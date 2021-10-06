@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/brandStockFragment">
+
+    <fragment
+        android:id="@+id/bookKeepeingFragment"
+        android:name="com.example.app21try6.bookkeeping.editdetail.BookKeepeingFragment"
+        android:label="@string/pembukuan"
+        tools:layout="@layout/fragment_book_keepeing">
+        <argument
+            android:name="date"
+            app:argType="string[]" />
+        <action
+            android:id="@+id/action_bookKeepeingFragment_to_vendibleFragment"
+            app:destination="@id/vendibleFragment"
+            app:enterAnim="@anim/zoom_in"
+            app:exitAnim="@anim/zoom_in_book"
+            app:popExitAnim="@anim/zoom_out"
+            app:popUpTo="@id/bookKeepeingFragment"
+            app:popUpToInclusive="?android:attr/windowOverscan" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/bookSummaryFragment"
+        android:name="com.example.app21try6.bookkeeping.summary.BookSummaryFragment"
+        android:label="@string/pembukuan">
+        <action
+            android:id="@+id/action_bookSummaryFragment_to_bookKeepeingFragment3"
+            app:destination="@id/bookKeepeingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/vendibleFragment"
+        android:name="com.example.app21try6.bookkeeping.vendiblelist.VendibleFragment"
+        android:label="Daftar Barang">
+        <argument
+            android:name="date"
+            app:argType="string[]" />
+        <action
+            android:id="@+id/action_vendibleFragment_to_bookKeepeingFragment3"
+            app:destination="@id/bookKeepeingFragment"
+            app:enterAnim="@anim/zoom_in_book"
+            app:exitAnim="@anim/zoom_out" />
+        <action
+            android:id="@+id/action_vendibleFragment_to_subProductStockFragment"
+            app:destination="@id/subProductStockFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/brandStockFragment"
+        android:name="com.example.app21try6.stock.brandstock.BrandStockFragment"
+        android:label="Stok ">
+        <action
+            android:id="@+id/action_brandStockFragment_to_productStockFragment"
+            app:destination="@id/productStockFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/productStockFragment"
+        android:name="com.example.app21try6.stock.productstock.ProductStockFragment">
+        <action
+            android:id="@+id/action_productStockFragment_to_subProductStockFragment"
+            app:destination="@id/subProductStockFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
+        <argument
+            android:name="id"
+            app:argType="string[]" />
+    </fragment>
+    <fragment
+        android:id="@+id/subProductStockFragment"
+        android:name="com.example.app21try6.stock.subproductstock.SubProductStockFragment">
+        <action
+            android:id="@+id/action_subProductStockFragment_to_detailFragment"
+            app:destination="@id/detailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
+        <argument
+            android:name="productId"
+            app:argType="string[]" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.example.app21try6.stock.subdetail.DetailFragment"
+        android:label="Detail ">
+        <argument
+            android:name="sub_id"
+            app:argType="string[]" />
+    </fragment>
+    <fragment
+        android:id="@+id/transactionActiveFragment"
+        android:name="com.example.app21try6.transaction.transactionactive.TransactionActiveFragment"
+        android:label="TransactionActiveFragment" >
+        <action
+            android:id="@+id/action_transactionActiveFragment_to_transactionDetailFragment"
+            app:destination="@id/transactionDetailFragment" />
+        <action
+            android:id="@+id/action_transactionActiveFragment_to_transactionEditFragment"
+            app:destination="@id/transactionEditFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/transactionEditFragment"
+        android:name="com.example.app21try6.transaction.transactionedit.TransactionEditFragment"
+        android:label="TransactionEditFragment" >
+        <argument
+            android:name="id"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_transactionEditFragment_to_transactionDetailFragment"
+            app:destination="@id/transactionDetailFragment"
+            app:popUpTo="@id/transactionActiveFragment" />
+        <action
+            android:id="@+id/action_transactionEditFragment_to_vendibleFragment"
+            app:destination="@id/vendibleFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/transactionDetailFragment"
+        android:name="com.example.app21try6.transaction.transactiondetail.TransactionDetailFragment"
+        android:label="TransactionDetailFragment" >
+        <argument
+            android:name="id"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_transactionDetailFragment_to_transactionEditFragment"
+            app:destination="@id/transactionEditFragment" />
+    </fragment>
+</navigation>

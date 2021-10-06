@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_import"
+        android:title="Import Data"/>
+    <item
+        android:id="@+id/menu_export_csv"
+        android:title="Export Data as CSV"/>
+    <item
+        android:id="@+id/menu_export_pdf"
+        android:title="Export Data as PDF"/>
+</menu>

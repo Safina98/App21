@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="subProduct"
+            type="com.example.app21try6.database.SubProduct" />
+        <variable
+            name="longListener"
+            type="com.example.app21try6.stock.subproductstock.SubStokLongListener" />
+        <variable
+            name="plusListener"
+            type="com.example.app21try6.stock.subproductstock.PlusStokListener" />
+        <variable
+            name="subssListener"
+            type="com.example.app21try6.stock.subproductstock.SubsStokListener" />
+        <variable
+            name="warnaListener"
+            type="com.example.app21try6.stock.subproductstock.WarnaStokListener" />
+        <variable
+            name="ketListener"
+            type="com.example.app21try6.stock.subproductstock.KetStokListener" />
+        <variable
+            name="subProductListener"
+            type="com.example.app21try6.stock.subproductstock.SubListener" />
+        <variable
+            name="subCheckBoxListener"
+            type="com.example.app21try6.stock.subproductstock.CheckBoxListenerSub" />
+
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:onClick="@{() -> subProductListener.onSubProductClick(subProduct)}"
+        android:onLongClick="@{(view) -> longListener.onLongClick(view,subProduct)}"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+       >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/sub_product_txt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/alegreya_sc"
+                android:onClick="@{() -> subProductListener.onSubProductClick(subProduct)}"
+                android:text="TextView"
+                
+                android:textSize="30sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+             <!-- android:textColor="@color/black"-->
+            <Button
+                android:id="@+id/add_n_stock_btn"
+                style="@style/sub_btn_style"
+                android:onClick="@{() -> plusListener.onPlusButtonClick(subProduct)}"
+                android:text="@string/add_btn_value"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/stok_txt"
+                android:layout_width="30dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/alegreya_sc"
+                android:foregroundGravity="center_horizontal"
+                android:gravity="center"
+                android:text="0"
+                
+                android:textSize="24sp"
+                app:layout_constraintEnd_toStartOf="@+id/add_n_stock_btn"
+                app:layout_constraintTop_toTopOf="parent" />
+             <!-- android:textColor="@color/black"-->
+            <Button
+                android:id="@+id/subs_n_stock_btn"
+                style="@style/add_btn_style"
+                android:onClick="@{() -> subssListener.onSubsButtonClick(subProduct)}"
+                android:text="@string/sub_btn_value"
+                app:layout_constraintEnd_toStartOf="@+id/stok_txt"
+                app:layout_constraintHorizontal_bias="0.969"
+                app:layout_constraintStart_toEndOf="@+id/sub_product_txt"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/color_txt"
+                android:layout_width="125dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:onClick="@{() -> warnaListener.onWarnaClick(subProduct)}"
+                android:text="TextView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/sub_product_txt" />
+
+            <TextView
+                android:id="@+id/ket_txt"
+                android:layout_width="125dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="128dp"
+                android:layout_marginTop="4dp"
+                android:gravity="center_horizontal"
+                android:onClick="@{()-> ketListener.onKetClick(subProduct)}"
+                android:text="TextView"
+                app:layout_constraintEnd_toStartOf="@+id/subs_n_stock_btn"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/color_txt"
+                app:layout_constraintTop_toBottomOf="@+id/sub_product_txt" />
+
+            <TextView
+                android:id="@+id/textView2"
+                style="@style/text_subproduct_small_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Toko"
+                android:onClick="@{() -> subProductListener.onSubProductClick(subProduct)}"
+                app:layout_constraintEnd_toEndOf="@+id/color_txt"
+                app:layout_constraintStart_toStartOf="@+id/color_txt"
+                app:layout_constraintTop_toBottomOf="@+id/color_txt" />
+
+            <TextView
+                android:id="@+id/textView3"
+                style="@style/text_subproduct_small_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Gudang"
+                android:onClick="@{() -> subProductListener.onSubProductClick(subProduct)}"
+                app:layout_constraintEnd_toEndOf="@+id/add_n_stock_btn"
+                app:layout_constraintStart_toStartOf="@+id/subs_n_stock_btn"
+                app:layout_constraintTop_toBottomOf="@+id/ket_txt" />
+
+            <TextView
+                android:id="@+id/text_stok_toko"
+                style="@style/text_subproduct_small_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="8dp"
+                android:onClick="@{() -> subProductListener.onSubProductClick(subProduct)}"
+                android:text="TextView"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/textView2"
+                app:layout_constraintStart_toStartOf="@+id/textView2"
+                app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+            <TextView
+                android:id="@+id/text_stok_gudang"
+                style="@style/text_subproduct_small_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="8dp"
+                android:onClick="@{() -> subProductListener.onSubProductClick(subProduct)}"
+                android:text="TextView"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/textView3"
+                app:layout_constraintStart_toStartOf="@+id/textView3"
+                app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+            <CheckBox
+                android:id="@+id/checkBox"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:onClick="@{(view)->subCheckBoxListener.onCheckBoxSubClick(view,subProduct)}"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

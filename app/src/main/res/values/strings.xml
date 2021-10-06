@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Stok 21</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="submit">submit</string>
+    <string name="sub_btn_value">-</string>
+    <string name="add_btn_value">+</string>
+    <string name="pembukuan">Pembukuan</string>
+    <string name="menu_stok">Stok</string>
+</resources>

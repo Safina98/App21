@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="item"
+            type="com.example.app21try6.database.TransactionDetail" />
+        <variable
+            name="clickListener"
+            type="com.example.app21try6.transaction.transactionedit.TransEditClickListener" />
+
+        <variable
+            name="plusListener"
+            type="com.example.app21try6.transaction.transactionedit.PlusTransClickListener" />
+        <variable
+            name="subsListener"
+            type="com.example.app21try6.transaction.transactionedit.SubsTransClickListener" />
+        <variable
+            name="plusLongListener"
+            type="com.example.app21try6.transaction.transactionedit.PlusTransLongListener" />
+        <variable
+            name="subsLongListener"
+            type="com.example.app21try6.transaction.transactionedit.SubsTransLongListener" />
+
+
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_margin="2dp"
+        android:onClick="@{()->clickListener.onClick(item)}"
+       >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/txt_product_t"
+                style="@style/text_product_title_bookkeeping"
+                app:layout_constraintEnd_toStartOf="@+id/btn_subs_t"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/btn_subs_t"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+
+                android:layout_marginTop="8dp"
+
+                android:layout_marginEnd="8dp"
+                android:onLongClick="@{(view) -> subsLongListener.onLongClick(view,item)}"
+                android:onClick="@{()->subsListener.onClick(item)}"
+                android:text="-"
+                app:layout_constraintEnd_toStartOf="@+id/text_sells_t"
+                app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/text_sells_t"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:text="0"
+                
+                android:textSize="24dp"
+                app:layout_constraintEnd_toStartOf="@+id/btn_add_t"
+                app:layout_constraintTop_toTopOf="parent" />
+             <!--android:textColor="@color/dark_green3"-->
+            <Button
+                android:id="@+id/btn_add_t"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:onClick="@{()-> plusListener.onPlusButtonClick(item)}"
+                android:onLongClick="@{(view) -> plusLongListener.onLongClick(view,item)}"
+                android:text="+"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/text_sums_t"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:fontFamily="sans-serif"
+                android:text="0"
+                
+                android:textSize="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btn_subs_b" />
+             <!--android:textColor="@color/dark_green3"-->
+            <TextView
+                android:id="@+id/txt_price_t"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+
+                android:text="118.000"
+                
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/txt_product_b"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_product_b" />
+             <!--android:textColor="@color/dark_green3"-->
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

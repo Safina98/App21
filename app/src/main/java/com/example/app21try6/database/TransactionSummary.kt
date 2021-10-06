@@ -1,0 +1,24 @@
+package com.example.app21try6.database
+
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import java.util.*
+
+@Entity(tableName = "trans_sum_table")
+class TransactionSummary (
+        @PrimaryKey(autoGenerate = true)
+        var sum_id:Int = 0,
+        @ColumnInfo(name = "cust_name")
+        var cust_name:String = "",
+        @ColumnInfo(name = "total_trans")
+        var total_trans:Double=0.0,
+        @ColumnInfo(name = "paid")
+        var paid:Int=0,
+        @ColumnInfo(name = "trans_date")
+        var trans_date:String="",
+        @ColumnInfo(name = "is_taken")
+        var is_taken:Boolean=false,
+        @ColumnInfo(name = "is_paid_off")
+        var is_paid_off:Boolean=false
+)
