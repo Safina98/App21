@@ -11,14 +11,60 @@
             android:id="@+id/drawerLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/myNavHostFragment"
-                android:name="androidx.navigation.fragment.NavHostFragment"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:navGraph="@navigation/navigation"
-                app:headerLayout="@layout/nav_header"
-                app:defaultNavHost="true" />
+                android:orientation="vertical">
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    style="@style/Base_ToolbarStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize">
+
+                    <ImageView
+                        android:id="@+id/delete_image"
+                        style="@style/btn_style"
+                        app:srcCompat="@drawable/ic_baseline_delete_24" />
+                </androidx.appcompat.widget.Toolbar>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/linear_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:visibility="gone">
+
+                    <Button
+                        android:id="@+id/delete_button"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginRight="@dimen/medium_margin"
+                        android:text="Delete"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        style="@style/toobar_btn" />
+
+                    <Button
+                        android:id="@+id/cancel_button"
+                        style="@style/toobar_btn"
+                        android:layout_marginLeft="@dimen/medium_margin"
+                        android:padding="8dp"
+                        android:text="Cancel"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/myNavHostFragment"
+                    android:name="androidx.navigation.fragment.NavHostFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:navGraph="@navigation/navigation"
+                    app:headerLayout="@layout/nav_header"
+                    app:defaultNavHost="true" />
+
+            </LinearLayout>
+
+
 
             <com.google.android.material.navigation.NavigationView
                 android:id="@+id/navView"
