@@ -27,6 +27,7 @@ class BookkeepingViewModel(val database: SummaryDbDao,
     private val months = arrayOf("all","Januari", "Februari", "Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember")
     val dayly_sells = database.getToday(date[0].toInt(), date[1], date[2].toInt())
     val totalToday = database.getTotalToday(date[0].toInt(), date[1], date[2].toInt())
+
     val playerName: LiveData<String> =
             Transformations.map(totalToday) { formatRupiah(it).toString() }
     val inFormat = SimpleDateFormat("dd-MM-yyyy")

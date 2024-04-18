@@ -10,9 +10,11 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
+import android.os.Build
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -46,8 +48,8 @@ class SummaryViewModel (val database: SummaryDbDao, application: Application):An
     //Variables
     val months_list = arrayOf("all","Januari", "Februari", "Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember")
     val year_list = arrayOf("2021","2022","2023","2024","2025","2026","2027","2028","2029","2030","2031")
-
-    var _itemPosition = MutableLiveData<Int>(0)
+    val year = Calendar.getInstance().get(Calendar.YEAR)
+    var _itemPosition = MutableLiveData<Int>(year_list.indexOf(year.toString()))
     var _itemMonthPosition = MutableLiveData<Int>()
 
     //variable thisMonth to hold the current month
@@ -56,19 +58,15 @@ class SummaryViewModel (val database: SummaryDbDao, application: Application):An
     //variable all Month  to hold value of getAllMonth from the data base
     //var _months = database.getAllMonth(2021)
     val __months get() = _itemPosition.value.let {year_id->
-        database.getAllMonthNew(year_list?.get(year_id!!).toInt())
+        database.getAllMonthNew(year_list.get(year_id!!).toInt())
     }
-
-
    val __days get() = _itemPosition.value?.let {year_id->
         _itemMonthPosition.value?.let {month_id->
             if (month_id==0){
-                database.getAllMonthNew(year_list?.get(year_id).toInt())
-
+                database.getAllMonthNew(year_list.get(year_id).toInt())
             }else{
-                database.getAllDayNew(year_list?.get(year_id).toInt(),months_list?.get(month_id))
+                database.getAllDayNew(year_list.get(year_id).toInt(), months_list.get(month_id))
             }
-
         }
     }
     val allItemFromSummary = database.getAllSummary()
@@ -81,6 +79,7 @@ class SummaryViewModel (val database: SummaryDbDao, application: Application):An
     val is_month
         get() = _is_month
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun onStartTracking() {
         uiScope.launch {
             val summary = Summary()
@@ -91,7 +90,7 @@ class SummaryViewModel (val database: SummaryDbDao, application: Application):An
                 for(d in 1..yearMonthObject.lengthOfMonth() ){
                     val input = d.toString()+"-"+m.toString()+"-"+year.toString()
                     val date: Date = inFormat.parse(input)
-                    summary.year= year!!.toInt()
+                    summary.year= year.toInt()
                     summary.month = months_list.get(m)
                     summary.month_number = m
                     summary.day = d
@@ -104,7 +103,6 @@ class SummaryViewModel (val database: SummaryDbDao, application: Application):An
             Toast.makeText(getApplication(),"Finnised",Toast.LENGTH_SHORT).show()
         }
     }
-
     fun insertCSV(token: List<String>){
         uiScope.launch {
             try {
@@ -156,32 +154,27 @@ class SummaryViewModel (val database: SummaryDbDao, application: Application):An
 
     fun generatePDF(file: File){
         val listBulanan = allItemFromSummary.value
-
         var pdfDocument = PdfDocument()
         val title = Paint()
         val month_style =Paint()
-
         var pageNumber =1
         var mypageInfo = PdfDocument.PageInfo.Builder(pagewidth, pageHeight, pageNumber).create()
         var myPage = pdfDocument.startPage(mypageInfo)
         var canvas: Canvas = myPage.canvas
-
-        title.setTypeface(Typeface.create(Typeface.DEFAULT_BOLD, Typeface.BOLD))
-        title.setTextSize(45F)
-        title.setColor(ContextCompat.getColor(getApplication(), R.color.black))
-
-        month_style.setTypeface(Typeface.create(Typeface.DEFAULT_BOLD, Typeface.BOLD))
-        month_style.setTextSize(30F)
-        month_style.setColor(ContextCompat.getColor(getApplication(), R.color.black))
-        month_style.setTextAlign(Paint.Align.CENTER)
-        val year = year_list?.get(_itemPosition.value!!)
+        title.typeface = Typeface.create(Typeface.DEFAULT_BOLD, Typeface.BOLD)
+        title.textSize = 45F
+        title.color = ContextCompat.getColor(getApplication(), R.color.black)
+        month_style.typeface = Typeface.create(Typeface.DEFAULT_BOLD, Typeface.BOLD)
+        month_style.textSize = 30F
+        month_style.color = ContextCompat.getColor(getApplication(), R.color.black)
+        month_style.textAlign = Paint.Align.CENTER
+        val year = year_list.get(_itemPosition.value!!)
         canvas.drawText("LAPORAN KEUANGAN", 60F, 260F, title)
         canvas.drawText("TOKO 21", 200F, 330F, title)
         canvas.drawText("TAHUN $year", 160F, 390F, title)
-
-        title.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL))
-        title.setColor(ContextCompat.getColor(getApplication(), R.color.black))
-        title.setTextSize(15F)
+        title.typeface = Typeface.defaultFromStyle(Typeface.NORMAL)
+        title.color = ContextCompat.getColor(getApplication(), R.color.black)
+        title.textSize = 15F
         var this_month = ""
         var x = 50F
         var y =220F
@@ -196,7 +189,7 @@ class SummaryViewModel (val database: SummaryDbDao, application: Application):An
                             totalIncome.clear()
                             y = 120F
                             this_month = v.month
-                            pdfDocument.finishPage(myPage);
+                            pdfDocument.finishPage(myPage)
                             pageNumber += 1
                             mypageInfo = PdfDocument.PageInfo.Builder(pagewidth, pageHeight, pageNumber).create()
                             myPage = pdfDocument.startPage(mypageInfo)
@@ -207,10 +200,10 @@ class SummaryViewModel (val database: SummaryDbDao, application: Application):An
                             canvas.drawText("Jumlah", 300F, y-20, title)
                             canvas.drawText("Harga Satuan", 400F, y-20, title)
                             canvas.drawText("Total", 500F, y-20, title)
-                            title.setTextAlign(Paint.Align.LEFT)
+                            title.textAlign = Paint.Align.LEFT
                     }
                             if (y>750F){
-                               pdfDocument.finishPage(myPage);
+                               pdfDocument.finishPage(myPage)
                                 pageNumber+=1
                                 mypageInfo = PdfDocument.PageInfo.Builder(pagewidth, pageHeight, pageNumber).create()
                                 myPage = pdfDocument.startPage(mypageInfo)

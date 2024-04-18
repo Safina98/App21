@@ -29,7 +29,7 @@ class VendibleAdapter (
                 binding.textSubproductV.text =item.product_name
                 binding.checkBoxListener = checkBoxListener
                 //binding.checkBox.visibility= View.GONE
-                binding.checkBox.isChecked = item.checkBoxBoolean
+                binding.checkbox.isChecked= item.checkBoxBoolean
                 binding.textListener = textListener
                 binding.delLongListenerV = delLongListenerV
                 binding.executePendingBindings()

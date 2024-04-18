@@ -93,7 +93,7 @@ class VendibleViewModel(val database: SummaryDbDao,
                 insertTry(product,brand,cath)
             } catch (e: SQLiteException) {
                 Toast.makeText(getApplication(),e.toString(),Toast.LENGTH_LONG).show()
-                Log.i("tag_1", "message ${e.toString()}")
+                Log.i("tag_1", "message $e")
             }
         }
     }

@@ -27,7 +27,7 @@ class ProductViewModel (
     private val _navigateProduct = MutableLiveData<Array<String>>()
     val navigateProduct:LiveData<Array<String>>
         get() = _navigateProduct
-        fun insertAnItemProductStock(product_name:String,price:Int){
+    fun insertAnItemProductStock(product_name:String,price:Int){
         uiScope.launch {
             if (product_name!="") {
                 val product = Product()

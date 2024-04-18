@@ -40,7 +40,7 @@ class SubAdapter (val code:Int,
                 binding.ketTxt.text = item.ket
                 binding.textStokToko.text = item.roll_bt.toString()+"B + "+item.roll_st+"S + "+item.roll_kt+"K"
                 binding.textStokGudang.text = item.roll_bg.toString()+"BG + "+item.roll_sg+"SG + "+item.roll_kg+"KG"
-                binding.checkBox.visibility=View.GONE
+                binding.substockCheckbox.visibility=View.GONE
                 binding.longListener = longListener
                 binding.plusListener = plusListener
                 binding.subssListener = subsListener
@@ -58,8 +58,7 @@ class SubAdapter (val code:Int,
                 binding.textStokToko.visibility = View.GONE
                 binding.ketTxt.visibility = View.GONE
                 binding.subCheckBoxListener = checkBoxListenerSub
-
-                binding.checkBox.isChecked = item.is_cheked
+                binding.substockCheckbox.isChecked = item.is_cheked
 
             }
 

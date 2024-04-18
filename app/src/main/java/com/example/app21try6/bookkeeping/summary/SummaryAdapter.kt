@@ -13,7 +13,6 @@ import com.example.app21try6.databinding.SummaryItemListBinding
 import com.example.app21try6.formatRupiah
 
 class SummaryAdapter(
-
         val clickListener: SummaryListener
 ):
         ListAdapter<ListModel, SummaryAdapter.MyViewHolder>(ProductDiffCallback())

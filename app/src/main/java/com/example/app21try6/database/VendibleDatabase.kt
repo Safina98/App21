@@ -8,13 +8,18 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 
-@Database(entities = [Brand::class,Product::class,SubProduct::class,Category::class],version=16, exportSchema = true)
+@Database(entities = [Brand::class,Product::class,SubProduct::class,Category::class,TransactionSummary::class,TransactionDetail::class],version=17, exportSchema = true)
 abstract class VendibleDatabase:RoomDatabase(){
     //abstract val vendibleDbDao: VendibleDbDao
+
     abstract val brandDao :BrandDao
     abstract val productDao:ProductDao
     abstract val subProductDao:SubProductDao
     abstract val categoryDao:CategoryDao
+    abstract val transDetailDao:TransDetailDao
+    abstract val transSumDao:TransSumDao
+
+
 
     companion object{
         @Volatile
@@ -32,7 +37,7 @@ abstract class VendibleDatabase:RoomDatabase(){
                             context.applicationContext,
                             VendibleDatabase::class.java,
                             "vendible_table"
-                    ).addMigrations(MIGRATION_1_2).build()
+                    ).fallbackToDestructiveMigration().build()
                     INSTANCE = instance
                     //instance = Room.databaseBuilder(context.applicationContext,VendibleDatabase::class.java,"mymaindb").allowMainThreadQueries().build()
                 }

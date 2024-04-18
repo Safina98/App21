@@ -1,9 +1,6 @@
 package com.example.app21try6.database
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 @Entity(tableName = "sub_table",
     foreignKeys = [ForeignKey(entity = Product::class,
@@ -52,5 +49,4 @@ data class SubProduct(
     var cath_code:Int = 0,
     @ColumnInfo(name="is_checked")
     var is_cheked:Boolean = false
-
 )

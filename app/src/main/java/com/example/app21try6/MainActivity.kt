@@ -21,8 +21,10 @@ class MainActivity : AppCompatActivity() {
         val toolbar:androidx.appcompat.widget.Toolbar = binding.toolbar
        drawerLayout = binding.drawerLayout
         setSupportActionBar(toolbar)
+
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.myNavHostFragment) as NavHostFragment
         val navController = navHostFragment.navController
+
         NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
         appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
         NavigationUI.setupWithNavController(binding.navView, navController)

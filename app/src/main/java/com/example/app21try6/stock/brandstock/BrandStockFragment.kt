@@ -45,7 +45,7 @@ class BrandStockFragment : Fragment() {
     var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
-          var i = 1
+            var i = 1
             try {
                 context?.contentResolver?.openInputStream(data!!.data!!)?.bufferedReader()?.forEachLine {
                     val tokens: List<String> = it.split(",")
@@ -78,9 +78,8 @@ class BrandStockFragment : Fragment() {
                 if (checkPermission()) {
                     //Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show();
                 } else {
-                    requestPermission();
+                    requestPermission()
                 }
-
 
                 val adapter = BrandStockAdapter(BrandStockListener {  
                     viewModel.onBrandCLick(arrayOf(it.brand_id.toString(),it.cath_code.toString(),it.brand_name))
@@ -246,7 +245,7 @@ class BrandStockFragment : Fragment() {
 
     private fun importCSVStock() {
         var fileIntent = Intent(Intent.ACTION_GET_CONTENT)
-        fileIntent.setType("text/*")
+        fileIntent.type = "text/*"
         try { resultLauncher.launch(fileIntent) }
         catch (e: FileNotFoundException) {
             Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show() }
@@ -259,7 +258,7 @@ class BrandStockFragment : Fragment() {
         Log.i("FilePath","else path: " +file.path.toString())
         viewModel.writeCSV(file)
 
-        val photoURI: Uri = FileProvider.getUriForFile(this!!.requireContext(), requireContext().getApplicationContext().getPackageName() + ".provider",file)
+        val photoURI: Uri = FileProvider.getUriForFile(this.requireContext(), requireContext().applicationContext.packageName + ".provider",file)
         val shareIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_STREAM, photoURI)

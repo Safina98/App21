@@ -18,7 +18,7 @@ class CategoryAdapter (val checkBoxListener: CheckBoxListenerDoalog):ListAdapter
         ){
             binding.category = item
             binding.textSubproductV.text =item.category_name
-            binding.checkBox.isChecked = item.checkBoxBoolean
+            binding.cathCheckbox.isChecked = item.checkBoxBoolean
             binding.checkBoxListener = checkBoxListener
             binding.executePendingBindings()
         }

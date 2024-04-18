@@ -17,7 +17,8 @@ class TransactionEditAdapter(
         val subsTransClickListener: SubsTransClickListener,
         val plusTransClickListener: PlusTransClickListener,
         val subslongListener: SubsTransLongListener,
-        val plusLongListener: PlusTransLongListener)
+        val plusLongListener: PlusTransLongListener,
+        val longListener: TransEditLongListener)
     :ListAdapter<TransactionDetail,TransactionEditAdapter.MyViewHolder>(TransEditDiffCallBack()){
     class MyViewHolder private constructor(val binding:TransactionEditItemListBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(
@@ -26,7 +27,8 @@ class TransactionEditAdapter(
                 subsTransClickListener: SubsTransClickListener,
                 plusTransClickListener: PlusTransClickListener,
                 subslongListener: SubsTransLongListener,
-                plusLongListener: PlusTransLongListener){
+                plusLongListener: PlusTransLongListener,
+                longListener: TransEditLongListener){
             binding.item = item
             binding.txtProductT.text = item.trans_item_name
             binding.textSellsT.text = item.qty.toString()
@@ -37,6 +39,7 @@ class TransactionEditAdapter(
             binding.plusListener = plusTransClickListener
             binding.subsLongListener = subslongListener
             binding.plusLongListener = plusLongListener
+            binding.longListener = longListener
             binding.executePendingBindings()
         }
         companion object{
@@ -51,7 +54,7 @@ class TransactionEditAdapter(
         return MyViewHolder.from(parent)
     }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-       holder.bind(getItem(position),clickListener,subsTransClickListener,plusTransClickListener,subslongListener,plusLongListener)
+       holder.bind(getItem(position),clickListener,subsTransClickListener,plusTransClickListener,subslongListener,plusLongListener,longListener)
     }
 }
 class TransEditDiffCallBack: DiffUtil.ItemCallback<TransactionDetail>(){
@@ -68,9 +71,12 @@ class TransEditClickListener(val clickListener:(edit_trans: TransactionDetail)->
     fun onClick(edit_trans: TransactionDetail) = clickListener(edit_trans)
 
 }
-//class PlusTransClickListener(val clickListener:(edit_trans: TransactionDetail)->Unit){
-  //  fun onClick(edit_trans: TransactionDetail) = clickListener(edit_trans)
-//}
+class TransEditLongListener(val longListener:(edit_trans: TransactionDetail)->Unit){
+    fun onLongClick(v: View, edit_trans: TransactionDetail):Boolean{
+        longListener(edit_trans)
+        return true
+    }
+}
 class SubsTransClickListener(val clickListener:(edit_trans: TransactionDetail)->Unit){
     fun onClick(edit_trans: TransactionDetail) = clickListener(edit_trans)
 }
@@ -89,3 +95,5 @@ class SubsTransLongListener(val longListener:(edit_trans: TransactionDetail)->Un
         return true
     }
 }
+
+

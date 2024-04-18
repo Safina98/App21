@@ -5,6 +5,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import com.example.app21try6.bookkeeping.summary.ListModel
+import com.example.app21try6.transaction.transactionselect.TransSelectModel
 
 @Dao
 interface ProductDao {
@@ -14,6 +16,10 @@ interface ProductDao {
     fun update(product: Product)
     @Query("SELECT * FROM product_table WHERE brand_code = :brand_id_")
     fun getAll(brand_id_:Int): LiveData<List<Product>>
+
+
+    //@Query("SELECT year as year_n,month as month_n,month_number as month_nbr, month as nama,day as day_n,day_name as day_name,SUM(total_income) as total FROM SUMMARY_TABLE  WHERE year = :year_  GROUP BY month ORDER BY month_nbr ASC")
+
     @Query("SELECT * FROM product_table WHERE cath_code = :c_id_")
     fun getCategoriedProduct(c_id_:Int): LiveData<List<Product>>
     @Query("SELECT * FROM product_table")

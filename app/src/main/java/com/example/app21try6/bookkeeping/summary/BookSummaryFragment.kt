@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -85,12 +86,12 @@ class BookSummaryFragment : Fragment(){
         val viewModelFactory = SummaryViewModelFactory(dataSource, application)
         val summaryViewModel = ViewModelProvider(
                 this, viewModelFactory).get(SummaryViewModel::class.java)
-        binding.setLifecycleOwner(this)
+        binding.lifecycleOwner = this
         binding.summaryViewModel = summaryViewModel
         if (checkPermission()) {
-            Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show()
         } else {
-           requestPermission();
+           requestPermission()
         }
         val adapter = SummaryAdapter(SummaryListener {
                     //if (it.day_n==0) {
@@ -123,7 +124,7 @@ class BookSummaryFragment : Fragment(){
                 object : Observer<Int> {
                     override fun onChanged(t: Int) {
                         summaryViewModel._itemMonthPosition.value = 0
-                        summaryViewModel.__months?.observe(viewLifecycleOwner, Observer {
+                        summaryViewModel.__months.observe(viewLifecycleOwner, Observer {
                             it?.let {
                                 adapter.submitList(it.sortedBy { it.month_nbr})
                                 adapter.notifyDataSetChanged()
@@ -178,10 +179,14 @@ class BookSummaryFragment : Fragment(){
 
     private fun exportPDFBook() {
         val fileName = generateFileName()
-        val file = File(context?.getExternalFilesDir(null), "Laporan 21 "+fileName+".pdf")
+        val file = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+            File(context?.getExternalFilesDir(null), "Laporan 21 "+fileName+".pdf")
+        } else {
+            TODO("VERSION.SDK_INT < FROYO")
+        }
         Log.i("filepath",""+file.path.toString())
         viewModel.generatePDF(file)
-        val photoURI:Uri = FileProvider.getUriForFile(this!!.requireContext(), requireContext().getApplicationContext().getPackageName() + ".provider",file)
+        val photoURI:Uri = FileProvider.getUriForFile(this.requireContext(), requireContext().applicationContext.packageName + ".provider",file)
         val shareIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_STREAM, photoURI)
@@ -197,7 +202,7 @@ class BookSummaryFragment : Fragment(){
 
     private fun importCSVBook() {
         var fileIntent = Intent(Intent.ACTION_GET_CONTENT)
-        fileIntent.setType("text/*")
+        fileIntent.type = "text/*"
         try { resultLauncher.launch(fileIntent) } catch (e: FileNotFoundException) { Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show() }
     }
 
@@ -207,7 +212,7 @@ class BookSummaryFragment : Fragment(){
         Log.i("filepath"," "+context?.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString())
         Toast.makeText(context,context?.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString(),Toast.LENGTH_LONG).show()
         viewModel.writeCSV(file)
-        val photoURI:Uri = FileProvider.getUriForFile(this!!.requireContext(), requireContext().getApplicationContext().getPackageName() + ".provider",file)
+        val photoURI:Uri = FileProvider.getUriForFile(this.requireContext(), requireContext().applicationContext.packageName + ".provider",file)
         val shareIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_STREAM, photoURI)

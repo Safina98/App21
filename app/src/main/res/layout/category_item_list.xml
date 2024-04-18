@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             />
         <CheckBox
-            android:id="@+id/checkBox"
+            android:id="@+id/cath_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:onClick="@{(view) -> checkBoxListener.onCheckBoxClick(view,category)}"/>

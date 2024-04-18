@@ -91,7 +91,7 @@ class BrandStockViewModel(
                     insertCath(category)
                 } catch (e: SQLiteException) {
                     Toast.makeText(getApplication(), e.toString(), Toast.LENGTH_LONG).show()
-                    Log.i("tag_1", "message ${e.toString()}")
+                    Log.i("tag_1", "message $e")
                 }
             }
         }
@@ -107,10 +107,16 @@ class BrandStockViewModel(
                 val product= Product()
                 product.product_name = token[2].toUpperCase().trim()
                 product.product_price = token[3].toInt()
-                if(token[4]=="TRUE"){product.bestSelling=true}else{product.bestSelling=false}
+                product.bestSelling = token[4]=="TRUE"
                 val subProduct = SubProduct()
                 subProduct.sub_name = token[5].toUpperCase().trim()
                 subProduct.roll_u = token[6].toInt()
+                subProduct.roll_bt = token[7].toInt()
+                subProduct.roll_st = token[8].toInt()
+                subProduct.roll_kt = token[9].toInt()
+                subProduct.roll_bg = token[10].toInt()
+                subProduct.roll_sg = token[11].toInt()
+                subProduct.roll_kg = token[12].toInt()
                 if (all_cath!!.isEmpty()){insertCathNew__(token[0].toUpperCase().trim())}else{insertCathNew(token[0].toUpperCase().trim())}
                 if (allBrand!!.isEmpty()){ insertBrandNew_(token[1].toUpperCase().trim(),token[0].toUpperCase().trim()) }else{ insertBrandNew(token[1].toUpperCase().trim(),token[0].toUpperCase().trim()) }
                 if (all_product_!!.isEmpty()){ inserProductNew_(product,token[1].toUpperCase().trim(),token[0].toUpperCase().trim()) }
@@ -118,7 +124,7 @@ class BrandStockViewModel(
                 if (all_sub_!!.isEmpty()){ insertSubProductNew_(subProduct,product.product_name,token[1].toUpperCase().trim(),token[0].toUpperCase().trim())}
                 else{ insertSubProductNew(subProduct,product.product_name,token[1].toUpperCase().trim(),token[0].toUpperCase().trim())}
             } catch (e: SQLiteException) {
-                Log.i("message_e", "message: ${e.toString()}")
+                Log.i("message_e", "message: $e")
                 Toast.makeText(getApplication(),e.toString(),Toast.LENGTH_LONG).show()
             }
         }

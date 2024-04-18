@@ -7,7 +7,9 @@ import android.widget.Toast
 import androidx.lifecycle.*
 import com.example.app21try6.Constants
 import com.example.app21try6.database.*
+import com.example.app21try6.formatRupiah
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -19,43 +21,34 @@ class TransactionEditViewModel(
     val datasource2: TransDetailDao,
     var id:Int
 ):AndroidViewModel(application){
+    //Navigation
     private val _navigateToVendible = MutableLiveData<Array<String>>()
     val navigateToVendible: LiveData<Array<String>>
         get() = _navigateToVendible
     private val _navigateToDetail = MutableLiveData<Int>()
     val navigateToDetail: LiveData<Int>
         get() = _navigateToDetail
-   var custName  =MutableLiveData<String>()
-    val itemTransDetail = datasource2.selectATransDetail(id)
-    val transSum = MutableLiveData<TransactionSummary>()
-    val sdf = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT)
-    val currentDate = sdf.format(Date())
     private val _showDialog = MutableLiveData<TransactionDetail>()
     val showDialog:LiveData<TransactionDetail> get() = _showDialog
 
+   var custName  =MutableLiveData<String>("")
+
+    var itemTransDetail = datasource2.selectATransDetail(id)
+    val transSum = MutableLiveData<TransactionSummary>()
+    val sdf = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT)
+    val currentDate = sdf.format(Date())
+    val totalSum = datasource2.getTotalTrans(id)
+    val trans_total: LiveData<String> =
+            Transformations.map(totalSum) { formatRupiah(it).toString() }
     init {
         viewModelScope.launch {
             if (id==-1){
-                initiateNewId()
+             // initiateNewId()
                 id=  datasource1.getLastInsertedId() ?: return@launch
             }
-            custName.value = datasource1.getCustName(id)  ?: return@launch
-           // itemTransDetail = datasource2.selectATransDetail(id)
+            itemTransDetail = datasource2.selectATransDetail(id)
+            custName.value = datasource1.getCustName(id)
             transSum.value = datasource1.getTrans(id)
-        }
-    }
-    fun initiateNewId(){
-        viewModelScope.launch {
-          var trans =   TransactionSummary()
-            trans.trans_date = currentDate
-         insertNewSum(trans)
-             //id=  datasource1.getLastInsertedId() ?: return@launch
-        }
-    }
-
-    suspend fun insertNewSum(transactionSummary: TransactionSummary){
-        withContext(Dispatchers.IO){
-            datasource1.insert(transactionSummary)
         }
     }
 
@@ -66,7 +59,7 @@ class TransactionEditViewModel(
     fun onNavigatedtoVendible(){
         _navigateToVendible.value =null
     }
-    suspend fun updateSum(transactionSummary: TransactionSummary){
+    private suspend fun updateSum(transactionSummary: TransactionSummary){
         withContext(Dispatchers.IO){
             datasource1.update(transactionSummary)
         }
@@ -74,6 +67,7 @@ class TransactionEditViewModel(
     fun updateTransDetail(transactionDetail: TransactionDetail,i: Double){
         viewModelScope.launch {
             transactionDetail.qty = transactionDetail.qty + i
+            transactionDetail.total_price = transactionDetail.trans_price*transactionDetail.qty
             _updateTransDetail(transactionDetail)
         }
     }
@@ -92,19 +86,36 @@ class TransactionEditViewModel(
     suspend fun _updateTransDetail(transactionDetail: TransactionDetail){
         withContext(Dispatchers.IO){
             datasource2.update(transactionDetail)
-
         }
     }
 
     fun onNavigatetoDetail(idm:Int){
         viewModelScope.launch {
-
-            var transSumS: TransactionSummary = datasource1.getTrans(id) ?: return@launch
+            // delete_()
+            _navigateToDetail.value=id
+        }
+    }
+    fun saveCustName(){
+        viewModelScope.launch {
+            var transSumS: TransactionSummary = datasource1.getTrans(id)
             transSumS.cust_name = custName.value ?: "Kosong"
-            Log.e("SUM","transum in viewModel navigate fun is "+transSumS.sum_id.toString())
-           updateSum(transSumS)
-           // delete_()
-       _navigateToDetail.value=id
+            Log.e("SUMVM","transum in viewModel navigate fun is "+transSumS.sum_id.toString())
+            Log.e("SUMVM","transum in viewModel navigate fun is "+custName.value.toString()+"")
+            updateSum(transSumS)
+            Log.e("SUMVM","transum in viewModel navigate fun is "+transSumS.cust_name.toString()+"")
+        }
+    }
+    fun saveCustomerName(){
+        viewModelScope.launch {
+
+        }
+    }
+    fun updateTotalSum(){
+        viewModelScope.launch {
+            var transSumS: TransactionSummary = datasource1.getTrans(id)
+            transSumS.total_trans = totalSum.value ?: 0.0
+            updateSum(transSumS)
+
         }
     }
     @SuppressLint("NullSafeMutableLiveData")
@@ -112,14 +123,14 @@ class TransactionEditViewModel(
         this._navigateToDetail.value =null
     }
 
-    suspend fun delete_(){
+    suspend fun delete_(idm: Int){
         withContext(Dispatchers.IO){
-            datasource1.deleteAll()
+            datasource2.deleteAnItemTransDetail(idm)
         }
     }
-    fun delete(){
+    fun delete(idm: Int){
         viewModelScope.launch {
-            delete()
+          delete_(idm)
         }
     }
     fun onShowDialog(transactionDetail: TransactionDetail){
@@ -129,6 +140,13 @@ class TransactionEditViewModel(
     fun onCloseDialog(){
         _showDialog.value = null
     }
+    fun onFramgentClosed(){
+        viewModelScope.launch {
+            saveCustName()
+        }
+    }
+    fun onFragmentStart(){
 
+    }
 
 }

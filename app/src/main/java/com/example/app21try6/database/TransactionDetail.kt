@@ -1,17 +1,21 @@
 package com.example.app21try6.database
 
+import androidx.room.*
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
-    @Entity(tableName = "trans_detail_table",
-        foreignKeys = [ForeignKey(entity = TransactionSummary::class,
+
+@Entity(tableName = "trans_detail_table",
+        foreignKeys = [
+                ForeignKey(entity = TransactionSummary::class,
                 parentColumns = ["sum_id"],
                 childColumns = ["sum_id"],
                 onDelete = ForeignKey.CASCADE,
-                onUpdate = ForeignKey.CASCADE)])
-class TransactionDetail(
+                onUpdate = ForeignKey.CASCADE)
+        ])
+data class TransactionDetail(
         @PrimaryKey(autoGenerate = true)
         var trans_detail_id:Int = 0,
         @ColumnInfo(name="sum_id")
@@ -24,4 +28,5 @@ class TransactionDetail(
         var trans_price:Int= 0,
         @ColumnInfo(name = "total_price")
         var total_price:Double = 0.0
-)
+        )
+

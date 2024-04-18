@@ -2,11 +2,12 @@ package com.example.app21try6.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import java.util.*
 
 @Entity(tableName = "trans_sum_table")
-class TransactionSummary (
+data class TransactionSummary (
         @PrimaryKey(autoGenerate = true)
         var sum_id:Int = 0,
         @ColumnInfo(name = "cust_name")
@@ -18,7 +19,7 @@ class TransactionSummary (
         @ColumnInfo(name = "trans_date")
         var trans_date:String="",
         @ColumnInfo(name = "is_taken")
-        var is_taken:Boolean=false,
+        var is_taken_:Boolean=false,
         @ColumnInfo(name = "is_paid_off")
-        var is_paid_off:Boolean=false
+        var is_paid_off:Boolean=false,
 )

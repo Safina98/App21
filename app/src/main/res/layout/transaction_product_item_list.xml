@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="product"
+            type="com.example.app21try6.database.Product" />
+        <variable
+            name="clickListener"
+            type="com.example.app21try6.transaction.transactionproduct.ProductTransListener" />
+
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{()->clickListener.onClick(product)}"
+        android:layout_margin="2dp">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/sub_product_txt_trans"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:fontFamily="@font/alegreya_sc"
+                android:text="@{product.product_name}"
+                android:textSize="30sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/trans_checkbox"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <!-- android:textColor="@color/black"-->
+            <!--
+            <Button
+                android:id="@+id/add_n_trans_btn"
+                style="@style/sub_btn_style"
+                android:text="@string/add_btn_value"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/qty_txt_trans"
+                android:layout_width="30dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/alegreya_sc"
+                android:foregroundGravity="center_horizontal"
+                android:gravity="center"
+                android:text="0"
+                android:textSize="24sp"
+                app:layout_constraintEnd_toStartOf="@+id/add_n_trans_btn"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/subs_n_trans_btn"
+                style="@style/add_btn_style"
+                android:text="@string/sub_btn_value"
+                app:layout_constraintEnd_toStartOf="@+id/qty_txt_trans"
+                app:layout_constraintHorizontal_bias="0.969"
+                app:layout_constraintStart_toEndOf="@+id/sub_product_txt_trans"
+                app:layout_constraintTop_toTopOf="parent" />
+                -->
+            <CheckBox
+                android:id="@+id/trans_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+               />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

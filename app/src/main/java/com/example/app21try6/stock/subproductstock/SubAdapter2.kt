@@ -14,7 +14,7 @@ class SubAdapter2 (val code:Int,val checkBoxListener2: CheckBoxListener2):  List
         fun bind(code:Int,checkBoxListener2: CheckBoxListener2,
                  item: SubProduct){
             binding.subProduct = item
-            binding.checkBox.visibility=View.GONE
+            //binding.s.visibility=View.GONE
             binding.textSubproductV.text = item.sub_name
             binding.executePendingBindings()
         }

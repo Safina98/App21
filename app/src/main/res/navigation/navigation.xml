@@ -98,7 +98,7 @@
     <fragment
         android:id="@+id/transactionActiveFragment"
         android:name="com.example.app21try6.transaction.transactionactive.TransactionActiveFragment"
-        android:label="TransactionActiveFragment" >
+        android:label="Nota">
         <action
             android:id="@+id/action_transactionActiveFragment_to_transactionDetailFragment"
             app:destination="@id/transactionDetailFragment" />
@@ -109,7 +109,7 @@
     <fragment
         android:id="@+id/transactionEditFragment"
         android:name="com.example.app21try6.transaction.transactionedit.TransactionEditFragment"
-        android:label="TransactionEditFragment" >
+        android:label="Edit Nota">
         <argument
             android:name="id"
             app:argType="integer" />
@@ -118,18 +118,37 @@
             app:destination="@id/transactionDetailFragment"
             app:popUpTo="@id/transactionActiveFragment" />
         <action
-            android:id="@+id/action_transactionEditFragment_to_vendibleFragment"
-            app:destination="@id/vendibleFragment" />
+            android:id="@+id/action_transactionEditFragment_to_transactionProductFragment"
+            app:destination="@id/transactionProductFragment" />
     </fragment>
     <fragment
         android:id="@+id/transactionDetailFragment"
         android:name="com.example.app21try6.transaction.transactiondetail.TransactionDetailFragment"
-        android:label="TransactionDetailFragment" >
+        android:label="Detail Nota">
         <argument
             android:name="id"
             app:argType="integer" />
         <action
             android:id="@+id/action_transactionDetailFragment_to_transactionEditFragment"
             app:destination="@id/transactionEditFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/transactionSelectFragment"
+        android:name="com.example.app21try6.transaction.transactionselect.TransactionSelectFragment"
+        android:label="Pilih Item">
+        <argument
+            android:name="date"
+            app:argType="string[]" />
+    </fragment>
+    <fragment
+        android:id="@+id/transactionProductFragment"
+        android:name="com.example.app21try6.transaction.transactionproduct.TransactionProductFragment"
+        android:label="Pilih Produk">
+        <argument
+            android:name="date"
+            app:argType="string[]" />
+        <action
+            android:id="@+id/action_transactionProductFragment_to_transactionSelectFragment"
+            app:destination="@id/transactionSelectFragment" />
     </fragment>
 </navigation>

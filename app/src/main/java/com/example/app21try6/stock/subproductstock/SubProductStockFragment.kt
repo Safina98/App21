@@ -30,7 +30,7 @@ class SubProductStockFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_sub_product_stock,container,false)
         val application = requireNotNull(this.activity).application
         val dataSource2 = VendibleDatabase.getInstance(application).subProductDao
-        val dataSource3 = SummaryDatabase.getInstance(application).transDetailDao
+        val dataSource3 = VendibleDatabase.getInstance(application).transDetailDao
         var id = arguments?.let { SubProductStockFragmentArgs.fromBundle(it).productId }
         (activity as AppCompatActivity).supportActionBar?.title = id?.last()
 

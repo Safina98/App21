@@ -33,7 +33,8 @@ class VendibleFragment : Fragment() {
         val dataSource4 = VendibleDatabase.getInstance(application).subProductDao
         val date= arguments?.let { VendibleFragmentArgs.fromBundle(it).date }
         var datee  = date!!.toMutableList()
-        val viewModelFactory = VendibleViewModelFactory(dataSource,dataSource1,dataSource2,dataSource3,dataSource4, date!!,application)
+        val viewModelFactory = VendibleViewModelFactory(dataSource,dataSource1,dataSource2,dataSource3,dataSource4,
+            date,application)
         binding.lifecycleOwner =this
         val vendibleViewModel =ViewModelProvider(this,viewModelFactory)
             .get(VendibleViewModel::class.java)
@@ -52,9 +53,8 @@ class VendibleFragment : Fragment() {
             datee.add(2, vendible.cath_code.toString())
             datee.add(3, date[0])
             datee.add(4, date[1])
-            vendibleViewModel.onNavigateToSub(date)
-
-            //showUpdateDialog(vendible,vendibleViewModel)
+            //vendibleViewModel.onNavigateToSub(date)
+            showUpdateDialog(vendible,vendibleViewModel)
         }, DelLongListenerV {
             deleteDialog(it, vendibleViewModel)
         })

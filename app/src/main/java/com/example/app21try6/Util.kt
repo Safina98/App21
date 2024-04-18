@@ -6,5 +6,10 @@ import java.util.*
 fun formatRupiah(number: Double): String? {
     val localeID = Locale("in", "ID")
     val formatRupiah: NumberFormat = NumberFormat.getCurrencyInstance(localeID)
-    return formatRupiah.format(number)
+    if(number==null) {
+        return formatRupiah.format(0.0)
+    }
+    else {
+        return formatRupiah.format(number)
+    }
 }

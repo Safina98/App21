@@ -4,10 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
         <variable
             name="viewModel"
             type="com.example.app21try6.transaction.transactiondetail.TransactionDetailViewModel"/>
     <import type="com.example.app21try6.Converter3"/>
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,13 +38,15 @@
                 android:text="@{viewModel.trans_sum.cust_name}"
                 android:textAlignment="viewEnd"
                 android:textSize="24sp" />
+            <!--  android:text="@{viewModel.trans_sum.cust_name}" -->
             <!-- android:textColor="@color/dark_green3"-->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.trans_sum.trans_date}"
                 android:textAlignment="viewEnd"
+                android:text="@{viewModel.trans_sum.trans_date}"
                 android:textSize="24sp" />
+            <!--  android:text="@{viewModel.trans_sum.trans_date}" -->
             <!-- android:textColor="@color/dark_green3"-->
         </LinearLayout>
         <androidx.recyclerview.widget.RecyclerView
@@ -53,10 +57,10 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{Converter3.decimalToText(viewModel.trans_sum.total_trans)}"
             android:textAlignment="viewEnd"
-
+            android:text="@{viewModel.trans_total}"
             android:textSize="24sp" />
+        <!-- android:text="@{Converter3.decimalToText(viewModel.trans_sum.total_trans)}"-->
         <!-- android:textColor="@color/dark_green3"-->
     </LinearLayout>
 
@@ -79,9 +83,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:onClick="@{()->viewModel.onNavigateToEdit(0)}"
+                    android:onClick="@{() -> viewModel.onNavigateToEdit()}"
                     android:text="Edit" />
-                <!--  -->
+                <!-- android:onClick="@{()->viewModel.onNavigateToEdit(0)}"  -->
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

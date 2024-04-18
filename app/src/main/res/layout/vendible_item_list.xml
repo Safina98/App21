@@ -44,7 +44,7 @@
                 android:onLongClick="@{(view) -> delLongListenerV.onLongClick(view,vendible)}"/>
 
             <CheckBox
-                android:id="@+id/checkBox"
+                android:id="@+id/checkbox"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:onClick="@{(view) -> checkBoxListener.onCheckBoxClick(view,vendible)}"

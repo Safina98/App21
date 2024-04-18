@@ -11,6 +11,7 @@ import com.example.app21try6.databinding.TransactionDetailItemListBinding
 import com.example.app21try6.formatRupiah
 import com.example.app21try6.transaction.transactionedit.TransactionEditDummyModel
 
+
 class TransactionDetailAdapter(val clickListener: TransDetailClickListener):ListAdapter<TransactionDetail,TransactionDetailAdapter.MyViewHolder>(TransDetailDiffCallBack()) {
     class MyViewHolder private constructor(val binding:TransactionDetailItemListBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(item:TransactionDetail,clickListener: TransDetailClickListener){
@@ -49,3 +50,5 @@ class TransDetailDiffCallBack:DiffUtil.ItemCallback<TransactionDetail>(){
 class TransDetailClickListener(val clickListener:(detail_trans:TransactionEditDummyModel)->Unit){
     fun onClick(detail_trans: TransactionEditDummyModel)=clickListener(detail_trans)
 }
+
+

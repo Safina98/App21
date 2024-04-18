@@ -2,6 +2,7 @@ package com.example.app21try6.bookkeeping.editdetail
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.text.InputType
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -94,6 +95,7 @@ class BookKeepeingFragment : Fragment() {
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.update, null)
         val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
+        textKet.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         builder.setView(view)
         builder.setPositiveButton("OK") { dialog, which ->
             val v = textKet.text.toString().toUpperCase().trim()

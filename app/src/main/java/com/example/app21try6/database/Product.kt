@@ -1,9 +1,6 @@
 package com.example.app21try6.database
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 @Entity(tableName = "product_table",
         foreignKeys = [
@@ -30,6 +27,8 @@ data class Product(
         var bestSelling: Boolean = false,
         @ColumnInfo(name="brand_code")
         var brand_code:Int=0,
-        @ColumnInfo(name="cath_code")
-        var cath_code:Int=0
+        @ColumnInfo(name = "cath_code")
+        var cath_code:Int = 0
+
+
 )

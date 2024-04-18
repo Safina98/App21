@@ -13,7 +13,6 @@
         android:layout_height="match_parent"
         tools:context=".transaction.TransactionActiveFragment"
         android:orientation="vertical">
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView_active_trans"
             android:layout_width="match_parent"
@@ -40,12 +39,11 @@
             android:focusable="true"
             android:onClick="@{()->viewModel.onNavigatetoTransEdit(-1)}"
             android:src="@drawable/ic_baseline_add_circle_outline_24"
-
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/recyclerView_active_trans" />
-        <!--
 
-         -->
+<!--  android:onClick="@{()->viewModel.onNavigatetoTransEdit(-1)}"-->
+
 <!-- android:tint="@color/dark_green2"-->
         <Button
             android:id="@+id/button3"
