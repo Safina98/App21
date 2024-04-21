@@ -18,7 +18,7 @@ class TransactionSelectViewModelFactory(
     val application: Application
 ): ViewModelProvider.Factory{
     @Suppress("unchecked_cast")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TransactionSelectViewModel::class.java)) {
             return TransactionSelectViewModel(sum_id,database1,database2,database3,database4,date,database5,database6,application) as T
         }

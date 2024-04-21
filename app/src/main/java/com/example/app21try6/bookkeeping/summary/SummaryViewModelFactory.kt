@@ -9,7 +9,7 @@ class SummaryViewModelFactory (
         private val dataSource: SummaryDbDao,
         private val application: Application) : ViewModelProvider.Factory{
     @Suppress("unchecked_cast")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SummaryViewModel::class.java)) {
             return SummaryViewModel(dataSource, application) as T
         }

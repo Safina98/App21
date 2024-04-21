@@ -38,7 +38,6 @@ import java.io.*
 
 class BrandStockFragment : Fragment() {
     private lateinit var binding: FragmentBrandStockBinding
-
     private val PERMISSION_REQUEST_CODE = 200
     val requestcode = 1
     private val viewModel:BrandStockViewModel by viewModels()

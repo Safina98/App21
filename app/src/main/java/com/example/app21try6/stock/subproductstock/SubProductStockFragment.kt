@@ -16,7 +16,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
 import com.example.app21try6.database.SubProduct
-import com.example.app21try6.database.SummaryDatabase
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentSubProductStockBinding
 import com.google.android.material.textfield.TextInputEditText
@@ -47,7 +46,7 @@ class SubProductStockFragment : Fragment() {
         var adapter = SubAdapter(id_[3],
                 CheckBoxListenerSub({view:View,subProduct:SubProduct->
                     val cb = view as CheckBox
-                    subProduct.is_cheked = cb.isChecked
+                    subProduct.is_checked = cb.isChecked
                     viewModel.onCheckBoxClicked(subProduct,cb.isChecked)
 
                 }),

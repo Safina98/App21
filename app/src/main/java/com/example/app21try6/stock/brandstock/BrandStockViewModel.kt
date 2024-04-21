@@ -117,12 +117,16 @@ class BrandStockViewModel(
                 subProduct.roll_bg = token[10].toInt()
                 subProduct.roll_sg = token[11].toInt()
                 subProduct.roll_kg = token[12].toInt()
-                if (all_cath!!.isEmpty()){insertCathNew__(token[0].toUpperCase().trim())}else{insertCathNew(token[0].toUpperCase().trim())}
-                if (allBrand!!.isEmpty()){ insertBrandNew_(token[1].toUpperCase().trim(),token[0].toUpperCase().trim()) }else{ insertBrandNew(token[1].toUpperCase().trim(),token[0].toUpperCase().trim()) }
-                if (all_product_!!.isEmpty()){ inserProductNew_(product,token[1].toUpperCase().trim(),token[0].toUpperCase().trim()) }
-                else{ inserProductNew(product,token[1].toUpperCase().trim(),token[0].toUpperCase().trim()) }
-                if (all_sub_!!.isEmpty()){ insertSubProductNew_(subProduct,product.product_name,token[1].toUpperCase().trim(),token[0].toUpperCase().trim())}
-                else{ insertSubProductNew(subProduct,product.product_name,token[1].toUpperCase().trim(),token[0].toUpperCase().trim())}
+                insertCathNew(token[0].toUpperCase().trim())
+                //if (all_cath!!.isEmpty()){insertCathNew__(token[0].toUpperCase().trim())}else{insertCathNew(token[0].toUpperCase().trim())}
+                insertBrandNew(token[1].toUpperCase().trim(),token[0].toUpperCase().trim())
+                //if (allBrand!!.isEmpty()){ insertBrandNew_(token[1].toUpperCase().trim(),token[0].toUpperCase().trim()) }else{ insertBrandNew(token[1].toUpperCase().trim(),token[0].toUpperCase().trim()) }
+                inserProductNew(product,token[1].toUpperCase().trim(),token[0].toUpperCase().trim())
+                //if (all_product_!!.isEmpty()){ inserProductNew_(product,token[1].toUpperCase().trim(),token[0].toUpperCase().trim()) }
+                //else{ inserProductNew(product,token[1].toUpperCase().trim(),token[0].toUpperCase().trim()) }
+                insertSubProductNew(subProduct,product.product_name,token[1].toUpperCase().trim(),token[0].toUpperCase().trim())
+            //if (all_sub_!!.isEmpty()){ insertSubProductNew_(subProduct,product.product_name,token[1].toUpperCase().trim(),token[0].toUpperCase().trim())}
+                //else{ insertSubProductNew(subProduct,product.product_name,token[1].toUpperCase().trim(),token[0].toUpperCase().trim())}
             } catch (e: SQLiteException) {
                 Log.i("message_e", "message: $e")
                 Toast.makeText(getApplication(),e.toString(),Toast.LENGTH_LONG).show()

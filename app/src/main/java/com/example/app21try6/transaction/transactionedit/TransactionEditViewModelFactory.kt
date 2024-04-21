@@ -14,7 +14,7 @@ class TransactionEditViewModelFactory(
     private val id:Int
 ):ViewModelProvider.Factory{
     @Suppress("unchecked_cast")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TransactionEditViewModel::class.java)) {
             return TransactionEditViewModel(application,datasource1,datasource2,id) as T
         }

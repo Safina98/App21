@@ -14,7 +14,7 @@ class VendibleViewModelFactory (private val dataSource:SummaryDbDao,
                                 private val date:Array<String>,
                                 private val application: Application):ViewModelProvider.Factory{
     @Suppress("unchecked_cast")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(VendibleViewModel::class.java)) {
             return VendibleViewModel(dataSource,dataSource1,dataSource2,datasource3,dataSource4,date,application) as T
         }

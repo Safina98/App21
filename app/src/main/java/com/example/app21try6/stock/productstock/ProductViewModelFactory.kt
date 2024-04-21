@@ -14,7 +14,7 @@ class ProductViewModelFactory (
         private val brand_id:Array<Int>
 ): ViewModelProvider.Factory{
     @Suppress("unchecked_cast")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProductViewModel::class.java)) {
             return ProductViewModel(dataSource2,application,brand_id) as T
         }

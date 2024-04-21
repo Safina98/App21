@@ -10,7 +10,7 @@ class DetailViewModelFactory (private val dataSource2: SubProductDao,
                               private val product_id:Array<Int>
 ): ViewModelProvider.Factory {
     @Suppress("unchecked_cast")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(DetailViewModel::class.java)) {
             return DetailViewModel(dataSource2, application, product_id) as T
         }

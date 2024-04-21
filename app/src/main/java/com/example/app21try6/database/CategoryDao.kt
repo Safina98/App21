@@ -24,6 +24,6 @@ interface CategoryDao {
     fun clear(category_name_:String)
     @Query("INSERT INTO category_table (category_name) VALUES (:cath_name_)")
     fun insert_try(cath_name_:String)
-    @Query("INSERT INTO category_table (category_name) SELECT :cath_name_ as category_name FROM category_table WHERE NOT EXISTS(SELECT category_name FROM category_table WHERE category_name =:cath_name_) LIMIT 1 ")
+    @Query("INSERT INTO category_table(category_name) SELECT :cath_name_ WHERE NOT EXISTS (SELECT 1 FROM category_table WHERE category_name = :cath_name_)")
     fun insertIfNotExist(cath_name_:String)
 }

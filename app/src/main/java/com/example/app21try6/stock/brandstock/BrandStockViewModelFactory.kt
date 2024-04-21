@@ -16,7 +16,7 @@ class BrandStockViewModelFactory(
         private val application: Application
 ): ViewModelProvider.Factory{
     @Suppress("unchecked_cast")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(BrandStockViewModel::class.java)) {
             return BrandStockViewModel(dataSource1,dataSource2,dataSource3,dataSource4,application) as T
         }

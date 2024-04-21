@@ -12,7 +12,7 @@ class TransactionActiveViewModelFactory(
     private val datasource2: TransDetailDao
 ):ViewModelProvider.Factory{
     @Suppress("unchecked_cast")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TransactionActiveViewModel::class.java)) {
             return TransactionActiveViewModel(application,datasource1,datasource2) as T
         }

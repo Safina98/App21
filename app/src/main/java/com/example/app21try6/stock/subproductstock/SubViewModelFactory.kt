@@ -13,7 +13,7 @@ class SubViewModelFactory(private val dataSource2: SubProductDao,
                           private val sum_id:Int
 ): ViewModelProvider.Factory{
     @Suppress("unchecked_cast")
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SubViewModel::class.java)) {
             return SubViewModel(dataSource2,application,product_id,datasource3,sum_id) as T
         }

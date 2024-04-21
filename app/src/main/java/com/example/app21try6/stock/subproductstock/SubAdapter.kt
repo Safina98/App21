@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.database.Product
 import com.example.app21try6.database.SubProduct
 import com.example.app21try6.databinding.SubProductItemListBinding
 
@@ -58,7 +57,7 @@ class SubAdapter (val code:Int,
                 binding.textStokToko.visibility = View.GONE
                 binding.ketTxt.visibility = View.GONE
                 binding.subCheckBoxListener = checkBoxListenerSub
-                binding.substockCheckbox.isChecked = item.is_cheked
+                binding.substockCheckbox.isChecked = item.is_checked
 
             }
 

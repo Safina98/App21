@@ -48,5 +48,5 @@ data class SubProduct(
     @ColumnInfo(name="cath_code")
     var cath_code:Int = 0,
     @ColumnInfo(name="is_checked")
-    var is_cheked:Boolean = false
+    var is_checked:Boolean = false
 )
