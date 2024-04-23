@@ -12,26 +12,25 @@ import android.os.Bundle
 import android.os.Environment
 import android.util.Log
 import android.view.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.example.app21try6.BuildConfig
 import com.example.app21try6.database.SummaryDatabase
 import com.example.app21try6.databinding.FragmentBookSummaryBinding
 import java.io.*
 import java.lang.Exception
-import java.lang.IllegalStateException
-import java.lang.IndexOutOfBoundsException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -48,7 +47,6 @@ class BookSummaryFragment : Fragment(){
     // for storing our images
     lateinit var bmp: Bitmap
     lateinit var scaledbmp: Bitmap // creating a bitmap variable
-    // for storing our images
 
     // constant code for runtime permissions
     private val PERMISSION_REQUEST_CODE = 200
@@ -76,6 +74,7 @@ class BookSummaryFragment : Fragment(){
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -93,24 +92,52 @@ class BookSummaryFragment : Fragment(){
         } else {
            requestPermission()
         }
+        summaryViewModel.initialRv()
         val adapter = SummaryAdapter(SummaryListener {
-                    //if (it.day_n==0) {
-                      if (summaryViewModel.is_month.value ==true){
-                        Toast.makeText(context, it.month_n.toString(), Toast.LENGTH_LONG).show()
-                        summaryViewModel._itemMonthPosition.value = summaryViewModel.months_list.indexOf(it.month_n)
-                          summaryViewModel.onMontSelected()
 
-                    } else{
-                        var date = arrayOf(it.year_n.toString(),it.month_n,it.day_n.toString())
-                          summaryViewModel.onMonthDoneSelected()
-                        summaryViewModel.onDayClicked(date)
+            summaryViewModel.onRvClick(it)
+                    //if (it.day_n==0) {
+            /*
+            if (summaryViewModel.is_month.value ==true){
+                Toast.makeText(context, it.month_n.toString(), Toast.LENGTH_LONG).show()
+                summaryViewModel._itemMonthPosition.value = summaryViewModel.months_list.indexOf(it.month_n)
+                summaryViewModel.onMontSelected()
+            } else{
+                var date = arrayOf(it.year_n.toString(),it.month_n,it.day_n.toString())
+                summaryViewModel.onMonthDoneSelected()
+                summaryViewModel.onDayClicked(date)
                     }
+
+             */
                 })
         binding.recyclerViewSumary.adapter = adapter
 
         summaryViewModel.allItemFromSummary.observe(viewLifecycleOwner, Observer {
            // Toast.makeText(context,it.toString(),Toast.LENGTH_SHORT).show()
         })
+        val adapterYear = ArrayAdapter(requireContext(), R.layout.simple_dropdown_item_1line, viewModel.year_list)
+        binding.spinner.adapter = adapterYear
+
+        val adapterMonth = ArrayAdapter(requireContext(), R.layout.simple_dropdown_item_1line, viewModel.months_list)
+        binding.spinnerM.adapter = adapterMonth
+
+        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedItem = parent.getItemAtPosition(position).toString()
+                summaryViewModel.setSelectedYear(selectedItem)
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {
+            }
+        }
+        binding.spinnerM.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedItem = parent.getItemAtPosition(position).toString()
+                summaryViewModel.setSelectedMonth(selectedItem)
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {
+            }
+        }
+        /*
         summaryViewModel.is_month.observe(requireActivity(), Observer {
             summaryViewModel.__days?.observe(viewLifecycleOwner, Observer {
                 it?.let {
@@ -120,6 +147,22 @@ class BookSummaryFragment : Fragment(){
             })
         })
 
+         */
+        summaryViewModel.selectedYear.observe(viewLifecycleOwner) {
+            // Handle the selected value
+            viewModel.updateRvNew()
+        }
+        summaryViewModel.selectedMonth.observe(viewLifecycleOwner){
+            viewModel.updateRvNew()
+        }
+        summaryViewModel.recyclerViewData.observe(viewLifecycleOwner){
+            it?.let {
+                Log.i("SUMMARYRV",it.toString())
+                adapter.submitList(it)
+                adapter.notifyDataSetChanged()
+            }
+        }
+        /*
         summaryViewModel._itemPosition.observe(requireActivity(),
                 object : Observer<Int> {
                     override fun onChanged(t: Int) {
@@ -131,6 +174,9 @@ class BookSummaryFragment : Fragment(){
                             }
                         })
                     }})
+
+         */
+        /*
         summaryViewModel._itemMonthPosition.observe(requireActivity(),
                 object : Observer<Int> {
                     override fun onChanged(t: Int?) {
@@ -145,6 +191,8 @@ class BookSummaryFragment : Fragment(){
                             }
                         })
                     }})
+
+         */
         summaryViewModel.navigateBookKeeping.observe(viewLifecycleOwner, Observer { date->
             date?.let {
                 this.findNavController().navigate(BookSummaryFragmentDirections.actionBookSummaryFragmentToBookKeepeingFragment3(date))

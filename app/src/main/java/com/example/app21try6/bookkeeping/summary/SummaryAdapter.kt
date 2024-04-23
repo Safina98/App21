@@ -69,7 +69,6 @@ class ProductDiffCallback: DiffUtil.ItemCallback<ListModel>() {
 
 class SummaryListener (val clickListener:(product: ListModel)->Unit){
     fun onClick(product: ListModel) = clickListener(product)
-
 }
 class SummaryLongListener(val longListener:(product: ListModel)->Unit ){
     fun onLongClick(v: View, product: ListModel):Boolean{

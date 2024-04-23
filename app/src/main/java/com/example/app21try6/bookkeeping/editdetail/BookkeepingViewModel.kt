@@ -26,16 +26,13 @@ class BookkeepingViewModel(val database: SummaryDbDao,
     private val uiScope = CoroutineScope(Dispatchers.Main +  viewModelJob)
     private val months = arrayOf("all","Januari", "Februari", "Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember")
     val dayly_sells = database.getToday(date[0].toInt(), date[1], date[2].toInt())
-    val totalToday = database.getTotalToday(date[0].toInt(), date[1], date[2].toInt())
-
-    val playerName: LiveData<String> =
-            Transformations.map(totalToday) { formatRupiah(it).toString() }
+    // edited val totalToday = database.getTotalToday(date[0].toInt(), date[1], date[2].toInt())
+    //edited val playerName: LiveData<String> =
+      //edited      Transformations.map(totalToday) { formatRupiah(it).toString() }
     val inFormat = SimpleDateFormat("dd-MM-yyyy")
     val day = android.text.format.DateFormat.format("EEEE",inFormat.parse(date[2].toString()+"-"+months.indexOf(date[1]).toString()+"-"+date[0].toString())) as String
     val day_string = day +", "+date[2]+" "+date[1]+", "+date[0]
-
     var all_item_from_db = database2.getAllProduct()
-
     private val _navigateToVendible = MutableLiveData<Boolean>()
     val navigateToVendible:LiveData<Boolean>
         get() = _navigateToVendible

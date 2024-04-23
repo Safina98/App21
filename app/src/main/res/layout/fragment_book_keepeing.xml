@@ -117,14 +117,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
+                <!-- edited
                 <TextView
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="70dp"
                     android:fontFamily="@font/alegreya_sc"
                     android:text="@{ bookViewModel.playerName}"
-
                     android:textSize="48sp" />
+                    -->
                 <!--android:textColor="@color/black"-->
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/btn_add_new_item"

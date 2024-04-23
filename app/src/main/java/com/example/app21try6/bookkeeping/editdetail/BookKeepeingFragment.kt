@@ -3,6 +3,7 @@ package com.example.app21try6.bookkeeping.editdetail
 import android.app.AlertDialog
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -37,6 +38,7 @@ class BookKeepeingFragment : Fragment() {
         val dataSource2 = VendibleDatabase.getInstance(application).productDao
 
         val date= arguments?.let { BookKeepeingFragmentArgs.fromBundle(it).date }
+
         //Toast.makeText(context, date!![2]?.toString(),Toast.LENGTH_LONG).show()
         val viewModelFactory = BookkeepingViewModelFactory(dataSource,dataSource2,application, date!!)
         binding.lifecycleOwner = this

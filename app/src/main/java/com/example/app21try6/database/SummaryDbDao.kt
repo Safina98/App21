@@ -12,19 +12,14 @@ import com.example.app21try6.bookkeeping.summary.ListModel
 interface SummaryDbDao {
     @Insert
     fun insert(summary: Summary)
-
     @Update
     fun update(summary: Summary)
-
     @Query("SELECT * from summary_table WHERE id_m = :key")
     fun get(key:Long):Summary?
-
     @Query("DELETE FROM summary_table")
     fun clear()
-
     @Query("DELETE FROM summary_table WHERE month = 'empty' OR day = 0 or month_number=0")
     fun clearEmpties()
-
     @Query("DELETE  FROM summary_table WHERE year = :year_ AND month = :month_ AND day = :day_ AND id_m = :item_name_ ")
     fun deleteItemSummary(year_: Int,month_: String,day_:Int,item_name_:Int)
 
@@ -64,6 +59,13 @@ interface SummaryDbDao {
     fun getAllDayNew(year_: Int,month_: String):LiveData<List<ListModel>>
     @Query("SELECT year as year_n,month as month_n,month_number as month_nbr, month as nama,day as day_n,day_name as day_name,SUM(total_income) as total FROM SUMMARY_TABLE  WHERE year = :year_  GROUP BY month ORDER BY month_nbr ASC")
     fun getAllMonthNew(year_: Int):LiveData<List<ListModel>>
+
+    @Query("SELECT year as year_n,month as month_n,month_number as month_nbr, month as nama,day as day_n,day_name as day_name,SUM(total_income) as total FROM SUMMARY_TABLE  WHERE year = :year_  GROUP BY month ORDER BY month_nbr ASC")
+    fun getMonthlyData(year_: Int):List<ListModel>
+
+    @Query("SELECT year as year_n,month as month_n, month_number as month_nbr,day as day_n,day as nama,day_name as day_name,SUM(total_income) as total FROM SUMMARY_TABLE  WHERE year = :year_ AND month = :month_ AND day !=0 GROUP BY day ")
+    fun getDailyData(year_: Int,month_: String):List<ListModel>
+
     @Query("SELECT * FROM summary_table ORDER BY month_number")
     fun getAllSummary():LiveData<List<Summary>>
 

@@ -37,18 +37,15 @@
                 android:id="@+id/spinner"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:entries="@{summaryViewModel.year_list}"
-                android:selectedItemPosition="@={summaryViewModel._itemPosition}"
                 />
             <Spinner
                 android:id="@+id/spinner_m"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_gravity="center_horizontal"
-                android:entries="@{summaryViewModel.months_list}"
                 android:foregroundGravity="center_horizontal"
                 android:gravity="center_horizontal"
-                android:selectedItemPosition="@={summaryViewModel._itemMonthPosition}" />
+                />
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
