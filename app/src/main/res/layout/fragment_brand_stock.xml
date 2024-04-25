@@ -42,10 +42,9 @@
                     android:layout_weight="1"
                     android:layout_height="50dp"
                     android:layout_gravity="center_horizontal"
-                    android:entries="@{brandStockViewModel.cathList_}"
                     android:foregroundGravity="center_horizontal"
                     android:gravity="center_horizontal"
-                    android:selectedItemPosition="@={brandStockViewModel._itemCathPosition}" />
+                    />
 
                 <Button
                     style="@style/add_btn_style"

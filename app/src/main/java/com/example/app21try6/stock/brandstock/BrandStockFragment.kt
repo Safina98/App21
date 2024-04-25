@@ -12,6 +12,8 @@ import android.os.Bundle
 import android.os.Environment
 import android.util.Log
 import android.view.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.Toast
@@ -41,6 +43,7 @@ class BrandStockFragment : Fragment() {
     private val PERMISSION_REQUEST_CODE = 200
     val requestcode = 1
     private val viewModel:BrandStockViewModel by viewModels()
+
     var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
@@ -60,7 +63,6 @@ class BrandStockFragment : Fragment() {
             override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
                 binding = DataBindingUtil.inflate(inflater,R.layout.fragment_brand_stock,container,false)
-
                 val application = requireNotNull(this.activity).application
                 val dataSource1 = VendibleDatabase.getInstance(application).categoryDao
                 val dataSource2 = VendibleDatabase.getInstance(application).brandDao
@@ -91,15 +93,38 @@ class BrandStockFragment : Fragment() {
                 viewModel.all_product.observe(viewLifecycleOwner, Observer {})
                 viewModel.all_sub.observe(viewLifecycleOwner, Observer {})
 
-                var h = 0
+                binding.spinnerM.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                        val selectedItem = parent.getItemAtPosition(position).toString()
+                        viewModel.setSelectedKategoriValue(selectedItem)
+                    }
+                    override fun onNothingSelected(parent: AdapterView<*>) {
+                    }
+                }
+
+                viewModel.cathList_.observe(viewLifecycleOwner){entries->
+                    val adapter1 = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, entries)
+                    binding.spinnerM.adapter = adapter1
+                }
+                viewModel.selectedKategoriSpinner.observe(viewLifecycleOwner) {
+                    viewModel.updateRv()
+                }
+                viewModel.all_brand_from_db.observe(viewLifecycleOwner){
+                    adapter.submitList(it.sortedBy { it.brand_name})
+                    adapter.notifyDataSetChanged()
+                }
+/*
               viewModel.itemCathPosition.observe(viewLifecycleOwner, Observer {t->
                   viewModel.cathList.observe(viewLifecycleOwner, Observer {})
                   h = t
                   viewModel.all_brand_from_db.observe(viewLifecycleOwner, Observer {
                       it?.let {
                           if (h==t){
-                          adapter.submitList(it.sortedBy { it.brand_name})
-                          adapter.notifyDataSetChanged() } } }) })
+                            adapter.submitList(it.sortedBy { it.brand_name})
+                            adapter.notifyDataSetChanged() } } }) })
+
+ */
+
                 viewModel.addItem.observe(viewLifecycleOwner, Observer {
                     if (it==true){
                         showAddDialog(viewModel,1)

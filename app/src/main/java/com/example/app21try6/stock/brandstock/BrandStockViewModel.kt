@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.app21try6.database.*
 
 import kotlinx.coroutines.*
@@ -30,24 +31,24 @@ class BrandStockViewModel(
 
     //Navigation
     private val _navigateProduct = MutableLiveData<Array<String>>()
-    val navigateProduct:LiveData<Array<String>>
-        get() = _navigateProduct
+    val navigateProduct:LiveData<Array<String>> get() = _navigateProduct
     private val _addItem = MutableLiveData<Boolean>()
-    val addItem: LiveData<Boolean>
-        get() = _addItem
+    val addItem: LiveData<Boolean> get() = _addItem
     private val _delCath = MutableLiveData<Boolean>()
-    val delCath: LiveData<Boolean>
-        get() = _delCath
+    val delCath: LiveData<Boolean> get() = _delCath
     private val _addCath = MutableLiveData<Boolean>()
-    val addCath: LiveData<Boolean>
-        get() = _addCath
+    val addCath: LiveData<Boolean> get() = _addCath
     //Display Data
     val cathList = database1.getAll()
     val cathList_ = database1.getName()
     var _itemCathPosition = MutableLiveData<Int>(0)
-    val itemCathPosition :LiveData<Int>
-        get() = _itemCathPosition
+    val itemCathPosition :LiveData<Int> get() = _itemCathPosition
 
+    var _all_brand_from_db = MutableLiveData<List<Brand>>()
+    val all_brand_from_db :LiveData<List<Brand>> get()= _all_brand_from_db
+
+    var kategori_id = MutableLiveData<Int>(-1)
+/*
     val all_brand_from_db get() = itemCathPosition.value.let {position->
         val cath = cathList.value
         val selectedCath = position?.let { cath?.get(it) }
@@ -55,11 +56,44 @@ class BrandStockViewModel(
             database2.getAll(selectedCath.category_id)}
         else{ database2.getAll(0) }
     }
+
+ */
     private var checkedItemList = mutableListOf<Category>()
     val all_brand = database2.getAllBrand()
     val all_item = database2.getExportedData()
     val all_product = database3.getAllProduct()
     val all_sub = database4.getAllSub()
+    private val _selectedKategoriSpinner = MutableLiveData<String>()
+    val selectedKategoriSpinner: LiveData<String> get() = _selectedKategoriSpinner
+
+
+    fun setSelectedKategoriValue(value: String) {
+        viewModelScope.launch {
+            var id = getKategoriIdByName(value)
+            kategori_id.value = id
+            _selectedKategoriSpinner.value = value
+        }
+
+    }
+    private suspend fun getKategoriIdByName(id: String):Int{
+        return withContext(Dispatchers.IO){
+            database2.getKategoriIdByName(id)
+        }
+
+    }
+    fun updateRv(){
+        viewModelScope.launch {
+            var brandlist = getBrandByKatId(kategori_id.value ?: 0)
+            Log.i("BrandProb","updateRV "+brandlist)
+            _all_brand_from_db.value = brandlist
+        }
+    }
+    private suspend fun getBrandByKatId(id:Int):List<Brand>{
+        return withContext(Dispatchers.IO){
+            database2.getBrandByKatId(id)
+        }
+    }
+
     fun onCheckBoxClicked(category: Category,bool:Boolean){ if(bool){ checkedItemList.add(category)} else{ checkedItemList.remove(category) } }
     fun deleteDialog(){
         uiScope.launch {
@@ -73,12 +107,11 @@ class BrandStockViewModel(
     fun insertAnItemBrandStock(brand_name:String){
         uiScope.launch {
             if (brand_name!="") {
-                val cath_list = cathList.value
-                val caht_name = cath_list!![_itemCathPosition.value!!]
                 val brand = Brand()
                 brand.brand_name = brand_name
-                brand.cath_code = caht_name.category_id
-                insert(brand, caht_name.category_name)
+                brand.cath_code = getKategoriIdByName(selectedKategoriSpinner.value ?: "")
+                Log.i("BrandProb","insertItemBrand "+brand_name)
+                insert(brand)
             }
         }
     }
@@ -88,6 +121,7 @@ class BrandStockViewModel(
                 val category = Category()
                 category.category_name = cath_name
                 try {
+                    Log.i("BrandProb","insertItenCath "+category)
                     insertCath(category)
                 } catch (e: SQLiteException) {
                     Toast.makeText(getApplication(), e.toString(), Toast.LENGTH_LONG).show()
@@ -105,11 +139,11 @@ class BrandStockViewModel(
                 val all_product_ = all_product.value
                 val all_sub_ = all_sub.value
                 val product= Product()
-                product.product_name = token[2].toUpperCase().trim()
+                product.product_name = token[2].uppercase().trim()
                 product.product_price = token[3].toInt()
                 product.bestSelling = token[4]=="TRUE"
                 val subProduct = SubProduct()
-                subProduct.sub_name = token[5].toUpperCase().trim()
+                subProduct.sub_name = token[5].uppercase().trim()
                 subProduct.roll_u = token[6].toInt()
                 subProduct.roll_bt = token[7].toInt()
                 subProduct.roll_st = token[8].toInt()
@@ -117,14 +151,18 @@ class BrandStockViewModel(
                 subProduct.roll_bg = token[10].toInt()
                 subProduct.roll_sg = token[11].toInt()
                 subProduct.roll_kg = token[12].toInt()
-                insertCathNew(token[0].toUpperCase().trim())
+                insertCathNew(token[0].uppercase().trim())
+                Log.i("BrandProb","CSV insertCath"+token[0].uppercase().trim())
                 //if (all_cath!!.isEmpty()){insertCathNew__(token[0].toUpperCase().trim())}else{insertCathNew(token[0].toUpperCase().trim())}
-                insertBrandNew(token[1].toUpperCase().trim(),token[0].toUpperCase().trim())
+                insertBrandNew(token[1].uppercase().trim(),token[0].uppercase().trim())
+                Log.i("BrandProb","CSV brand"+token[0].uppercase().trim())
                 //if (allBrand!!.isEmpty()){ insertBrandNew_(token[1].toUpperCase().trim(),token[0].toUpperCase().trim()) }else{ insertBrandNew(token[1].toUpperCase().trim(),token[0].toUpperCase().trim()) }
-                inserProductNew(product,token[1].toUpperCase().trim(),token[0].toUpperCase().trim())
+                inserProductNew(product,token[1].uppercase().trim(),token[0].uppercase().trim())
+                Log.i("BrandProb","CSV insertProduct"+token[0].uppercase().trim())
                 //if (all_product_!!.isEmpty()){ inserProductNew_(product,token[1].toUpperCase().trim(),token[0].toUpperCase().trim()) }
                 //else{ inserProductNew(product,token[1].toUpperCase().trim(),token[0].toUpperCase().trim()) }
-                insertSubProductNew(subProduct,product.product_name,token[1].toUpperCase().trim(),token[0].toUpperCase().trim())
+                insertSubProductNew(subProduct,product.product_name,token[1].uppercase().trim(),token[0].uppercase().trim())
+                Log.i("BrandProb","CSV insertSubProduct"+token[0].uppercase().trim())
             //if (all_sub_!!.isEmpty()){ insertSubProductNew_(subProduct,product.product_name,token[1].toUpperCase().trim(),token[0].toUpperCase().trim())}
                 //else{ insertSubProductNew(subProduct,product.product_name,token[1].toUpperCase().trim(),token[0].toUpperCase().trim())}
             } catch (e: SQLiteException) {
@@ -179,7 +217,7 @@ class BrandStockViewModel(
     fun updateCath(category: Category){ uiScope.launch { updateCath_(category) } }
     private suspend fun updateCath_(category: Category){withContext(Dispatchers.IO){ database1.update(category) } }
     fun getSelectedCategory():Category{ return checkedItemList.get(0) }
-    private suspend fun insert(brand: Brand, categoryName: String){ withContext(Dispatchers.IO){ database2.insert(brand) } }
+    private suspend fun insert(brand: Brand){ withContext(Dispatchers.IO){ database2.insert(brand) } }
     fun updateBrand(brand: Brand){ uiScope.launch { update(brand) } }
     private suspend fun update(brand:Brand){ withContext(Dispatchers.IO){ database2.update(brand) } }
     fun deleteBrand(brand: Brand){ uiScope.launch { delete(brand) } }

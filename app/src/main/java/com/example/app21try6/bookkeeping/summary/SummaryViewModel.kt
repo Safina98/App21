@@ -17,99 +17,49 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.app21try6.PDFGenerator
 import com.example.app21try6.database.Summary
 import com.example.app21try6.database.SummaryDbDao
 import kotlinx.coroutines.*
 import java.io.*
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.TextStyle
 import java.util.*
 
 
 class SummaryViewModel (val database: SummaryDbDao, application: Application):AndroidViewModel(application){
-
 
     //devine an instance JOB
     private var viewModelJob = Job()
     //ui scope for coroutines
     private val uiScope = CoroutineScope(Dispatchers.Main +  viewModelJob)
 
-    //pdf
-    var pageHeight = 842
-    var pagewidth = 595
-
-    // creating a bitmap variable
-    // constant code for runtime permissions
-    private val PERMISSION_REQUEST_CODE = 200
-
     //Variables
     val months_list = arrayOf("All","Januari", "Februari", "Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember")
     val year_list = arrayOf("2021","2022","2023","2024","2025","2026","2027","2028","2029","2030","2031")
     val year = Calendar.getInstance().get(Calendar.YEAR)
+    //to create pdf
     var _itemPosition = MutableLiveData<Int>(year_list.indexOf(year.toString()))
-    var _itemMonthPosition = MutableLiveData<Int>()
-
-    //variable thisMonth to hold the current month
-    private var this_month = MutableLiveData<Summary?>()
-
-    //variable all Month  to hold value of getAllMonth from the data base
-    //var _months = database.getAllMonth(2021)
-    val __months get() = _itemPosition.value.let {year_id->
-        database.getAllMonthNew(year_list.get(year_id!!).toInt())
-    }
-   val __days get() = _itemPosition.value?.let {year_id->
-        _itemMonthPosition.value?.let {month_id->
-            if (month_id==0){
-                database.getAllMonthNew(year_list.get(year_id).toInt())
-            }else{
-                database.getAllDayNew(year_list.get(year_id).toInt(), months_list.get(month_id))
-            }
-        }
-    }
     val allItemFromSummary = database.getAllSummary()
-
+    //selected spinner
     private val _selectedYear= MutableLiveData<Int>(year)
     val selectedYear
         get() = _selectedYear
     private val _selectedMonth= MutableLiveData<String>("All")
     val selectedMonth
         get() = _selectedMonth
+    //recyclerview daya
     private val _recyclerViewData = MutableLiveData<List<ListModel>>()
     val recyclerViewData: LiveData<List<ListModel>>
         get() = _recyclerViewData
-
+    //navigation
     private val _navigateBookKeeping = MutableLiveData<Array<String>>()
     val navigateBookKeeping
         get() = _navigateBookKeeping
 
-    private val _is_month = MutableLiveData<Boolean>(true)
-    val is_month
-        get() = _is_month
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun onStartTracking() {
-        uiScope.launch {
-            val summary = Summary()
-            val inFormat = SimpleDateFormat("dd-MM-yyyy")
-            for (year in year_list){
-            for(m in 1..12){
-                val yearMonthObject = YearMonth.of(year.toInt(),m)
-                for(d in 1..yearMonthObject.lengthOfMonth() ){
-                    val input = d.toString()+"-"+m.toString()+"-"+year.toString()
-                    val date: Date = inFormat.parse(input)
-                    summary.year= year.toInt()
-                    summary.month = months_list.get(m)
-                    summary.month_number = m
-                    summary.day = d
-                    summary.day_name = android.text.format.DateFormat.format("EEEE", date) as String
-                    insert(summary)
-                }
-            }
-                Toast.makeText(getApplication(),year,Toast.LENGTH_SHORT).show()
-            }
-            Toast.makeText(getApplication(),"Finnised",Toast.LENGTH_SHORT).show()
-        }
-    }
     fun onRvClick(listModel: ListModel){
         if (selectedMonth.value!="All"){
             var clickedDate = arrayOf(listModel.year_n.toString(),listModel.month_n,listModel.day_n.toString())
@@ -125,7 +75,7 @@ class SummaryViewModel (val database: SummaryDbDao, application: Application):An
     fun setSelectedMonth(month:String){
         selectedMonth.value = month
     }
-    fun monthToNumber(monthString: String):Int{
+    fun monthToNumber(monthString: String?):Int{
         val monthNumbers = mapOf(
             "Januari" to 1,
             "Februari" to 2,
@@ -148,6 +98,12 @@ class SummaryViewModel (val database: SummaryDbDao, application: Application):An
     fun getNumberOfDaysInMonth(year: Int, month: Int, locale: Locale = Locale("id")): Int {
         val yearMonth = YearMonth.of(year, month)
         return yearMonth.lengthOfMonth()
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getDayName(year: Int, month: Int, day: Int): String {
+        val date = LocalDate.of(year, month, day)
+        val localeIndonesia = Locale("id", "ID") // Specify Indonesian locale
+        return date.dayOfWeek.getDisplayName(TextStyle.FULL, localeIndonesia)
     }
     fun initialRv(){
         var initialList = mutableListOf<ListModel>()
@@ -205,16 +161,15 @@ class SummaryViewModel (val database: SummaryDbDao, application: Application):An
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun updateListForSelectedMonth(currentList: MutableList<ListModel>, filteredData: List<ListModel>) {
-        val monthNumber = monthToNumber(selectedMonth.value!!)
+        val monthNumber = monthToNumber(selectedMonth.value)
         val numberOfDays = getNumberOfDaysInMonth(selectedYear.value ?: year, monthNumber)
         for (day in 1..numberOfDays) {
-            currentList.add(ListModel(selectedYear.value!!, selectedMonth.value ?: "", monthNumber, day, day.toString(), "", 0.0))
+            val dayName = getDayName(selectedYear.value!!, monthNumber, day)
+            currentList.add(ListModel(selectedYear.value!!, selectedMonth.value ?: "", monthNumber, day, day.toString(), dayName, 0.0))
         }
         filteredData.forEach { filteredItem ->
             currentList.find { it.day_n == filteredItem.day_n }?.apply {
                 total = filteredItem.total
-                nama = filteredItem.nama
-                day_n = filteredItem.day_n
                 year_n = filteredItem.year_n
                 month_n = filteredItem.month_n
             }
@@ -265,11 +220,13 @@ class SummaryViewModel (val database: SummaryDbDao, application: Application):An
     fun onClear() { uiScope.launch {clear() } }
     suspend fun clear() { withContext(Dispatchers.IO) { database.clear() } }
     fun onDayClick(id: Array<String>){ _navigateBookKeeping.value = id }
-    @SuppressLint("NullSafeMutableLiveData") fun onDayNavigated() { _navigateBookKeeping.value  = null }
-    fun onMontSelected(){ _is_month.value = false }
-    fun onMonthDoneSelected(){ _is_month.value =true }
+    @SuppressLint("NullSafeMutableLiveData")
+    fun onDayNavigated() { _navigateBookKeeping.value  = null }
 
     fun generatePDF(file: File){
+        val pdfGenerator = PDFGenerator(getApplication())
+        pdfGenerator.generatePDF(file,allItemFromSummary.value,_itemPosition.value ?: 0, year_list)
+        /*
         val listBulanan = allItemFromSummary.value
         var pdfDocument = PdfDocument()
         val title = Paint()
@@ -350,6 +307,8 @@ class SummaryViewModel (val database: SummaryDbDao, application: Application):An
             e.printStackTrace()
         }
         pdfDocument.close()
+
+         */
 
 
     }

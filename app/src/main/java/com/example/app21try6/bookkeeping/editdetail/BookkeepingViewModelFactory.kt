@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.app21try6.database.ProductDao
 import com.example.app21try6.database.SummaryDbDao
 
-
+/*
 class BookkeepingViewModelFactory(
         private val dataSource: SummaryDbDao,
         private val dataSource2: ProductDao,
@@ -20,3 +20,5 @@ class BookkeepingViewModelFactory(
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+
+ */

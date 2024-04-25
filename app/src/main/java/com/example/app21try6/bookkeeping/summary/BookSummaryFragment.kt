@@ -5,7 +5,6 @@ import android.R
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -14,7 +13,6 @@ import android.util.Log
 import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -23,11 +21,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.example.app21try6.database.SummaryDatabase
+import com.example.app21try6.bookkeeping.editdetail.BookkeepingViewModel
 import com.example.app21try6.databinding.FragmentBookSummaryBinding
 import java.io.*
 import java.lang.Exception
@@ -37,54 +34,82 @@ import java.util.*
 
 class BookSummaryFragment : Fragment(){
 
-
-    // declaring width and height
-    // for our PDF file.
-    var pageHeight = 1120
-    var pagewidth = 792
-
-    // creating a bitmap variable
-    // for storing our images
-    lateinit var bmp: Bitmap
-    lateinit var scaledbmp: Bitmap // creating a bitmap variable
-
     // constant code for runtime permissions
     private val PERMISSION_REQUEST_CODE = 200
     //private lateinit var binding: FragmentBookSummaryBinding
     private lateinit var binding: FragmentBookSummaryBinding
-    lateinit var generatePDFbtn:Button
-
-    private val viewModel:SummaryViewModel by viewModels()
-    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private val summaryViewModel :BookkeepingViewModel by activityViewModels { BookkeepingViewModel.Factory }
+    //private val viewModel:SummaryViewModel by viewModels()
+    /*
+    val contentResolver = requireContext().contentResolver
+    val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
-            Log.i("URI_", data?.data?.path.toString())
-            var i = 1
-            try {
-                context?.contentResolver?.openInputStream(data!!.data!!)?.bufferedReader()?.forEachLine {
-                    val tokens: List<String> = it.split(",")
-                    if (i!=1) { viewModel.insertCSV(tokens) }
-                    i+=1
+            data?.data?.let { uri ->
+                val inputStream = contentResolver.openInputStream(uri)
+                inputStream?.bufferedReader()?.useLines { lines ->
+                    val csvData = lines.map { it.split(",") }.toList()
+                    summaryViewModel.insertCSVData(csvData)
                 }
-            }catch (e: Exception){
-                Toast.makeText(context,e.toString(),Toast.LENGTH_SHORT).show()
-                Log.e("message_e", ""+e)
             }
         }
     }
 
+     */
+    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        Log.i("Insert Csv", "result Launcher")
 
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            var isFirstLine = true
+
+                Log.i("InsertCsv", "result Launcher if " + data?.data?.path.toString())
+                val tokensList = mutableListOf<List<String>>()
+                try {
+                    context?.contentResolver?.openInputStream(data!!.data!!)?.bufferedReader()
+                        ?.forEachLine { line ->
+                            if (!isFirstLine) {
+                                val tokens: List<String> = line.split(",")
+                                tokensList.add(tokens)
+                            }
+                            isFirstLine = false
+                        }
+                    summaryViewModel.insertCSVBatch(tokensList)
+                } catch (e: Exception) {
+                    Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
+                    Log.e("Insert Csv", "Error reading CSV: $e")
+                }
+
+        }
+    }
+/*
+    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        Log.i("Insert Csv", "result Launcher")
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            Log.i("InsertCsv",  "result Launcher if " +data?.data?.path.toString())
+            var i = 1
+            try {
+                context?.contentResolver?.openInputStream(data!!.data!!)?.bufferedReader()?.forEachLine {
+                    val tokens: List<String> = it.split(",")
+                    Log.i("Insert Csv", "result Launcher else $i"+tokens.toString())
+                    if (i!=1) { summaryViewModel.insertCSV(tokens) }
+                    i+=1
+                }
+            }catch (e: Exception){
+                Toast.makeText(context,e.toString(),Toast.LENGTH_SHORT).show()
+                Log.i("Insert Csv", "catch $e")
+            }
+        }
+    }
+
+ */
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, com.example.app21try6.R.layout.fragment_book_summary,container,false)
-        //generatePDFbtn = binding.btn3
         val application = requireNotNull(this.activity).application
-        val dataSource = SummaryDatabase.getInstance(application).summaryDbDao
-        val viewModelFactory = SummaryViewModelFactory(dataSource, application)
-        val summaryViewModel = ViewModelProvider(
-                this, viewModelFactory).get(SummaryViewModel::class.java)
         binding.lifecycleOwner = this
         binding.summaryViewModel = summaryViewModel
         if (checkPermission()) {
@@ -94,32 +119,26 @@ class BookSummaryFragment : Fragment(){
         }
         summaryViewModel.initialRv()
         val adapter = SummaryAdapter(SummaryListener {
-
             summaryViewModel.onRvClick(it)
-                    //if (it.day_n==0) {
-            /*
-            if (summaryViewModel.is_month.value ==true){
-                Toast.makeText(context, it.month_n.toString(), Toast.LENGTH_LONG).show()
-                summaryViewModel._itemMonthPosition.value = summaryViewModel.months_list.indexOf(it.month_n)
-                summaryViewModel.onMontSelected()
-            } else{
-                var date = arrayOf(it.year_n.toString(),it.month_n,it.day_n.toString())
-                summaryViewModel.onMonthDoneSelected()
-                summaryViewModel.onDayClicked(date)
-                    }
-
-             */
+            val monthname = summaryViewModel.selectedMonth.value
+            val defaultPosition =summaryViewModel.months_list.indexOf(monthname)
+            binding.spinnerM.setSelection(defaultPosition)
                 })
         binding.recyclerViewSumary.adapter = adapter
 
         summaryViewModel.allItemFromSummary.observe(viewLifecycleOwner, Observer {
-           // Toast.makeText(context,it.toString(),Toast.LENGTH_SHORT).show()
         })
-        val adapterYear = ArrayAdapter(requireContext(), R.layout.simple_dropdown_item_1line, viewModel.year_list)
+        val adapterYear = ArrayAdapter(requireContext(), R.layout.simple_dropdown_item_1line, summaryViewModel.year_list)
         binding.spinner.adapter = adapterYear
 
-        val adapterMonth = ArrayAdapter(requireContext(), R.layout.simple_dropdown_item_1line, viewModel.months_list)
+        val adapterMonth = ArrayAdapter(requireContext(), R.layout.simple_dropdown_item_1line, summaryViewModel.months_list)
         binding.spinnerM.adapter = adapterMonth
+        val catname = summaryViewModel.selectedMonth.value
+        val defaultPosition =summaryViewModel.months_list.indexOf(catname)
+        binding.spinnerM.setSelection(defaultPosition)
+        val thisyear = summaryViewModel.year.toString()
+        val defaultPositionYear =summaryViewModel.year_list.indexOf(thisyear)
+        binding.spinner.setSelection(defaultPositionYear)
 
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
@@ -129,6 +148,7 @@ class BookSummaryFragment : Fragment(){
             override fun onNothingSelected(parent: AdapterView<*>) {
             }
         }
+
         binding.spinnerM.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedItem = parent.getItemAtPosition(position).toString()
@@ -137,62 +157,38 @@ class BookSummaryFragment : Fragment(){
             override fun onNothingSelected(parent: AdapterView<*>) {
             }
         }
-        /*
-        summaryViewModel.is_month.observe(requireActivity(), Observer {
-            summaryViewModel.__days?.observe(viewLifecycleOwner, Observer {
-                it?.let {
-                    adapter.submitList(it)
-                    adapter.notifyDataSetChanged()
-                }
-            })
-        })
-
-         */
         summaryViewModel.selectedYear.observe(viewLifecycleOwner) {
-            // Handle the selected value
-            viewModel.updateRvNew()
+            summaryViewModel.updateRvNew()
         }
         summaryViewModel.selectedMonth.observe(viewLifecycleOwner){
-            viewModel.updateRvNew()
+            summaryViewModel.updateRvNew()
         }
         summaryViewModel.recyclerViewData.observe(viewLifecycleOwner){
             it?.let {
-                Log.i("SUMMARYRV",it.toString())
                 adapter.submitList(it)
                 adapter.notifyDataSetChanged()
             }
         }
-        /*
-        summaryViewModel._itemPosition.observe(requireActivity(),
-                object : Observer<Int> {
-                    override fun onChanged(t: Int) {
-                        summaryViewModel._itemMonthPosition.value = 0
-                        summaryViewModel.__months.observe(viewLifecycleOwner, Observer {
-                            it?.let {
-                                adapter.submitList(it.sortedBy { it.month_nbr})
-                                adapter.notifyDataSetChanged()
-                            }
-                        })
-                    }})
-
-         */
-        /*
-        summaryViewModel._itemMonthPosition.observe(requireActivity(),
-                object : Observer<Int> {
-                    override fun onChanged(t: Int?) {
-                        //you will get the position on selection os spinner
-                        if (t==0){
-                            summaryViewModel.onMonthDoneSelected()
-                        }
-                        summaryViewModel.__days?.observe(viewLifecycleOwner, Observer {
-                            it?.let {
-                                adapter.submitList(it)
-                                adapter.notifyDataSetChanged()
-                            }
-                        })
-                    }})
-
-         */
+        summaryViewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
+            if(isLoading==true){
+                binding.recyclerViewSumary.visibility = View.GONE
+                binding.progressBar.visibility = View.VISIBLE
+            }else{
+                binding.recyclerViewSumary.visibility = View.VISIBLE
+                binding.progressBar.visibility = View.GONE
+            }
+            //binding.progressBar.visibility = if (isLoading ==true) View.VISIBLE else View.GONE
+            })
+        summaryViewModel.insertionCompleted.observe(viewLifecycleOwner, Observer { insertionCompleted ->
+        if (insertionCompleted) {
+           summaryViewModel.setSelectedYear(summaryViewModel.year.toString())
+            val thisyear = summaryViewModel.selectedYear.value.toString()
+            val defaultPosition =summaryViewModel.year_list.indexOf(thisyear)
+            binding.spinner.setSelection(defaultPosition)
+            }
+         })
+        summaryViewModel.date.observe(viewLifecycleOwner) { date ->
+        }
         summaryViewModel.navigateBookKeeping.observe(viewLifecycleOwner, Observer { date->
             date?.let {
                 this.findNavController().navigate(BookSummaryFragmentDirections.actionBookSummaryFragmentToBookKeepeingFragment3(date))
@@ -233,7 +229,7 @@ class BookSummaryFragment : Fragment(){
             TODO("VERSION.SDK_INT < FROYO")
         }
         Log.i("filepath",""+file.path.toString())
-        viewModel.generatePDF(file)
+        summaryViewModel.generatePDF(file)
         val photoURI:Uri = FileProvider.getUriForFile(this.requireContext(), requireContext().applicationContext.packageName + ".provider",file)
         val shareIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
@@ -248,18 +244,28 @@ class BookSummaryFragment : Fragment(){
         }
         }
 
-    private fun importCSVBook() {
-        var fileIntent = Intent(Intent.ACTION_GET_CONTENT)
-        fileIntent.type = "text/*"
-        try { resultLauncher.launch(fileIntent) } catch (e: FileNotFoundException) { Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show() }
-    }
 
+    //private fun importCSVBook() {
+    //    var fileIntent = Intent(Intent.ACTION_GET_CONTENT)
+    //    fileIntent.type = "text/*"
+     //   try { resultLauncher.launch(fileIntent) } catch (e: FileNotFoundException) { Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show() }
+    //}
+
+    private fun importCSVBook() {
+        val fileIntent = Intent(Intent.ACTION_GET_CONTENT)
+        fileIntent.type = "text/*"
+        try {
+            resultLauncher.launch(fileIntent)
+        } catch (e: FileNotFoundException) {
+            Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
+        }
+    }
     private fun exportCSVBook() {
         val fileName = "Pembukuan 21"
         val file = File(context?.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName + ".csv")
         Log.i("filepath"," "+context?.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString())
         Toast.makeText(context,context?.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString(),Toast.LENGTH_LONG).show()
-        viewModel.writeCSV(file)
+        summaryViewModel.writeCSV(file)
         val photoURI:Uri = FileProvider.getUriForFile(this.requireContext(), requireContext().applicationContext.packageName + ".provider",file)
         val shareIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND

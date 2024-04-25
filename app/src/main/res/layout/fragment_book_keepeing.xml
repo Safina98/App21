@@ -10,8 +10,6 @@
             name="util"
             type="com.example.app21try6.UtilKt"/>
     </data>
-
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -23,55 +21,14 @@
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/cardView"
             app:layout_constraintTop_toTopOf="parent">
-<!--
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <Button
-                    android:id="@+id/btn_try5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="61dp"
-                    android:layout_marginRight="16dp"
-                    android:onClick="@{() -> bookViewModel.insertVendible()}"
-                    android:text="Vendible" />
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/btn_try3"
-                    android:text="Vendible clear"/>
-
-            </LinearLayout>
-            -->
-
-
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:orientation="vertical">
-                <!--
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/btn_try1"
-                    android:text="cek Vendible"
-                    android:onClick="@{() -> bookViewModel.checkVendible()}"
-                    android:layout_gravity="top"/>
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/btn_try6"
-                    android:text="cek Summary"
-                    android:onClick="@{() -> bookViewModel.checkSummary()}" />
-                    -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-
-
                 <Button
                     android:id="@+id/btn_try15"
                     android:layout_width="wrap_content"
@@ -86,15 +43,13 @@
                     android:text="Clear Today"
                     android:onClick="@{() -> bookViewModel.clearSummary()}"/>
                 </LinearLayout>
-
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@{bookViewModel.day_string}"
-
                     android:textSize="24sp"
                     android:textAlignment="viewEnd"/>
-                <!--android:textColor="@color/dark_green3"-->
+                <!--@{bookViewModel.day_string}-->
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -110,23 +65,21 @@
             android:layout_width="match_parent"
             android:layout_height="75dp"
             android:layout_gravity="bottom"
-
             app:layout_constraintBottom_toBottomOf="parent">
             <!-- app:cardBackgroundColor="@color/grey_green"-->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
-                <!-- edited
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="70dp"
                     android:fontFamily="@font/alegreya_sc"
-                    android:text="@{ bookViewModel.playerName}"
+                    android:text="@{bookViewModel.playerName}"
                     android:textSize="48sp" />
-                    -->
-                <!--android:textColor="@color/black"-->
+
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/btn_add_new_item"
                     android:layout_width="wrap_content"
@@ -138,16 +91,8 @@
                     android:layout_marginBottom="8dp"
                     android:onClick="@{() -> bookViewModel.onNavigateToVendible()}"
                     android:src="@drawable/ic_baseline_add_circle_outline_24" />
-
             </LinearLayout>
-
-
-
-
         </androidx.cardview.widget.CardView>
-
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

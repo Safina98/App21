@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.RoomDatabase
+import androidx.room.Transaction
 import androidx.room.Update
 import com.example.app21try6.bookkeeping.summary.ListModel
 
@@ -44,6 +46,9 @@ interface SummaryDbDao {
     @Query("SELECT * FROM summary_table WHERE year = :year_ AND month = :month_ AND day = :day_ AND item_name!='empty' ORDER BY id_m DESC")
     fun getToday(year_: Int,month_: String,day_:Int): LiveData<List<Summary>>
 
+    @Query("SELECT * FROM summary_table WHERE year = :year_ AND month = :month_ AND day = :day_ AND item_name!='empty' ORDER BY id_m DESC")
+    fun getTodayNew(year_: Int,month_: String,day_:Int): List<Summary>
+
     @Query("SELECT * FROM summary_table  ORDER BY id_m DESC LIMIT 1")
     fun getThisMonth(): Summary?
 
@@ -69,4 +74,14 @@ interface SummaryDbDao {
     @Query("SELECT * FROM summary_table ORDER BY month_number")
     fun getAllSummary():LiveData<List<Summary>>
 
+    @Transaction
+    suspend fun performTransaction(block: suspend () -> Unit) {
+        // Begin transaction
+        try {
+            block()
+        } catch (e: Exception) {
+            // Handle exceptions
+            throw e
+        }
+    }
 }

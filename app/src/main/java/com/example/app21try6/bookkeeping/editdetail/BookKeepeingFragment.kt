@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -24,7 +25,7 @@ import com.google.android.material.textfield.TextInputEditText
 
 class BookKeepeingFragment : Fragment() {
     private lateinit var binding: FragmentBookKeepeingBinding
-
+    private val bookKeepingViewModel  :BookkeepingViewModel by activityViewModels { BookkeepingViewModel.Factory }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -32,18 +33,12 @@ class BookKeepeingFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_book_keepeing,container,false)
 
-
         val application = requireNotNull(this.activity).application
         val dataSource = SummaryDatabase.getInstance(application).summaryDbDao
         val dataSource2 = VendibleDatabase.getInstance(application).productDao
 
         val date= arguments?.let { BookKeepeingFragmentArgs.fromBundle(it).date }
-
-        //Toast.makeText(context, date!![2]?.toString(),Toast.LENGTH_LONG).show()
-        val viewModelFactory = BookkeepingViewModelFactory(dataSource,dataSource2,application, date!!)
         binding.lifecycleOwner = this
-        val bookKeepingViewModel = ViewModelProvider(this, viewModelFactory)
-                .get(BookkeepingViewModel::class.java)
         binding.bookViewModel = bookKeepingViewModel
         val adapter = BookkeepingAdapter(PlusBookListener {
            // Toast.makeText(context,(it.item_sold+1).toString(),Toast.LENGTH_SHORT).show()
@@ -76,9 +71,14 @@ class BookKeepeingFragment : Fragment() {
         bookKeepingViewModel.all_item_from_db.observe(viewLifecycleOwner, Observer {
 
         })
+        bookKeepingViewModel.selectedMonth.observe(viewLifecycleOwner){
+        }
+        bookKeepingViewModel.date.observe(viewLifecycleOwner) { date ->
+            // Perform actions based on the selected date
+        }
         bookKeepingViewModel.navigateToVendible.observe(viewLifecycleOwner, Observer {
             if (it==true) {
-                this.findNavController().navigate(BookKeepeingFragmentDirections.actionBookKeepeingFragmentToVendibleFragment(date))
+                this.findNavController().navigate(BookKeepeingFragmentDirections.actionBookKeepeingFragmentToVendibleFragment(date!!))
                 bookKeepingViewModel.onNavigatedToVendivle()
             }
 
