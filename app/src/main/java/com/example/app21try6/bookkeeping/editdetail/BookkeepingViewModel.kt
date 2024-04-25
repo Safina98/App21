@@ -96,8 +96,6 @@ class BookkeepingViewModel(val database: SummaryDbDao,
 
 
     //////////////////////////////////////BookKeeping funtions////////////////////////////////////////////////
-
-
     //Get Best Selling
     fun onAddClicked(){
         val list_item_to_add_new =all_item_from_db.value
