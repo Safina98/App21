@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,6 +41,7 @@ class TransactionEditFragment : Fragment() {
         val datasource2 = VendibleDatabase.getInstance(application).transDetailDao
 
         val id= arguments?.let{TransactionEditFragmentArgs.fromBundle(it).id}
+       Log.e("SUMVM","transum in TransEditFragmnet id is "+id.toString()+"")
 
         val viewModelFactory = TransactionEditViewModelFactory(application, datasource1, datasource2, id!!)
         val viewModel = ViewModelProvider(this, viewModelFactory).get(TransactionEditViewModel::class.java)
@@ -47,7 +49,7 @@ class TransactionEditFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         var code:Code = Code.ZERO
-        //TODO parameter add on price click listener
+
 
        val adapter = TransactionEditAdapter(TransEditClickListener {
            code = Code.TEXTITEM
@@ -86,6 +88,7 @@ class TransactionEditFragment : Fragment() {
        viewModel.navigateToVendible.observe(viewLifecycleOwner, Observer {
            if (it != null) {
                this.findNavController().navigate(TransactionEditFragmentDirections.actionTransactionEditFragmentToTransactionProductFragment(it))
+               viewModel.saveCustName()
                viewModel.onNavigatedtoVendible()
 
            }
@@ -105,15 +108,13 @@ class TransactionEditFragment : Fragment() {
        })
        viewModel.custName.observe(viewLifecycleOwner, Observer {
            it?.let{
-               viewModel.saveCustomerName()
+               //viewModel.saveCustomerName()
+               viewModel.saveCustName()
+               Log.e("SUMVM","transum in viewModel navigate fun is "+it+"")
            }
        })
-
-
        // Inflate the layout for this fragment
        return binding.root
-
-
     }
 
 

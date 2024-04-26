@@ -34,24 +34,31 @@ class TransactionEditViewModel(
    var custName  =MutableLiveData<String>("")
 
     var itemTransDetail = datasource2.selectATransDetail(id)
-    val transSum = MutableLiveData<TransactionSummary>()
+    //val transSum = MutableLiveData<TransactionSummary>()
+    val transSum = datasource1.getTransSum(id)
     val sdf = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT)
     val currentDate = sdf.format(Date())
     val totalSum = datasource2.getTotalTrans(id)
     val trans_total: LiveData<String> =
             Transformations.map(totalSum) { formatRupiah(it).toString() }
     init {
+        getCustName(id)
+        //getTransactionSummary(id)
+    }
+    fun getCustName(id:Int){
         viewModelScope.launch {
-            if (id==-1){
-             // initiateNewId()
-                id=  datasource1.getLastInsertedId() ?: return@launch
-            }
-            itemTransDetail = datasource2.selectATransDetail(id)
-            custName.value = datasource1.getCustName(id)
-            transSum.value = datasource1.getTrans(id)
+            var customerName = withContext(Dispatchers.IO){datasource1.getCustName(id)}
+            custName.value = customerName
+            Log.e("SUMVM","transum in TransEditVm custName is "+custName.value+"")
         }
     }
-
+    fun getTransactionSummary(id:Int){
+        viewModelScope.launch {
+            //var transactionSummary = withContext(Dispatchers.IO){datasource1.getTrans(id)}
+            //transSum.value = transactionSummary
+            Log.e("SUMVM","transum in TransEditVm transactionSUmmary is "+transSum.value.toString()+"")
+        }
+    }
     fun onNavigatetoVendible(){
         _navigateToVendible.value= arrayOf(transSum.value!!.sum_id.toString(),"1")
     }
@@ -88,22 +95,21 @@ class TransactionEditViewModel(
             datasource2.update(transactionDetail)
         }
     }
-
     fun onNavigatetoDetail(idm:Int){
         viewModelScope.launch {
             // delete_()
+            updateSum(transSum.value!!)
             _navigateToDetail.value=id
         }
     }
     fun saveCustName(){
-        viewModelScope.launch {
-            var transSumS: TransactionSummary = datasource1.getTrans(id)
-            transSumS.cust_name = custName.value ?: "Kosong"
-            Log.e("SUMVM","transum in viewModel navigate fun is "+transSumS.sum_id.toString())
-            Log.e("SUMVM","transum in viewModel navigate fun is "+custName.value.toString()+"")
-            updateSum(transSumS)
-            Log.e("SUMVM","transum in viewModel navigate fun is "+transSumS.cust_name.toString()+"")
-        }
+
+            transSum.value?.cust_name = custName.value ?: "-"
+            Log.e("SUMVM","transum in viewModel saveCustName transum is "+transSum.value.toString())
+            Log.e("SUMVM","transum in viewModel saveCustName name is "+custName.value.toString()+"")
+           // updateSum(transSum.value!!)
+            Log.e("SUMVM","transum in viewModel navigate fun is "+transSum.value?.cust_name.toString()+"")
+
     }
     fun saveCustomerName(){
         viewModelScope.launch {

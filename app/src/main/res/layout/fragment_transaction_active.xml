@@ -37,7 +37,7 @@
             android:clickable="true"
             android:contentDescription="@string/submit"
             android:focusable="true"
-            android:onClick="@{()->viewModel.onNavigatetoTransEdit(-1)}"
+            android:onClick="@{()->viewModel.onAddNewTransactionClick()}"
             android:src="@drawable/ic_baseline_add_circle_outline_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/recyclerView_active_trans" />

@@ -1,7 +1,6 @@
 package com.example.app21try6.database
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.room.*
 
 @Dao
@@ -11,6 +10,7 @@ interface TransSumDao {
     fun insert(transactionSummary: TransactionSummary)
     //@Insert
     //fun insertNew(transactionSummary: TransactionSummary):Int
+
     @Update
     fun update(transactionSummary: TransactionSummary)
 
@@ -45,6 +45,9 @@ interface TransSumDao {
 
     @Query("SELECT * from trans_sum_table order by sum_id DESC limit 1")
     fun getLastInserted():LiveData<TransactionSummary>
+
+    @Query("SELECT last_insert_rowid()")
+    fun getLastInsertedIdN(): Int
 
     @Query("SELECT * from trans_sum_table WHERE sum_id = :sum_id_")
     fun getTransSum(sum_id_: Int):LiveData<TransactionSummary>

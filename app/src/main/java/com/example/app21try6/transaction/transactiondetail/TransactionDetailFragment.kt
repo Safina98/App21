@@ -1,6 +1,7 @@
 package com.example.app21try6.transaction.transactiondetail
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -26,7 +27,7 @@ class TransactionDetailFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_transaction_detail,container,false)
         val application= requireNotNull(this.activity).application
         val id= arguments?.let{ TransactionDetailFragmentArgs.fromBundle(it).id}
-
+        Log.e("SUMVM","transum in TransEditFragmnet id is "+id.toString()+"")
         val datasource1 = VendibleDatabase.getInstance(application).transSumDao
         val datasource2 = VendibleDatabase.getInstance(application).transDetailDao
         val viewModelFactory = TransactionDetailViewModelFactory(application,datasource1,datasource2,id!!)

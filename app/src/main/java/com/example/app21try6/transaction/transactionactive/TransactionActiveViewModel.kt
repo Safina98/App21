@@ -61,38 +61,48 @@ class TransactionActiveViewModel(
                 checkedItemList.remove(stok) }
         }
     }
-
-
     fun delete(){
         viewModelScope.launch {
             delete_(checkedItemList)
-
             onButtonClicked()
         }
     }
-
-
     suspend fun delete_(list: MutableList<TransactionSummary>){
         withContext(Dispatchers.IO){
            datasource1.delete_(*list.toTypedArray())
         }
     }
     fun initiateNewId(){
+        var id:Int = -1
         viewModelScope.launch {
             var trans =   TransactionSummary()
             trans.trans_date = currentDate
-            insertNewSum(trans)
+            insertNewSumAndGetId(trans)
         }
     }
-    suspend fun insertNewSum(transactionSummary: TransactionSummary) {
-        withContext(Dispatchers.IO){
+    suspend fun insertNewSumAndGetId(transactionSummary: TransactionSummary){
+       withContext(Dispatchers.IO){
             datasource1.insert(transactionSummary)
+        }
+    }
+    suspend fun getLastInsertedID():Int{
+        return withContext(Dispatchers.IO){
+            datasource1.getLastInsertedIdN()
+        }
+    }
+    fun onAddNewTransactionClick(){
+        viewModelScope.launch {
+            var trans =   TransactionSummary()
+            trans.trans_date = currentDate
+            insertNewSumAndGetId(trans)
+            var id = getLastInsertedID()
+            _navigateToTransEdit.value = id
+            Log.e("SUMVM","_navigateToTransEdit id "+id.toString()+"")
         }
     }
 
     fun onNavigatetoTransEdit(id:Int){
-        initiateNewId()
-        _navigateToTransEdit.value=-1
+        _navigateToTransEdit.value=id
     }
     fun onNavigatedToTransEdit(){
         this._navigateToTransEdit.value=null
