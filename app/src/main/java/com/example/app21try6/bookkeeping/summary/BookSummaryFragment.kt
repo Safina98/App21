@@ -40,32 +40,14 @@ class BookSummaryFragment : Fragment(){
     private lateinit var binding: FragmentBookSummaryBinding
     private val summaryViewModel :BookkeepingViewModel by activityViewModels { BookkeepingViewModel.Factory }
     //private val viewModel:SummaryViewModel by viewModels()
-    /*
-    val contentResolver = requireContext().contentResolver
-    val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val data: Intent? = result.data
-            data?.data?.let { uri ->
-                val inputStream = contentResolver.openInputStream(uri)
-                inputStream?.bufferedReader()?.useLines { lines ->
-                    val csvData = lines.map { it.split(",") }.toList()
-                    summaryViewModel.insertCSVData(csvData)
-                }
-            }
-        }
-    }
-
-     */
     var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         Log.i("Insert Csv", "result Launcher")
-
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
             var isFirstLine = true
-
-                Log.i("InsertCsv", "result Launcher if " + data?.data?.path.toString())
-                val tokensList = mutableListOf<List<String>>()
-                try {
+            Log.i("InsertCsv", "result Launcher if " + data?.data?.path.toString())
+            val tokensList = mutableListOf<List<String>>()
+            try {
                     context?.contentResolver?.openInputStream(data!!.data!!)?.bufferedReader()
                         ?.forEachLine { line ->
                             if (!isFirstLine) {
@@ -82,28 +64,7 @@ class BookSummaryFragment : Fragment(){
 
         }
     }
-/*
-    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        Log.i("Insert Csv", "result Launcher")
-        if (result.resultCode == Activity.RESULT_OK) {
-            val data: Intent? = result.data
-            Log.i("InsertCsv",  "result Launcher if " +data?.data?.path.toString())
-            var i = 1
-            try {
-                context?.contentResolver?.openInputStream(data!!.data!!)?.bufferedReader()?.forEachLine {
-                    val tokens: List<String> = it.split(",")
-                    Log.i("Insert Csv", "result Launcher else $i"+tokens.toString())
-                    if (i!=1) { summaryViewModel.insertCSV(tokens) }
-                    i+=1
-                }
-            }catch (e: Exception){
-                Toast.makeText(context,e.toString(),Toast.LENGTH_SHORT).show()
-                Log.i("Insert Csv", "catch $e")
-            }
-        }
-    }
 
- */
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {

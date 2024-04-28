@@ -5,6 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -46,7 +49,29 @@ class TransactionProductFragment : Fragment() {
         })
         binding.transproductRv.adapter  = adapter
 
-        viewModel.all_product_from_db.observe(viewLifecycleOwner, Observer {
+        binding.spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedItem = parent.getItemAtPosition(position).toString()
+                // Update the selected value in your ViewModel
+                viewModel.setSelectedKategoriValue(selectedItem)
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Handle the case when nothing is selected
+            }
+        }
+        viewModel.categoryEntries.observe(viewLifecycleOwner){it?.let {
+            val adapterCategory = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
+            binding.spinnerCategory.adapter = adapterCategory
+
+        }
+        }
+        viewModel.selectedKategoriSpinner.observe(viewLifecycleOwner) {
+            // Handle the selected value
+            viewModel.updateRv(it)
+        }
+
+
+        viewModel.allProduct.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it.sortedBy { it.cath_code })
         })
 

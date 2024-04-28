@@ -28,6 +28,7 @@ class BrandStockViewModel(
     private var viewModelJob = Job()
     //ui scope for coroutines
     private val uiScope = CoroutineScope(Dispatchers.Main +  viewModelJob)
+    private val db: VendibleDatabase = VendibleDatabase.getInstance(application)
 
     //Navigation
     private val _navigateProduct = MutableLiveData<Array<String>>()
@@ -65,6 +66,15 @@ class BrandStockViewModel(
     val all_sub = database4.getAllSub()
     private val _selectedKategoriSpinner = MutableLiveData<String>()
     val selectedKategoriSpinner: LiveData<String> get() = _selectedKategoriSpinner
+
+    //Insert batch
+    private val _insertionCompleted = MutableLiveData<Boolean>()
+    val insertionCompleted: LiveData<Boolean>
+        get() = _insertionCompleted
+
+    private val _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading: LiveData<Boolean>
+        get() = _isLoading
 
 
     fun setSelectedKategoriValue(value: String) {
@@ -131,52 +141,9 @@ class BrandStockViewModel(
         }
     }
 
-    fun insertCSV(token: List<String>){
-        uiScope.launch {
-            try {
-                val allBrand = all_brand.value
-                val all_cath = cathList.value
-                val all_product_ = all_product.value
-                val all_sub_ = all_sub.value
-                val product= Product()
-                product.product_name = token[2].uppercase().trim()
-                product.product_price = token[3].toInt()
-                product.bestSelling = token[4]=="TRUE"
-                val subProduct = SubProduct()
-                subProduct.sub_name = token[5].uppercase().trim()
-                subProduct.roll_u = token[6].toInt()
-                subProduct.roll_bt = token[7].toInt()
-                subProduct.roll_st = token[8].toInt()
-                subProduct.roll_kt = token[9].toInt()
-                subProduct.roll_bg = token[10].toInt()
-                subProduct.roll_sg = token[11].toInt()
-                subProduct.roll_kg = token[12].toInt()
-                insertCathNew(token[0].uppercase().trim())
-                Log.i("BrandProb","CSV insertCath"+token[0].uppercase().trim())
-                //if (all_cath!!.isEmpty()){insertCathNew__(token[0].toUpperCase().trim())}else{insertCathNew(token[0].toUpperCase().trim())}
-                insertBrandNew(token[1].uppercase().trim(),token[0].uppercase().trim())
-                Log.i("BrandProb","CSV brand"+token[0].uppercase().trim())
-                //if (allBrand!!.isEmpty()){ insertBrandNew_(token[1].toUpperCase().trim(),token[0].toUpperCase().trim()) }else{ insertBrandNew(token[1].toUpperCase().trim(),token[0].toUpperCase().trim()) }
-                inserProductNew(product,token[1].uppercase().trim(),token[0].uppercase().trim())
-                Log.i("BrandProb","CSV insertProduct"+token[0].uppercase().trim())
-                //if (all_product_!!.isEmpty()){ inserProductNew_(product,token[1].toUpperCase().trim(),token[0].toUpperCase().trim()) }
-                //else{ inserProductNew(product,token[1].toUpperCase().trim(),token[0].toUpperCase().trim()) }
-                insertSubProductNew(subProduct,product.product_name,token[1].uppercase().trim(),token[0].uppercase().trim())
-                Log.i("BrandProb","CSV insertSubProduct"+token[0].uppercase().trim())
-            //if (all_sub_!!.isEmpty()){ insertSubProductNew_(subProduct,product.product_name,token[1].toUpperCase().trim(),token[0].toUpperCase().trim())}
-                //else{ insertSubProductNew(subProduct,product.product_name,token[1].toUpperCase().trim(),token[0].toUpperCase().trim())}
-            } catch (e: SQLiteException) {
-                Log.i("message_e", "message: $e")
-                Toast.makeText(getApplication(),e.toString(),Toast.LENGTH_LONG).show()
-            }
-        }
-    }
 
-    private fun insertCathNew__(trim: String) {
-        uiScope.launch {
-            insertCathNew_(trim)
-        }
-    }
+
+
 
     fun writeCSV(file: File) {
         try {
@@ -198,21 +165,124 @@ class BrandStockViewModel(
             Toast.makeText(getApplication(),"fAILED",Toast.LENGTH_SHORT).show()
         }
     }
+    fun insertCSVO(token: List<String>){
+        uiScope.launch {
+            try {
+                val product= Product()
+                product.product_name = token[2].uppercase().trim()
+                product.product_price = token[3].toInt()
+                product.bestSelling = token[4]=="TRUE"
+                val subProduct = SubProduct()
+                subProduct.sub_name = token[5].uppercase().trim()
+                subProduct.roll_u = token[6].toInt()
+                subProduct.roll_bt = token[7].toInt()
+                subProduct.roll_st = token[8].toInt()
+                subProduct.roll_kt = token[9].toInt()
+                subProduct.roll_bg = token[10].toInt()
+                subProduct.roll_sg = token[11].toInt()
+                subProduct.roll_kg = token[12].toInt()
+                insertCathNew(token[0].uppercase().trim())
+                insertBrandNew(token[1].uppercase().trim(),token[0].uppercase().trim())
+                inserProductNew(product,token[1].uppercase().trim(),token[0].uppercase().trim())
+                insertSubProductNew(subProduct,product.product_name,token[1].uppercase().trim(),token[0].uppercase().trim())
+            } catch (e: SQLiteException) {
+                Log.i("message_e", "message: $e")
+                Toast.makeText(getApplication(),e.toString(),Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    fun insertCSV(token: List<String>){
+        uiScope.launch {
+            try {
+                val product= Product()
+                product.product_name = token[2].uppercase().trim()
+                product.product_price = token[3].toInt()
+                product.bestSelling = token[4]=="TRUE"
+                val subProduct = SubProduct()
+                subProduct.sub_name = token[5].uppercase().trim()
+                subProduct.roll_u = token[6].toInt()
+                subProduct.roll_bt = token[7].toInt()
+                subProduct.roll_st = token[8].toInt()
+                subProduct.roll_kt = token[9].toInt()
+                subProduct.roll_bg = token[10].toInt()
+                subProduct.roll_sg = token[11].toInt()
+                subProduct.roll_kg = token[12].toInt()
+                // Start transaction
+                //startTransaction()
+                insertCathNew(token[0].uppercase().trim())
+                insertBrandNew(token[1].uppercase().trim(),token[0].uppercase().trim())
+                inserProductNew(product,token[1].uppercase().trim(),token[0].uppercase().trim())
+                insertSubProductNew(subProduct,product.product_name,token[1].uppercase().trim(),token[0].uppercase().trim())
+                // Commit transaction
+               //commitTransaction()
+            } catch (e: SQLiteException) {
+                // Rollback transaction in case of exception
+                //rollbackTransaction()
+                Log.i("message_e", "message: $e")
+                Toast.makeText(getApplication(),e.toString(),Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    fun insertCSVBatch(tokensList: List<List<String>>) {
+        viewModelScope.launch {
+            try {
+                _isLoading.value = true
+                database1.performTransaction {
+                    val batchSize = 100 // Define your batch size here
+                    for (i in 0 until tokensList.size step batchSize) {
+                        val batch = tokensList.subList(i, minOf(i + batchSize, tokensList.size))
+                        insertBatch(batch)
+                    }
+                }
+                _insertionCompleted.value = true
+            } catch (e: Exception) {
+                Toast.makeText(getApplication(), e.toString(), Toast.LENGTH_LONG).show()
+            }finally {
+                _isLoading.value = false // Hide loading indicator
+            }
+        }
+    }
+
+    private suspend fun insertBatch(batch: List<List<String>>) {
+        batch.forEach { tokens ->
+            insertCSVN(tokens)
+        }
+    }
+    private suspend fun insertCSVN(token: List<String>) {
+        val product= Product()
+        product.product_name = token[2].uppercase().trim()
+        product.product_price = token[3].toInt()
+        product.bestSelling = token[4]=="TRUE"
+        val subProduct = SubProduct()
+        subProduct.sub_name = token[5].uppercase().trim()
+        subProduct.roll_u = token[6].toInt()
+        subProduct.roll_bt = token[7].toInt()
+        subProduct.roll_st = token[8].toInt()
+        subProduct.roll_kt = token[9].toInt()
+        subProduct.roll_bg = token[10].toInt()
+        subProduct.roll_sg = token[11].toInt()
+        subProduct.roll_kg = token[12].toInt()
+        var brand_name = token[1].uppercase().trim()
+        var categoryName = token[0].uppercase().trim()
+        database1.insertIfNotExist(categoryName)
+        database2.insertIfNotExist(brand_name,categoryName)
+        database3.insertIfNotExist(product.product_name,product.product_price,product.bestSelling,brand_name,categoryName)
+        database4.insertIfNotExist(subProduct.sub_name,subProduct.warna,subProduct.ket,subProduct.roll_u,subProduct.roll_bt,subProduct.roll_st,subProduct.roll_kt,subProduct.roll_bg,subProduct.roll_sg,subProduct.roll_kg,product.product_name,brand_name,categoryName)
+
+    }
+    // Function to start a transaction
+
+
 
     private suspend fun insertCath(category: Category){ withContext(Dispatchers.IO){ database1.insert(category) } }
     private suspend fun insertCathNew(categoryName: String){ withContext(Dispatchers.IO) { database1.insertIfNotExist(categoryName) }}
-    private suspend fun insertCathNew_(categoryName: String){ withContext(Dispatchers.IO) { database1.insert_try(categoryName) }}
     private suspend fun insertBrandNew(brand_name: String,categoryName: String){ withContext(Dispatchers.IO) { database2.insertIfNotExist(brand_name, categoryName) }}
-    private suspend fun insertBrandNew_(brand_name: String,categoryName: String){ withContext(Dispatchers.IO) { database2.insert_try(brand_name, categoryName) }}
     private suspend fun inserProductNew(product: Product,brand_name: String,categoryName: String){ withContext(Dispatchers.IO){ database3.insertIfNotExist(product.product_name,product.product_price,product.bestSelling,brand_name,categoryName)}}
-    private suspend fun inserProductNew_(product: Product,brand_name: String,categoryName: String){ withContext(Dispatchers.IO){database3.inserProduct(product.product_name,product.product_price,product.bestSelling,brand_name,categoryName)}}
     private suspend fun insertSubProductNew(subProduct: SubProduct,product_name:String,brand_name: String,categoryName: String){
         withContext(Dispatchers.IO){
             database4.insertIfNotExist(subProduct.sub_name,subProduct.warna,subProduct.ket,subProduct.roll_u,subProduct.roll_bt,subProduct.roll_st,subProduct.roll_kt,subProduct.roll_bg,subProduct.roll_sg,subProduct.roll_kg,product_name,brand_name,categoryName)
-        } }
-    private suspend fun insertSubProductNew_(subProduct: SubProduct,product_name:String,brand_name: String,categoryName: String){
-        withContext(Dispatchers.IO){
-            database4.inserSubProduct(subProduct.sub_name,subProduct.warna,subProduct.ket,subProduct.roll_u,subProduct.roll_bt,subProduct.roll_st,subProduct.roll_kt,subProduct.roll_bg,subProduct.roll_sg,subProduct.roll_kg,product_name,brand_name,categoryName)
         } }
     fun updateCath(category: Category){ uiScope.launch { updateCath_(category) } }
     private suspend fun updateCath_(category: Category){withContext(Dispatchers.IO){ database1.update(category) } }

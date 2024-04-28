@@ -6,6 +6,7 @@ import java.util.*
 fun formatRupiah(number: Double?): String? {
     val localeID = Locale("in", "ID")
     val formatRupiah: NumberFormat = NumberFormat.getCurrencyInstance(localeID)
+    formatRupiah.maximumFractionDigits = 0
     return if (number != null) {
         formatRupiah.format(number)
     } else {

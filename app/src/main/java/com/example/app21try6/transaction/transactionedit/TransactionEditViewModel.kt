@@ -3,13 +3,11 @@ package com.example.app21try6.transaction.transactionedit
 import android.annotation.SuppressLint
 import android.app.Application
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.*
 import com.example.app21try6.Constants
 import com.example.app21try6.database.*
 import com.example.app21try6.formatRupiah
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -42,23 +40,17 @@ class TransactionEditViewModel(
     val trans_total: LiveData<String> =
             Transformations.map(totalSum) { formatRupiah(it).toString() }
     init {
-        getCustName(id)
+        setCustomerName(id)
         //getTransactionSummary(id)
     }
-    fun getCustName(id:Int){
+    fun setCustomerName(id:Int){
         viewModelScope.launch {
             var customerName = withContext(Dispatchers.IO){datasource1.getCustName(id)}
             custName.value = customerName
             Log.e("SUMVM","transum in TransEditVm custName is "+custName.value+"")
         }
     }
-    fun getTransactionSummary(id:Int){
-        viewModelScope.launch {
-            //var transactionSummary = withContext(Dispatchers.IO){datasource1.getTrans(id)}
-            //transSum.value = transactionSummary
-            Log.e("SUMVM","transum in TransEditVm transactionSUmmary is "+transSum.value.toString()+"")
-        }
-    }
+
     fun onNavigatetoVendible(){
         _navigateToVendible.value= arrayOf(transSum.value!!.sum_id.toString(),"1")
     }
@@ -87,10 +79,11 @@ class TransactionEditViewModel(
     fun updateTransDetailItemPrice(transactionDetail: TransactionDetail,itemPrice: Int){
         viewModelScope.launch {
             transactionDetail.trans_price = itemPrice
+            transactionDetail.total_price = transactionDetail.trans_price * transactionDetail.qty
             _updateTransDetail(transactionDetail)
         }
     }
-    suspend fun _updateTransDetail(transactionDetail: TransactionDetail){
+    private suspend fun _updateTransDetail(transactionDetail: TransactionDetail){
         withContext(Dispatchers.IO){
             datasource2.update(transactionDetail)
         }
@@ -102,19 +95,9 @@ class TransactionEditViewModel(
             _navigateToDetail.value=id
         }
     }
-    fun saveCustName(){
+    fun setCustomerName(){
+        transSum.value?.cust_name = custName.value ?: "-"
 
-            transSum.value?.cust_name = custName.value ?: "-"
-            Log.e("SUMVM","transum in viewModel saveCustName transum is "+transSum.value.toString())
-            Log.e("SUMVM","transum in viewModel saveCustName name is "+custName.value.toString()+"")
-           // updateSum(transSum.value!!)
-            Log.e("SUMVM","transum in viewModel navigate fun is "+transSum.value?.cust_name.toString()+"")
-
-    }
-    fun saveCustomerName(){
-        viewModelScope.launch {
-
-        }
     }
     fun updateTotalSum(){
         viewModelScope.launch {
@@ -129,7 +112,7 @@ class TransactionEditViewModel(
         this._navigateToDetail.value =null
     }
 
-    suspend fun delete_(idm: Int){
+    private suspend fun delete_(idm: Int){
         withContext(Dispatchers.IO){
             datasource2.deleteAnItemTransDetail(idm)
         }
@@ -146,11 +129,7 @@ class TransactionEditViewModel(
     fun onCloseDialog(){
         _showDialog.value = null
     }
-    fun onFramgentClosed(){
-        viewModelScope.launch {
-            saveCustName()
-        }
-    }
+
     fun onFragmentStart(){
 
     }

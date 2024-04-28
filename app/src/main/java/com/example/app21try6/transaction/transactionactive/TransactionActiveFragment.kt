@@ -65,7 +65,6 @@ class TransactionActiveFragment : Fragment() {
         }
         val adapter = TransactionActiveAdapter(ActiveClickListener {
             viewModel.onNavigatetoTransDetail(it.sum_id)
-            //Toast.makeText(context,it.sum_id.toString(),Toast.LENGTH_SHORT).show()
         }
             ,CheckBoxListenerTransActive{view, stok ->
             val cb = view as CheckBox
@@ -73,7 +72,6 @@ class TransactionActiveFragment : Fragment() {
             viewModel.onCheckBoxClicked(stok, cb.isChecked)
         }
         )
-
         binding.recyclerViewActiveTrans.adapter = adapter
         //adapter.submitList(dummyModel)
         viewModel.active_trans.observe(viewLifecycleOwner, Observer {
@@ -96,19 +94,17 @@ class TransactionActiveFragment : Fragment() {
             adapter.notifyDataSetChanged()
         })
 
-
-
         viewModel.navigateToTransEdit.observe(viewLifecycleOwner, Observer {
-         if(it==-1){
-             this.findNavController().navigate(TransactionActiveFragmentDirections.actionTransactionActiveFragmentToTransactionEditFragment(-1))
-            viewModel.onNavigatedToTransEdit()
+            it?.let {
+            // this.findNavController().navigate(TransactionActiveFragmentDirections.actionTransactionActiveFragmentToTransactionEditFragment(it))
+            //viewModel.onNavigatedToTransEdit()
           }
         })
         viewModel.navigateToTransDetail.observe(viewLifecycleOwner, Observer {
             it?.let {
-
+                //Toast.makeText(context,it.toString(),Toast.LENGTH_SHORT).show()
                 this.findNavController().navigate(TransactionActiveFragmentDirections.actionTransactionActiveFragmentToTransactionDetailFragment(it))
-            viewModel.onNavigatedToTransDetail()
+                viewModel.onNavigatedToTransDetail()
             }
         })
         // Inflate the layout for this fragment

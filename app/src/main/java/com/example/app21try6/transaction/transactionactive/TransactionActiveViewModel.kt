@@ -23,8 +23,7 @@ class TransactionActiveViewModel(
     val datasource2: TransDetailDao
 ):AndroidViewModel(application){
     private val _navigateToTransEdit = MutableLiveData<Int>()
-    val navigateToTransEdit: LiveData<Int>
-        get() = _navigateToTransEdit
+    val navigateToTransEdit: LiveData<Int> get() = _navigateToTransEdit
     private val _navigateToTransDetail = MutableLiveData<Int>()
     val navigateToTransDetail: LiveData<Int>
         get() = _navigateToTransDetail

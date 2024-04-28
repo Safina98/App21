@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.database.SubProduct
 import com.example.app21try6.database.TransactionDetail
 import com.example.app21try6.databinding.TransactionEditItemListBinding
 import com.example.app21try6.formatRupiah
@@ -18,7 +17,9 @@ class TransactionEditAdapter(
         val plusTransClickListener: PlusTransClickListener,
         val subslongListener: SubsTransLongListener,
         val plusLongListener: PlusTransLongListener,
-        val longListener: TransEditLongListener)
+        val longListener: TransEditDeleteLongListener,
+        val priceLongListener:TransEditPriceLongListener
+    )
     :ListAdapter<TransactionDetail,TransactionEditAdapter.MyViewHolder>(TransEditDiffCallBack()){
     class MyViewHolder private constructor(val binding:TransactionEditItemListBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(
@@ -28,7 +29,8 @@ class TransactionEditAdapter(
                 plusTransClickListener: PlusTransClickListener,
                 subslongListener: SubsTransLongListener,
                 plusLongListener: PlusTransLongListener,
-                longListener: TransEditLongListener){
+                longListener: TransEditDeleteLongListener,
+                priceLongListener:TransEditPriceLongListener){
             binding.item = item
             binding.txtProductT.text = item.trans_item_name
             binding.textSellsT.text = item.qty.toString()
@@ -40,6 +42,7 @@ class TransactionEditAdapter(
             binding.subsLongListener = subslongListener
             binding.plusLongListener = plusLongListener
             binding.longListener = longListener
+            binding.priceLongListener = priceLongListener
             binding.executePendingBindings()
         }
         companion object{
@@ -54,7 +57,7 @@ class TransactionEditAdapter(
         return MyViewHolder.from(parent)
     }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-       holder.bind(getItem(position),clickListener,subsTransClickListener,plusTransClickListener,subslongListener,plusLongListener,longListener)
+       holder.bind(getItem(position),clickListener,subsTransClickListener,plusTransClickListener,subslongListener,plusLongListener,longListener,priceLongListener)
     }
 }
 class TransEditDiffCallBack: DiffUtil.ItemCallback<TransactionDetail>(){
@@ -71,7 +74,13 @@ class TransEditClickListener(val clickListener:(edit_trans: TransactionDetail)->
     fun onClick(edit_trans: TransactionDetail) = clickListener(edit_trans)
 
 }
-class TransEditLongListener(val longListener:(edit_trans: TransactionDetail)->Unit){
+class TransEditDeleteLongListener(val longListener:(edit_trans: TransactionDetail)->Unit){
+    fun onLongClick(v: View, edit_trans: TransactionDetail):Boolean{
+        longListener(edit_trans)
+        return true
+    }
+}
+class TransEditPriceLongListener(val longListener:(edit_trans: TransactionDetail)->Unit){
     fun onLongClick(v: View, edit_trans: TransactionDetail):Boolean{
         longListener(edit_trans)
         return true

@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,7 +17,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
-import com.example.app21try6.database.SummaryDatabase
 import com.example.app21try6.database.TransactionDetail
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionEditBinding
@@ -64,9 +62,13 @@ class TransactionEditFragment : Fragment() {
        }, PlusTransLongListener {
            code = Code.LONGPLUS
            viewModel.onShowDialog(it)
-       }, TransEditLongListener {
-           Toast.makeText(context,it.trans_item_name+" deleted",Toast.LENGTH_SHORT).show()
-           viewModel.delete(it.trans_detail_id)
+       }, TransEditDeleteLongListener {
+           //Toast.makeText(context,it.trans_item_name+" deleted",Toast.LENGTH_SHORT).show()
+           //viewModel.delete(it.trans_detail_id)
+           deleteDialog(it, viewModel)
+       }, TransEditPriceLongListener {
+           showDialog(it,viewModel,Code.TEXTPRICE)
+           Toast.makeText(context,it.trans_item_name+" price clicked",Toast.LENGTH_SHORT).show()
        })
        //TODO create custom adapter that shows or hide checkbox for delete purpose
        binding.recyclerViewEditTrans.adapter = adapter
@@ -88,7 +90,7 @@ class TransactionEditFragment : Fragment() {
        viewModel.navigateToVendible.observe(viewLifecycleOwner, Observer {
            if (it != null) {
                this.findNavController().navigate(TransactionEditFragmentDirections.actionTransactionEditFragmentToTransactionProductFragment(it))
-               viewModel.saveCustName()
+               viewModel.setCustomerName()
                viewModel.onNavigatedtoVendible()
 
            }
@@ -109,7 +111,7 @@ class TransactionEditFragment : Fragment() {
        viewModel.custName.observe(viewLifecycleOwner, Observer {
            it?.let{
                //viewModel.saveCustomerName()
-               viewModel.saveCustName()
+               viewModel.setCustomerName()
                Log.e("SUMVM","transum in viewModel navigate fun is "+it+"")
            }
        })
@@ -171,11 +173,24 @@ class TransactionEditFragment : Fragment() {
         alert.show()
 
     }
+    private fun deleteDialog(transactionDetail: TransactionDetail, viewModel: TransactionEditViewModel) {
+        val builder = AlertDialog.Builder(context)
+        builder.setMessage("Are you sure you want to Delete?")
+            .setCancelable(true)
+            .setPositiveButton("Yes") { dialog, id ->
+                viewModel.delete(transactionDetail.trans_detail_id)
+                Toast.makeText(context, "Deleted!!", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("No") { dialog, id ->
+                // Dismiss the dialog
+                dialog.dismiss()
+            }
+        val alert = builder.create()
+        alert.show()
+    }
 
     override fun onPause(){
         Toast.makeText(context,"onDestroy View Called",Toast.LENGTH_SHORT).show()
-        viewModel.onFramgentClosed()
         super.onPause()
-
     }
 }

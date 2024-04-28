@@ -397,10 +397,8 @@ fun insertCSVBatch(tokensList: List<List<String>>) {
                 }
             }
             _insertionCompleted.value = true
-            Log.i("Insert Csv", "Batch insertion successful")
         } catch (e: Exception) {
             Toast.makeText(getApplication(), e.toString(), Toast.LENGTH_LONG).show()
-            Log.e("Insert Csv", "Batch insertion error: $e")
         }finally {
             _isLoading.value = false // Hide loading indicator
         }

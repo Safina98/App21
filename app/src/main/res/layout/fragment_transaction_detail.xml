@@ -91,6 +91,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Kirim"
+                    android:onClick="@{()->viewModel.onKirimBtnClick()}"
                     android:layout_marginLeft="4dp"
                     android:layout_marginRight="4dp"/>
                 <Button

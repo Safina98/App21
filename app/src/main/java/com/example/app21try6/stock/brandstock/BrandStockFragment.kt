@@ -43,7 +43,7 @@ class BrandStockFragment : Fragment() {
     private val PERMISSION_REQUEST_CODE = 200
     val requestcode = 1
     private val viewModel:BrandStockViewModel by viewModels()
-
+/*
     var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
@@ -60,7 +60,36 @@ class BrandStockFragment : Fragment() {
             }
         }
     }
-            override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+ */
+    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        Log.i("Insert Csv", "result Launcher")
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            var isFirstLine = true
+            Log.i("InsertCsv", "result Launcher if " + data?.data?.path.toString())
+            val tokensList = mutableListOf<List<String>>()
+            try {
+                context?.contentResolver?.openInputStream(data!!.data!!)?.bufferedReader()
+                    ?.forEachLine { line ->
+                        if (!isFirstLine) {
+                            val tokens: List<String> = line.split(",")
+                            tokensList.add(tokens)
+                        }
+                        isFirstLine = false
+                    }
+                viewModel.insertCSVBatch(tokensList)
+            } catch (e: java.lang.Exception) {
+                Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
+                Log.e("Insert Csv", "Error reading CSV: $e")
+            }
+
+        }
+    }
+
+
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
                 binding = DataBindingUtil.inflate(inflater,R.layout.fragment_brand_stock,container,false)
                 val application = requireNotNull(this.activity).application
@@ -113,17 +142,6 @@ class BrandStockFragment : Fragment() {
                     adapter.submitList(it.sortedBy { it.brand_name})
                     adapter.notifyDataSetChanged()
                 }
-/*
-              viewModel.itemCathPosition.observe(viewLifecycleOwner, Observer {t->
-                  viewModel.cathList.observe(viewLifecycleOwner, Observer {})
-                  h = t
-                  viewModel.all_brand_from_db.observe(viewLifecycleOwner, Observer {
-                      it?.let {
-                          if (h==t){
-                            adapter.submitList(it.sortedBy { it.brand_name})
-                            adapter.notifyDataSetChanged() } } }) })
-
- */
 
                 viewModel.addItem.observe(viewLifecycleOwner, Observer {
                     if (it==true){

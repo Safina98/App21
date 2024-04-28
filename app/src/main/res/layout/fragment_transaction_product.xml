@@ -7,30 +7,28 @@
         <variable
             name="viewModel"
             type="com.example.app21try6.transaction.transactionproduct.TransactionProductViewModel" />
-
     </data>
-
-
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="8dp"
         tools:context=".transaction.transactionselect.TransactionProductFragment">
-
-
-
-            <!-- TODO: Update blank fragment layout -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+        <Spinner
+            android:id="@+id/spinnerCategory"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            />
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/transproduct_rv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 />
-
-            <!--android:onClick="@{() -> vendibleViewModel.onAddItem()}"-->
-            <!--android:tint="@color/dark_green2"-->
-
-
-
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 </layout>
