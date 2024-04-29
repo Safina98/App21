@@ -32,7 +32,6 @@ class TransactionEditFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transaction_edit, container, false)
 
-
         val application = requireNotNull(this.activity).application
 
         val datasource1 = VendibleDatabase.getInstance(application).transSumDao
@@ -100,7 +99,6 @@ class TransactionEditFragment : Fragment() {
                showDialog(it, viewModel, code)
            } else {
                // Hide the keyboard.
-           //TODO close keyboard when dialog closed
            }
        })
        viewModel.totalSum.observe(viewLifecycleOwner, Observer {
@@ -110,16 +108,36 @@ class TransactionEditFragment : Fragment() {
        })
        viewModel.custName.observe(viewLifecycleOwner, Observer {
            it?.let{
-               //viewModel.saveCustomerName()
                viewModel.setCustomerName()
-               Log.e("SUMVM","transum in viewModel navigate fun is "+it+"")
            }
        })
+       viewModel.isBtnBayarClicked.observe(viewLifecycleOwner){
+           if (it==true){
+               showBayarDialog()
+               viewModel.onBtnBayarClicked()
+           }
+       }
        // Inflate the layout for this fragment
        return binding.root
     }
 
+    private fun showBayarDialog(){
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Update")
+        val inflater = LayoutInflater.from(context)
+        val view = inflater.inflate(R.layout.update, null)
+        val textPrice = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
+        builder.setView(view)
+        builder.setPositiveButton("Update") { dialog, which ->
+            if(textPrice.text.toString().toIntOrNull()!=null){
+                viewModel.bayar(textPrice.text.toString().toInt())
 
+            }            }
+        builder.setNegativeButton("No") { dialog, which ->
+        }
+        val alert = builder.create()
+        alert.show()
+    }
     private fun showDialog(transactionDetail: TransactionDetail, viewModel: TransactionEditViewModel, code: Code) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle(code.text)

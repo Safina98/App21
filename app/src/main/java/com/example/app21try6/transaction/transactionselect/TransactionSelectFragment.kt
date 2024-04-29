@@ -11,11 +11,14 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.app21try6.R
+import com.example.app21try6.bookkeeping.editdetail.BookkeepingViewModel
 import com.example.app21try6.bookkeeping.vendiblelist.VendibleFragmentArgs
 import com.example.app21try6.database.SummaryDatabase
 import com.example.app21try6.database.TransactionDetail
@@ -28,7 +31,7 @@ import com.google.android.material.textfield.TextInputEditText
 
 class TransactionSelectFragment : Fragment() {
     private lateinit var binding:FragmentTransactionSelectBinding
-    private val viewModel :TransactionSelectViewModel by viewModels()
+    private lateinit var viewModel: TransactionSelectViewModel
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,44 +39,42 @@ class TransactionSelectFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_transaction_select,container,false)
         val application = requireNotNull(this.activity).application
-        val dataSource = SummaryDatabase.getInstance(application).summaryDbDao
         val dataSource1 = VendibleDatabase.getInstance(application).categoryDao
         val dataSource2 = VendibleDatabase.getInstance(application).productDao
-        val dataSource3 = VendibleDatabase.getInstance(application).brandDao
         val dataSource4 = VendibleDatabase.getInstance(application).subProductDao
-        val dataSource5 = VendibleDatabase.getInstance(application).transSumDao
         val dataSource6 = VendibleDatabase.getInstance(application).transDetailDao
         val date= arguments?.let { VendibleFragmentArgs.fromBundle(it).date }
         var datee  = date!!.toMutableList()
-        val viewModelFactory = TransactionSelectViewModelFactory(date[0].toInt()!!,dataSource1,dataSource2,dataSource3,dataSource4,date,dataSource5,dataSource6,application)
-        val viewModel = ViewModelProvider(this, viewModelFactory).get(TransactionSelectViewModel::class.java)
 
+        val viewModelFactory = TransactionSelectViewModelFactory(date[0].toInt()!!,dataSource1,dataSource2,dataSource4,date,dataSource6,application)
+        val viewModel = ViewModelProvider(this, viewModelFactory).get(TransactionSelectViewModel::class.java)
+         
+        /*
+        viewModel = ViewModelProvider(requireActivity(), TransactionSelectViewModelFactory(date[0].toInt()!!,dataSource1,dataSource2,dataSource4,date,dataSource6,application))
+            .get(TransactionSelectViewModel::class.java)
+
+         */
         var code: Code = Code.ZERO
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         val adapter = TransactionSelectAdapter(
             PlusSelectListener {
-                               it.qty = it.qty+1
-               // Toast.makeText(context, it.qty.toString(), Toast.LENGTH_SHORT).show()
+                it.qty = it.qty+1
                 viewModel.updateTransDetail(it)
 
         }, SubsSelectListener {
                 it.qty = it.qty-1
-                //Toast.makeText(context, it.qty.toString(), Toast.LENGTH_SHORT).show()
                 viewModel.updateTransDetail(it)
         },
             CheckBoxSelectListener{view:View, trans:TransSelectModel ->
                 val cb = view as CheckBox
-               // trans.is_selected  = cb.isChecked
                 viewModel.onCheckBoxClicked(trans,cb.isChecked)
             },
             PlusSelectLongListener {
-               // Toast.makeText(context,it.toString(),Toast.LENGTH_SHORT).show()
                 code = Code.LONGPLUS
                 viewModel.onShowDialog(it)
             },
             SubsSelectLongListener {
-                //Toast.makeText(context,it.toString(),Toast.LENGTH_SHORT).show()
                 code = Code.LONGSUBS
                 viewModel.onShowDialog(it)
             }
@@ -84,6 +85,31 @@ class TransactionSelectFragment : Fragment() {
             adapter.notifyDataSetChanged()
         }
         })
+        binding.searchBarSub.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                // Handle submit action if needed
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { query ->
+                    viewModel.trans_select_model.observe(viewLifecycleOwner, Observer { list ->
+                        list?.let { items ->
+                            // Filter the list based on the query
+                            val filteredList = items.filter { item ->
+                                // Customize your filtering logic here
+                                item.item_name.contains(query, ignoreCase = true) // Example: Filter based on item containing the query
+                            }
+                            // Update the adapter with the filtered list
+                            adapter.submitList(filteredList)
+                        }
+                    })
+                }
+                // Return true to indicate the event was handled
+                return true
+            }
+        })
+
         viewModel.showDialog.observe(viewLifecycleOwner, Observer {
             if (it!=null){
                 showDialog(it,viewModel,code)
@@ -94,11 +120,13 @@ class TransactionSelectFragment : Fragment() {
         })
         return binding.root
     }
-
+/*
     override fun onDestroyView() {
         super.onDestroyView()
         viewModel.unCheckedAllSubs()
     }
+
+ */
 
     private fun showDialog(transSelectModel: TransSelectModel, viewModel: TransactionSelectViewModel, code: Code) {
         val builder = AlertDialog.Builder(context)
@@ -132,18 +160,13 @@ class TransactionSelectFragment : Fragment() {
 
                 }
                 Code.LONGPLUS -> {
-                    //viewModel.updateTransDetail(transactionDetail, v.toDouble())
-                    //viewModel.updateTransDetail(transSelectModel,v.toDouble())
                     transSelectModel.qty = transSelectModel.qty +v.toDouble()
-                    // viewModel.updateTransDetail(transSelectModel,v.toDouble()*-
                     viewModel.updateTransDetail(transSelectModel)
 
                 }
                 Code.TEXTITEM -> {
-                    //viewModel.updateTransDetailItemName(transactionDetail, v)
                 }
                 Code.TEXTPRICE -> {
-                    //viewModel.updateTransDetailItemPrice(transactionDetail, v.toInt())
                 }
             }
             imm.hideSoftInputFromWindow(view?.windowToken, 0)
@@ -162,5 +185,20 @@ class TransactionSelectFragment : Fragment() {
         alert.show()
 
     }
+    private fun filterList(query: String) {
+        viewModel.trans_select_model.value?.let { list ->
+            // Filter the list based on the query
+            val filteredList = mutableListOf<TransSelectModel>()
+            for (item in list) {
+                // Customize your filtering logic here
+                if (item.item_name.contains(query, ignoreCase = true)) {
+                    filteredList.add(item)
+                }
+            }
+            // Update the adapter with the filtered list
+            //adapter.submitList(filteredList)
+        }
+    }
+
 
 }

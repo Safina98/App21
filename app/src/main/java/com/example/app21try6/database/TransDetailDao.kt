@@ -25,6 +25,7 @@ interface TransDetailDao {
     @Query("SELECT  IFNULL(SUM(total_price),0.0)  FROM TRANS_DETAIL_TABLE WHERE sum_id =:sum_id_ ")
     fun getTotalTrans(sum_id_: Int):LiveData<Double>
 
+
     @Query("DELETE  FROM trans_detail_table WHERE sum_id =:sum_id_")
     fun deleteATransDetail(sum_id_:Int)
 

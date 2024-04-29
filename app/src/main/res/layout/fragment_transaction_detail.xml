@@ -16,93 +16,85 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".transaction.transactiondetail.TransactionDetailFragment">
-<androidx.core.widget.NestedScrollView
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:id="@+id/nested"
-    app:layout_constraintBottom_toTopOf="@+id/cardView"
-    app:layout_constraintTop_toTopOf="parent">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        >
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="vertical">
             <TextView
+                android:id="@+id/txt_cust_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.trans_sum.cust_name}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 android:textAlignment="viewEnd"
                 android:textSize="24sp" />
             <!--  android:text="@{viewModel.trans_sum.cust_name}" -->
             <!-- android:textColor="@color/dark_green3"-->
             <TextView
+                android:id="@+id/txt_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="viewEnd"
                 android:text="@{viewModel.trans_sum.trans_date}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_cust_name"
                 android:textSize="24sp" />
-            <!--  android:text="@{viewModel.trans_sum.trans_date}" -->
-            <!-- android:textColor="@color/dark_green3"-->
-        </LinearLayout>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView_detail_trans"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txt_date"
+            app:layout_constraintStart_toStartOf="parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
         <TextView
+            android:id="@+id/txt_total_sum"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="viewEnd"
             android:text="@{viewModel.trans_total}"
-            android:textSize="24sp" />
-        <!-- android:text="@{Converter3.decimalToText(viewModel.trans_sum.total_trans)}"-->
-        <!-- android:textColor="@color/dark_green3"-->
-    </LinearLayout>
-
-</androidx.core.widget.NestedScrollView>
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/recyclerView_detail_trans"
+            android:textSize="36sp" />
+        <TextView
+            android:id="@+id/txt_bayar_sum"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-
-            app:layout_constraintBottom_toBottomOf="parent">
-            <!--app:cardBackgroundColor="@color/grey_green"-->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+            android:textAlignment="viewEnd"
+            android:text="@{viewModel.bayar}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txt_total_sum"
+            app:layout_constraintBottom_toTopOf="@+id/btn_edit_trans"
+            android:textSize="36sp" />
                 <Button
                     android:id="@+id/btn_edit_trans"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_weight="1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_kirim"
                     android:onClick="@{() -> viewModel.onNavigateToEdit()}"
                     android:text="Edit" />
                 <!-- android:onClick="@{()->viewModel.onNavigateToEdit(0)}"  -->
                 <Button
+                    android:id="@+id/btn_kirim"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_weight="1"
                     android:text="Kirim"
                     android:onClick="@{()->viewModel.onKirimBtnClick()}"
                     android:layout_marginLeft="4dp"
+                    app:layout_constraintEnd_toStartOf="@id/btn_cetak"
+                    app:layout_constraintStart_toEndOf="@id/btn_edit_trans"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_marginRight="4dp"/>
                 <Button
+                    android:id="@+id/btn_cetak"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_weight="1"
+                    app:layout_constraintStart_toEndOf="@id/btn_kirim"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     android:text="Cetak" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

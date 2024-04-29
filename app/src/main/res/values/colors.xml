@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="primaryColor">#000000</color>
+    <color name="primaryLightColor">#000000</color>
+    <color name="primaryDarkColor">#000000</color>
+    <color name="secondaryColor">#6A6670</color>
+    <color name="secondaryLightColor">#7F7B86</color>
+    <color name="secondaryDarkColor">#FFFFFF</color>
+    <color name="primaryTextColor">#FFFFFF</color>
+    <color name="secondaryTextColor">#000000</color>
+
+    <!--
     <color name="primaryColor">#586648</color>
     <color name="primaryLightColor">#576F58</color>
     <color name="primaryDarkColor">#393C36</color>
@@ -8,6 +18,8 @@
     <color name="secondaryDarkColor">#277C8500</color>
     <color name="primaryTextColor">#ffffff</color>
     <color name="secondaryTextColor">#000000</color>
+
+    -->
 
 
     <color name="purple_200">#FFBB86FC</color>

@@ -12,6 +12,106 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".transaction.transactionedit.TransactionEditFragment">
+                <EditText
+                    android:id="@+id/cust_name_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@={viewModel.custName}"
+                    android:textAlignment="viewEnd"
+                    android:textSize="24sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    />
+                <!--   -->
+                <!-- android:textColor="@color/dark_green3"-->
+                <TextView
+                    android:id="@+id/txt_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="viewEnd"
+                    android:text="@{viewModel.transSum.trans_date}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/cust_name_edit"
+                    android:textSize="24sp" />
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView_edit_trans"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_date"
+                app:layout_constraintBottom_toTopOf="@+id/txt_total_sum"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                    <TextView
+                        android:id="@+id/txt_total_sum"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/alegreya_sc"
+                        android:text="@{viewModel.trans_total}"
+                        app:layout_constraintEnd_toStartOf="@+id/btn_add_new_item"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toTopOf="@+id/btn_bayar"
+                        android:textSize="36sp" />
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/btn_add_new_item"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end|bottom"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toTopOf="@+id/btn_selesai"
+                        android:onClick="@{()->viewModel.onNavigatetoVendible()}"
+                        android:src="@drawable/ic_baseline_add_circle_outline_24" />
+
+                <Button
+                    android:id="@+id/btn_bayar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Bayar"
+                    android:layout_marginBottom="0dp"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_add_new_item"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/btn_selesai"
+                    android:onClick="@{()->viewModel.onBtnBayarClick()}"
+                    />
+
+                <Button
+                    android:id="@+id/btn_selesai"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Selesai"
+                    android:layout_marginTop="0dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:onClick="@{()->viewModel.onNavigatetoDetail(0)}"
+                   />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
+<!--
+
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.app21try6.transaction.transactionedit.TransactionEditViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".transaction.transactionedit.TransactionEditFragment">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,73 +130,75 @@
                     android:text="@={viewModel.custName}"
                     android:textAlignment="viewEnd"
                     android:textSize="24sp" />
-                <!--   -->
-                <!-- android:textColor="@color/dark_green3"-->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAlignment="viewEnd"
-                    android:text="@{viewModel.transSum.trans_date}"
-                    android:textSize="24sp" />
-                <!--  -->
-                <!-- android:textColor="@color/dark_green3"-->
-            </LinearLayout>
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView_edit_trans"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-        </LinearLayout>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView"
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:layout_gravity="bottom"
-            
-            app:layout_constraintBottom_toBottomOf="parent">
-<!--app:cardBackgroundColor="@color/grey_green"-->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+<TextView
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:textAlignment="viewEnd"
+android:text="@{viewModel.transSum.trans_date}"
+android:textSize="24sp" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
+    </LinearLayout>
+<androidx.recyclerview.widget.RecyclerView
+android:id="@+id/recyclerView_edit_trans"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+    </LinearLayout>
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="70dp"
-                        android:layout_weight="1"
-                        android:fontFamily="@font/alegreya_sc"
-                        android:text="@{viewModel.trans_total}"
-                        android:textSize="48sp" />
-                    <!-- android:text="@{viewModel.trans_total}"-->
-<!--android:textColor="@color/black"-->
-                    <com.google.android.material.floatingactionbutton.FloatingActionButton
-                        android:id="@+id/btn_add_new_item"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end|bottom"
-                        android:layout_marginLeft="0dp"
-                        android:layout_marginTop="0dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:onClick="@{()->viewModel.onNavigatetoVendible()}"
-                        android:src="@drawable/ic_baseline_add_circle_outline_24" />
-                    <!--   android:onClick="@{()->viewModel.onNavigatetoVendible()}"  -->
-                </LinearLayout>
+<androidx.cardview.widget.CardView
+android:id="@+id/cardView"
+android:layout_width="match_parent"
+android:layout_height="120dp"
+android:layout_gravity="bottom"
+app:layout_constraintBottom_toBottomOf="parent">
 
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Selesai"
-                    android:onClick="@{()->viewModel.onNavigatetoDetail(0)}"
-                   />
-                <!--  android:onClick="@{()->viewModel.onNavigatetoDetail(0)}" -->
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/alegreya_sc"
+            android:text="@{viewModel.trans_total}"
+            android:textSize="48sp" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_add_new_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:onClick="@{()->viewModel.onNavigatetoVendible()}"
+            android:src="@drawable/ic_baseline_add_circle_outline_24" />
+    </LinearLayout>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bayar"
+        android:onClick="@{()->viewModel.onNavigatetoDetail(0)}"
+        />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Selesai"
+        android:onClick="@{()->viewModel.onNavigatetoDetail(0)}"
+        />
+</LinearLayout>
+</androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
+    </layout>
+
+-->

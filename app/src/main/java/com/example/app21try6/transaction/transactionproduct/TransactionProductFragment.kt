@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -17,11 +17,13 @@ import com.example.app21try6.bookkeeping.vendiblelist.VendibleFragmentArgs
 import com.example.app21try6.database.SummaryDatabase
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionProductBinding
+import com.example.app21try6.transaction.transactionselect.TransactionSelectViewModel
+import com.example.app21try6.transaction.transactionselect.TransactionSelectViewModelFactory
 
 
 class TransactionProductFragment : Fragment() {
     private lateinit var binding : FragmentTransactionProductBinding
-
+    private lateinit var viewModel: TransactionSelectViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,15 +41,26 @@ class TransactionProductFragment : Fragment() {
         val dataSource6 = VendibleDatabase.getInstance(application).transDetailDao
         val date= arguments?.let { VendibleFragmentArgs.fromBundle(it).date }
         var datee  = date!!.toMutableList()
-        val viewModelFactory = TransactionProductViewModelFactory(date[0].toInt()!!,dataSource1,dataSource2,dataSource3,dataSource4,date,dataSource5,dataSource6,application)
-        val viewModel = ViewModelProvider(this, viewModelFactory).get(TransactionProductViewModel::class.java)
+
+        val viewModelFactory = TransactionSelectViewModelFactory(date[0].toInt()!!,dataSource1,dataSource2,dataSource4,date,dataSource6,application)
+        val viewModel = ViewModelProvider(this, viewModelFactory).get(TransactionSelectViewModel::class.java)
+
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         val adapter = TransactionProductAdapter(ProductTransListener {
             viewModel.onNavigatetoTransSelect(it.product_id.toString())
-            //Toast.makeText(context,it.toString(),Toast.LENGTH_SHORT).show()
         })
         binding.transproductRv.adapter  = adapter
+        binding.searchBarProduct.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
+            }
+            override fun onQueryTextChange(newText: String?): Boolean {
+                viewModel.filterProduct(newText)
+                return true
+            }
+        })
+
 
         binding.spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {

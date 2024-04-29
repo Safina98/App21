@@ -1,6 +1,7 @@
 package com.example.app21try6.transaction.transactiondetail
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -27,10 +28,15 @@ class TransactionDetailViewModel (application: Application,
     val trans_total_ = datasource2.getTotalTrans(id)
     val trans_total: LiveData<String> = Transformations.map(trans_total_) { formatRupiah(it).toString() }
     private val _sendReceipt = MutableLiveData<Boolean>()
+    var bayar = formatRupiah(trans_sum.value?.paid?.toDouble())
     val sendReceipt:LiveData<Boolean> get() = _sendReceipt
 
     fun onNavigateToEdit(){_navigateToEdit.value = id}
     fun onNavigatedToEdit(){this._navigateToEdit.value = null}
+
+    init {
+
+    }
 
 /*
 

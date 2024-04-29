@@ -24,13 +24,10 @@ class TransactionProductViewModel(val sum_id:Int,
 ): AndroidViewModel(application) {
     private var _allProduct = MutableLiveData<List<Product>>()
     val allProduct :LiveData<List<Product>> get() = _allProduct
-    //val allProduct  = database2.getAllProduct()
     private var _categoryEntries = MutableLiveData<List<String>>()
     val categoryEntries : LiveData<List<String>> get() = _categoryEntries
-    var selectedCategoryId = MutableLiveData<Int>()
     private val _navigateToTransSelect = MutableLiveData<Array<String>>()
-    val navigateToTransSelect: LiveData<Array<String>>
-        get() = _navigateToTransSelect
+    val navigateToTransSelect: LiveData<Array<String>> get() = _navigateToTransSelect
     private val _selectedKategoriSpinner = MutableLiveData<String>()
     val selectedKategoriSpinner: LiveData<String> get() = _selectedKategoriSpinner
 
@@ -52,11 +49,6 @@ class TransactionProductViewModel(val sum_id:Int,
     private suspend fun getProductByCategory(category_id:Int?):List<Product>{
         return withContext(Dispatchers.IO){
             database2.getProductByCategory(category_id)
-        }
-    }
-    private suspend fun getAllProducts():List<Product>{
-        return withContext(Dispatchers.IO){
-            database2.getAllProducts()
         }
     }
 
