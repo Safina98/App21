@@ -143,12 +143,12 @@ class TransactionEditViewModel(
         this._navigateToDetail.value =null
     }
 
-    private suspend fun delete_(idm: Int){
+    private suspend fun delete_(idm: Long){
         withContext(Dispatchers.IO){
             datasource2.deleteAnItemTransDetail(idm)
         }
     }
-    fun delete(idm: Int){
+    fun delete(idm: Long){
         viewModelScope.launch {
           delete_(idm)
         }

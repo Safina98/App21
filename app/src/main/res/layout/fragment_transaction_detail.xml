@@ -39,9 +39,10 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView_detail_trans"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/txt_date"
+            app:layout_constraintBottom_toTopOf="@+id/txt_total_sum"
             app:layout_constraintStart_toStartOf="parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
         <TextView
@@ -51,11 +52,12 @@
             android:textAlignment="viewEnd"
             android:text="@{viewModel.trans_total}"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/txt_bayar_sum"
             app:layout_constraintTop_toBottomOf="@id/recyclerView_detail_trans"
             android:textSize="36sp" />
         <TextView
             android:id="@+id/txt_bayar_sum"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="viewEnd"
             android:text="@{viewModel.bayar}"
@@ -63,21 +65,37 @@
             app:layout_constraintTop_toBottomOf="@id/txt_total_sum"
             app:layout_constraintBottom_toTopOf="@+id/btn_edit_trans"
             android:textSize="36sp" />
-                <Button
-                    android:id="@+id/btn_edit_trans"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/btn_kirim"
-                    android:onClick="@{() -> viewModel.onNavigateToEdit()}"
-                    android:text="Edit" />
-                <!-- android:onClick="@{()->viewModel.onNavigateToEdit(0)}"  -->
-                <Button
+
+        <Button
+            android:id="@+id/btn_add_new_brand_"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:onClick="@{()->viewModel.updateBooleanValue()}"
+            android:contentDescription="@string/submit"
+            app:layout_constraintBottom_toTopOf="@+id/btn_edit_trans"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txt_total_sum"
+            app:buttonColor="@{viewModel.trans_sum.is_taken_}" />
+
+
+        <!-- android:onClick="@{()->viewModel.onNavigateToEdit(0)}"  -->
+
+        <Button
+            android:id="@+id/btn_edit_trans"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="@{() -> viewModel.onNavigateToEdit()}"
+            android:text="Edit"
+            app:layout_constraintBaseline_toBaselineOf="@+id/btn_kirim"
+            app:layout_constraintEnd_toStartOf="@+id/btn_kirim"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
                     android:id="@+id/btn_kirim"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Kirim"
                     android:onClick="@{()->viewModel.onKirimBtnClick()}"
@@ -88,8 +106,8 @@
                     android:layout_marginRight="4dp"/>
                 <Button
                     android:id="@+id/btn_cetak"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     app:layout_constraintStart_toEndOf="@id/btn_kirim"
                     app:layout_constraintBottom_toBottomOf="parent"

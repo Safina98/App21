@@ -95,7 +95,7 @@ class TransactionProductFragment : Fragment() {
         }
 
         viewModel.allProduct.observe(viewLifecycleOwner, Observer {
-            adapter.submitList(it.sortedBy { it.cath_code })
+            adapter.submitList(it.sortedBy { it.product_name })
         })
 
         viewModel.navigateToTransSelect.observe(viewLifecycleOwner, Observer {

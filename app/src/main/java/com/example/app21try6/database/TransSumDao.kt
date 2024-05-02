@@ -34,8 +34,8 @@ interface TransSumDao {
     @Query("SELECT * FROM trans_sum_table")
     fun getAllTransSum():LiveData<List<TransactionSummary>>
 
-    @Query("SELECT * FROM trans_sum_table WHERE is_paid_off = 0 OR is_taken = 0")
-    fun getActiveSum():LiveData<List<TransactionSummary>>
+    @Query("SELECT * FROM trans_sum_table WHERE  is_taken = :bool")
+    fun getActiveSum(bool:Boolean):LiveData<List<TransactionSummary>>
 
     @Query("SELECT cust_name FROM trans_sum_table WHERE sum_id = :sum_id_")
     suspend fun getCustName(sum_id_:Int):String

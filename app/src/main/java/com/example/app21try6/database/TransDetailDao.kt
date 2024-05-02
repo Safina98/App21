@@ -3,6 +3,7 @@ package com.example.app21try6.database
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.app21try6.bookkeeping.summary.ListModel
@@ -17,8 +18,13 @@ interface TransDetailDao {
     @Update
     fun update(transactionDetail: TransactionDetail)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertN(transactionDetail: TransactionDetail):Long
+
     @Query("SELECT * FROM trans_detail_table WHERE sum_id =:sum_id_")
     fun selectATransDetail(sum_id_:Int):LiveData<List<TransactionDetail>>
+
+
 
     //@Query("SELECT SUM(total_income) FROM SUMMARY_TABLE  WHERE year = :year_ AND month = :month_ AND day = :day_ ")
 
@@ -30,7 +36,7 @@ interface TransDetailDao {
     fun deleteATransDetail(sum_id_:Int)
 
     @Query("DELETE FROM trans_detail_table WHERE trans_detail_id=:trans_detail_id ")
-    fun deleteAnItemTransDetail(trans_detail_id:Int)
+    fun deleteAnItemTransDetail(trans_detail_id:Long)
 
     @Query("DELETE FROM trans_detail_table WHERE sum_id = :sum_id and trans_item_name =:name ")
     fun deteleAnItemTransDetailSub(sum_id:Int,name:String)

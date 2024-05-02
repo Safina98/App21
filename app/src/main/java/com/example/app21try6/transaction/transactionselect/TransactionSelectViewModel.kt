@@ -3,11 +3,9 @@ package com.example.app21try6.transaction.transactionselect
 import android.annotation.SuppressLint
 import android.app.Application
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
@@ -58,7 +56,7 @@ class TransactionSelectViewModel(
     fun incrementQuantity(trans: TransSelectModel) {
        // trans.qty++
         viewModelScope.launch {
-            trans.trans_detail_id = getLastInsertedIdFormBD() ?: -1
+            //trans.trans_detail_id = getLastInsertedIdFormBD() ?:
             Log.i("CHECKBOXPROB","incrementQuantity: $trans")
             updateTransDetaill(trans)
         }
@@ -66,7 +64,7 @@ class TransactionSelectViewModel(
     fun checkBoxClicked(trans: TransSelectModel) {
         // trans.qty++
         viewModelScope.launch {
-            trans.trans_detail_id = getLastInsertedIdFormBD() ?: -1
+           // trans.trans_detail_id = getLastInsertedIdFormBD() ?: -1
             Log.i("CHECKBOXPROB","incrementQuantity: $trans")
             updateTransDetaill(trans)
         }
@@ -99,58 +97,65 @@ class TransactionSelectViewModel(
            var list = withContext(Dispatchers.IO){
                database6.getSubProductM(productId,_sumId.value ?: 0)
            }
-            Log.i("CHECKBOXPROB","getTransModel: $list")
+            Log.i("DataProb","updateTransDetail $list")
             transSelectModel.value = list
         }
     }
     /////////////////////////////////////old functions///////////////////////////////////////////
     fun setProductId(id:Int){
         _productId.value = id
-        Log.i("CHECKBOXPROB","set product id : $id")
+        Log.i("DataProb","setProductId $id")
     }
     fun setProductSumId(id:Int?){
         if (id!=null)
         { _sumId.value = id!!
-            Log.i("CHECKBOXPROB","set Sum id: $id")
+            Log.i("DataProb","setSumId $id")
         }
     }
 
     fun updateTransDetail(s:TransSelectModel){
         viewModelScope.launch {
             var t = converter(s)
-           // t.trans_detail_id = s.trans_detail_id
-            t.trans_detail_id = getLastInsertedIdFormBD() ?:-1
-            _updateTransDetail(t)
-            Log.i("CHECKBOXPROB","Update trans Detail: "+t.toString())
+            var id =s.trans_detail_id
+            if (id==0L) id = insertDetailToDBandGetId(t) else _updateTransDetail(t)
+
+            s.trans_detail_id  = id ?: -1L
+            updateTransDetaill(s)
         }
     }
     fun converter(s:TransSelectModel): TransactionDetail {
         var t = TransactionDetail()
         t.sum_id = sum_id
+        t.trans_detail_id = s.trans_detail_id
         t.qty = s.qty
         t.total_price = s.qty*s.item_price
         t.trans_item_name = s.item_name
         t.trans_price = s.item_price
         return t
-        Log.i("CHECKBOXPROB","converter: "+t.toString())
     }
 
     fun onCheckBoxClicked(s:TransSelectModel,boolean: Boolean){
         viewModelScope.launch {
-            //checkedSub(s.item_name,if (boolean) 1 else 0)
             s.is_selected = boolean
             if (boolean == true) {
-                insertTransDetail(s)
-                var id = getLastInsertedIdFormBD()
-                s.trans_detail_id  = id ?:-1
-                Log.i("CHECKBOXPROB","on checkBox clicked : $s")
-                updateTransDetaill(s)
+                var t = converter(s)
+               // var id = getLastInsertedIdFormBD()
+                try {
+                    var id = insertDetailToDBandGetId(t)
+                    s.trans_detail_id  = id ?: -1L
+                     updateTransDetaill(s)
+                }catch (e:Exception)
+                {
+                    Log.i("DataProb",e.toString())
+                }
             }
-
-            else{delete(s)}
-
         }
 
+    }
+    private suspend fun insertDetailToDBandGetId(t:TransactionDetail):Long{
+       return withContext(Dispatchers.IO){
+            database6.insertN(t)
+        }
     }
     private suspend fun checkedSub(name:String,bool:Int){
         withContext(Dispatchers.IO){
@@ -172,8 +177,8 @@ class TransactionSelectViewModel(
     fun insertTransDetail(s:TransSelectModel){
         viewModelScope.launch {
             var t = converter(s)
+            Log.i("DataProb","insertTransDetail $t")
             _insertTransDetail(t)
-            Log.i("CHECKBOXPROB","is : $s")
 
         }
     }
@@ -196,7 +201,6 @@ class TransactionSelectViewModel(
     }
     fun unCheckedAllSubs(){
         viewModelScope.launch {
-            Log.i("CHECKBOXPROB","unCheckedAllSubs called")
             uncheckedAllSubs_()
         }
     }
@@ -258,10 +262,11 @@ class TransactionSelectViewModel(
         _navigateToTransSelect.value =null
     }
 
+    @SuppressLint("NullSafeMutableLiveData")
     override fun onCleared() {
-        Log.i("CHECKBOXPROB","onCleared called")
-        unCheckedAllSubs()
+      //  unCheckedAllSubs()
         super.onCleared()
+
     }
 
 

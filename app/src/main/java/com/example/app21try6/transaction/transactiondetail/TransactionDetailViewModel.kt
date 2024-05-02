@@ -6,11 +6,16 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.viewModelScope
 import com.example.app21try6.Converter3.decimalToText
 import com.example.app21try6.database.TransDetailDao
 import com.example.app21try6.database.TransSumDao
 import com.example.app21try6.database.TransactionDetail
+import com.example.app21try6.database.TransactionSummary
 import com.example.app21try6.formatRupiah
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -28,16 +33,29 @@ class TransactionDetailViewModel (application: Application,
     val trans_total_ = datasource2.getTotalTrans(id)
     val trans_total: LiveData<String> = Transformations.map(trans_total_) { formatRupiah(it).toString() }
     private val _sendReceipt = MutableLiveData<Boolean>()
-    var bayar = formatRupiah(trans_sum.value?.paid?.toDouble())
+    var bayar :LiveData<String> = Transformations.map(trans_sum) { formatRupiah(it.paid.toDouble()).toString() }
+    //var bayar = formatRupiah(trans_sum.value?.paid?.toDouble())
     val sendReceipt:LiveData<Boolean> get() = _sendReceipt
 
     fun onNavigateToEdit(){_navigateToEdit.value = id}
     fun onNavigatedToEdit(){this._navigateToEdit.value = null}
+    private val _booleanValue = MutableLiveData<Boolean>()
 
-    init {
 
+
+    fun updateBooleanValue() {
+       viewModelScope.launch {
+           var transSum = trans_sum.value
+          transSum?.is_taken_ = transSum?.is_taken_?.not() ?: true
+           transSum?.let { updataTransSumDB(it) }
+           Log.i("DataProb","updateBooleanValue: $transSum")
+       }
     }
-
+    private suspend fun updataTransSumDB(transSum:TransactionSummary){
+        withContext(Dispatchers.IO){
+            datasource1.update(transSum)
+        }
+    }
 /*
 
     fun generateReceiptText(): String {

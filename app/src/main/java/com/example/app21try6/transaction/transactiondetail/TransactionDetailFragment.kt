@@ -38,20 +38,6 @@ class TransactionDetailFragment : Fragment() {
     private lateinit var viewModel:TransactionDetailViewModel
     var receiptText=""
 
-    val requestPermissionLauncher =
-        registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) { isGranted: Boolean ->
-            if (isGranted) {
-                // Permission is granted. Continue the action or workflow in your
-                // app.
-                Toast.makeText(context,"permission granted",Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context,"permission denied",Toast.LENGTH_SHORT).show()
-
-            }
-        }
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -76,47 +62,28 @@ class TransactionDetailFragment : Fragment() {
 
         })
         binding.recyclerViewDetailTrans.adapter = adapter
-        receiptText = viewModel.generateReceiptTextNew()
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-
 
         binding.btnCetak.setOnClickListener {
             printReceipt()
-            /*
-
-            val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
-
-            if (bluetoothAdapter != null && bluetoothAdapter.isEnabled) {
-                val printerService = PrinterService(bluetoothAdapter)
-                val printerAddress = "DC:0D:30:27:4B:D4" // Replace with your printer's Bluetooth address
-                val textToPrint = viewModel.generateReceiptText()
-               // printText(bluetoothAdapter,printerAddress,textToPrint)
-                //printLongText(bluetoothAdapter,printerAddress,textToPrint)
-            } else {
-                // Bluetooth is either not supported or not enabled
-            }
-
-             */
         }
-
-
         viewModel.transDetail.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it)
         })
+
+        viewModel.trans_sum.observe(viewLifecycleOwner){
+            Log.i("DataProb","transum framgment: $it")
+        }
         viewModel.sendReceipt.observe(viewLifecycleOwner){
             if (it==true){
                 var exportedString=viewModel.generateReceiptText()
-
                 exportTextToWhatsApp(exportedString)
             }
         }
         viewModel.navigateToEdit.observe(viewLifecycleOwner, Observer {
             it?.let {
-                //Toast.makeText(context,id.toString(),Toast.LENGTH_SHORT).show()
                 this.findNavController().navigate(TransactionDetailFragmentDirections.actionTransactionDetailFragmentToTransactionEditFragment(id))
                 viewModel.onNavigatedToEdit()
-                //var exportedString=""
-                //exportTextToWhatsApp("Text successfully exported")
             }
         })
 
@@ -151,9 +118,7 @@ class TransactionDetailFragment : Fragment() {
     private fun printReceipt() {
         // Check if Bluetooth is enabled
         if (!bluetoothAdapter.isEnabled) {
-            // Request user to enable Bluetooth
-            val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-           // startActivityForResult(enableBluetoothIntent, REQUEST_ENABLE_BLUETOOTH)
+           Toast.makeText(context,"BLUETOOTH IS DISCONNECTED", Toast.LENGTH_SHORT).show()
         } else {
             // Discover and select printer device
             discoverAndSelectPrinter()
@@ -170,7 +135,6 @@ class TransactionDetailFragment : Fragment() {
                 Toast.makeText(context, "No printer found", Toast.LENGTH_SHORT).show()
                 return
             }
-            // For simplicity, let's select the first printer device found
             selectedPrinter = printerDevices.first()
             // Connect to the selected printer
             printerService = BluetoothPrinterService(selectedPrinter)
@@ -187,18 +151,10 @@ class TransactionDetailFragment : Fragment() {
     }
 
     private fun generateReceiptData(): ByteArray {
-        // Generate receipt data according to printer's specifications
-        // For example, let's assume a simple receipt format with text and line breaks
         receiptText = viewModel.generateReceiptTextNew()
         Log.i("PRINTB",receiptText)
         return receiptText.toByteArray()
     }
-
-
-
-
-
-
 
     private fun checkPermission(): Boolean {
         // checking of permissions.
@@ -231,7 +187,7 @@ class TransactionDetailFragment : Fragment() {
     }
 
     override fun onDestroy() {
-        printerService.disconnect()
+        //printerService.disconnect()
         super.onDestroy()
     }
 

@@ -8,6 +8,8 @@
     <color name="secondaryDarkColor">#FFFFFF</color>
     <color name="primaryTextColor">#FFFFFF</color>
     <color name="secondaryTextColor">#000000</color>
+    <color name="normal_button_color">#FF0000</color> <!-- Change to your desired normal button color -->
+    <color name="disabled_button_color">#808080</color>
 
     <!--
     <color name="primaryColor">#586648</color>

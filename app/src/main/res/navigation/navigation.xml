@@ -105,6 +105,9 @@
         <action
             android:id="@+id/action_transactionActiveFragment_to_transactionEditFragment"
             app:destination="@id/transactionEditFragment" />
+        <action
+            android:id="@+id/action_transactionActiveFragment_to_allTransactionsFragment"
+            app:destination="@id/allTransactionsFragment" />
     </fragment>
     <fragment
         android:id="@+id/transactionEditFragment"
@@ -151,4 +154,8 @@
             android:id="@+id/action_transactionProductFragment_to_transactionSelectFragment"
             app:destination="@id/transactionSelectFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/allTransactionsFragment"
+        android:name="com.example.app21try6.transaction.transactionall.AllTransactionsFragment"
+        android:label="AllTransactionsFragment" />
 </navigation>

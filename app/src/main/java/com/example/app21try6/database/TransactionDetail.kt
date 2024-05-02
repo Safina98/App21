@@ -3,7 +3,6 @@ package com.example.app21try6.database
 import androidx.room.*
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
 
@@ -17,7 +16,7 @@ import androidx.room.PrimaryKey
         ])
 data class TransactionDetail(
         @PrimaryKey(autoGenerate = true)
-        var trans_detail_id:Int = 0,
+        var trans_detail_id: Long = 0,
         @ColumnInfo(name="sum_id")
         var sum_id:Int = 0,
         @ColumnInfo(name = "trans_item_name")

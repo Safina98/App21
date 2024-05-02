@@ -2,7 +2,6 @@ package com.example.app21try6.transaction.transactionactive
 
 import android.app.Application
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -25,9 +24,12 @@ class TransactionActiveViewModel(
     private val _navigateToTransEdit = MutableLiveData<Int>()
     val navigateToTransEdit: LiveData<Int> get() = _navigateToTransEdit
     private val _navigateToTransDetail = MutableLiveData<Int>()
-    val navigateToTransDetail: LiveData<Int>
-        get() = _navigateToTransDetail
-   var active_trans = datasource1.getActiveSum()
+    val navigateToTransDetail: LiveData<Int> get() = _navigateToTransDetail
+
+    private val _navigateToAllTrans = MutableLiveData<Boolean>()
+    val navigatToAllTrans: LiveData<Boolean> get() = _navigateToAllTrans
+
+   var active_trans = datasource1.getActiveSum(false)
     val sdf = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT)
     val currentDate = sdf.format(Date())
 
@@ -111,6 +113,12 @@ class TransactionActiveViewModel(
     }
     fun onNavigatedToTransDetail(){
         this._navigateToTransDetail.value = null
+    }
+    fun onNavigateToAllTrans(){
+        _navigateToAllTrans.value=true
+    }
+    fun onNavigatedToAllTrans(){
+        _navigateToAllTrans.value=false
     }
 
 

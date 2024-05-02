@@ -62,16 +62,12 @@ class TransactionSelectFragment : Fragment() {
         binding.viewModel = viewModel
         val adapter = TransactionSelectAdapter(
             PlusSelectListener {
-
                 it.qty = it.qty+1
-                Log.i("CHECKBOXPROB","fragment plus listener "+it)
                 viewModel.updateTransDetail(it)
-                viewModel.incrementQuantity(it)
 
         }, SubsSelectListener {
                 it.qty = it.qty-1
                 viewModel.updateTransDetail(it)
-                viewModel.incrementQuantity(it)
         },
             CheckBoxSelectListener{view:View, trans:TransSelectModel ->
                 val cb = view as CheckBox
@@ -88,7 +84,8 @@ class TransactionSelectFragment : Fragment() {
         )
         binding.transselectRv.adapter = adapter
         viewModel.trans_select_model.observe(viewLifecycleOwner, Observer {it?.let {
-            adapter.submitList(it)
+            adapter.submitList(it.sortedBy { it.item_name })
+          //  Log.i("DataProb","fragment observe trans $it")
             adapter.notifyDataSetChanged()
         }
         })
@@ -158,9 +155,7 @@ class TransactionSelectFragment : Fragment() {
             var v = textKet.text.toString().toUpperCase().trim()
             when (code) {
                 Code.LONGSUBS -> {
-                    //viewModel.updateTransDetail(transactionDetail, (v.toDouble() * -1))
                     transSelectModel.qty = transSelectModel.qty -v.toDouble()
-                   // viewModel.updateTransDetail(transSelectModel,v.toDouble()*-1)
                     viewModel.updateTransDetail(transSelectModel)
 
                 }

@@ -2,6 +2,7 @@ package com.example.app21try6.transaction.transactionactive
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +19,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.R
 import com.example.app21try6.database.SummaryDatabase
 import com.example.app21try6.database.VendibleDatabase
@@ -68,22 +71,26 @@ class TransactionActiveFragment : Fragment() {
         }
             ,CheckBoxListenerTransActive{view, stok ->
             val cb = view as CheckBox
-            //stok.is_checked = cb.isChecked
             viewModel.onCheckBoxClicked(stok, cb.isChecked)
         }
         )
+        val displayMetrics = resources.displayMetrics
+        val screenWidthPx = displayMetrics.widthPixels
+        val itemWidthPx = resources.getDimensionPixelSize(R.dimen.rv_width) // Change this to the width of your item
+
+        val spanCount = screenWidthPx / itemWidthPx
         binding.recyclerViewActiveTrans.adapter = adapter
-        //adapter.submitList(dummyModel)
+        binding.recyclerViewActiveTrans.layoutManager = GridLayoutManager(context, spanCount, RecyclerView.VERTICAL, false)
+
         viewModel.active_trans.observe(viewLifecycleOwner, Observer {
             it?.let {
-               adapter.submitList(it)
-                adapter.notifyDataSetChanged()
+                adapter.submitList(it.sortedByDescending { it.sum_id })
             }
         })
 
         viewModel.is_image_clicked.observe(this.viewLifecycleOwner, Observer {
 
-           // Toast.makeText(context,""+it.toString(),Toast.LENGTH_SHORT).show()
+
             if (it == true) {
                 (binding.recyclerViewActiveTrans.adapter as TransactionActiveAdapter).isActive(it)
                 binding.btnAddNewTrans.visibility = View.GONE
@@ -100,14 +107,18 @@ class TransactionActiveFragment : Fragment() {
             //viewModel.onNavigatedToTransEdit()
           }
         })
+        viewModel.navigatToAllTrans.observe(viewLifecycleOwner, Observer {
+           if(it==true) {
+                this.findNavController().navigate(TransactionActiveFragmentDirections.actionTransactionActiveFragmentToAllTransactionsFragment())
+                viewModel.onNavigatedToAllTrans()
+            }
+        })
         viewModel.navigateToTransDetail.observe(viewLifecycleOwner, Observer {
             it?.let {
-                //Toast.makeText(context,it.toString(),Toast.LENGTH_SHORT).show()
                 this.findNavController().navigate(TransactionActiveFragmentDirections.actionTransactionActiveFragmentToTransactionDetailFragment(it))
                 viewModel.onNavigatedToTransDetail()
             }
         })
-        // Inflate the layout for this fragment
 
 
         return binding.root
