@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -44,27 +45,33 @@ class TransactionSelectFragment : Fragment() {
         val dataSource4 = VendibleDatabase.getInstance(application).subProductDao
         val dataSource6 = VendibleDatabase.getInstance(application).transDetailDao
         val date= arguments?.let { VendibleFragmentArgs.fromBundle(it).date }
+
         var datee  = date!!.toMutableList()
 
-        val viewModelFactory = TransactionSelectViewModelFactory(date[0].toInt()!!,dataSource1,dataSource2,dataSource4,date,dataSource6,application)
-        val viewModel = ViewModelProvider(this, viewModelFactory).get(TransactionSelectViewModel::class.java)
+        //val viewModelFactory = TransactionSelectViewModelFactory(date[0].toInt()!!,dataSource1,dataSource2,dataSource4,date,dataSource6,application)
+        //val viewModel = ViewModelProvider(this, viewModelFactory).get(TransactionSelectViewModel::class.java)
          
-        /*
+
         viewModel = ViewModelProvider(requireActivity(), TransactionSelectViewModelFactory(date[0].toInt()!!,dataSource1,dataSource2,dataSource4,date,dataSource6,application))
             .get(TransactionSelectViewModel::class.java)
-
-         */
+        var i = date!![1].toInt()
+        viewModel.setProductId(i)
+        Log.i("CHECKBOXPROB","selectFragment date: $date")
         var code: Code = Code.ZERO
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         val adapter = TransactionSelectAdapter(
             PlusSelectListener {
+
                 it.qty = it.qty+1
+                Log.i("CHECKBOXPROB","fragment plus listener "+it)
                 viewModel.updateTransDetail(it)
+                viewModel.incrementQuantity(it)
 
         }, SubsSelectListener {
                 it.qty = it.qty-1
                 viewModel.updateTransDetail(it)
+                viewModel.incrementQuantity(it)
         },
             CheckBoxSelectListener{view:View, trans:TransSelectModel ->
                 val cb = view as CheckBox
@@ -87,7 +94,6 @@ class TransactionSelectFragment : Fragment() {
         })
         binding.searchBarSub.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                // Handle submit action if needed
                 return true
             }
 
@@ -95,21 +101,20 @@ class TransactionSelectFragment : Fragment() {
                 newText?.let { query ->
                     viewModel.trans_select_model.observe(viewLifecycleOwner, Observer { list ->
                         list?.let { items ->
-                            // Filter the list based on the query
                             val filteredList = items.filter { item ->
-                                // Customize your filtering logic here
-                                item.item_name.contains(query, ignoreCase = true) // Example: Filter based on item containing the query
+                                item.item_name.contains(query, ignoreCase = true)
                             }
-                            // Update the adapter with the filtered list
                             adapter.submitList(filteredList)
                         }
                     })
                 }
-                // Return true to indicate the event was handled
                 return true
             }
         })
-
+        viewModel.productId.observe(viewLifecycleOwner){it?.let {
+            viewModel.getTransModel(it)
+        }
+        }
         viewModel.showDialog.observe(viewLifecycleOwner, Observer {
             if (it!=null){
                 showDialog(it,viewModel,code)
@@ -184,20 +189,6 @@ class TransactionSelectFragment : Fragment() {
         val alert = builder.create()
         alert.show()
 
-    }
-    private fun filterList(query: String) {
-        viewModel.trans_select_model.value?.let { list ->
-            // Filter the list based on the query
-            val filteredList = mutableListOf<TransSelectModel>()
-            for (item in list) {
-                // Customize your filtering logic here
-                if (item.item_name.contains(query, ignoreCase = true)) {
-                    filteredList.add(item)
-                }
-            }
-            // Update the adapter with the filtered list
-            //adapter.submitList(filteredList)
-        }
     }
 
 

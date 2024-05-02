@@ -89,6 +89,7 @@ class TransactionEditViewModel(
             mutableTransSum.value?.let { updateSum(it) }
         }
     }
+
     ////Suspend
     private suspend fun updateSum(transactionSummary: TransactionSummary){
         withContext(Dispatchers.IO){

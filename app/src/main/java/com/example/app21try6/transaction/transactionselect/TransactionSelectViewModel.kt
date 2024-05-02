@@ -2,9 +2,12 @@ package com.example.app21try6.transaction.transactionselect
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
@@ -22,14 +25,17 @@ class TransactionSelectViewModel(
     val date:Array<String>,
     val database6:TransDetailDao,
     application: Application): AndroidViewModel(application){
-
-
-    val trans_select_model =database6.getSubProduct(date[1].toInt(),sum_id)
+   // val trans_select_model =database6.getSubProduct(date[1].toInt(),sum_id)
+    var transSelectModel = MutableLiveData<List<TransSelectModel>>()
+    val trans_select_model :LiveData<List<TransSelectModel>> get() = transSelectModel
     private val _showDialog = MutableLiveData<TransSelectModel>()
     val showDialog:LiveData<TransSelectModel> get() = _showDialog
 
     /////////////////////////////////////////Product////////////////////////////////////////////
     private var _allProduct = MutableLiveData<List<Product>>()
+    private var _productId = MutableLiveData<Int>(-1)
+    private var _sumId = MutableLiveData<Int>(-1)
+    val productId:LiveData<Int> get()=_productId
     val allProduct :LiveData<List<Product>> get() = _allProduct
     private var _categoryEntries = MutableLiveData<List<String>>()
     val categoryEntries : LiveData<List<String>> get() = _categoryEntries
@@ -43,14 +49,79 @@ class TransactionSelectViewModel(
 
     init {
         getKategoriEntries()
-       // _unFilteredProduct.value =
+        Log.i("CHECKBOXPROB","viewModelInitCalled")
+        unCheckedAllSubs()
+    }
+    fun updateTransDetailList(updatedList: List<TransSelectModel>) {
+        transSelectModel.value = updatedList
+    }
+    fun incrementQuantity(trans: TransSelectModel) {
+       // trans.qty++
+        viewModelScope.launch {
+            trans.trans_detail_id = getLastInsertedIdFormBD() ?: -1
+            Log.i("CHECKBOXPROB","incrementQuantity: $trans")
+            updateTransDetaill(trans)
+        }
+    }
+    fun checkBoxClicked(trans: TransSelectModel) {
+        // trans.qty++
+        viewModelScope.launch {
+            trans.trans_detail_id = getLastInsertedIdFormBD() ?: -1
+            Log.i("CHECKBOXPROB","incrementQuantity: $trans")
+            updateTransDetaill(trans)
+        }
+    }
+
+    fun update(trans: TransSelectModel) {
+        updateTransDetaill(trans)
+    }
+    fun updateTransDetaill(trans: TransSelectModel) {
+        viewModelScope.launch {
+            val updatedList = transSelectModel.value?.toMutableList() ?: mutableListOf()
+            val index = updatedList.indexOfFirst { it.sub_product_id == trans.sub_product_id }
+            if (index != -1) {
+                updatedList[index] = trans
+                Log.i("CHECKBOXPROB","updateTransDetail: $trans")
+                updateTransDetailList(updatedList)
+            }
+        }
+
+    }
+    private suspend fun getLastInsertedIdFormBD():Int?{
+        return withContext(Dispatchers.IO){
+            database6.getLastInsertedId()
+        }
+
+    }
+
+    fun getTransModel(productId:Int){
+        viewModelScope.launch {
+           var list = withContext(Dispatchers.IO){
+               database6.getSubProductM(productId,_sumId.value ?: 0)
+           }
+            Log.i("CHECKBOXPROB","getTransModel: $list")
+            transSelectModel.value = list
+        }
+    }
+    /////////////////////////////////////old functions///////////////////////////////////////////
+    fun setProductId(id:Int){
+        _productId.value = id
+        Log.i("CHECKBOXPROB","set product id : $id")
+    }
+    fun setProductSumId(id:Int?){
+        if (id!=null)
+        { _sumId.value = id!!
+            Log.i("CHECKBOXPROB","set Sum id: $id")
+        }
     }
 
     fun updateTransDetail(s:TransSelectModel){
         viewModelScope.launch {
             var t = converter(s)
-            t.trans_detail_id = s.trans_detail_id
+           // t.trans_detail_id = s.trans_detail_id
+            t.trans_detail_id = getLastInsertedIdFormBD() ?:-1
             _updateTransDetail(t)
+            Log.i("CHECKBOXPROB","Update trans Detail: "+t.toString())
         }
     }
     fun converter(s:TransSelectModel): TransactionDetail {
@@ -61,12 +132,23 @@ class TransactionSelectViewModel(
         t.trans_item_name = s.item_name
         t.trans_price = s.item_price
         return t
+        Log.i("CHECKBOXPROB","converter: "+t.toString())
     }
 
     fun onCheckBoxClicked(s:TransSelectModel,boolean: Boolean){
         viewModelScope.launch {
-            checkedSub(s.item_name,if (boolean) 1 else 0)
-            if (boolean == true) insertTransDetail(s) else delete(s)
+            //checkedSub(s.item_name,if (boolean) 1 else 0)
+            s.is_selected = boolean
+            if (boolean == true) {
+                insertTransDetail(s)
+                var id = getLastInsertedIdFormBD()
+                s.trans_detail_id  = id ?:-1
+                Log.i("CHECKBOXPROB","on checkBox clicked : $s")
+                updateTransDetaill(s)
+            }
+
+            else{delete(s)}
+
         }
 
     }
@@ -91,6 +173,8 @@ class TransactionSelectViewModel(
         viewModelScope.launch {
             var t = converter(s)
             _insertTransDetail(t)
+            Log.i("CHECKBOXPROB","is : $s")
+
         }
     }
 
@@ -112,6 +196,7 @@ class TransactionSelectViewModel(
     }
     fun unCheckedAllSubs(){
         viewModelScope.launch {
+            Log.i("CHECKBOXPROB","unCheckedAllSubs called")
             uncheckedAllSubs_()
         }
     }
@@ -174,9 +259,12 @@ class TransactionSelectViewModel(
     }
 
     override fun onCleared() {
-        super.onCleared()
+        Log.i("CHECKBOXPROB","onCleared called")
         unCheckedAllSubs()
+        super.onCleared()
     }
+
+
 
     companion object {
 

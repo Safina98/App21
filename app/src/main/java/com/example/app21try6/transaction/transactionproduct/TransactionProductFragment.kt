@@ -1,6 +1,7 @@
 package com.example.app21try6.transaction.transactionproduct
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -41,13 +42,20 @@ class TransactionProductFragment : Fragment() {
         val dataSource6 = VendibleDatabase.getInstance(application).transDetailDao
         val date= arguments?.let { VendibleFragmentArgs.fromBundle(it).date }
         var datee  = date!!.toMutableList()
-
+/*
         val viewModelFactory = TransactionSelectViewModelFactory(date[0].toInt()!!,dataSource1,dataSource2,dataSource4,date,dataSource6,application)
         val viewModel = ViewModelProvider(this, viewModelFactory).get(TransactionSelectViewModel::class.java)
 
+
+ */
+        viewModel = ViewModelProvider(requireActivity(), TransactionSelectViewModelFactory(date[0].toInt()!!,dataSource1,dataSource2,dataSource4,date,dataSource6,application))
+            .get(TransactionSelectViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
+        viewModel.setProductSumId(date[0]?.toInt())
+        Log.i("CHECKBOXPROB","productFragment date: $date")
         val adapter = TransactionProductAdapter(ProductTransListener {
+            viewModel.setProductId(it.product_id)
             viewModel.onNavigatetoTransSelect(it.product_id.toString())
         })
         binding.transproductRv.adapter  = adapter
@@ -82,7 +90,9 @@ class TransactionProductFragment : Fragment() {
             // Handle the selected value
             viewModel.updateRv(it)
         }
-
+        viewModel.productId.observe(viewLifecycleOwner){
+           // viewModel.getTransModel(it)
+        }
 
         viewModel.allProduct.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it.sortedBy { it.cath_code })

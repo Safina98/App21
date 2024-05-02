@@ -72,10 +72,10 @@ class TransactionDetailViewModel (application: Application,
 
  */
 
-    fun getPadding(value:String, position:String):Int
+    fun getPadding(value:String, position:String,constant:Int):Int
     {
         val stringLength = value.length
-        return if(position=="Middle")  ((50 - stringLength) / 2) else (50 - value.length)
+        return if(position=="Middle")  ((constant - stringLength) / 2) else (constant - value.length)
 
     }
     fun generateReceiptText(): String {
@@ -86,7 +86,7 @@ class TransactionDetailViewModel (application: Application,
         val storeName = "Toko 21"
         val storeAddress = "Jl Sungai Limboto No 110, Makassar"
         val storePhone = "Phone: 081343713281"
-        val paddingStoreName = "-".repeat(getPadding(storeName,"Middle"))
+        val paddingStoreName = "-".repeat(getPadding(storeName,"Middle",50))
         // Get current date
         val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
 
@@ -95,11 +95,11 @@ class TransactionDetailViewModel (application: Application,
         builder.append("$paddingStoreName $storeName $paddingStoreName\n")
         builder.append("$storeAddress\n")
         builder.append("$storePhone\n")
-        builder.append("Receipt:" +" ".repeat(getPadding("Receipt Receipt : Date : $currentDate","Right"))+ "Date: $currentDate\n\n")
-        builder.append("-".repeat(getPadding("","Left"))+"\n")
+        builder.append("Receipt:" +" ".repeat(getPadding("Receipt Receipt : Date : $currentDate","Right",50))+ "Date: $currentDate\n\n")
+        builder.append("-".repeat(getPadding("","Left",50))+"\n")
         builder.append("TOKO/BPK/IBU: ${transsum?.cust_name}\n")
         builder.append("Barang  Jumlah  Harga  Total\n")
-        builder.append("-".repeat(getPadding("","Left"))+"\n")
+        builder.append("-".repeat(getPadding("","Left",50))+"\n")
         // Receipt items
         var x ="x"
         var arp = "@"
@@ -114,15 +114,62 @@ class TransactionDetailViewModel (application: Application,
             }
         }
         // Receipt footer
-        builder.append("-".repeat(getPadding("","Left"))+"\n")
+        builder.append("-".repeat(getPadding("","Left",50))+"\n")
         builder.append(String.format("%-24s%14s\n", "Total:", formatRupiah(transsum?.total_trans)))
-        builder.append("-".repeat(getPadding("","Left"))+"\n")
+        builder.append("-".repeat(getPadding("","Left",50))+"\n")
         builder.append("Terimakasih atas pembelian anda\n")
         builder.append("                Have a nice day!\n")
-        builder.append("-".repeat(getPadding("","Left"))+"\n")
+        builder.append("-".repeat(getPadding("","Left",50))+"\n")
 
         return builder.toString()
     }
+    fun generateReceiptTextNew(): String {
+        val builder = StringBuilder()
+        val items = transDetail.value
+        val transsum = trans_sum.value
+        val c = 30
+        // Store information
+        val storeName = "Toko 21"
+        val storeAddress = "Jl Sungai Limboto No 110,\nMakassar"
+        val storePhone = "Phone: 081343713281"
+        val paddingStoreName = "-".repeat(getPadding(storeName,"Middle",c))
+        // Get current date
+        val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+
+        // Receipt header
+        //builder.append("------------------ $storeName ------------------\n")
+        builder.append("$paddingStoreName $storeName $paddingStoreName\n")
+        builder.append("$storeAddress\n")
+        builder.append("$storePhone\n")
+        builder.append("Date: $currentDate\n")
+        builder.append("-".repeat(getPadding("","Left",c))+"\n")
+        builder.append("TOKO/BPK/IBU: ${transsum?.cust_name}\n")
+        builder.append("Barang  Jumlah  Harga  Total\n")
+        builder.append("-".repeat(getPadding("","Left",c))+"\n")
+        // Receipt items
+        var x ="x"
+        var arp = "@"
+        var rp = "Rp."
+        if (items != null) {
+            for (item in items) {
+                val itemTotalPrice = item.qty * item.trans_price
+                //builder.append(String.format("%-24s%6.2f%14d%14.2f\n", item.trans_item_name, item.qty, item.trans_price, itemTotalPrice))
+                builder.append(String.format("%-24s\n", item.trans_item_name))
+                builder.append(String.format("%3.2f   %-3s %3s\n",  item.qty, x, formatRupiah(item.trans_price.toDouble())))
+                builder.append(String.format(" %27s\n", formatRupiah(itemTotalPrice)))
+            }
+        }
+        // Receipt footer
+        builder.append("-".repeat(getPadding("","Left",c))+"\n")
+        builder.append(String.format("%-10s%19s\n", "Total:", formatRupiah(transsum?.total_trans)))
+        builder.append("-".repeat(getPadding("","Left",c))+"\n")
+        builder.append("Terimakasih atas pembelian anda\n")
+        builder.append("      Have a nice day!\n")
+
+        return builder.toString()
+
+    }
+
 
     // Calculate subtotal
     fun calculateSubtotal(items: List<TransactionDetail>?): Double {

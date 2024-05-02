@@ -42,7 +42,8 @@ class TransactionSelectAdapter (
             binding.txtProductT.text = item.item_name
             binding.textSellsT.text = item.qty.toString()
             binding.checkBox3.isChecked = item.is_selected or if (item.qty>0){true}else { false }
-            binding.executePendingBindings()
+            // Set OnClickListener for the checkbox
+
         }
         companion object{
             fun from(parent: ViewGroup): MyViewHolder {

@@ -40,8 +40,10 @@ class TransactionEditFragment : Fragment() {
         val id= arguments?.let{TransactionEditFragmentArgs.fromBundle(it).id}
        Log.e("SUMVM","transum in TransEditFragmnet id is "+id.toString()+"")
 
+
         val viewModelFactory = TransactionEditViewModelFactory(application, datasource1, datasource2, id!!)
         val viewModel = ViewModelProvider(this, viewModelFactory).get(TransactionEditViewModel::class.java)
+
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
