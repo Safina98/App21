@@ -34,7 +34,7 @@ class TransactionEditAdapter(
             binding.item = item
             binding.txtProductT.text = item.trans_item_name
             binding.textSellsT.text = item.qty.toString()
-            binding.txtPriceT.text = formatRupiah(item.trans_price.toDouble()).toString()
+            binding.txtPriceT.text =  formatRupiah(item.trans_price.toDouble())
             binding.textSumsT.text = formatRupiah(item.total_price).toString()
             binding.clickListener = clickListener
             binding.subsListener = subsTransClickListener

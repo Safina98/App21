@@ -1,8 +1,11 @@
 package com.example.app21try6.transaction.transactiondetail
 
-import android.annotation.SuppressLint
+import android.R
+import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -12,19 +15,33 @@ import com.example.app21try6.formatRupiah
 import com.example.app21try6.transaction.transactionedit.TransactionEditDummyModel
 
 
-class TransactionDetailAdapter(val clickListener: TransDetailClickListener):ListAdapter<TransactionDetail,TransactionDetailAdapter.MyViewHolder>(TransDetailDiffCallBack()) {
-    class MyViewHolder private constructor(val binding:TransactionDetailItemListBinding):RecyclerView.ViewHolder(binding.root){
-        fun bind(item:TransactionDetail,clickListener: TransDetailClickListener){
-            binding.item  = item
+class TransactionDetailAdapter(val clickListener: TransDetailClickListener, val longListener:TransDetailLongListener):ListAdapter<TransactionDetail,TransactionDetailAdapter.MyViewHolder>(TransDetailDiffCallBack()) {
+
+    class MyViewHolder private constructor(val binding: TransactionDetailItemListBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(
+            item: TransactionDetail,
+            clickListener: TransDetailClickListener,
+            longListener: TransDetailLongListener
+        ) {
+            binding.item = item
+            binding.longClickListener = longListener
+            binding.txtItemTDetail.setBackgroundColor(Color.WHITE)
             binding.txtItemTDetail.text = item.trans_item_name
             binding.txtQtyTDetail.text = item.qty.toString()
-            binding.txtPriceTDetail.text = formatRupiah(item.trans_price.toDouble()).toString()
+            binding.txtPriceTDetail.text =
+                if (item.qty >= 1) formatRupiah(item.trans_price.toDouble()).toString() else "-"
             binding.txtTotalTDetail.text = formatRupiah(item.total_price).toString()
+
+            binding.executePendingBindings()
+
         }
-        companion object{
-            fun from(parent:ViewGroup):MyViewHolder{
+
+        companion object {
+            fun from(parent: ViewGroup): MyViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = TransactionDetailItemListBinding.inflate(layoutInflater,parent,false)
+                val binding =
+                    TransactionDetailItemListBinding.inflate(layoutInflater, parent, false)
                 return MyViewHolder(binding)
             }
         }
@@ -35,7 +52,8 @@ class TransactionDetailAdapter(val clickListener: TransDetailClickListener):List
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(getItem(position),clickListener)
+        holder.bind(getItem(position), clickListener, longListener)
+        // Update background color based on clickedItems
     }
 }
 class TransDetailDiffCallBack:DiffUtil.ItemCallback<TransactionDetail>(){
@@ -52,3 +70,9 @@ class TransDetailClickListener(val clickListener:(detail_trans:TransactionEditDu
 }
 
 
+class TransDetailLongListener(val longListener:(trans_detail: TransactionDetail)->Unit){
+    fun onLongClick(v: View, trans_detail:  TransactionDetail):Boolean{
+        longListener(trans_detail)
+        return true
+    }
+}

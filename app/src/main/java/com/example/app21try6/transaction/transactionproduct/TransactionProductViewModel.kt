@@ -33,6 +33,7 @@ class TransactionProductViewModel(val sum_id:Int,
 
     init {
         getKategoriEntries()
+        Log.i("SUMIDPROB","TransactionProductViewModel init sum_id $sum_id")
     }
 
     fun updateRv(value: String){

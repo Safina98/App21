@@ -37,7 +37,10 @@ class TransactionDetailViewModel (application: Application,
     //var bayar = formatRupiah(trans_sum.value?.paid?.toDouble())
     val sendReceipt:LiveData<Boolean> get() = _sendReceipt
 
-    fun onNavigateToEdit(){_navigateToEdit.value = id}
+    fun onNavigateToEdit(){
+        _navigateToEdit.value = id
+        Log.i("SUMIDPROB","TransactionDetailViewModel id ${_navigateToEdit.value}")
+    }
     fun onNavigatedToEdit(){this._navigateToEdit.value = null}
     private val _booleanValue = MutableLiveData<Boolean>()
 
@@ -51,44 +54,23 @@ class TransactionDetailViewModel (application: Application,
            Log.i("DataProb","updateBooleanValue: $transSum")
        }
     }
+    fun updateTransDetail(transdetail:TransactionDetail){
+        viewModelScope.launch {
+            updateTransDetailDB(transdetail)
+            Log.i("BOOLPROB","viewModel update ${transdetail.is_prepared.toString()}")
+        }
+    }
+    private suspend fun updateTransDetailDB(transdetail: TransactionDetail){
+        withContext(Dispatchers.IO){
+            datasource2.update(transdetail)
+        }
+    }
+
     private suspend fun updataTransSumDB(transSum:TransactionSummary){
         withContext(Dispatchers.IO){
             datasource1.update(transSum)
         }
     }
-/*
-
-    fun generateReceiptText(): String {
-        val items = transDetail.value
-        val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
-        var summary= TransactionSummary(0,"-",0.0,0,currentDate,false,false)
-        if (trans_sum.value!=null){
-            summary = trans_sum.value!!
-        }
-        val builder = StringBuilder()
-        var storeName = "TOKO  21"
-        val paddingStoreName = " ".repeat(getPadding(storeName,"Middle"))
-        builder.append(". $paddingStoreName$storeName$paddingStoreName\n\n")
-
-
-        val datePaddingString = " ".repeat(getPadding(currentDate,"RIGHT"))
-        builder.append(". ${datePaddingString}${currentDate}\n\n")
-        builder.append("Receipt:\n\n")
-        var totalPrice = 0.0
-        if (items != null) {
-            for (item in items) {
-                val itemTotalPrice = item.qty * item.trans_price
-                totalPrice += itemTotalPrice
-
-                builder.append("${item.trans_item_name} x ${item.qty} : \$${item.trans_price} each = \$${itemTotalPrice}\n")
-            }
-        }
-        builder.append("\nTotal Price: \$${totalPrice}")
-
-        return builder.toString()
-    }
-
- */
 
     fun getPadding(value:String, position:String,constant:Int):Int
     {
@@ -127,7 +109,7 @@ class TransactionDetailViewModel (application: Application,
                 val itemTotalPrice = item.qty * item.trans_price
                 //builder.append(String.format("%-24s%6.2f%14d%14.2f\n", item.trans_item_name, item.qty, item.trans_price, itemTotalPrice))
                 builder.append(String.format("%-24s\n", item.trans_item_name))
-                builder.append(String.format("%10.2f   %-4s %4s\n",  item.qty, x, formatRupiah(item.trans_price.toDouble())))
+                builder.append(String.format("%10.2f   %-4s %4s\n",  item.qty, x, if(item.qty>=1)formatRupiah(item.trans_price.toDouble()) else "-"))
                 builder.append(String.format(" %44s\n", formatRupiah(itemTotalPrice)))
             }
         }
@@ -166,14 +148,13 @@ class TransactionDetailViewModel (application: Application,
         builder.append("-".repeat(getPadding("","Left",c))+"\n")
         // Receipt items
         var x ="x"
-        var arp = "@"
-        var rp = "Rp."
+
         if (items != null) {
             for (item in items) {
                 val itemTotalPrice = item.qty * item.trans_price
                 //builder.append(String.format("%-24s%6.2f%14d%14.2f\n", item.trans_item_name, item.qty, item.trans_price, itemTotalPrice))
                 builder.append(String.format("%-24s\n", item.trans_item_name))
-                builder.append(String.format("%3.2f   %-3s %3s\n",  item.qty, x, formatRupiah(item.trans_price.toDouble())))
+                builder.append(String.format("%3.2f   %-3s %3s\n",  item.qty, x, if(item.qty>=1)formatRupiah(item.trans_price.toDouble()) else "-"))
                 builder.append(String.format(" %27s\n", formatRupiah(itemTotalPrice)))
             }
         }
@@ -182,7 +163,7 @@ class TransactionDetailViewModel (application: Application,
         builder.append(String.format("%-10s%19s\n", "Total:", formatRupiah(transsum?.total_trans)))
         builder.append("-".repeat(getPadding("","Left",c))+"\n")
         builder.append("Terimakasih atas pembelian anda\n")
-        builder.append("      Have a nice day!\n")
+        builder.append("      Have a nice day!\n\n\n\n")
 
         return builder.toString()
 

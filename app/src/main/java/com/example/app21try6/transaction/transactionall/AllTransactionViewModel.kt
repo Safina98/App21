@@ -2,6 +2,8 @@ package com.example.app21try6.transaction.transactionall
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
@@ -12,6 +14,15 @@ import com.example.app21try6.transaction.transactionselect.TransactionSelectView
 
 class AllTransactionViewModel(application: Application,dataSource1:TransSumDao):AndroidViewModel(application) {
     val allTransactionSummary = dataSource1.getAllTransSum()
+    private val _navigateToTransDetail = MutableLiveData<Int>()
+    val navigateToTransDetail: LiveData<Int> get() = _navigateToTransDetail
+
+    fun onNavigatetoTransDetail(id:Int){
+        _navigateToTransDetail.value = id
+    }
+    fun onNavigatedToTransDetail(){
+        this._navigateToTransDetail.value = null
+    }
 
     companion object {
         @JvmStatic

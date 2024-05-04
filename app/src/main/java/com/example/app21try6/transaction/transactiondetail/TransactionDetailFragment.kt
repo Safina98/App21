@@ -45,7 +45,7 @@ class TransactionDetailFragment : Fragment() {
             com.example.app21try6.R.layout.fragment_transaction_detail,container,false)
         val application= requireNotNull(this.activity).application
         val id= arguments?.let{ TransactionDetailFragmentArgs.fromBundle(it).id}
-        Log.e("SUMVM","transum in TransEditFragmnet id is "+id.toString()+"")
+        Log.i("SUMIDPROB","TransactionDetailFragment argument id $id")
         val datasource1 = VendibleDatabase.getInstance(application).transSumDao
         val datasource2 = VendibleDatabase.getInstance(application).transDetailDao
         val viewModelFactory = TransactionDetailViewModelFactory(application,datasource1,datasource2,id!!)
@@ -60,7 +60,13 @@ class TransactionDetailFragment : Fragment() {
         }
         val adapter = TransactionDetailAdapter(TransDetailClickListener {
 
-        })
+        }, TransDetailLongListener {it->
+
+            it.is_prepared = it.is_prepared.not()
+            Log.i("BOOLPROB","fragamet${it.is_prepared.toString()}")
+            viewModel.updateTransDetail(it)
+        }
+        )
         binding.recyclerViewDetailTrans.adapter = adapter
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
@@ -68,11 +74,14 @@ class TransactionDetailFragment : Fragment() {
             printReceipt()
         }
         viewModel.transDetail.observe(viewLifecycleOwner, Observer {
-            adapter.submitList(it)
+            it?.let {
+                adapter.submitList(it)
+                adapter.notifyDataSetChanged()
+            }
         })
 
         viewModel.trans_sum.observe(viewLifecycleOwner){
-            Log.i("DataProb","transum framgment: $it")
+            Log.i("SUMIDPROB","TransactionDetailFragment Trans_sum observer id $it")
         }
         viewModel.sendReceipt.observe(viewLifecycleOwner){
             if (it==true){
@@ -82,6 +91,7 @@ class TransactionDetailFragment : Fragment() {
         }
         viewModel.navigateToEdit.observe(viewLifecycleOwner, Observer {
             it?.let {
+                Log.i("SUMIDPROB","TransactionDetailFragment Navigate to edit oberver $it")
                 this.findNavController().navigate(TransactionDetailFragmentDirections.actionTransactionDetailFragmentToTransactionEditFragment(id))
                 viewModel.onNavigatedToEdit()
             }

@@ -8,8 +8,8 @@ interface TransSumDao {
 
     @Insert
     fun insert(transactionSummary: TransactionSummary)
-    //@Insert
-    //fun insertNew(transactionSummary: TransactionSummary):Int
+    @Insert
+    fun insertNew(transactionSummary: TransactionSummary):Long
 
     @Update
     fun update(transactionSummary: TransactionSummary)

@@ -7,6 +7,9 @@
         <variable
             name="item"
             type="com.example.app21try6.database.TransactionDetail"/>
+        <variable
+            name="longClickListener"
+            type="com.example.app21try6.transaction.transactiondetail.TransDetailLongListener" />
 
     </data>
 
@@ -15,8 +18,10 @@
         android:layout_height="wrap_content">
 
         <TextView
+            android:onLongClick="@{(view) -> longClickListener.onLongClick(view,item)}"
             android:id="@+id/txt_item_t_detail"
             style="@style/text_trans_detail_style"
+            android:onClick="@{}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -24,7 +29,8 @@
             android:text="TextView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:backgroundColor="@{item.is_prepared}"/>
 
         <TextView
             android:id="@+id/txt_qty_t_detail"

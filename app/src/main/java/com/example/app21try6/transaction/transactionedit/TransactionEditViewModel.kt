@@ -131,7 +131,8 @@ class TransactionEditViewModel(
     ////////////////////////////////Navigation//////////////////////////////////////
 
     fun onNavigatetoVendible(){
-        _navigateToVendible.value= arrayOf(transSum.value!!.sum_id.toString(),"1")
+        _navigateToVendible.value= arrayOf(transSum.value!!.sum_id.toString(),"-1")
+        Log.i("SUMIDPROB","TransactionEditViewModel onnavigateTotransactionProduct $_navigateToVendible")
     }
     @SuppressLint("NullSafeMutableLiveData")
     fun onNavigatedtoVendible(){

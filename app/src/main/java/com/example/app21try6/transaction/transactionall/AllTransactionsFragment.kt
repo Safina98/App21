@@ -9,6 +9,7 @@ import android.widget.CheckBox
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.AndroidViewModel
+import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
 import com.example.app21try6.bookkeeping.editdetail.BookkeepingViewModel
 import com.example.app21try6.databinding.FragmentAllTransactionsBinding
@@ -16,6 +17,7 @@ import com.example.app21try6.databinding.TransactionAllItemListBinding
 import com.example.app21try6.transaction.transactionactive.ActiveClickListener
 import com.example.app21try6.transaction.transactionactive.CheckBoxListenerTransActive
 import com.example.app21try6.transaction.transactionactive.TransactionActiveAdapter
+import com.example.app21try6.transaction.transactionactive.TransactionActiveFragmentDirections
 
 class AllTransactionsFragment : Fragment() {
     private lateinit var binding: FragmentAllTransactionsBinding
@@ -29,7 +31,7 @@ class AllTransactionsFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         val adapter = AllTransactionAdapter(AllTransClickListener {
-           // viewModel.onNavigatetoTransDetail(it.sum_id)
+            viewModel.onNavigatetoTransDetail(it.sum_id)
         }
             , CheckBoxListenerTransAll{ view, stok ->
                 val cb = view as CheckBox
@@ -43,6 +45,13 @@ class AllTransactionsFragment : Fragment() {
                 adapter.submitList(it)
             }
         }
+        viewModel.navigateToTransDetail.observe(viewLifecycleOwner){
+            it?.let {
+                this.findNavController().navigate(AllTransactionsFragmentDirections.actionAllTransactionsFragmentToTransactionDetailFragment(it))
+                viewModel.onNavigatedToTransDetail()
+            }
+        }
+
         return binding.root
 
     }

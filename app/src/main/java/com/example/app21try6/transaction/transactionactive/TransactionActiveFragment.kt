@@ -50,7 +50,6 @@ class TransactionActiveFragment : Fragment() {
             val btn_cancel =  requireActivity().findViewById<Button>(R.id.cancel_button)
             val btn_linear =  requireActivity().findViewById<ConstraintLayout>(R.id.linear_btn)
             img.setOnClickListener {
-                //Toast.makeText(context,"clicked",Toast.LENGTH_SHORT).show()
                 viewModel.onImageClicked()
                 btn_linear.visibility = View.VISIBLE
                 toolbar.visibility = View.GONE
@@ -67,6 +66,7 @@ class TransactionActiveFragment : Fragment() {
             }
         }
         val adapter = TransactionActiveAdapter(ActiveClickListener {
+
             viewModel.onNavigatetoTransDetail(it.sum_id)
         }
             ,CheckBoxListenerTransActive{view, stok ->
@@ -89,8 +89,6 @@ class TransactionActiveFragment : Fragment() {
         })
 
         viewModel.is_image_clicked.observe(this.viewLifecycleOwner, Observer {
-
-
             if (it == true) {
                 (binding.recyclerViewActiveTrans.adapter as TransactionActiveAdapter).isActive(it)
                 binding.btnAddNewTrans.visibility = View.GONE
@@ -103,8 +101,8 @@ class TransactionActiveFragment : Fragment() {
 
         viewModel.navigateToTransEdit.observe(viewLifecycleOwner, Observer {
             it?.let {
-            // this.findNavController().navigate(TransactionActiveFragmentDirections.actionTransactionActiveFragmentToTransactionEditFragment(it))
-            //viewModel.onNavigatedToTransEdit()
+            this.findNavController().navigate(TransactionActiveFragmentDirections.actionTransactionActiveFragmentToTransactionEditFragment(it))
+            viewModel.onNavigatedToTransEdit()
           }
         })
         viewModel.navigatToAllTrans.observe(viewLifecycleOwner, Observer {

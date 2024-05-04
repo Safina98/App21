@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/brandStockFragment">
+    app:startDestination="@id/transactionActiveFragment">
 
     <fragment
         android:id="@+id/bookKeepeingFragment"
@@ -157,5 +157,9 @@
     <fragment
         android:id="@+id/allTransactionsFragment"
         android:name="com.example.app21try6.transaction.transactionall.AllTransactionsFragment"
-        android:label="AllTransactionsFragment" />
+        android:label="AllTransactionsFragment" >
+        <action
+            android:id="@+id/action_allTransactionsFragment_to_transactionDetailFragment"
+            app:destination="@id/transactionDetailFragment" />
+    </fragment>
 </navigation>

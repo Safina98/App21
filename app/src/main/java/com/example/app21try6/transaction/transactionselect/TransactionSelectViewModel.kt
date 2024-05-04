@@ -20,7 +20,7 @@ class TransactionSelectViewModel(
     val database1: CategoryDao,
     val database2: ProductDao,
     val database4: SubProductDao,
-    val date:Array<String>,
+    val sumAndProductId:Array<String>,
     val database6:TransDetailDao,
     application: Application): AndroidViewModel(application){
    // val trans_select_model =database6.getSubProduct(date[1].toInt(),sum_id)
@@ -47,7 +47,8 @@ class TransactionSelectViewModel(
 
     init {
         getKategoriEntries()
-        Log.i("CHECKBOXPROB","viewModelInitCalled")
+        Log.i("SUMIDPROB","TransactionProductViewModel init sum_id $sum_id")
+        Log.i("SUMIDPROB","TransactionProductViewModel rv _sum_id.value ${_sumId.value}")
         unCheckedAllSubs()
     }
     fun updateTransDetailList(updatedList: List<TransSelectModel>) {
@@ -57,7 +58,7 @@ class TransactionSelectViewModel(
        // trans.qty++
         viewModelScope.launch {
             //trans.trans_detail_id = getLastInsertedIdFormBD() ?:
-            Log.i("CHECKBOXPROB","incrementQuantity: $trans")
+
             updateTransDetaill(trans)
         }
     }
@@ -65,7 +66,7 @@ class TransactionSelectViewModel(
         // trans.qty++
         viewModelScope.launch {
            // trans.trans_detail_id = getLastInsertedIdFormBD() ?: -1
-            Log.i("CHECKBOXPROB","incrementQuantity: $trans")
+
             updateTransDetaill(trans)
         }
     }
@@ -104,12 +105,12 @@ class TransactionSelectViewModel(
     /////////////////////////////////////old functions///////////////////////////////////////////
     fun setProductId(id:Int){
         _productId.value = id
-        Log.i("DataProb","setProductId $id")
+
     }
     fun setProductSumId(id:Int?){
         if (id!=null)
         { _sumId.value = id!!
-            Log.i("DataProb","setSumId $id")
+            Log.i("SUMIDPROB","TransactionSelectViewModel SetSumId  ${_sumId.value}")
         }
     }
 
@@ -125,7 +126,7 @@ class TransactionSelectViewModel(
     }
     fun converter(s:TransSelectModel): TransactionDetail {
         var t = TransactionDetail()
-        t.sum_id = sum_id
+        t.sum_id = _sumId.value ?: -1
         t.trans_detail_id = s.trans_detail_id
         t.qty = s.qty
         t.total_price = s.qty*s.item_price
@@ -139,7 +140,6 @@ class TransactionSelectViewModel(
             s.is_selected = boolean
             if (boolean == true) {
                 var t = converter(s)
-               // var id = getLastInsertedIdFormBD()
                 try {
                     var id = insertDetailToDBandGetId(t)
                     s.trans_detail_id  = id ?: -1L
@@ -255,7 +255,7 @@ class TransactionSelectViewModel(
         }
     }
     fun onNavigatetoTransSelect(id:String){
-        _navigateToTransSelect.value= arrayOf(date[0],id)
+        _navigateToTransSelect.value= arrayOf(sum_id.toString(),id)
     }
     @SuppressLint("NullSafeMutableLiveData")
     fun onNavigatedtoTransSelect(){

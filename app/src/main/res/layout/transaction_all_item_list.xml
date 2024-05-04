@@ -16,13 +16,19 @@
 
     </data>
 
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
+        android:onClick="@{()->clickListener.onClick(item)}"
         android:layout_height="80dp">
 
         <TextView
             android:id="@+id/txt_nama_pe"
             style="@style/active_transaction_text_style"
+            android:onClick="@{()->clickListener.onClick(item)}"
             android:layout_marginStart="4dp"
             android:layout_marginTop="8dp"
             android:text="Rezky Jok"
@@ -35,6 +41,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginBottom="8dp"
             android:text="Rp.560.000"
+            android:onClick="@{()->clickListener.onClick(item)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -43,6 +50,7 @@
             style="@style/active_transaction_text_style"
             android:layout_marginEnd="64dp"
             android:text="28/07/2021"
+            android:onClick="@{()->clickListener.onClick(item)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -57,4 +65,5 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 </layout>

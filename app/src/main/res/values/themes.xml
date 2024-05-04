@@ -7,6 +7,12 @@
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/white</item>
         -->
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryVariant">@color/primaryLightColor</item>
+        <item name="colorOnPrimary">@color/primaryLightTextColor</item>
+        <item name="colorSecondary">@color/secondaryColor</item>
+        <item name="colorSecondaryVariant">@color/secondaryLightColor</item>
+        <item name="colorOnSecondary">@color/secondaryLightTextColor</item>
         <!-- Secondary brand color. -->
         <!--
         <item name="colorSecondary">@color/teal_200</item>
@@ -27,7 +33,7 @@
         -->
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
-        <item name="colorOnPrimary">@color/primaryTextColor</item>
+        <item name="colorOnPrimary">@color/primaryDarkTextColor</item>
         <!-- Secondary brand color. -->
 <!--
         <item name="colorSecondary">@color/dark_green</item>
@@ -35,7 +41,7 @@
         -->
         <item name="colorSecondary">@color/secondaryColor</item>
         <item name="colorSecondaryVariant">@color/secondaryLightColor</item>
-        <item name="colorOnSecondary">@color/secondaryTextColor</item>
+        <item name="colorOnSecondary">@color/secondaryDarkTextColor</item>
 
         <!-- Status bar color. -->
 

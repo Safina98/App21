@@ -38,7 +38,7 @@ class TransactionEditFragment : Fragment() {
         val datasource2 = VendibleDatabase.getInstance(application).transDetailDao
 
         val id= arguments?.let{TransactionEditFragmentArgs.fromBundle(it).id}
-       Log.e("SUMVM","transum in TransEditFragmnet id is "+id.toString()+"")
+       Log.i("SUMIDPROB","TransactionEditFragment argument id $id")
 
 
         val viewModelFactory = TransactionEditViewModelFactory(application, datasource1, datasource2, id!!)
@@ -90,6 +90,7 @@ class TransactionEditFragment : Fragment() {
 
        viewModel.navigateToVendible.observe(viewLifecycleOwner, Observer {
            if (it != null) {
+               Log.i("SUMIDPROB","TransactionEditFragment navigateTotransactionProduct $it")
                this.findNavController().navigate(TransactionEditFragmentDirections.actionTransactionEditFragmentToTransactionProductFragment(it))
                viewModel.setCustomerName()
                viewModel.onNavigatedtoVendible()

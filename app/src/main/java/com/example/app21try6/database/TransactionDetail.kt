@@ -26,6 +26,8 @@ data class TransactionDetail(
         @ColumnInfo(name = "trans_price")
         var trans_price:Int= 0,
         @ColumnInfo(name = "total_price")
-        var total_price:Double = 0.0
+        var total_price:Double = 0.0,
+        @ColumnInfo(name = "is_prepared")
+        var is_prepared:Boolean = false
         )
 

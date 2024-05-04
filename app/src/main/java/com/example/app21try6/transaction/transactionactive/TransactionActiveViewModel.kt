@@ -81,9 +81,9 @@ class TransactionActiveViewModel(
             insertNewSumAndGetId(trans)
         }
     }
-    suspend fun insertNewSumAndGetId(transactionSummary: TransactionSummary){
-       withContext(Dispatchers.IO){
-            datasource1.insert(transactionSummary)
+    suspend fun insertNewSumAndGetId(transactionSummary: TransactionSummary):Long{
+       return withContext(Dispatchers.IO){
+            datasource1.insertNew(transactionSummary)
         }
     }
     suspend fun getLastInsertedID():Int{
@@ -95,15 +95,17 @@ class TransactionActiveViewModel(
         viewModelScope.launch {
             var trans =   TransactionSummary()
             trans.trans_date = currentDate
-            insertNewSumAndGetId(trans)
-            var id = getLastInsertedID()
+            var id =insertNewSumAndGetId(trans).toInt()
+            //var id = getLastInsertedID()
             _navigateToTransEdit.value = id
-            Log.e("SUMVM","_navigateToTransEdit id "+id.toString()+"")
+            Log.i("SUMIDPROB","TransActiveViewModel addNewTransactionClick:  id $id")
+            Log.i("SUMIDPROB","TransActiveViewModel addNewTransactionClick:  _navigateToTransEdit ${_navigateToAllTrans.value}")
         }
     }
 
     fun onNavigatetoTransEdit(id:Int){
         _navigateToTransEdit.value=id
+        Log.i("SUMIDPROB","TransActiveViewModel addNewTransactionClick:  _navigateToTransEdit ${_navigateToAllTrans.value}")
     }
     fun onNavigatedToTransEdit(){
         this._navigateToTransEdit.value=null

@@ -40,23 +40,26 @@ class TransactionProductFragment : Fragment() {
         val dataSource4 = VendibleDatabase.getInstance(application).subProductDao
         val dataSource5 = VendibleDatabase.getInstance(application).transSumDao
         val dataSource6 = VendibleDatabase.getInstance(application).transDetailDao
-        val date= arguments?.let { VendibleFragmentArgs.fromBundle(it).date }
-        var datee  = date!!.toMutableList()
+        val sumAndProductId= arguments?.let { VendibleFragmentArgs.fromBundle(it).date }
+        var datee  = sumAndProductId!!.toMutableList()
+        Log.i("SUMIDPROB","TransactionProductFragment arguments $sumAndProductId[0]")
 /*
         val viewModelFactory = TransactionSelectViewModelFactory(date[0].toInt()!!,dataSource1,dataSource2,dataSource4,date,dataSource6,application)
         val viewModel = ViewModelProvider(this, viewModelFactory).get(TransactionSelectViewModel::class.java)
 
 
  */
-        viewModel = ViewModelProvider(requireActivity(), TransactionSelectViewModelFactory(date[0].toInt()!!,dataSource1,dataSource2,dataSource4,date,dataSource6,application))
+        viewModel = ViewModelProvider(requireActivity(), TransactionSelectViewModelFactory(sumAndProductId[0].toInt()!!,dataSource1,dataSource2,dataSource4,sumAndProductId,dataSource6,application))
             .get(TransactionSelectViewModel::class.java)
+
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        viewModel.setProductSumId(date[0]?.toInt())
-        Log.i("CHECKBOXPROB","productFragment date: $date")
+        viewModel.setProductSumId(sumAndProductId[0]?.toInt())
+
         val adapter = TransactionProductAdapter(ProductTransListener {
             viewModel.setProductId(it.product_id)
             viewModel.onNavigatetoTransSelect(it.product_id.toString())
+
         })
         binding.transproductRv.adapter  = adapter
         binding.searchBarProduct.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -100,6 +103,7 @@ class TransactionProductFragment : Fragment() {
 
         viewModel.navigateToTransSelect.observe(viewLifecycleOwner, Observer {
             if (it != null) {
+                Log.i("SUMIDPROB","TransactionEditViewModel navigateTOSelect $it")
                 this.findNavController().navigate(TransactionProductFragmentDirections.actionTransactionProductFragmentToTransactionSelectFragment(it))
                 viewModel.onNavigatedtoTransSelect()
 
