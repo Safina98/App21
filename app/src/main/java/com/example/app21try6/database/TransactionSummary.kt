@@ -6,21 +6,11 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import java.util.*
-import androidx.room.TypeConverter
+import androidx.room.TypeConverters
 
-class Converters {
-        @TypeConverter
-        fun toDate(timestamp: Long): Date {
-                return Date(timestamp)
-        }
-
-        @TypeConverter
-        fun toTimestamp(date: Date): Long {
-                return date.time
-        }
-}
 
 @Entity(tableName = "trans_sum_table")
+@TypeConverters(Converters::class)
 data class TransactionSummary (
         @PrimaryKey(autoGenerate = true)
         var sum_id:Int = 0,
@@ -31,7 +21,7 @@ data class TransactionSummary (
         @ColumnInfo(name = "paid")
         var paid:Int=0,
         @ColumnInfo(name = "trans_date")
-        var trans_date:String="",
+        var trans_date:Date=Date(),
         @ColumnInfo(name = "is_taken")
         var is_taken_:Boolean=false,
         @ColumnInfo(name = "is_paid_off")

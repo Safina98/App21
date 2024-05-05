@@ -2,6 +2,7 @@ package com.example.app21try6.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import java.util.Date
 
 @Dao
 interface TransSumDao {
@@ -22,7 +23,7 @@ interface TransSumDao {
     custName: String,
     totalTrans: Double,
     paid: Int,
-    transDate: String,
+    transDate: Date,
     isTaken: Boolean,
     isPaidOff: Boolean,
     ref: String

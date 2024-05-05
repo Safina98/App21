@@ -50,11 +50,12 @@
             android:id="@+id/txt_tgl_trans"
             style="@style/active_transaction_text_style"
             android:layout_marginEnd="64dp"
-            android:text="28/07/2021"
             android:onClick="@{()->clickListener.onClick(item)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:dateFormatted="@{item.trans_date}"
+            />
 
         <CheckBox
             android:id="@+id/checkbox_trans_active"

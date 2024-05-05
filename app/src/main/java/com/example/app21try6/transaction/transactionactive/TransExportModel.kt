@@ -1,6 +1,7 @@
 package com.example.app21try6.transaction.transactionactive
 
 import androidx.room.ColumnInfo
+import java.util.Date
 
 data class TransExportModel (
     var trans_detail_id: Long? = null,
@@ -13,7 +14,7 @@ data class TransExportModel (
     var cust_name:String? = null,
     var total_trans:Double? = null,
     var paid:Int? = null,
-    var trans_date:String? = null,
+    var trans_date: Date? = null,
     var is_taken:Boolean? = null,
     var is_paid_off:Boolean? = null,
     var ref:String? = null

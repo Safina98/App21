@@ -34,7 +34,7 @@ class TransactionActiveAdapter(val clickListener:ActiveClickListener,
 
             binding.item = item
             binding.txtNamaPe.text = item.cust_name
-            binding.txtTglTrans.text = item.trans_date
+          //  binding.txtTglTrans.text = item.trans_date
             binding.txtTotalTrans.text = formatRupiah(item.total_trans.toDouble()).toString()
             binding.clickListener = clickListener
            binding.checkboxListener = checkBoxListener

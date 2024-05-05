@@ -8,8 +8,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.app21try6.Constants
-import com.example.app21try6.database.Product
-import com.example.app21try6.database.SubProduct
 import com.example.app21try6.database.TransDetailDao
 import com.example.app21try6.database.TransSumDao
 import com.example.app21try6.database.TransactionDetail
@@ -94,7 +92,7 @@ class TransactionActiveViewModel(
         var id:Int = -1
         viewModelScope.launch {
             var trans =   TransactionSummary()
-            trans.trans_date = currentDate
+           // trans.trans_date = currentDate
             insertNewSumAndGetId(trans)
         }
     }
@@ -110,6 +108,8 @@ class TransactionActiveViewModel(
     }
     fun onAddNewTransactionClick(){
         viewModelScope.launch {
+            val sdf = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT)
+            val currentDate = sdf.parse(sdf.format(Date()))
             var trans =   TransactionSummary()
             trans.trans_date = currentDate
             trans.ref =UUID.randomUUID().toString()
@@ -178,8 +178,9 @@ class TransactionActiveViewModel(
     }
     private suspend fun insertCSVN(token: List<String>) {
         val transactionSummary=TransactionSummary()
-
-        transactionSummary.trans_date = token[0]
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy") // Adjust the format according to your CSV date format
+        val date = dateFormat.parse(token[0])
+        transactionSummary.trans_date = date
         transactionSummary.cust_name = token[1]
         transactionSummary.total_trans = token[2].toDouble()
         transactionSummary.paid = token[3].toInt()
@@ -196,14 +197,7 @@ class TransactionActiveViewModel(
 
         datasource1.insertIfNotExist(transactionSummary.cust_name,transactionSummary.total_trans,transactionSummary.paid,transactionSummary.trans_date,transactionSummary.is_taken_,transactionSummary.is_paid_off,transactionSummary.ref)
         //datasource2.insert(transactionDetail)
-        datasource2.insertTransactionDetailWithRef(
-            transactionSummary.ref,
-            transactionDetail.trans_item_name,
-            transactionDetail.qty,
-            transactionDetail.trans_price,
-            transactionDetail.total_price,
-            transactionDetail.is_prepared
-        )
+        datasource2.insertTransactionDetailWithRef(transactionSummary.ref, transactionDetail.trans_item_name, transactionDetail.qty, transactionDetail.trans_price, transactionDetail.total_price, transactionDetail.is_prepared)
 
     }
     fun writeCSV(file: File) {
@@ -213,13 +207,14 @@ class TransactionActiveViewModel(
                 val bw = BufferedWriter(fw)
                 bw.write(content)
                 bw.newLine()
-
+                val dateFormatter = SimpleDateFormat("dd/MM/yyyy") // Change the date format according to your requirements
                 // Write data to file
                 allTransFromDB.value?.let {
                     for (j in allTransFromDB.value!!) {
                         if (j.trans_detail_id!=null) {
-                            val line =
-                                "${j.trans_date},${j.cust_name},${j.total_trans},${j.paid},${j.is_taken},${j.is_paid_off},{${j.trans_item_name}},${j.trans_price},${j.qty},${j.total_price},${j.is_prepared},${j.ref}"
+
+                            val dateString = dateFormatter.format(j.trans_date)
+                            val line = "$dateString,${j.cust_name},${j.total_trans},${j.paid},${j.is_taken},${j.is_paid_off},${j.trans_item_name},${j.trans_price},${j.qty},${j.total_price},${j.is_prepared},${j.ref}"
                             Log.i("INSERTCSVPROB", "line: $line")
                             Log.i("INSERTCSVPROB", "j: $j")
                             bw.write(line)
@@ -235,6 +230,7 @@ class TransactionActiveViewModel(
                 Toast.makeText(getApplication(),"Failed", Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 e.printStackTrace()
+                Log.i("INSERTCSVPROB", "$e" )
                 Toast.makeText(getApplication(),"An unexpected error occurred", Toast.LENGTH_SHORT).show()
             }
 
