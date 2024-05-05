@@ -1,6 +1,7 @@
 package com.example.app21try6
 
 import androidx.databinding.InverseMethod
+import androidx.room.TypeConverter
 import java.text.NumberFormat
 import java.util.*
 
@@ -23,6 +24,17 @@ object Converter3{
             0.0
         }
 
+    }
+    @TypeConverter
+    @JvmStatic
+    fun toDate(timestamp: Long): Date {
+        return Date(timestamp)
+    }
 
+    @TypeConverter
+    @JvmStatic
+    fun toTimestamp(date: Date): Long {
+        return date.time
     }
 }
+

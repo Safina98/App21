@@ -152,12 +152,15 @@ class BrandStockViewModel(
             val bw = BufferedWriter(fw)
             bw.write(content)
             bw.newLine()
+
             for (j in all_item.value!!){
                 //bw.newLine()
                 var content = "${j.category},${j.brand},${j.product},${j.price},${j.bestSelling},${j.subProduct},${j.roll_u},${j.roll_b_t},${j.roll_s_t},${j.roll_k_t},${j.roll_b_g},${j.roll_s_g},${j.roll_k_g}"
                 bw.write(content)
                 bw.newLine()
             }
+
+
             bw.close()
             Toast.makeText(getApplication(),"Success",Toast.LENGTH_SHORT).show()
         } catch (e: IOException) {

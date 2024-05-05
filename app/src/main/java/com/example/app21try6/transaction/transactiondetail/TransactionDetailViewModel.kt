@@ -7,7 +7,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
-import com.example.app21try6.Converter3.decimalToText
 import com.example.app21try6.database.TransDetailDao
 import com.example.app21try6.database.TransSumDao
 import com.example.app21try6.database.TransactionDetail

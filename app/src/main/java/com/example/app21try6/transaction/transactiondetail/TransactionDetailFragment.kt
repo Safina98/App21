@@ -63,7 +63,6 @@ class TransactionDetailFragment : Fragment() {
         }, TransDetailLongListener {it->
 
             it.is_prepared = it.is_prepared.not()
-            Log.i("BOOLPROB","fragamet${it.is_prepared.toString()}")
             viewModel.updateTransDetail(it)
         }
         )
@@ -81,7 +80,7 @@ class TransactionDetailFragment : Fragment() {
         })
 
         viewModel.trans_sum.observe(viewLifecycleOwner){
-            Log.i("SUMIDPROB","TransactionDetailFragment Trans_sum observer id $it")
+            Log.i("INSERTCSVPROB","transDetail transSUm: $it")
         }
         viewModel.sendReceipt.observe(viewLifecycleOwner){
             if (it==true){

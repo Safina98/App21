@@ -196,6 +196,7 @@ class SummaryViewModel (val database: SummaryDbDao, application: Application):An
         }
     }
     fun writeCSV(file: File) {
+
         try {
             val content = "Tahun,Bulan,Bulan, Tanggal, Hari,Nama Produk,Harga,Jumlah,Total"
             val fw = FileWriter(file.absoluteFile)

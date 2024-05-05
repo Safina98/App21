@@ -13,7 +13,20 @@ interface TransSumDao {
 
     @Update
     fun update(transactionSummary: TransactionSummary)
-
+// @Query("INSERT INTO product_table (product_name,product_price,checkBoxBoolean,best_selling,brand_code,cath_code) SELECT :product_name_ as product_name,:product_price_ as product_price, 0 as checkBoxBoolean,:best_selling_ as best_selling,(SELECT brand_id FROM brand_table WHERE brand_name = :brand_code_ limit 1) as brand_code,(SELECT category_id FROM category_table WHERE category_name = :cath_code_ limit 1) as cath_code WHERE NOT EXISTS (SELECT 1 FROM product_table WHERE product_name = :product_name_)")
+    // @Query("INSERT INTO category_table(category_name) SELECT :cath_name_ WHERE NOT EXISTS (SELECT 1 FROM category_table WHERE category_name = :cath_name_)")
+@Query("INSERT INTO trans_sum_table (cust_name, total_trans, paid, trans_date, is_taken, is_paid_off, ref) " +
+        "SELECT  :custName, :totalTrans, :paid, :transDate, :isTaken, :isPaidOff, :ref " +
+        "WHERE NOT EXISTS (SELECT 1 FROM trans_sum_table WHERE ref = :ref)")
+ fun insertIfNotExist(
+    custName: String,
+    totalTrans: Double,
+    paid: Int,
+    transDate: String,
+    isTaken: Boolean,
+    isPaidOff: Boolean,
+    ref: String
+)
     //@Delete
     //fun delete(transactionSummary: TransactionSummary)
 
@@ -36,6 +49,9 @@ interface TransSumDao {
 
     @Query("SELECT * FROM trans_sum_table WHERE  is_taken = :bool")
     fun getActiveSum(bool:Boolean):LiveData<List<TransactionSummary>>
+
+    @Query("SELECT * FROM trans_sum_table WHERE  is_taken = :bool")
+    fun getActiveSumList(bool:Boolean):List<TransactionSummary>
 
     @Query("SELECT cust_name FROM trans_sum_table WHERE sum_id = :sum_id_")
     suspend fun getCustName(sum_id_:Int):String
@@ -63,6 +79,17 @@ interface TransSumDao {
     //suspend fun getSelected(id_:Int):TransactionSummary?
     //@Query("INSERT INTO trans_sum_table (cust_name,total_trans,paid,trans_date,is_taken,is_paid_off) SELECT '' as cust_name,0.0 as total_trans, 0 as paid, '' as trans_date, 0 as is_taken,0 as is_paid_off FROM trans_sum_table WHERE NOT EXISTS(SELECT sum_id FROM trans_sum_table WHERE sum_id =:sum_id) LIMIT 1  ")
     //fun insertNewCost(sum_id:Int)
+
+    @Transaction
+    suspend fun performTransaction(block: suspend () -> Unit) {
+        // Begin transaction
+        try {
+            block()
+        } catch (e: Exception) {
+            // Handle exceptions
+            throw e
+        }
+    }
 
 
 

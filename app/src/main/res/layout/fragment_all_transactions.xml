@@ -7,13 +7,36 @@
         <variable
             name="view_model"
             type="com.example.app21try6.transaction.transactionall.AllTransactionViewModel" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".transaction.transactionall.AllTransactionsFragment">
+        <Spinner
+            android:id="@+id/spinner_d"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+        <TextView
+            android:id="@+id/txtDatePick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="dateee"
+            android:onClick="@{()->view_model.onDatePickerClick()}"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search_allTrans"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spinner_d"
+            />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView_all_trans"
             android:layout_width="match_parent"
@@ -25,6 +48,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/search_allTrans" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

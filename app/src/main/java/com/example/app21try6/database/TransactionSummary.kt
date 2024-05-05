@@ -1,10 +1,24 @@
 package com.example.app21try6.database
 
+
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import java.util.*
+import androidx.room.TypeConverter
+
+class Converters {
+        @TypeConverter
+        fun toDate(timestamp: Long): Date {
+                return Date(timestamp)
+        }
+
+        @TypeConverter
+        fun toTimestamp(date: Date): Long {
+                return date.time
+        }
+}
 
 @Entity(tableName = "trans_sum_table")
 data class TransactionSummary (
@@ -22,4 +36,6 @@ data class TransactionSummary (
         var is_taken_:Boolean=false,
         @ColumnInfo(name = "is_paid_off")
         var is_paid_off:Boolean=false,
+        @ColumnInfo(name = "ref")
+        var ref:String=""
 )
