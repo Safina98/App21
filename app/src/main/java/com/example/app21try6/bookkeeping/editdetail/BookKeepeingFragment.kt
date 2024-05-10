@@ -113,7 +113,7 @@ class BookKeepeingFragment : Fragment() {
         builder.setMessage("Are you sure you want to Delete?")
                 .setCancelable(true)
                 .setPositiveButton("Yes") { dialog, id ->
-                    viewModel.deleteItemSummary(summary.id_m)
+                    viewModel.deleteItemSummary(summary)
                     Toast.makeText(context, "Deleted!!", Toast.LENGTH_SHORT).show()
                 }
                 .setNegativeButton("No") { dialog, id ->

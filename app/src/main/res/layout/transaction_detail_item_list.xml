@@ -21,7 +21,6 @@
             android:onLongClick="@{(view) -> longClickListener.onLongClick(view,item)}"
             android:id="@+id/txt_item_t_detail"
             style="@style/text_trans_detail_style"
-            android:onClick="@{}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"

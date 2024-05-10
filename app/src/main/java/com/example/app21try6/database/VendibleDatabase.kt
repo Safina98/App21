@@ -9,8 +9,8 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 
-@Database(entities = [Brand::class,Product::class,SubProduct::class,Category::class,TransactionSummary::class,TransactionDetail::class],version=24, exportSchema = true)
-@TypeConverters(Converters::class)
+@Database(entities = [Brand::class,Product::class,SubProduct::class,Category::class,TransactionSummary::class,TransactionDetail::class],version=26, exportSchema = true)
+@TypeConverters(DateTypeConverter::class)
 abstract class VendibleDatabase:RoomDatabase(){
     abstract val brandDao :BrandDao
     abstract val productDao:ProductDao
@@ -41,6 +41,11 @@ abstract class VendibleDatabase:RoomDatabase(){
                         database.execSQL("ALTER TABLE `trans_sum_table` ADD COLUMN `ref` TEXT NOT NULL DEFAULT ''")
                     }
                 }
+                val MIGRATION_24_25 = object : Migration(24, 25) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        database.execSQL("ALTER TABLE `trans_sum_table` ADD COLUMN `is_keeped` INTEGER NOT NULL DEFAULT 0")
+                    }
+                }
 
                 var instance = INSTANCE
                 if (instance == null) {
@@ -48,7 +53,7 @@ abstract class VendibleDatabase:RoomDatabase(){
                             context.applicationContext,
                             VendibleDatabase::class.java,
                             "vendible_table"
-                    )
+                    ).addMigrations(MIGRATION_24_25)
                         .fallbackToDestructiveMigration().build()
                     INSTANCE = instance
                     //instance = Room.databaseBuilder(context.applicationContext,VendibleDatabase::class.java,"mymaindb").allowMainThreadQueries().build()

@@ -25,6 +25,15 @@ fun setBackgroundColor(view: View, isPrepared: Boolean) {
     }
     view.setBackgroundColor(color)
 }
+@BindingAdapter("buttonBackgroundColor")
+fun setButtontBackgroundColor(view: View, isPrepared: Boolean) {
+    val color = if (isPrepared) {
+        ContextCompat.getColor(view.context,R.color.greenn)
+    } else {
+        ContextCompat.getColor(view.context, R.color.black)
+    }
+    view.setBackgroundColor(color)
+}
 
 @BindingAdapter("dateFormatted")
 fun bindDateFormatted(textView: TextView, date: Date?) {
@@ -33,6 +42,26 @@ fun bindDateFormatted(textView: TextView, date: Date?) {
         val dateString = dateFormatter.format(date)
         textView.text = dateString
     } else {
-        textView.text = ""
+        textView.text = "Pick a Date"
+    }
+}
+@BindingAdapter("startDatePickerFormat")
+fun bindStartDatePickerFormatted(textView: TextView, date: Date?) {
+    if (date != null) {
+        val dateFormatter = SimpleDateFormat("dd/MM/yyyy") // Change the date format according to your requirements
+        val dateString = dateFormatter.format(date)
+        textView.text = "from $dateString"
+    } else {
+        textView.text = "Pick Start Date"
+    }
+}
+@BindingAdapter("endDatePickerFormat")
+fun bindEndDatePickerFormatted(textView: TextView, date: Date?) {
+    if (date != null) {
+        val dateFormatter = SimpleDateFormat("dd/MM/yyyy") // Change the date format according to your requirements
+        val dateString = dateFormatter.format(date)
+        textView.text = "to  $dateString"
+    } else {
+        textView.text = "Pick End Date"
     }
 }

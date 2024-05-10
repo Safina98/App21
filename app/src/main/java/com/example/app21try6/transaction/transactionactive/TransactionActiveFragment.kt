@@ -58,7 +58,7 @@ class TransactionActiveFragment : Fragment() {
                     ?.forEachLine { line ->
                         if (!isFirstLine) {
                             val tokens: List<String> = line.split(",")
-                            Log.i("INSERTCSVPROB","tokens: $tokens")
+                           // Log.i("INSERTCSVPROB","tokens: $tokens")
                             tokensList.add(tokens)
                         }
                         isFirstLine = false
@@ -137,7 +137,9 @@ class TransactionActiveFragment : Fragment() {
                 adapter.notifyDataSetChanged()
             }
         })
-        viewModel.allTransFromDB.observe(viewLifecycleOwner){ Log.i("INSERTCSVPROB","AllTansSum: $it") }
+        viewModel.allTransFromDB.observe(viewLifecycleOwner){
+            //Log.i("INSERTCSVPROB","AllTansSum: $it")
+            }
 
         viewModel.is_image_clicked.observe(this.viewLifecycleOwner, Observer {
             if (it == true) {

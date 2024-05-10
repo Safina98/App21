@@ -7,6 +7,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
+import com.example.app21try6.database.ProductDao
+import com.example.app21try6.database.SubProductDao
+import com.example.app21try6.database.Summary
+import com.example.app21try6.database.SummaryDbDao
 import com.example.app21try6.database.TransDetailDao
 import com.example.app21try6.database.TransSumDao
 import com.example.app21try6.database.TransactionDetail
@@ -16,14 +20,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
 
 class TransactionDetailViewModel (application: Application,
                                   private val datasource1: TransSumDao,
-                                  private val datasource2: TransDetailDao
-                                  , var id:Int):AndroidViewModel(application){
+                                  private val datasource2: TransDetailDao,
+                                  private val datasource3: SummaryDbDao,
+                                  private val datasource4: ProductDao,
+                                  private val datasource5: SubProductDao,
+                                  var id:Int):AndroidViewModel(application){
 
     val transDetail = datasource2.selectATransDetail(id)
     private val _navigateToEdit = MutableLiveData<Int>()
@@ -38,21 +46,68 @@ class TransactionDetailViewModel (application: Application,
 
     fun onNavigateToEdit(){
         _navigateToEdit.value = id
-        Log.i("SUMIDPROB","TransactionDetailViewModel id ${_navigateToEdit.value}")
+
     }
     fun onNavigatedToEdit(){this._navigateToEdit.value = null}
     private val _booleanValue = MutableLiveData<Boolean>()
-
-
 
     fun updateBooleanValue() {
        viewModelScope.launch {
            var transSum = trans_sum.value
           transSum?.is_taken_ = transSum?.is_taken_?.not() ?: true
            transSum?.let { updataTransSumDB(it) }
-           Log.i("DataProb","updateBooleanValue: $transSum")
+
        }
     }
+    fun getYearFromDate(date: Date): Int {
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+        return calendar.get(Calendar.YEAR)
+    }
+
+    fun onBtnPembukuanClick(){
+        viewModelScope.launch {
+            val transSum = trans_sum.value
+            if (transSum?.is_keeped==false){
+            transSum.is_keeped = transSum.is_keeped.not() ?: true
+            transSum.let { updataTransSumDB(it) }
+               insertToSummary()
+            }
+        }
+    }
+    fun insertToSummary(){
+        viewModelScope.launch {
+            val calendar = Calendar.getInstance()
+            calendar.time = trans_sum.value!!.trans_date
+            val dateFormat = SimpleDateFormat("MMMM", Locale.getDefault())
+
+            transDetail.value?.forEach {it->
+               val summary = Summary()
+                Log.i("INSERTSUMMARYBUG","insertSummary summary ${summary}")
+               summary.year= calendar.get(Calendar.YEAR)
+               summary.month = dateFormat.format(trans_sum.value!!.trans_date)
+               summary.month_number = calendar.get(Calendar.MONTH)+1
+               summary.day = calendar.get(Calendar.DATE)
+               summary.day_name = trans_sum.value!!.trans_date.toString()
+               summary.item_name = getProductName(it.trans_item_name)
+               summary.price = it.trans_price.toDouble()
+               summary.item_sold = it.qty
+               summary.total_income = it.total_price
+               insertItemToSummaryDB(summary)
+           }
+        }
+    }
+    private suspend fun getProductName(subName:String):String{
+        return withContext(Dispatchers.IO){
+            datasource5.getProductName(subName)
+        }
+    }
+    private suspend fun insertItemToSummaryDB(summary: Summary){
+        withContext(Dispatchers.IO){
+            datasource3.insertOrUpdate(summary)
+        }
+    }
+
     fun updateTransDetail(transdetail:TransactionDetail){
         viewModelScope.launch {
             updateTransDetailDB(transdetail)
@@ -101,8 +156,6 @@ class TransactionDetailViewModel (application: Application,
         builder.append("-".repeat(getPadding("","Left",50))+"\n")
         // Receipt items
         var x ="x"
-        var arp = "@"
-        var rp = "Rp."
         if (items != null) {
             for (item in items) {
                 val itemTotalPrice = item.qty * item.trans_price

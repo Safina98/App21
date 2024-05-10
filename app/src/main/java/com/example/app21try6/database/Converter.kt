@@ -5,15 +5,22 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class Converters {
-    @TypeConverter
-    fun fromTimestamp(value: Long?): Date? {
-        return value?.let { Date(it) }
-    }
+class DateTypeConverter {
+    companion object {
+        private const val dateFormat = "yyyy-MM-dd"
+        private val formatter = SimpleDateFormat(dateFormat, Locale.getDefault())
 
-    @TypeConverter
-    fun dateToTimestamp(date: Date?): Long? {
-        return date?.time
+        @TypeConverter
+        @JvmStatic
+        fun fromDate(date: Date?): String? {
+            return date?.let { formatter.format(it) }
+        }
+
+        @TypeConverter
+        @JvmStatic
+        fun toDate(dateString: String?): Date? {
+            return dateString?.let { formatter.parse(it) }
+        }
     }
 }
 

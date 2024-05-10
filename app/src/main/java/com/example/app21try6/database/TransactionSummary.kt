@@ -10,7 +10,7 @@ import androidx.room.TypeConverters
 
 
 @Entity(tableName = "trans_sum_table")
-@TypeConverters(Converters::class)
+@TypeConverters(DateTypeConverter::class)
 data class TransactionSummary (
         @PrimaryKey(autoGenerate = true)
         var sum_id:Int = 0,
@@ -26,6 +26,8 @@ data class TransactionSummary (
         var is_taken_:Boolean=false,
         @ColumnInfo(name = "is_paid_off")
         var is_paid_off:Boolean=false,
+        @ColumnInfo(name = "is_keeped")
+        var is_keeped:Boolean=false,
         @ColumnInfo(name = "ref")
         var ref:String=""
 )

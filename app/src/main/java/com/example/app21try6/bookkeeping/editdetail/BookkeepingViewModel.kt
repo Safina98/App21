@@ -124,10 +124,10 @@ class BookkeepingViewModel(val database: SummaryDbDao,
         viewModelScope.launch { clear()} }
     //delete today
     fun clearSummary(){
-       // edited viewModelScope.launch { clearToday(date[0].toInt(), date[1], date[2].toInt())}
+   viewModelScope.launch { clearToday(date.value!![0].toInt(), date.value!![1], date.value!![2].toInt())}
     }
-    fun deleteItemSummary(item_name: Int){
-      //edited  viewModelScope.launch { deleteItemSummary_(date[0].toInt(), date[1], date[2].toInt(),item_name)}
+    fun deleteItemSummary(item_name: Summary){
+      viewModelScope.launch { deleteItemSummary_(item_name.year,item_name.month, item_name.day,item_name.id_m)}
     }
     fun addBtnClicked(summary: Summary){
         viewModelScope.launch {
@@ -317,6 +317,10 @@ class BookkeepingViewModel(val database: SummaryDbDao,
             }
         }
     }
+
+    fun onClear() { viewModelScope.launch {clear() } }
+    //suspend fun clear() { withContext(Dispatchers.IO) { database.clear() } }
+
     fun insertCSV(token: List<String>){
         viewModelScope.launch {
             try {

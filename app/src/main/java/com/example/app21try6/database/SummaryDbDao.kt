@@ -1,5 +1,6 @@
 package com.example.app21try6.database
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.room.Dao
@@ -16,6 +17,27 @@ interface SummaryDbDao {
     fun insert(summary: Summary)
     @Update
     fun update(summary: Summary)
+
+
+    @Query("SELECT * FROM summary_table WHERE item_name = :itemName AND year =:year AND month=:month_n AND day=:day AND price = :price LIMIT 1")
+    fun getSummaryByItemNameAndDayName(itemName: String, year: Int, month_n:String, day: Int,price:Double): Summary?
+
+    // Function to insert or update based on existence of item_name and day_name combination
+    @Transaction
+    fun insertOrUpdate(summary: Summary) {
+        val existingSummary = getSummaryByItemNameAndDayName(summary.item_name, summary.year,summary.month,summary.day,summary.price)
+
+        if (existingSummary == null) {
+            insert(summary)
+        } else {
+            // Row exists, update existing row
+            summary.id_m = existingSummary.id_m // Ensure the ID remains the same
+            summary.item_sold = summary.item_sold+existingSummary.item_sold
+            summary.total_income = summary.item_sold*summary.price
+            update(summary)
+        }
+    }
+
     @Query("SELECT * from summary_table WHERE id_m = :key")
     fun get(key:Long):Summary?
     @Query("DELETE FROM summary_table")

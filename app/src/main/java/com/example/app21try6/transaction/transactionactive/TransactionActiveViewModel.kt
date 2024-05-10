@@ -20,6 +20,7 @@ import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.*
 
 class TransactionActiveViewModel(
@@ -108,15 +109,11 @@ class TransactionActiveViewModel(
     }
     fun onAddNewTransactionClick(){
         viewModelScope.launch {
-            val sdf = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT)
-            val currentDate = sdf.parse(sdf.format(Date()))
             var trans =   TransactionSummary()
-            trans.trans_date = currentDate
+            trans.trans_date = Date()
             trans.ref =UUID.randomUUID().toString()
             var id =insertNewSumAndGetId(trans).toInt()
             trans.sum_id = id
-            Log.i("INSERTCSVPROB","transDetail transSUm: $trans")
-            //var id = getLastInsertedID()
             _navigateToTransEdit.value = id
         }
     }
@@ -159,13 +156,16 @@ class TransactionActiveViewModel(
                 datasource1.performTransaction {
                     val batchSize = 100 // Define your batch size here
                     for (i in 0 until tokensList.size step batchSize) {
+                       // Log.i("INSERTCSVPROB","i: $i")
                         val batch = tokensList.subList(i, minOf(i + batchSize, tokensList.size))
+                      //  Log.i("INSERTCSVPROB","batch: $batch")
                         insertBatch(batch)
                     }
                 }
               //  _insertionCompleted.value = true
             } catch (e: Exception) {
                 Toast.makeText(getApplication(), e.toString(), Toast.LENGTH_LONG).show()
+                Log.i("INSERTCSVPROB","excepttions: $e")
             }finally {
               //  _isLoading.value = false // Hide loading indicator
             }
@@ -176,33 +176,37 @@ class TransactionActiveViewModel(
             insertCSVN(tokens)
         }
     }
+    fun getDate(dateString:String):Date{
+        val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        return inputFormat.parse(dateString)
+    }
     private suspend fun insertCSVN(token: List<String>) {
         val transactionSummary=TransactionSummary()
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy") // Adjust the format according to your CSV date format
-        val date = dateFormat.parse(token[0])
-        transactionSummary.trans_date = date
+
+        transactionSummary.trans_date =getDate(token[0])
         transactionSummary.cust_name = token[1]
         transactionSummary.total_trans = token[2].toDouble()
         transactionSummary.paid = token[3].toInt()
-        transactionSummary.is_taken_ = if(token[4]=="TRUE") true else false
-        transactionSummary.is_paid_off  = if(token[5]=="TRUE") true else false
+        transactionSummary.is_taken_ = false//token[4].toBooleanStrictOrNull() ?: false
+        transactionSummary.is_paid_off  = token[5].toBooleanStrictOrNull() ?: false
         transactionSummary.ref = token[11]
+        transactionSummary.is_keeped = false//token[12].toBooleanStrictOrNull() ?: false
         val transactionDetail = TransactionDetail()
         // "${j.trans_item_name},${j.trans_price},${j.qty},${j.total_price},${j.is_prepared}"
         transactionDetail.trans_item_name = token[6]
         transactionDetail.trans_price = token[7].toInt()
         transactionDetail.qty = token[8].toDouble()
         transactionDetail.total_price = token[9].toDouble()
-        transactionDetail.is_prepared =  if(token[10]=="TRUE") true else false
-
-        datasource1.insertIfNotExist(transactionSummary.cust_name,transactionSummary.total_trans,transactionSummary.paid,transactionSummary.trans_date,transactionSummary.is_taken_,transactionSummary.is_paid_off,transactionSummary.ref)
+        transactionDetail.is_prepared =  token[10].toBooleanStrictOrNull() ?: false
+        Log.i("INSERTCSVPROB","batch: $transactionSummary")
+        datasource1.insertIfNotExist(transactionSummary.cust_name,transactionSummary.total_trans,transactionSummary.paid,transactionSummary.trans_date,transactionSummary.is_taken_,transactionSummary.is_paid_off,transactionSummary.is_keeped,transactionSummary.ref)
         //datasource2.insert(transactionDetail)
         datasource2.insertTransactionDetailWithRef(transactionSummary.ref, transactionDetail.trans_item_name, transactionDetail.qty, transactionDetail.trans_price, transactionDetail.total_price, transactionDetail.is_prepared)
 
     }
     fun writeCSV(file: File) {
             try {
-                val content = "Date,Customer, Total Trans, Paid, isTaken,isPaidOff,Item Name,Item Price,QTY,Total Price,is Prepared,ref"
+                val content = "Date,Customer, Total Trans, Paid, isTaken,isPaidOff,Item Name,Item Price,QTY,Total Price,is Prepared,ref,isKeeped"
                 val fw = FileWriter(file.absoluteFile)
                 val bw = BufferedWriter(fw)
                 bw.write(content)
@@ -214,7 +218,7 @@ class TransactionActiveViewModel(
                         if (j.trans_detail_id!=null) {
 
                             val dateString = dateFormatter.format(j.trans_date)
-                            val line = "$dateString,${j.cust_name},${j.total_trans},${j.paid},${j.is_taken},${j.is_paid_off},${j.trans_item_name},${j.trans_price},${j.qty},${j.total_price},${j.is_prepared},${j.ref}"
+                            val line = "$dateString,${j.cust_name},${j.total_trans},${j.paid},${j.is_taken},${j.is_paid_off},${j.trans_item_name},${j.trans_price},${j.qty},${j.total_price},${j.is_prepared},${j.ref},${j.is_keeped}"
                             Log.i("INSERTCSVPROB", "line: $line")
                             Log.i("INSERTCSVPROB", "j: $j")
                             bw.write(line)

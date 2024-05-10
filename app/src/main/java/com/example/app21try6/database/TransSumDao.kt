@@ -16,8 +16,8 @@ interface TransSumDao {
     fun update(transactionSummary: TransactionSummary)
 // @Query("INSERT INTO product_table (product_name,product_price,checkBoxBoolean,best_selling,brand_code,cath_code) SELECT :product_name_ as product_name,:product_price_ as product_price, 0 as checkBoxBoolean,:best_selling_ as best_selling,(SELECT brand_id FROM brand_table WHERE brand_name = :brand_code_ limit 1) as brand_code,(SELECT category_id FROM category_table WHERE category_name = :cath_code_ limit 1) as cath_code WHERE NOT EXISTS (SELECT 1 FROM product_table WHERE product_name = :product_name_)")
     // @Query("INSERT INTO category_table(category_name) SELECT :cath_name_ WHERE NOT EXISTS (SELECT 1 FROM category_table WHERE category_name = :cath_name_)")
-@Query("INSERT INTO trans_sum_table (cust_name, total_trans, paid, trans_date, is_taken, is_paid_off, ref) " +
-        "SELECT  :custName, :totalTrans, :paid, :transDate, :isTaken, :isPaidOff, :ref " +
+@Query("INSERT INTO trans_sum_table (cust_name, total_trans, paid, trans_date, is_taken, is_paid_off, is_keeped,ref) " +
+        "SELECT  :custName, :totalTrans, :paid, :transDate, :isTaken, :isPaidOff,:isKeeped, :ref " +
         "WHERE NOT EXISTS (SELECT 1 FROM trans_sum_table WHERE ref = :ref)")
  fun insertIfNotExist(
     custName: String,
@@ -26,8 +26,8 @@ interface TransSumDao {
     transDate: Date,
     isTaken: Boolean,
     isPaidOff: Boolean,
-    ref: String
-)
+    isKeeped: Boolean,
+    ref: String)
     //@Delete
     //fun delete(transactionSummary: TransactionSummary)
 
@@ -80,6 +80,18 @@ interface TransSumDao {
     //suspend fun getSelected(id_:Int):TransactionSummary?
     //@Query("INSERT INTO trans_sum_table (cust_name,total_trans,paid,trans_date,is_taken,is_paid_off) SELECT '' as cust_name,0.0 as total_trans, 0 as paid, '' as trans_date, 0 as is_taken,0 as is_paid_off FROM trans_sum_table WHERE NOT EXISTS(SELECT sum_id FROM trans_sum_table WHERE sum_id =:sum_id) LIMIT 1  ")
     //fun insertNewCost(sum_id:Int)
+
+    @Query("SELECT * FROM trans_sum_table WHERE trans_date >= :startOfDay AND trans_date < :startOfNextDay")
+    fun getTransactionsForToday(startOfDay: Date, startOfNextDay: Date): List<TransactionSummary>
+
+
+    @Query("SELECT * FROM trans_sum_table t " +
+            " WHERE" +
+            " (:startDate IS NULL OR t.trans_date >= :startDate) " +
+            "AND (:endDate IS NULL OR  t.trans_date <= :endDate) ORDER BY t.trans_date DESC")
+    fun getFilteredData3( startDate: String?, endDate: String?): List<TransactionSummary>
+
+
 
     @Transaction
     suspend fun performTransaction(block: suspend () -> Unit) {

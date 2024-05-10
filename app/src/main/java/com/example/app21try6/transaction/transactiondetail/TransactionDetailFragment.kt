@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.app21try6.database.SummaryDatabase
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionDetailBinding
 import java.io.OutputStream
@@ -45,10 +46,13 @@ class TransactionDetailFragment : Fragment() {
             com.example.app21try6.R.layout.fragment_transaction_detail,container,false)
         val application= requireNotNull(this.activity).application
         val id= arguments?.let{ TransactionDetailFragmentArgs.fromBundle(it).id}
-        Log.i("SUMIDPROB","TransactionDetailFragment argument id $id")
         val datasource1 = VendibleDatabase.getInstance(application).transSumDao
         val datasource2 = VendibleDatabase.getInstance(application).transDetailDao
-        val viewModelFactory = TransactionDetailViewModelFactory(application,datasource1,datasource2,id!!)
+        val datasource3 = SummaryDatabase.getInstance(application).summaryDbDao
+        val datasource4 = VendibleDatabase.getInstance(application).productDao
+        val datasource5 = VendibleDatabase.getInstance(application).subProductDao
+
+        val viewModelFactory = TransactionDetailViewModelFactory(application,datasource1,datasource2,datasource3,datasource4,datasource5,id!!)
         viewModel =ViewModelProvider(this,viewModelFactory).get(TransactionDetailViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel

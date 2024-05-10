@@ -15,4 +15,10 @@
         <item>11</item>
         <item>12</item>
     </string-array>
+
+    <string-array name="spinner_all_trans">
+        <item>ALL</item>
+        <item>Hari Ini</item>
+        <item>Kemarin</item>
+    </string-array>
 </resources>

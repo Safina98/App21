@@ -24,7 +24,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 android:textAlignment="viewEnd"
                 android:textSize="24sp" />
-
             <TextView
                 android:id="@+id/txt_date"
                 android:layout_width="match_parent"
@@ -52,7 +51,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/txt_bayar_sum"
             app:layout_constraintTop_toBottomOf="@id/recyclerView_detail_trans"
-            android:textSize="36sp" />
+            android:textSize="24sp" />
         <TextView
             android:id="@+id/txt_bayar_sum"
             android:layout_width="wrap_content"
@@ -62,19 +61,36 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/txt_total_sum"
             app:layout_constraintBottom_toTopOf="@+id/btn_edit_trans"
-            android:textSize="36sp" />
+            android:textSize="24sp" />
 
         <Button
             android:id="@+id/btn_add_new_brand_"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:onClick="@{()->viewModel.updateBooleanValue()}"
             android:contentDescription="@string/submit"
+            android:text="diambil"
+            android:onClick="@{()->viewModel.updateBooleanValue()}"
+            app:buttonBackgroundColor="@{viewModel.trans_sum.is_taken_}"
             app:layout_constraintBottom_toTopOf="@+id/btn_edit_trans"
+            app:layout_constraintEnd_toEndOf="@+id/btn_edit_trans"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txt_total_sum"
-            app:backgroundColor="@{viewModel.trans_sum.is_taken_}" />
+            app:layout_constraintTop_toBottomOf="@id/txt_total_sum" />
+
+        <Button
+            android:id="@+id/btn_insert_to_sum_"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:backgroundTint="@color/black"
+            android:contentDescription="@string/submit"
+            android:onClick="@{()->viewModel.onBtnPembukuanClick()}"
+            android:text="pembukuan"
+            app:buttonBackgroundColor="@{viewModel.trans_sum.is_keeped}"
+            app:layout_constraintBottom_toTopOf="@+id/btn_edit_trans"
+            app:layout_constraintEnd_toEndOf="@+id/btn_kirim"
+            app:layout_constraintStart_toEndOf="@id/btn_add_new_brand_"
+            app:layout_constraintTop_toBottomOf="@id/txt_total_sum" />
 
 
         <!-- android:onClick="@{()->viewModel.onNavigateToEdit(0)}"  -->
