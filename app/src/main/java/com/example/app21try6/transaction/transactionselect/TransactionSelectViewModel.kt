@@ -13,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.app21try6.database.*
 import kotlinx.coroutines.*
+import java.util.Date
 import java.util.Locale
 
 class TransactionSelectViewModel(
@@ -47,28 +48,10 @@ class TransactionSelectViewModel(
 
     init {
         getKategoriEntries()
-        Log.i("SUMIDPROB","TransactionProductViewModel init sum_id $sum_id")
-        Log.i("SUMIDPROB","TransactionProductViewModel rv _sum_id.value ${_sumId.value}")
         unCheckedAllSubs()
     }
     fun updateTransDetailList(updatedList: List<TransSelectModel>) {
         transSelectModel.value = updatedList
-    }
-    fun incrementQuantity(trans: TransSelectModel) {
-       // trans.qty++
-        viewModelScope.launch {
-            //trans.trans_detail_id = getLastInsertedIdFormBD() ?:
-
-            updateTransDetaill(trans)
-        }
-    }
-    fun checkBoxClicked(trans: TransSelectModel) {
-        // trans.qty++
-        viewModelScope.launch {
-           // trans.trans_detail_id = getLastInsertedIdFormBD() ?: -1
-
-            updateTransDetaill(trans)
-        }
     }
 
     fun update(trans: TransSelectModel) {
@@ -80,15 +63,8 @@ class TransactionSelectViewModel(
             val index = updatedList.indexOfFirst { it.sub_product_id == trans.sub_product_id }
             if (index != -1) {
                 updatedList[index] = trans
-                Log.i("CHECKBOXPROB","updateTransDetail: $trans")
                 updateTransDetailList(updatedList)
             }
-        }
-
-    }
-    private suspend fun getLastInsertedIdFormBD():Int?{
-        return withContext(Dispatchers.IO){
-            database6.getLastInsertedId()
         }
 
     }
@@ -98,7 +74,6 @@ class TransactionSelectViewModel(
            var list = withContext(Dispatchers.IO){
                database6.getSubProductM(productId,_sumId.value ?: 0)
            }
-            Log.i("DataProb","updateTransDetail $list")
             transSelectModel.value = list
         }
     }
@@ -110,7 +85,6 @@ class TransactionSelectViewModel(
     fun setProductSumId(id:Int?){
         if (id!=null)
         { _sumId.value = id!!
-            Log.i("SUMIDPROB","TransactionSelectViewModel SetSumId  ${_sumId.value}")
         }
     }
 
@@ -119,7 +93,6 @@ class TransactionSelectViewModel(
             var t = converter(s)
             var id =s.trans_detail_id
             if (id==0L) id = insertDetailToDBandGetId(t) else _updateTransDetail(t)
-
             s.trans_detail_id  = id ?: -1L
             updateTransDetaill(s)
         }
@@ -132,6 +105,7 @@ class TransactionSelectViewModel(
         t.total_price = s.qty*s.item_price
         t.trans_item_name = s.item_name
         t.trans_price = s.item_price
+        t.trans_detail_date = Date()
         return t
     }
 

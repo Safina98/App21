@@ -131,7 +131,7 @@ class BrandStockViewModel(
                 val category = Category()
                 category.category_name = cath_name
                 try {
-                    Log.i("BrandProb","insertItenCath "+category)
+                    //Log.i("BrandProb","insertItenCath "+category)
                     insertCath(category)
                 } catch (e: SQLiteException) {
                     Toast.makeText(getApplication(), e.toString(), Toast.LENGTH_LONG).show()
@@ -143,11 +143,9 @@ class BrandStockViewModel(
 
 
 
-
-
     fun writeCSV(file: File) {
         try {
-            val content = "Kategori,Brand,Product, Price, BestSelling,SubProduct,Roll Utuh,Roll Besar TK,Roll Sedang TK,Roll Kecil TK,Roll Besar GDG,Roll Sedang GDG,Roll Kecil GDG"
+            val content = "Kategori,Brand,Product, Price, BestSelling,SubProduct,Roll Utuh,Roll Besar TK,Roll Sedang TK,Roll Kecil TK,Roll Besar GDG,Roll Sedang GDG,Roll Kecil GDG,Capital"
             val fw = FileWriter(file.absoluteFile)
             val bw = BufferedWriter(fw)
             bw.write(content)
@@ -155,7 +153,7 @@ class BrandStockViewModel(
 
             for (j in all_item.value!!){
                 //bw.newLine()
-                var content = "${j.category},${j.brand},${j.product},${j.price},${j.bestSelling},${j.subProduct},${j.roll_u},${j.roll_b_t},${j.roll_s_t},${j.roll_k_t},${j.roll_b_g},${j.roll_s_g},${j.roll_k_g}"
+                var content = "${j.category},${j.brand},${j.product},${j.price},${j.bestSelling},${j.subProduct},${j.roll_u},${j.roll_b_t},${j.roll_s_t},${j.roll_k_t},${j.roll_b_g},${j.roll_s_g},${j.roll_k_g}.${j.capital}"
                 bw.write(content)
                 bw.newLine()
             }
@@ -166,65 +164,6 @@ class BrandStockViewModel(
         } catch (e: IOException) {
             e.printStackTrace()
             Toast.makeText(getApplication(),"fAILED",Toast.LENGTH_SHORT).show()
-        }
-    }
-    fun insertCSVO(token: List<String>){
-        uiScope.launch {
-            try {
-                val product= Product()
-                product.product_name = token[2].uppercase().trim()
-                product.product_price = token[3].toInt()
-                product.bestSelling = token[4]=="TRUE"
-                val subProduct = SubProduct()
-                subProduct.sub_name = token[5].uppercase().trim()
-                subProduct.roll_u = token[6].toInt()
-                subProduct.roll_bt = token[7].toInt()
-                subProduct.roll_st = token[8].toInt()
-                subProduct.roll_kt = token[9].toInt()
-                subProduct.roll_bg = token[10].toInt()
-                subProduct.roll_sg = token[11].toInt()
-                subProduct.roll_kg = token[12].toInt()
-                insertCathNew(token[0].uppercase().trim())
-                insertBrandNew(token[1].uppercase().trim(),token[0].uppercase().trim())
-                inserProductNew(product,token[1].uppercase().trim(),token[0].uppercase().trim())
-                insertSubProductNew(subProduct,product.product_name,token[1].uppercase().trim(),token[0].uppercase().trim())
-            } catch (e: SQLiteException) {
-                Log.i("message_e", "message: $e")
-                Toast.makeText(getApplication(),e.toString(),Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-
-    fun insertCSV(token: List<String>){
-        uiScope.launch {
-            try {
-                val product= Product()
-                product.product_name = token[2].uppercase().trim()
-                product.product_price = token[3].toInt()
-                product.bestSelling = token[4]=="TRUE"
-                val subProduct = SubProduct()
-                subProduct.sub_name = token[5].uppercase().trim()
-                subProduct.roll_u = token[6].toInt()
-                subProduct.roll_bt = token[7].toInt()
-                subProduct.roll_st = token[8].toInt()
-                subProduct.roll_kt = token[9].toInt()
-                subProduct.roll_bg = token[10].toInt()
-                subProduct.roll_sg = token[11].toInt()
-                subProduct.roll_kg = token[12].toInt()
-                // Start transaction
-                //startTransaction()
-                insertCathNew(token[0].uppercase().trim())
-                insertBrandNew(token[1].uppercase().trim(),token[0].uppercase().trim())
-                inserProductNew(product,token[1].uppercase().trim(),token[0].uppercase().trim())
-                insertSubProductNew(subProduct,product.product_name,token[1].uppercase().trim(),token[0].uppercase().trim())
-                // Commit transaction
-               //commitTransaction()
-            } catch (e: SQLiteException) {
-                // Rollback transaction in case of exception
-                //rollbackTransaction()
-                Log.i("message_e", "message: $e")
-                Toast.makeText(getApplication(),e.toString(),Toast.LENGTH_LONG).show()
-            }
         }
     }
 
@@ -241,6 +180,7 @@ class BrandStockViewModel(
                 }
                 _insertionCompleted.value = true
             } catch (e: Exception) {
+                Log.i("INSERTCSVPROB","exception: $e")
                 Toast.makeText(getApplication(), e.toString(), Toast.LENGTH_LONG).show()
             }finally {
                 _isLoading.value = false // Hide loading indicator
@@ -254,10 +194,12 @@ class BrandStockViewModel(
         }
     }
     private suspend fun insertCSVN(token: List<String>) {
+       // Log.i("INSERTCSVPROB","brand token: $token")
         val product= Product()
         product.product_name = token[2].uppercase().trim()
         product.product_price = token[3].toInt()
         product.bestSelling = token[4]=="TRUE"
+        product.product_capital = 0//token[13].toInt()
         val subProduct = SubProduct()
         subProduct.sub_name = token[5].uppercase().trim()
         subProduct.roll_u = token[6].toInt()
@@ -271,7 +213,7 @@ class BrandStockViewModel(
         var categoryName = token[0].uppercase().trim()
         database1.insertIfNotExist(categoryName)
         database2.insertIfNotExist(brand_name,categoryName)
-        database3.insertIfNotExist(product.product_name,product.product_price,product.bestSelling,brand_name,categoryName)
+        database3.insertIfNotExist(product.product_name,product.product_price,product.product_capital,product.bestSelling,brand_name,categoryName)
         database4.insertIfNotExist(subProduct.sub_name,subProduct.warna,subProduct.ket,subProduct.roll_u,subProduct.roll_bt,subProduct.roll_st,subProduct.roll_kt,subProduct.roll_bg,subProduct.roll_sg,subProduct.roll_kg,product.product_name,brand_name,categoryName)
 
     }
@@ -282,7 +224,7 @@ class BrandStockViewModel(
     private suspend fun insertCath(category: Category){ withContext(Dispatchers.IO){ database1.insert(category) } }
     private suspend fun insertCathNew(categoryName: String){ withContext(Dispatchers.IO) { database1.insertIfNotExist(categoryName) }}
     private suspend fun insertBrandNew(brand_name: String,categoryName: String){ withContext(Dispatchers.IO) { database2.insertIfNotExist(brand_name, categoryName) }}
-    private suspend fun inserProductNew(product: Product,brand_name: String,categoryName: String){ withContext(Dispatchers.IO){ database3.insertIfNotExist(product.product_name,product.product_price,product.bestSelling,brand_name,categoryName)}}
+    private suspend fun inserProductNew(product: Product,brand_name: String,categoryName: String){ withContext(Dispatchers.IO){ database3.insertIfNotExist(product.product_name,product.product_price,product.product_capital,product.bestSelling,brand_name,categoryName)}}
     private suspend fun insertSubProductNew(subProduct: SubProduct,product_name:String,brand_name: String,categoryName: String){
         withContext(Dispatchers.IO){
             database4.insertIfNotExist(subProduct.sub_name,subProduct.warna,subProduct.ket,subProduct.roll_u,subProduct.roll_bt,subProduct.roll_st,subProduct.roll_kt,subProduct.roll_bg,subProduct.roll_sg,subProduct.roll_kg,product_name,brand_name,categoryName)

@@ -3,6 +3,7 @@ package com.example.app21try6.transaction.transactiondetail
 import android.Manifest
 import android.R.attr.value
 import android.app.Activity.RESULT_OK
+import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothClass
 import android.bluetooth.BluetoothDevice
@@ -10,6 +11,7 @@ import android.bluetooth.BluetoothSocket
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -23,9 +25,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.app21try6.R
 import com.example.app21try6.database.SummaryDatabase
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionDetailBinding
+import com.google.android.material.textfield.TextInputEditText
 import java.io.OutputStream
 import java.util.*
 
@@ -49,7 +53,7 @@ class TransactionDetailFragment : Fragment() {
         val datasource1 = VendibleDatabase.getInstance(application).transSumDao
         val datasource2 = VendibleDatabase.getInstance(application).transDetailDao
         val datasource3 = SummaryDatabase.getInstance(application).summaryDbDao
-        val datasource4 = VendibleDatabase.getInstance(application).productDao
+        val datasource4 = VendibleDatabase.getInstance(application).paymentDao
         val datasource5 = VendibleDatabase.getInstance(application).subProductDao
 
         val viewModelFactory = TransactionDetailViewModelFactory(application,datasource1,datasource2,datasource3,datasource4,datasource5,id!!)
@@ -62,10 +66,11 @@ class TransactionDetailFragment : Fragment() {
         } else {
             requestPermission()
         }
-        val adapter = TransactionDetailAdapter(TransDetailClickListener {
+        val adapter = TransactionDetailAdapter(
+            viewModel.trans_sum.value?.is_paid_off,
+            TransDetailClickListener {
 
         }, TransDetailLongListener {it->
-
             it.is_prepared = it.is_prepared.not()
             viewModel.updateTransDetail(it)
         }
@@ -73,7 +78,7 @@ class TransactionDetailFragment : Fragment() {
         binding.recyclerViewDetailTrans.adapter = adapter
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
-        binding.btnCetak.setOnClickListener {
+        binding.btnPrintNew.setOnClickListener {
             printReceipt()
         }
         viewModel.transDetail.observe(viewLifecycleOwner, Observer {
@@ -82,10 +87,16 @@ class TransactionDetailFragment : Fragment() {
                 adapter.notifyDataSetChanged()
             }
         })
-
+        val paymentAdapter = PaymentAdapter(viewModel.trans_sum.value?.is_paid_off,TransPaymentClickListener {  },TransPaymentLongListener {  })
+        binding.recyclerViewBayar.adapter = paymentAdapter
         viewModel.trans_sum.observe(viewLifecycleOwner){
-            Log.i("INSERTCSVPROB","transDetail transSUm: $it")
         }
+        viewModel.paymentModel.observe(viewLifecycleOwner, Observer {
+            it?.let{
+                paymentAdapter.submitList(it)
+                Toast.makeText(context,it.toString(),Toast.LENGTH_SHORT).show()
+            }
+        })
         viewModel.sendReceipt.observe(viewLifecycleOwner){
             if (it==true){
                 var exportedString=viewModel.generateReceiptText()
@@ -94,40 +105,36 @@ class TransactionDetailFragment : Fragment() {
         }
         viewModel.navigateToEdit.observe(viewLifecycleOwner, Observer {
             it?.let {
-                Log.i("SUMIDPROB","TransactionDetailFragment Navigate to edit oberver $it")
                 this.findNavController().navigate(TransactionDetailFragmentDirections.actionTransactionDetailFragmentToTransactionEditFragment(id))
                 viewModel.onNavigatedToEdit()
             }
         })
-
+        viewModel.isBtnBayarCLicked.observe(viewLifecycleOwner, Observer {
+            if (it==true){
+                showBayarDialog()
+                viewModel.onBtnBayarClicked()
+            }
+        })
         return binding.root
     }
-/*
-    fun printText(bluetoothAdapter: BluetoothAdapter,printerAddress: String, text: String) {
-        val printerDevice: BluetoothDevice? = bluetoothAdapter.getRemoteDevice(printerAddress)
 
-        val uuid: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB") // SPP UUID
-        if (checkPermission())
-        {
-            val socket: BluetoothSocket? = printerDevice?.createRfcommSocketToServiceRecord(uuid)
-
-            socket?.use { sock ->
-                try {
-                    sock.connect()
-                    val outputStream: OutputStream = sock.outputStream
-                    outputStream.write(text.toByteArray())
-                    Log.i("PRINTB","try "+text)
-                } catch (e: Exception) {
-                    Log.i("PRINTB","cathc "+e)
-                    // Handle connection errors
-                }
-            }
+    private fun showBayarDialog(){
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Update")
+        val inflater = LayoutInflater.from(context)
+        val view = inflater.inflate(R.layout.update, null)
+        val textPrice = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
+        textPrice.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+        builder.setView(view)
+        builder.setPositiveButton("Update") { dialog, which ->
+            if(textPrice.text.toString().toIntOrNull()!=null){
+                viewModel.bayar(textPrice.text.toString().toInt())
+            }            }
+        builder.setNegativeButton("No") { dialog, which ->
         }
-        }
-
- */
-
-
+        val alert = builder.create()
+        alert.show()
+    }
     private fun printReceipt() {
         // Check if Bluetooth is enabled
         if (!bluetoothAdapter.isEnabled) {
@@ -139,7 +146,6 @@ class TransactionDetailFragment : Fragment() {
     }
 
     private fun discoverAndSelectPrinter() {
-
         if (checkPermission()) {
             val pairedDevices = bluetoothAdapter.bondedDevices
             val printerDevices =
@@ -159,8 +165,6 @@ class TransactionDetailFragment : Fragment() {
             // Disconnect after printing
            //
         }
-
-
     }
 
     private fun generateReceiptData(): ByteArray {

@@ -21,6 +21,8 @@ data class Product(
         var product_name:String = "emtpy",
         @ColumnInfo(name="product_price")
         var product_price:Int = 0,
+        @ColumnInfo(name="product_capital")
+        var product_capital:Int = 0,
         @ColumnInfo(name="checkBoxBoolean")
         var checkBoxBoolean: Boolean = false,
         @ColumnInfo(name="best_selling")

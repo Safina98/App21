@@ -7,6 +7,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
+import com.example.app21try6.database.Payment
+
+import com.example.app21try6.database.PaymentDao
 import com.example.app21try6.database.ProductDao
 import com.example.app21try6.database.SubProductDao
 import com.example.app21try6.database.Summary
@@ -19,17 +22,19 @@ import com.example.app21try6.formatRupiah
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.UUID
 
 
 class TransactionDetailViewModel (application: Application,
                                   private val datasource1: TransSumDao,
                                   private val datasource2: TransDetailDao,
                                   private val datasource3: SummaryDbDao,
-                                  private val datasource4: ProductDao,
+                                  private val datasource4: PaymentDao,
                                   private val datasource5: SubProductDao,
                                   var id:Int):AndroidViewModel(application){
 
@@ -40,30 +45,94 @@ class TransactionDetailViewModel (application: Application,
     val trans_total_ = datasource2.getTotalTrans(id)
     val trans_total: LiveData<String> = Transformations.map(trans_total_) { formatRupiah(it).toString() }
     private val _sendReceipt = MutableLiveData<Boolean>()
-    var bayar :LiveData<String> = Transformations.map(trans_sum) { formatRupiah(it.paid.toDouble()).toString() }
+    /*
+    val sisa: Double = item.total_trans?.toDouble()?.let { total ->
+            item.paid?.toDouble()?.let { paid ->
+                total - paid
+            } ?: total
+        } ?: (item.paid?.toDouble() ?: 0.0)
+    * */
+    var bayar :LiveData<String> = Transformations.map(trans_sum) {item->
+       val a = item.total_trans.let { total ->
+           item.paid.toDouble().let { paid ->
+               total - paid
+           } ?: total
+       }
+        formatRupiah(a.toDouble()).toString()
+    }
     //var bayar = formatRupiah(trans_sum.value?.paid?.toDouble())
     val sendReceipt:LiveData<Boolean> get() = _sendReceipt
 
+    val paymentModel = datasource4.selectPaymentModelBySumId(id)
+
+    var _isBtnBayarClicked = MutableLiveData<Boolean>(false)
+    val isBtnBayarCLicked :LiveData<Boolean> get() = _isBtnBayarClicked
+
+
+
     fun onNavigateToEdit(){
         _navigateToEdit.value = id
-
     }
     fun onNavigatedToEdit(){this._navigateToEdit.value = null}
     private val _booleanValue = MutableLiveData<Boolean>()
+    val decimalFormat = DecimalFormat("#.##")
 
     fun updateBooleanValue() {
        viewModelScope.launch {
            var transSum = trans_sum.value
           transSum?.is_taken_ = transSum?.is_taken_?.not() ?: true
            transSum?.let { updataTransSumDB(it) }
-
        }
     }
-    fun getYearFromDate(date: Date): Int {
-        val calendar = Calendar.getInstance()
-        calendar.time = date
-        return calendar.get(Calendar.YEAR)
+    fun updateIsPaidOffValue() {
+        viewModelScope.launch {
+            var transSum = trans_sum.value
+            transSum?.is_paid_off = transSum?.is_paid_off?.not() ?: true
+            transSum?.let { updataTransSumDB(it) }
+        }
     }
+    fun bayar(num:Int){
+        viewModelScope.launch {
+            val bayar = Payment()
+            bayar.payment_ammount= num
+            bayar.payment_date =Date()
+            bayar.sum_id = trans_sum.value?.sum_id ?:-1
+            bayar.payment_ref = UUID.randomUUID().toString()
+            insertPaymentToDB(bayar)
+            updateTransSum()
+        }
+    }
+    fun updateTransSum(){
+        viewModelScope.launch {
+            var bayar = withContext(Dispatchers.IO){
+                datasource4.selectSumFragmentBySumId(trans_sum.value!!.sum_id)
+            }
+            var transSum = trans_sum.value!!
+           transSum.paid= bayar
+            updateTransSumDB(transSum)
+        }
+    }
+    private suspend fun updateTransSumDB(transSum: TransactionSummary){
+        withContext(Dispatchers.IO){
+            datasource1.update(transSum)
+        }
+    }
+
+    private suspend fun insertPaymentToDB(payment: Payment){
+        withContext(Dispatchers.IO){
+            datasource4.insert(payment)
+        }
+    }
+
+
+
+    fun onBtnBayarClick(){
+        _isBtnBayarClicked.value = true
+    }
+    fun onBtnBayarClicked(){
+        _isBtnBayarClicked.value = false
+    }
+
 
     fun onBtnPembukuanClick(){
         viewModelScope.launch {
@@ -136,6 +205,7 @@ class TransactionDetailViewModel (application: Application,
         val builder = StringBuilder()
         val items = transDetail.value
         val transsum = trans_sum.value
+        val payments = paymentModel.value
         // Store information
         val storeName = "Toko 21"
         val storeAddress = "Jl Sungai Limboto No 110, Makassar"
@@ -151,23 +221,53 @@ class TransactionDetailViewModel (application: Application,
         builder.append("$storePhone\n")
         builder.append("Receipt:" +" ".repeat(getPadding("Receipt Receipt : Date : $currentDate","Right",50))+ "Date: $currentDate\n\n")
         builder.append("-".repeat(getPadding("","Left",50))+"\n")
-        builder.append("TOKO/BPK/IBU: ${transsum?.cust_name}\n")
+        builder.append("${transsum?.cust_name}\n")
         builder.append("Barang  Jumlah  Harga  Total\n")
         builder.append("-".repeat(getPadding("","Left",50))+"\n")
+
+        decimalFormat.isDecimalSeparatorAlwaysShown = false
         // Receipt items
         var x ="x"
         if (items != null) {
             for (item in items) {
-                val itemTotalPrice = item.qty * item.trans_price
-                //builder.append(String.format("%-24s%6.2f%14d%14.2f\n", item.trans_item_name, item.qty, item.trans_price, itemTotalPrice))
+                val itemTotalPrice = item.qty * item.trans_price * item.unit_qty
+                val unit_qty = if (item.unit_qty!=1.0) "(${item.unit_qty})" else "   "
+                val price  = if(item.qty>=1)formatRupiah(item.trans_price.toDouble()) else "-"
                 builder.append(String.format("%-24s\n", item.trans_item_name))
-                builder.append(String.format("%10.2f   %-4s %4s\n",  item.qty, x, if(item.qty>=1)formatRupiah(item.trans_price.toDouble()) else "-"))
+                if (item.unit ==null){
+                    builder.append(String.format("%16.2f %7s %10s\n",  item.qty, x, price))
+                }
+                else{
+                    if (item.unit_qty!=1.0)
+                    {
+                        builder.append(String.format("%2s %1s %1s %-4s %1s\n",  decimalFormat.format(item.qty),item.unit, unit_qty, x, price))
+                    }else{
+                        builder.append(String.format("%12s %1s  %3s %10s\n",  decimalFormat.format(item.qty),item.unit, x, price))
+                    }
+                }
+
                 builder.append(String.format(" %44s\n", formatRupiah(itemTotalPrice)))
             }
         }
         // Receipt footer
         builder.append("-".repeat(getPadding("","Left",50))+"\n")
         builder.append(String.format("%-24s%14s\n", "Total:", formatRupiah(transsum?.total_trans)))
+        if (payments!=null){
+            var paymentAmmountSum :Int = 0
+            for (p in payments){
+                paymentAmmountSum +=p.payment_ammount?:0
+                var sisa = transsum!!.total_trans - paymentAmmountSum
+                builder.append(String.format("%-24s%14s\n", "Bayar:", formatRupiah(p.payment_ammount?.toDouble())))
+                if (transsum.total_trans!!>paymentAmmountSum)
+                {
+                    builder.append(String.format("%-24s%14s\n", "Sisa:", formatRupiah(sisa)))
+                }
+                else{
+                    builder.append(String.format("%-24s%14s\n", "Kembalian:", formatRupiah(sisa)))
+                }
+
+            }
+        }
         builder.append("-".repeat(getPadding("","Left",50))+"\n")
         builder.append("Terimakasih atas pembelian anda\n")
         builder.append("                Have a nice day!\n")
@@ -178,6 +278,7 @@ class TransactionDetailViewModel (application: Application,
     fun generateReceiptTextNew(): String {
         val builder = StringBuilder()
         val items = transDetail.value
+        val payments = paymentModel.value
         val transsum = trans_sum.value
         val c = 30
         // Store information
@@ -203,16 +304,46 @@ class TransactionDetailViewModel (application: Application,
 
         if (items != null) {
             for (item in items) {
-                val itemTotalPrice = item.qty * item.trans_price
-                //builder.append(String.format("%-24s%6.2f%14d%14.2f\n", item.trans_item_name, item.qty, item.trans_price, itemTotalPrice))
+                val itemTotalPrice = item.qty * item.trans_price*item.unit_qty
+
                 builder.append(String.format("%-24s\n", item.trans_item_name))
-                builder.append(String.format("%3.2f   %-3s %3s\n",  item.qty, x, if(item.qty>=1)formatRupiah(item.trans_price.toDouble()) else "-"))
+                //builder.append(String.format("%3.2f   %-3s %3s\n",  item.qty, x, if(item.qty>=1)formatRupiah(item.trans_price.toDouble()) else "-"))
+                if (item.unit ==null){
+                    builder.append(String.format("%3.2f %10s %3s\n",  item.qty, x, if(item.qty>=1)formatRupiah(item.trans_price.toDouble()) else "-"))
+                }
+                else{
+                    if (item.unit_qty!=1.0)
+                    {
+                        builder.append(String.format("%2s %1s %1s %-2s %1s\n",  decimalFormat.format(item.qty),item.unit,if (item.unit_qty!=1.0) "(${item.unit_qty})" else "   ", x,  if(item.qty>=1)formatRupiah(item.trans_price.toDouble()) else "-"))
+                    }else{
+                        builder.append(String.format("%12s %1s  %3s %10s\n",  decimalFormat.format(item.qty),item.unit, x,  if(item.qty>=1)formatRupiah(item.trans_price.toDouble()) else "-"))
+                    }
+
+                }
+
                 builder.append(String.format(" %27s\n", formatRupiah(itemTotalPrice)))
             }
         }
         // Receipt footer
         builder.append("-".repeat(getPadding("","Left",c))+"\n")
         builder.append(String.format("%-10s%19s\n", "Total:", formatRupiah(transsum?.total_trans)))
+        if (payments!=null){
+            var paymentAmmountSum :Int = 0
+            for (p in payments){
+               paymentAmmountSum +=p.payment_ammount?:0
+                var sisa = transsum!!.total_trans - paymentAmmountSum
+                builder.append(String.format("%-10s%19s\n", "Bayar:", formatRupiah(p.payment_ammount?.toDouble())))
+                if (transsum.total_trans!!>paymentAmmountSum)
+                {
+                    builder.append(String.format("%-10s%19s\n", "Sisa:", formatRupiah(sisa)))
+                }
+                else{
+                    builder.append(String.format("%-10s%19s\n", "Kembalian:", formatRupiah(sisa)))
+                }
+
+            }
+        }
+
         builder.append("-".repeat(getPadding("","Left",c))+"\n")
         builder.append("Terimakasih atas pembelian anda\n")
         builder.append("      Have a nice day!\n\n\n\n")

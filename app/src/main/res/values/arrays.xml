@@ -21,4 +21,13 @@
         <item>Hari Ini</item>
         <item>Kemarin</item>
     </string-array>
+    <string-array name="spinner_units">
+        <item>-</item>
+        <item>LSN</item>
+        <item>BKS</item>
+        <item>ROLL</item>
+        <item>DOS</item>
+    </string-array>
+
+
 </resources>

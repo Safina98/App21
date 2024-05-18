@@ -4,6 +4,7 @@ import androidx.room.*
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.Date
 
 
 @Entity(tableName = "trans_detail_table",
@@ -28,6 +29,12 @@ data class TransactionDetail(
         @ColumnInfo(name = "total_price")
         var total_price:Double = 0.0,
         @ColumnInfo(name = "is_prepared")
-        var is_prepared:Boolean = false
+        var is_prepared:Boolean = false,
+        @ColumnInfo(name = "trans_detail_date")
+        var trans_detail_date:Date? = null,
+        @ColumnInfo(name = "unit")
+        var unit:String?=null,
+        @ColumnInfo(name = "unit_qty")
+        var unit_qty:Double=1.0
         )
 

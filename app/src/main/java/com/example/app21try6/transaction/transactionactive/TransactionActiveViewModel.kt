@@ -20,7 +20,6 @@ import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.*
 
 class TransactionActiveViewModel(
@@ -32,6 +31,14 @@ class TransactionActiveViewModel(
     val navigateToTransEdit: LiveData<Int> get() = _navigateToTransEdit
     private val _navigateToTransDetail = MutableLiveData<Int>()
     val navigateToTransDetail: LiveData<Int> get() = _navigateToTransDetail
+
+    private val _insertionCompleted = MutableLiveData<Boolean>()
+    val insertionCompleted: LiveData<Boolean>
+        get() = _insertionCompleted
+
+    private val _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading: LiveData<Boolean>
+        get() = _isLoading
 
    var allTransFromDB =datasource2.getExportedDataNew()
 
@@ -66,7 +73,7 @@ class TransactionActiveViewModel(
     }
     fun onButtonClicked(){
         _is_image_clicked.value = false
-        checkedItemList.clear()
+       unchecked()
     }
 
     fun onCheckBoxClicked(stok: TransactionSummary,bool:Boolean){
@@ -82,6 +89,14 @@ class TransactionActiveViewModel(
         viewModelScope.launch {
             delete_(checkedItemList)
             onButtonClicked()
+        }
+    }
+    fun unchecked(){
+        viewModelScope.launch {
+            for (a in checkedItemList){
+                a.is_paid_off = false
+            }
+            checkedItemList.clear()
         }
     }
     suspend fun delete_(list: MutableList<TransactionSummary>){
@@ -152,7 +167,7 @@ class TransactionActiveViewModel(
     fun insertCSVBatch(tokensList: List<List<String>>) {
         viewModelScope.launch {
             try {
-               // _isLoading.value = true
+                _isLoading.value = true
                 datasource1.performTransaction {
                     val batchSize = 100 // Define your batch size here
                     for (i in 0 until tokensList.size step batchSize) {
@@ -162,12 +177,12 @@ class TransactionActiveViewModel(
                         insertBatch(batch)
                     }
                 }
-              //  _insertionCompleted.value = true
+                _insertionCompleted.value = true
             } catch (e: Exception) {
                 Toast.makeText(getApplication(), e.toString(), Toast.LENGTH_LONG).show()
                 Log.i("INSERTCSVPROB","excepttions: $e")
             }finally {
-              //  _isLoading.value = false // Hide loading indicator
+                _isLoading.value = false // Hide loading indicator
             }
         }
     }
@@ -181,16 +196,16 @@ class TransactionActiveViewModel(
         return inputFormat.parse(dateString)
     }
     private suspend fun insertCSVN(token: List<String>) {
+       // Log.i("INSERTCSVPROB","token: $token")
         val transactionSummary=TransactionSummary()
-
         transactionSummary.trans_date =getDate(token[0])
         transactionSummary.cust_name = token[1]
         transactionSummary.total_trans = token[2].toDouble()
         transactionSummary.paid = token[3].toInt()
-        transactionSummary.is_taken_ = false//token[4].toBooleanStrictOrNull() ?: false
-        transactionSummary.is_paid_off  = token[5].toBooleanStrictOrNull() ?: false
+        transactionSummary.is_taken_ = token[4].toBooleanStrictOrNull() ?: true//token[4].toBooleanStrictOrNull() ?: false
+        transactionSummary.is_paid_off  = token[5].toBooleanStrictOrNull() ?: true
         transactionSummary.ref = token[11]
-        transactionSummary.is_keeped = false//token[12].toBooleanStrictOrNull() ?: false
+        transactionSummary.is_keeped = token[12].toBooleanStrictOrNull() ?: true//token[12].toBooleanStrictOrNull() ?: false
         val transactionDetail = TransactionDetail()
         // "${j.trans_item_name},${j.trans_price},${j.qty},${j.total_price},${j.is_prepared}"
         transactionDetail.trans_item_name = token[6]
@@ -198,11 +213,13 @@ class TransactionActiveViewModel(
         transactionDetail.qty = token[8].toDouble()
         transactionDetail.total_price = token[9].toDouble()
         transactionDetail.is_prepared =  token[10].toBooleanStrictOrNull() ?: false
-        Log.i("INSERTCSVPROB","batch: $transactionSummary")
+        transactionDetail.unit = null //edit later token[14].toDouble()
+        transactionDetail.trans_detail_date = null //edit later
+        transactionDetail.unit_qty = 1.0 //token[15].toDouble()
+       Log.i("INSERTCSVPROB","trans_detail: $transactionDetail")
         datasource1.insertIfNotExist(transactionSummary.cust_name,transactionSummary.total_trans,transactionSummary.paid,transactionSummary.trans_date,transactionSummary.is_taken_,transactionSummary.is_paid_off,transactionSummary.is_keeped,transactionSummary.ref)
         //datasource2.insert(transactionDetail)
-        datasource2.insertTransactionDetailWithRef(transactionSummary.ref, transactionDetail.trans_item_name, transactionDetail.qty, transactionDetail.trans_price, transactionDetail.total_price, transactionDetail.is_prepared)
-
+        datasource2.insertTransactionDetailWithRef(transactionSummary.ref, transactionDetail.trans_item_name, transactionDetail.qty, transactionDetail.trans_price, transactionDetail.total_price, transactionDetail.is_prepared,transactionDetail.trans_detail_date,transactionDetail.unit,transactionDetail.unit_qty)
     }
     fun writeCSV(file: File) {
             try {
@@ -218,9 +235,10 @@ class TransactionActiveViewModel(
                         if (j.trans_detail_id!=null) {
 
                             val dateString = dateFormatter.format(j.trans_date)
-                            val line = "$dateString,${j.cust_name},${j.total_trans},${j.paid},${j.is_taken},${j.is_paid_off},${j.trans_item_name},${j.trans_price},${j.qty},${j.total_price},${j.is_prepared},${j.ref},${j.is_keeped}"
-                            Log.i("INSERTCSVPROB", "line: $line")
-                            Log.i("INSERTCSVPROB", "j: $j")
+                            val line = "$dateString,${j.cust_name},${j.total_trans}," +
+                                        "${j.paid},${j.is_taken},${j.is_paid_off},${j.trans_item_name}," +
+                                        "${j.trans_price},${j.qty},${j.total_price},${j.is_prepared},${j.ref}," +
+                                        "${j.is_keeped},${j.trans_detail_date},${j.unit},${j.unit_qty}"
                             bw.write(line)
                             bw.newLine()
                         }

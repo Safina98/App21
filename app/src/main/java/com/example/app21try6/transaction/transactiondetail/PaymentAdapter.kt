@@ -1,0 +1,71 @@
+package com.example.app21try6.transaction.transactiondetail
+
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
+import com.example.app21try6.databinding.TransactionPaymentItemListBinding
+import com.example.app21try6.formatRupiah
+
+class PaymentAdapter(
+    var isPaidoff:Boolean?,
+    val clickListener: TransPaymentClickListener,
+                      val longListener:TransPaymentLongListener):
+    ListAdapter<PaymentModel, PaymentAdapter.MyViewHolder>(TransPaymentDiffCallBack())
+{
+    class MyViewHolder private constructor(val binding: TransactionPaymentItemListBinding) :
+    RecyclerView.ViewHolder(binding.root) {
+    fun bind(
+        item: PaymentModel,
+        clickListener: TransPaymentClickListener,
+        longListener: TransPaymentLongListener,
+        isPaidOff:Boolean?
+    ) {
+        binding.item = item
+        binding.clickListener = clickListener
+        binding.longClickListener = longListener
+        binding.txtBayarItemList.text = formatRupiah(item.payment_ammount?.toDouble())
+        binding.executePendingBindings()
+    }
+        companion object {
+            fun from(parent: ViewGroup): PaymentAdapter.MyViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding =
+                    TransactionPaymentItemListBinding.inflate(layoutInflater, parent, false)
+                return PaymentAdapter.MyViewHolder(binding)
+            }
+        }
+
+}
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+        return MyViewHolder.from(parent)
+    }
+
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        holder.bind(getItem(position), clickListener, longListener,isPaidoff)
+        // Update background color based on clickedItems
+    }
+    }
+
+
+class TransPaymentDiffCallBack: DiffUtil.ItemCallback<PaymentModel>(){
+    override fun areItemsTheSame(oldItem: PaymentModel, newItem: PaymentModel): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: PaymentModel, newItem: PaymentModel): Boolean {
+        return oldItem == newItem
+    }
+}
+class TransPaymentClickListener(val clickListener:(paymentModel:PaymentModel)->Unit){
+    fun onClick(paymentModel:PaymentModel)=clickListener(paymentModel)
+}
+
+class TransPaymentLongListener(val longListener:(paymentModel:PaymentModel)->Unit){
+    fun onLongClick(v: View, paymentModel:PaymentModel):Boolean{
+        longListener(paymentModel)
+        return true
+    }
+}

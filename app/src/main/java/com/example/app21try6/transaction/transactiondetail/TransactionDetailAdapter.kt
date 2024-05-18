@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -15,20 +16,33 @@ import com.example.app21try6.formatRupiah
 import com.example.app21try6.transaction.transactionedit.TransactionEditDummyModel
 
 
-class TransactionDetailAdapter(val clickListener: TransDetailClickListener, val longListener:TransDetailLongListener):ListAdapter<TransactionDetail,TransactionDetailAdapter.MyViewHolder>(TransDetailDiffCallBack()) {
+class TransactionDetailAdapter(val isPaidOff:Boolean?,
+                                val clickListener: TransDetailClickListener,
+                               val longListener:TransDetailLongListener):
+    ListAdapter<TransactionDetail,TransactionDetailAdapter.MyViewHolder>(TransDetailDiffCallBack()) {
 
     class MyViewHolder private constructor(val binding: TransactionDetailItemListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(
             item: TransactionDetail,
             clickListener: TransDetailClickListener,
-            longListener: TransDetailLongListener
+            longListener: TransDetailLongListener,
+            isPaidOff:Boolean?
         ) {
             binding.item = item
             binding.longClickListener = longListener
             binding.txtItemTDetail.setBackgroundColor(Color.WHITE)
             binding.txtItemTDetail.text = item.trans_item_name
             binding.txtQtyTDetail.text = item.qty.toString()
+            binding.txtUnitQtyDetail.text = item.unit_qty.toString()
+            binding.txtUnitDetail.text = item.unit
+            if (isPaidOff ==true){
+                binding.txtItemTDate.visibility = View.VISIBLE
+            }else{
+                binding.txtItemTDate.visibility = View.GONE
+            }
+
+
             binding.txtPriceTDetail.text =
                 if (item.qty >= 1) formatRupiah(item.trans_price.toDouble()).toString() else "-"
             binding.txtTotalTDetail.text = formatRupiah(item.total_price).toString()
@@ -52,7 +66,7 @@ class TransactionDetailAdapter(val clickListener: TransDetailClickListener, val 
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(getItem(position), clickListener, longListener)
+        holder.bind(getItem(position), clickListener, longListener,isPaidOff)
         // Update background color based on clickedItems
     }
 }

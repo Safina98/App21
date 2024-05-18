@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <import type="android.widget.Spinner" />
         <variable
             name="item"
             type="com.example.app21try6.database.TransactionDetail" />
@@ -30,11 +30,17 @@
         <variable
             name="priceLongListener"
             type="com.example.app21try6.transaction.transactionedit.TransEditPriceLongListener" />
+        <variable
+            name="unitQtyListener"
+            type="com.example.app21try6.transaction.transactionedit.TransEditUnitQtyLongListener" />
+        <variable
+            name="selectedSpinnerListener"
+            type="com.example.app21try6.transaction.transactionedit.UnitTransTextCliked" />
     </data>
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="140dp"
         android:layout_margin="2dp"
         android:onClick="@{()->clickListener.onClick(item)}"
         android:onLongClick="@{(view) -> longListener.onLongClick(view,item)}"
@@ -47,7 +53,7 @@
             <TextView
                 android:id="@+id/txt_product_t"
                 style="@style/text_product_title_bookkeeping"
-                app:layout_constraintEnd_toStartOf="@+id/btn_subs_t"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -55,13 +61,12 @@
                 android:id="@+id/btn_subs_t"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="-"
-                android:onLongClick="@{(view) -> subsLongListener.onLongClick(view,item)}"
+                android:layout_marginEnd="@dimen/medium_margin"
                 android:onClick="@{()->subsListener.onClick(item)}"
+                android:onLongClick="@{(view) -> subsLongListener.onLongClick(view,item)}"
+                android:text="-"
                 app:layout_constraintEnd_toStartOf="@+id/text_sells_t"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/txt_product_t" />
             <!--
             android:onLongClick="@{(view) -> subsLongListener.onLongClick(view,item)}"
                 android:onClick="@{()->subsListener.onClick(item)}"
@@ -70,27 +75,63 @@
                 android:id="@+id/text_sells_t"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginTop="@dimen/medium_margin"
+                android:layout_marginEnd="@dimen/medium_margin"
                 android:gravity="center"
                 android:text="0"
                 android:textSize="24dp"
                 app:layout_constraintEnd_toStartOf="@+id/btn_add_t"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/txt_product_t" />
              <!--android:textColor="@color/dark_green3"-->
             <Button
                 android:id="@+id/btn_add_t"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="+"
+                android:layout_marginEnd="@dimen/medium_margin"
                 android:onClick="@{()-> plusListener.onPlusButtonClick(item)}"
                 android:onLongClick="@{(view) -> plusLongListener.onLongClick(view,item)}"
+                android:text="+"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/txt_product_t" />
 
-
+            <TextView
+                android:id="@+id/txt_unit_qty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/medium_margin"
+                android:layout_marginBottom="@dimen/medium_margin"
+                android:onLongClick="@{(view)->unitQtyListener.onLongClick(view,item)}"
+                android:text="k"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@id/txt_price_t"
+                app:layout_constraintEnd_toStartOf="@+id/btn_subs_t"
+                app:layout_constraintStart_toEndOf="@+id/text_unit"
+                app:layout_constraintTop_toBottomOf="@id/txt_product_t"
+                app:textVisibility="@{item.unit}" />
+            <!--
+            <Spinner
+                android:id="@+id/spinner_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:entries="@array/spinner_units"
+                android:onItemSelected="@{(parent, view, position, id) -> selectedSpinnerListener. onSpinnerItemSelected(parent.getItemAtPosition(position).toString(),item)}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_product_t"
+                />
+                -->
+            <TextView
+                android:id="@+id/text_unit"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_margin"
+                android:onClick="@{()-> selectedSpinnerListener.onUnitTransClick(item)}"
+                android:text="unit"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/txt_price_t"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_product_t" />
             <TextView
                 android:id="@+id/text_sums_t"
                 android:layout_width="wrap_content"
@@ -98,6 +139,7 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:fontFamily="sans-serif"
+                android:text="sum"
                 android:textSize="24dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -111,11 +153,12 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:textSize="20sp"
+                android:text="sum"
                 android:onLongClick="@{(view)->priceLongListener.onLongClick(view,item)}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/txt_product_t"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txt_product_t" />
+                app:layout_constraintTop_toBottomOf="@+id/btn_add_t" />
              <!--android:textColor="@color/dark_green3"-->
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

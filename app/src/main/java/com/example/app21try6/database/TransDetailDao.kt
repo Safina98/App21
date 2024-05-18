@@ -6,10 +6,9 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.example.app21try6.bookkeeping.summary.ListModel
-import com.example.app21try6.stock.brandstock.ExportModel
 import com.example.app21try6.transaction.transactionactive.TransExportModel
 import com.example.app21try6.transaction.transactionselect.TransSelectModel
+import java.util.Date
 
 @Dao
 interface TransDetailDao {
@@ -26,20 +25,19 @@ interface TransDetailDao {
     @Query("SELECT * FROM trans_detail_table WHERE sum_id =:sum_id_")
     fun selectATransDetail(sum_id_:Int):LiveData<List<TransactionDetail>>
     //@Query("INSERT INTO brand_table (brand_name,cath_code) SELECT :brand_name_ as brand_name, (SELECT category_id FROM category_table WHERE category_name = :caht_name_ limit 1) as cath_code WHERE NOT EXISTS (SELECT 1 FROM brand_table WHERE brand_name = :brand_name_)")
-    @Query("INSERT OR IGNORE INTO trans_detail_table (sum_id, trans_item_name, qty, trans_price, total_price, is_prepared) " +
-            "SELECT sum_id, :transItemName, :qty, :transPrice, :totalPrice, :isPrepared FROM trans_sum_table WHERE ref = :ref")
+    @Query("INSERT OR IGNORE INTO trans_detail_table (sum_id, trans_item_name, qty, trans_price, total_price, is_prepared,trans_detail_date,unit,unit_qty) " +
+            "SELECT sum_id, :transItemName, :qty, :transPrice, :totalPrice, :isPrepared,:trans_detail_date,:unit,:unit_qty FROM trans_sum_table WHERE ref = :ref")
     suspend fun insertTransactionDetailWithRef(
         ref: String,
         transItemName: String,
         qty: Double,
         transPrice: Int,
         totalPrice: Double,
-        isPrepared: Boolean
+        isPrepared: Boolean,
+        trans_detail_date: Date?,
+        unit:String?,
+        unit_qty:Double
     )
-
-
-
-    //@Query("SELECT SUM(total_income) FROM SUMMARY_TABLE  WHERE year = :year_ AND month = :month_ AND day = :day_ ")
 
     @Query("SELECT  IFNULL(SUM(total_price),0.0)  FROM TRANS_DETAIL_TABLE WHERE sum_id =:sum_id_ ")
     fun getTotalTrans(sum_id_: Int):LiveData<Double>

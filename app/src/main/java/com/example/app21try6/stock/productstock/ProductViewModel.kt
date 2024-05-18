@@ -35,6 +35,7 @@ class ProductViewModel (
                 product.product_name = product_name
                 product.product_price = price
                 product.cath_code = brand_id[1]
+                product.product_capital = price
                 insert(product)
             }
         }

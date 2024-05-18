@@ -52,8 +52,18 @@ class TransactionEditViewModel(
     fun updateTransDetail(transactionDetail: TransactionDetail,i: Double){
         viewModelScope.launch {
             transactionDetail.qty = transactionDetail.qty + i
-            transactionDetail.total_price = transactionDetail.trans_price*transactionDetail.qty
+            transactionDetail.total_price = transactionDetail.trans_price*transactionDetail.qty*transactionDetail.unit_qty
             _updateTransDetail(transactionDetail)
+        }
+    }
+    fun updateUnitTransDetail(selectedItem:String?,transactionDetail: TransactionDetail){
+        viewModelScope.launch {
+
+            if (transactionDetail.unit!=selectedItem){
+                transactionDetail.unit = if(selectedItem =="NONE") null else selectedItem
+                _updateTransDetail(transactionDetail)
+                Log.i("unit_Spinner","viewModel ${transactionDetail}")
+            }
         }
     }
 
@@ -105,9 +115,17 @@ class TransactionEditViewModel(
     fun updateTransDetailItemPrice(transactionDetail: TransactionDetail,itemPrice: Int){
         viewModelScope.launch {
             transactionDetail.trans_price = itemPrice
-            transactionDetail.total_price = transactionDetail.trans_price * transactionDetail.qty
+            transactionDetail.total_price = transactionDetail.trans_price * transactionDetail.qty *transactionDetail.unit_qty
             _updateTransDetail(transactionDetail)
         }
+    }
+    fun updateUitQty(transactionDetail: TransactionDetail,unit_qyt: Double){
+        viewModelScope.launch {
+            transactionDetail.unit_qty = unit_qyt
+            transactionDetail.total_price = transactionDetail.trans_price * transactionDetail.qty *transactionDetail.unit_qty
+            _updateTransDetail(transactionDetail)
+        }
+
     }
     fun updateTotalSum(){
         viewModelScope.launch {

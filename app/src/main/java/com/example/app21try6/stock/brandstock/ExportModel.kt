@@ -5,6 +5,7 @@ data class ExportModel(
         var brand: String,
         var product:String,
         var price:Int,
+        var capital:Int,
         var bestSelling:Boolean,
         var subProduct:String,
         var warna:String, var roll_u:Int,
@@ -12,7 +13,7 @@ data class ExportModel(
         var roll_b_g:Int,var roll_s_g:Int,var roll_k_g:Int
         //
 ){
-    constructor():this("","","",0,false,"","",0,0,0,0,0,0,0)
+    constructor():this("","","",0,0,false,"","",0,0,0,0,0,0,0)
 
 
 }

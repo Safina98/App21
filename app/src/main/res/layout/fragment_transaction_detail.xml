@@ -14,44 +14,100 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".transaction.transactiondetail.TransactionDetailFragment">
-
             <TextView
                 android:id="@+id/txt_cust_name"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_margin"
                 android:text="@{viewModel.trans_sum.cust_name}"
+                style="@style/texr_detail_style"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:textAlignment="viewEnd"
-                android:textSize="24sp" />
+                />
             <TextView
                 android:id="@+id/txt_date"
-                android:layout_width="match_parent"
+                android:layout_margin="@dimen/medium_margin"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAlignment="viewEnd"
                 app:dateFormatted="@{viewModel.trans_sum.trans_date}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/txt_cust_name"
-                android:textSize="24sp" />
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView_detail_trans"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                style="@style/texr_detail_style" />
+        <Button
+            android:id="@+id/btn_edit_trans_new"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="@dimen/medium_margin"
+            android:background="@drawable/baseline_edit_24"
+            android:tint="@android:color/holo_green_dark"
+            android:onClick="@{() -> viewModel.onNavigateToEdit()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txt_cust_name" />
+        <Button
+            android:id="@+id/btn_is_paid_off"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="@dimen/medium_margin"
+            android:backgroundTint="@color/black"
+            android:onClick="@{() -> viewModel.updateIsPaidOffValue()}"
+            app:buttonBackgroundColor="@{viewModel.trans_sum.is_paid_off}"
+            app:layout_constraintEnd_toStartOf="@id/btn_edit_trans_new"
+            app:layout_constraintTop_toBottomOf="@id/txt_cust_name" />
+        <Button
+            android:id="@+id/btn_print_new"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="@dimen/big_margin"
+            android:background="@drawable/baseline_print_24"
+            android:backgroundTint="@color/white"
+            app:layout_constraintBottom_toTopOf="@id/txt_bayar_sum"
+            app:layout_constraintEnd_toEndOf="parent" />
+        <Button
+            android:id="@+id/btn_send_new"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="@dimen/big_margin"
+            android:background="@drawable/wa"
+            android:backgroundTint="@color/white"
+            android:onClick="@{()->viewModel.onKirimBtnClick()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/btn_print_new" />
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/txt_date"
-            app:layout_constraintBottom_toTopOf="@+id/txt_total_sum"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-        <TextView
-            android:id="@+id/txt_total_sum"
+            app:layout_constraintBottom_toTopOf="@id/txt_bayar_sum">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="viewEnd"
-            android:text="@{viewModel.trans_total}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/txt_bayar_sum"
-            app:layout_constraintTop_toBottomOf="@id/recyclerView_detail_trans"
-            android:textSize="24sp" />
+            android:orientation="vertical"
+            android:padding="@dimen/medium_margin">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView_detail_trans"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+            <TextView
+                android:id="@+id/txt_total_sum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="viewEnd"
+                android:text="@{viewModel.trans_total}"
+                android:textSize="24sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView_bayar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
         <TextView
             android:id="@+id/txt_bayar_sum"
             android:layout_width="wrap_content"
@@ -59,8 +115,7 @@
             android:textAlignment="viewEnd"
             android:text="@{viewModel.bayar}"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txt_total_sum"
-            app:layout_constraintBottom_toTopOf="@+id/btn_edit_trans"
+            app:layout_constraintBottom_toTopOf="@+id/btn_bayar_trans"
             android:textSize="24sp" />
 
         <Button
@@ -72,10 +127,9 @@
             android:text="diambil"
             android:onClick="@{()->viewModel.updateBooleanValue()}"
             app:buttonBackgroundColor="@{viewModel.trans_sum.is_taken_}"
-            app:layout_constraintBottom_toTopOf="@+id/btn_edit_trans"
-            app:layout_constraintEnd_toEndOf="@+id/btn_edit_trans"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txt_total_sum" />
+            app:layout_constraintEnd_toStartOf="@id/btn_insert_to_sum_"
+            app:layout_constraintStart_toEndOf="@id/btn_bayar_trans"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <Button
             android:id="@+id/btn_insert_to_sum_"
@@ -87,46 +141,23 @@
             android:onClick="@{()->viewModel.onBtnPembukuanClick()}"
             android:text="pembukuan"
             app:buttonBackgroundColor="@{viewModel.trans_sum.is_keeped}"
-            app:layout_constraintBottom_toTopOf="@+id/btn_edit_trans"
-            app:layout_constraintEnd_toEndOf="@+id/btn_kirim"
             app:layout_constraintStart_toEndOf="@id/btn_add_new_brand_"
-            app:layout_constraintTop_toBottomOf="@id/txt_total_sum" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-
-        <!-- android:onClick="@{()->viewModel.onNavigateToEdit(0)}"  -->
 
         <Button
-            android:id="@+id/btn_edit_trans"
+            android:id="@+id/btn_bayar_trans"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="@{() -> viewModel.onNavigateToEdit()}"
-            android:text="Edit"
-            app:layout_constraintBaseline_toBaselineOf="@+id/btn_kirim"
-            app:layout_constraintEnd_toStartOf="@+id/btn_kirim"
+            android:text="bayar"
+            android:onClick="@{()->viewModel.onBtnBayarClick()}"
+            app:layout_constraintBaseline_toBaselineOf="@+id/btn_add_new_brand_"
+            app:layout_constraintEnd_toStartOf="@+id/btn_add_new_brand_"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <Button
-                    android:id="@+id/btn_kirim"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Kirim"
-                    android:onClick="@{()->viewModel.onKirimBtnClick()}"
-                    android:layout_marginLeft="4dp"
-                    app:layout_constraintEnd_toStartOf="@id/btn_cetak"
-                    app:layout_constraintStart_toEndOf="@id/btn_edit_trans"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:layout_marginRight="4dp"/>
-                <Button
-                    android:id="@+id/btn_cetak"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:layout_constraintStart_toEndOf="@id/btn_kirim"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:text="Cetak" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

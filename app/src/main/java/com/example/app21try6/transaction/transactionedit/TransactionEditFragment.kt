@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.RadioButton
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -16,14 +17,16 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.app21try6.Constants.Companion.UNITS
 import com.example.app21try6.R
 import com.example.app21try6.database.TransactionDetail
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionEditBinding
+import com.example.app21try6.databinding.UnitPopUpBinding
 import com.google.android.material.textfield.TextInputEditText
 
 
-enum class Code(val text: String) {ZERO(""),LONGPLUS("Tambah"),LONGSUBS("Kurang"),TEXTITEM("Update Nama Barang"),TEXTPRICE("Update Harga barang")}
+enum class Code(val text: String) {ZERO(""),LONGPLUS("Tambah"),LONGSUBS("Kurang"),TEXTITEM("Update Nama Barang"),TEXTPRICE("Update Harga barang"),UNITQTY("ISI")}
 class TransactionEditFragment : Fragment() {
     private lateinit var binding:FragmentTransactionEditBinding
     val viewModel:TransactionEditViewModel by viewModels()
@@ -38,8 +41,6 @@ class TransactionEditFragment : Fragment() {
         val datasource2 = VendibleDatabase.getInstance(application).transDetailDao
 
         val id= arguments?.let{TransactionEditFragmentArgs.fromBundle(it).id}
-       Log.i("SUMIDPROB","TransactionEditFragment argument id $id")
-
 
         val viewModelFactory = TransactionEditViewModelFactory(application, datasource1, datasource2, id!!)
         val viewModel = ViewModelProvider(this, viewModelFactory).get(TransactionEditViewModel::class.java)
@@ -64,13 +65,19 @@ class TransactionEditFragment : Fragment() {
            code = Code.LONGPLUS
            viewModel.onShowDialog(it)
        }, TransEditDeleteLongListener {
-           //Toast.makeText(context,it.trans_item_name+" deleted",Toast.LENGTH_SHORT).show()
-           //viewModel.delete(it.trans_detail_id)
            deleteDialog(it, viewModel)
        }, TransEditPriceLongListener {
            showDialog(it,viewModel,Code.TEXTPRICE)
-           Toast.makeText(context,it.trans_item_name+" price clicked",Toast.LENGTH_SHORT).show()
-       })
+
+       },
+           UnitTransTextCliked{ edit_trans ->
+          //    viewModel.updateUnitTransDetail(selectedItem,edit_trans)
+               showInputCoiceDialog(edit_trans)
+
+           }, TransEditUnitQtyLongListener {
+               showDialog(it,viewModel,Code.UNITQTY)
+           },
+           requireContext())
        //TODO create custom adapter that shows or hide checkbox for delete purpose
        binding.recyclerViewEditTrans.adapter = adapter
 
@@ -90,7 +97,6 @@ class TransactionEditFragment : Fragment() {
 
        viewModel.navigateToVendible.observe(viewLifecycleOwner, Observer {
            if (it != null) {
-               Log.i("SUMIDPROB","TransactionEditFragment navigateTotransactionProduct $it")
                this.findNavController().navigate(TransactionEditFragmentDirections.actionTransactionEditFragmentToTransactionProductFragment(it))
                viewModel.setCustomerName()
                viewModel.onNavigatedtoVendible()
@@ -176,6 +182,8 @@ class TransactionEditFragment : Fragment() {
                 }
                 Code.TEXTPRICE -> {
                     viewModel.updateTransDetailItemPrice(transactionDetail, v.toInt())
+                }Code.UNITQTY->{
+                    viewModel.updateUitQty(transactionDetail,v.toDouble())
                 }
             }
             imm.hideSoftInputFromWindow(view?.windowToken, 0)
@@ -209,9 +217,26 @@ class TransactionEditFragment : Fragment() {
         val alert = builder.create()
         alert.show()
     }
+    fun showInputCoiceDialog(item:TransactionDetail) {
+        val binding :UnitPopUpBinding = UnitPopUpBinding.inflate(LayoutInflater.from(context))
 
-    override fun onPause(){
-        Toast.makeText(context,"onDestroy View Called",Toast.LENGTH_SHORT).show()
-        super.onPause()
+        val dialog = AlertDialog.Builder(context).setTitle("PILIH").setView(binding.root)
+            .setPositiveButton("OK") { _, _ ->
+                val radioButtonId = binding.radioGroup.checkedRadioButtonId
+                val text: String? = if (radioButtonId == -1) {
+                    null
+                } else {
+                    val radioButton = binding.radioGroup.findViewById<RadioButton>(radioButtonId)
+                    radioButton.text.toString()
+                }
+                Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
+                viewModel.updateUnitTransDetail(text,item)
+            }
+            .setNegativeButton("Cancel", null)
+            .create()
+        dialog.show()
+
     }
+
+
 }

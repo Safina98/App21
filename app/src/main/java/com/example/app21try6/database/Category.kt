@@ -13,6 +13,4 @@ data class Category(
         var category_name:String = "emtpy",
         @Ignore
         var checkBoxBoolean:Boolean = false
-
-
 )

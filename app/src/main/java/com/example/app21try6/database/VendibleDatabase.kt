@@ -9,7 +9,8 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 
-@Database(entities = [Brand::class,Product::class,SubProduct::class,Category::class,TransactionSummary::class,TransactionDetail::class],version=26, exportSchema = true)
+
+@Database(entities = [Brand::class,Product::class,SubProduct::class,Category::class,TransactionSummary::class,TransactionDetail::class,Payment::class,Expenses::class,ExpenseCategory::class],version=29, exportSchema = true)
 @TypeConverters(DateTypeConverter::class)
 abstract class VendibleDatabase:RoomDatabase(){
     abstract val brandDao :BrandDao
@@ -18,7 +19,9 @@ abstract class VendibleDatabase:RoomDatabase(){
     abstract val categoryDao:CategoryDao
     abstract val transDetailDao:TransDetailDao
     abstract val transSumDao:TransSumDao
-
+    abstract val paymentDao:PaymentDao
+   abstract val expenseDao:ExpenseDao
+    abstract val expenseCategoryDao:ExpenseCategoryDao
 
 
     companion object{
@@ -46,6 +49,57 @@ abstract class VendibleDatabase:RoomDatabase(){
                         database.execSQL("ALTER TABLE `trans_sum_table` ADD COLUMN `is_keeped` INTEGER NOT NULL DEFAULT 0")
                     }
                 }
+                val MIGRATION_26_27 = object : Migration(26, 27) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        database.execSQL("ALTER TABLE `trans_detail_table` ADD COLUMN `trans_detail_date` TEXT")
+                        database.execSQL("ALTER TABLE `trans_detail_table` ADD COLUMN `unit` TEXT")
+                        database.execSQL("ALTER TABLE `trans_detail_table` ADD COLUMN `unit_qty` REAL NOT NULL DEFAULT 1.0")
+                        database.execSQL("ALTER TABLE `product_table` ADD COLUMN `product_capital` INTEGER NOT NULL DEFAULT 0")
+                    }
+                }
+                val MIGRATION_27_28 = object : Migration(27, 28) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        // Create the ExpenseCategory table
+                        database.execSQL("DROP TABLE IF EXISTS `expense_category_table`")
+                        database.execSQL(
+                            "CREATE TABLE IF NOT EXISTS `expense_category_table` (" +
+                                    "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                                    "`expense_category_name` TEXT NOT NULL DEFAULT '', " +
+                                    "`is_periodic` INTEGER NOT NULL DEFAULT 0)"
+                        )
+
+                        database.execSQL("DROP TABLE IF EXISTS `paymen_table`")
+
+                        // Create a new table with the desired schema
+                        database.execSQL(
+                            "CREATE TABLE IF NOT EXISTS `paymen_table` (" +
+                                    "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                                    "`sum_id` INTEGER NOT NULL, " +
+                                    "`payment_ammount` INTEGER NOT NULL DEFAULT 0, " +
+                                    "`payment_date` TEXT, " +
+                                    "`ref` TEXT NOT NULL DEFAULT '', " +
+                                    "FOREIGN KEY(`sum_id`) REFERENCES `trans_sum_table`(`sum_id`) ON DELETE CASCADE ON UPDATE CASCADE)"
+                        )
+
+
+                        // Create the Expenses table
+                        database.execSQL("DROP TABLE IF EXISTS `expense_table`")
+
+                        database.execSQL(
+                            "CREATE TABLE IF NOT EXISTS `expenses_table` (" +
+                                    "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                                    "`sum_id` INTEGER, " +
+                                    "`expense_category_id` INTEGER NOT NULL, " +
+                                    "`expense_name` TEXT NOT NULL DEFAULT '', " +
+                                    "`expense_ammount` INTEGER, " +
+                                    "`expense_date` TEXT, " +
+                                    "`expense_ref` TEXT NOT NULL DEFAULT '', " +
+                                    "FOREIGN KEY(`sum_id`) REFERENCES `trans_sum_table`(`sum_id`) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                                    "FOREIGN KEY(`expense_category_id`) REFERENCES `expense_category_table`(`id`) ON DELETE CASCADE ON UPDATE CASCADE)"
+                        )
+                    }
+                }
+
 
                 var instance = INSTANCE
                 if (instance == null) {
@@ -53,7 +107,8 @@ abstract class VendibleDatabase:RoomDatabase(){
                             context.applicationContext,
                             VendibleDatabase::class.java,
                             "vendible_table"
-                    ).addMigrations(MIGRATION_24_25)
+                    )
+
                         .fallbackToDestructiveMigration().build()
                     INSTANCE = instance
                     //instance = Room.databaseBuilder(context.applicationContext,VendibleDatabase::class.java,"mymaindb").allowMainThreadQueries().build()

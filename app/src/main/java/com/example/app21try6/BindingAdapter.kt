@@ -2,20 +2,55 @@ package com.example.app21try6
 
 import android.graphics.Color
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
+import com.example.app21try6.database.TransactionDetail
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 
-@BindingAdapter("app:buttonColor")
-fun setButtonColor(button: Button, isEnabled: Boolean) {
-    val color = if (isEnabled) Color.GREEN else Color.RED
-
-    button.setBackgroundColor(color)
+@BindingAdapter("textVisibility")
+fun TextView.setTextVisibility(text: String?) {
+    visibility = if (text.isNullOrEmpty()) {
+        View.GONE
+    } else {
+        View.VISIBLE
+    }
 }
 
+@BindingAdapter("textVisibility")
+fun TextView.setTextVisibility(bool: Boolean) {
+    visibility = if (bool ==false) {
+        View.GONE
+    } else {
+        View.VISIBLE
+    }
+}
+
+@BindingAdapter("textVisibilityDetail")
+fun setTextVisibilityDetail(textView: TextView,item:TransactionDetail) {
+    val decimalFormat = DecimalFormat("#.##")
+    textView.text = "(${decimalFormat.format(item.unit_qty)})"
+    textView.visibility= if (item.unit.isNullOrEmpty() || item.unit_qty ==1.0) {
+        View.GONE
+    } else {
+        View.VISIBLE
+    }
+
+}
+@BindingAdapter("selectedItemValue")
+fun Spinner.setSelectedItemValue(selectedItemValue: String?) {
+    val adapter = adapter as? ArrayAdapter<String>
+    val position = adapter?.getPosition(selectedItemValue)
+    if (position != null && position != AdapterView.INVALID_POSITION) {
+        setSelection(position)
+    }
+}
 @BindingAdapter("backgroundColor")
 fun setBackgroundColor(view: View, isPrepared: Boolean) {
     val color = if (isPrepared) {

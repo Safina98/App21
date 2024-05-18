@@ -131,6 +131,17 @@ class TransactionActiveFragment : Fragment() {
         binding.recyclerViewActiveTrans.adapter = adapter
         binding.recyclerViewActiveTrans.layoutManager = GridLayoutManager(context, spanCount, RecyclerView.VERTICAL, false)
 
+        viewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
+            if(isLoading==true){
+                binding.recyclerViewActiveTrans.visibility = View.GONE
+                binding.progressBar.visibility = View.VISIBLE
+            }else{
+                binding.recyclerViewActiveTrans.visibility  = View.VISIBLE
+                binding.progressBar.visibility = View.GONE
+            }
+            //binding.progressBar.visibility = if (isLoading ==true) View.VISIBLE else View.GONE
+        })
+
         viewModel.active_trans.observe(viewLifecycleOwner, Observer {
             it?.let {
                 adapter.submitList(it.sortedByDescending { it.sum_id })
