@@ -7,6 +7,9 @@
     <item name="tint">@color/secondaryColor</item>
     -->
 </style>
+    <style name="MyButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
     <style name="Base_ToolbarTheme">
         <!-- Color used for the title of the Toolbar - as long as not overridden -->
         <item name="android:textColorPrimary">@color/primaryTextColor</item>

@@ -1,7 +1,7 @@
 package com.example.app21try6
 
 import android.graphics.Color
-import android.view.View
+import android.graphics.drawable.ColorDrawable
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -13,6 +13,12 @@ import com.example.app21try6.database.TransactionDetail
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Date
+
+import android.content.res.Configuration
+import android.view.View
+
+
+
 
 @BindingAdapter("textVisibility")
 fun TextView.setTextVisibility(text: String?) {
@@ -53,17 +59,25 @@ fun Spinner.setSelectedItemValue(selectedItemValue: String?) {
 }
 @BindingAdapter("backgroundColor")
 fun setBackgroundColor(view: View, isPrepared: Boolean) {
+    val parent = view.parent as? View
+    val parentColor = parent?.background?.let { background ->
+        if (background is ColorDrawable) {
+            background.color
+        } else {
+            ContextCompat.getColor(view.context, android.R.color.transparent)
+        }
+    } ?: ContextCompat.getColor(view.context, android.R.color.transparent)
     val color = if (isPrepared) {
-        ContextCompat.getColor(view.context,R.color.greenn)
+        ContextCompat.getColor(view.context,R.color.pastel_green2)
     } else {
-        ContextCompat.getColor(view.context, R.color.white)
+        parentColor
     }
     view.setBackgroundColor(color)
 }
 @BindingAdapter("buttonBackgroundColor")
 fun setButtontBackgroundColor(view: View, isPrepared: Boolean) {
     val color = if (isPrepared) {
-        ContextCompat.getColor(view.context,R.color.greenn)
+        ContextCompat.getColor(view.context,R.color.pastel_green2)
     } else {
         ContextCompat.getColor(view.context, R.color.black)
     }

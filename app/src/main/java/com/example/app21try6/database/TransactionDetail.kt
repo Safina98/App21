@@ -35,6 +35,8 @@ data class TransactionDetail(
         @ColumnInfo(name = "unit")
         var unit:String?=null,
         @ColumnInfo(name = "unit_qty")
-        var unit_qty:Double=1.0
+        var unit_qty:Double=1.0,
+        @ColumnInfo(name = "item_position")
+        var item_position:Int=0
         )
 

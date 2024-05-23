@@ -24,7 +24,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/newlogocolored"
         android:supportsRtl="true"
-        android:theme="@style/Theme.App21Try6.alternate">
+        android:theme="@style/Theme.App21Try6">
         <activity android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

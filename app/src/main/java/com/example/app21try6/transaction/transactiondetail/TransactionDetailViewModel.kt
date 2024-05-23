@@ -68,6 +68,9 @@ class TransactionDetailViewModel (application: Application,
     var _isBtnBayarClicked = MutableLiveData<Boolean>(false)
     val isBtnBayarCLicked :LiveData<Boolean> get() = _isBtnBayarClicked
 
+    var _isBtnpaidOff = MutableLiveData<Boolean>()
+    val isBtnpaidOff :LiveData<Boolean> get() = _isBtnpaidOff
+
 
 
     fun onNavigateToEdit(){
@@ -89,8 +92,16 @@ class TransactionDetailViewModel (application: Application,
             var transSum = trans_sum.value
             transSum?.is_paid_off = transSum?.is_paid_off?.not() ?: true
             transSum?.let { updataTransSumDB(it) }
+            onImageClicked(transSum!!.is_paid_off)
+            Log.i("HIDEDATE","updateIsPaidOffValue ${transSum.is_paid_off}")
         }
     }
+    fun onImageClicked(bool:Boolean){
+        _isBtnpaidOff.value = bool
+        Log.i("HIDEDATE","onImageClickede isbtnPaidOff${_isBtnpaidOff.value}")
+        Log.i("HIDEDATE","onImageClicked bool ${bool}")
+    }
+
     fun bayar(num:Int){
         viewModelScope.launch {
             val bayar = Payment()

@@ -10,7 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 
 
-@Database(entities = [Brand::class,Product::class,SubProduct::class,Category::class,TransactionSummary::class,TransactionDetail::class,Payment::class,Expenses::class,ExpenseCategory::class],version=29, exportSchema = true)
+@Database(entities = [Brand::class,Product::class,SubProduct::class,Category::class,TransactionSummary::class,TransactionDetail::class,Payment::class,Expenses::class,ExpenseCategory::class],version=30, exportSchema = true)
 @TypeConverters(DateTypeConverter::class)
 abstract class VendibleDatabase:RoomDatabase(){
     abstract val brandDao :BrandDao
@@ -57,48 +57,12 @@ abstract class VendibleDatabase:RoomDatabase(){
                         database.execSQL("ALTER TABLE `product_table` ADD COLUMN `product_capital` INTEGER NOT NULL DEFAULT 0")
                     }
                 }
-                val MIGRATION_27_28 = object : Migration(27, 28) {
+                val MIGRATION_29_30 = object : Migration(29, 30) {
                     override fun migrate(database: SupportSQLiteDatabase) {
-                        // Create the ExpenseCategory table
-                        database.execSQL("DROP TABLE IF EXISTS `expense_category_table`")
-                        database.execSQL(
-                            "CREATE TABLE IF NOT EXISTS `expense_category_table` (" +
-                                    "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                                    "`expense_category_name` TEXT NOT NULL DEFAULT '', " +
-                                    "`is_periodic` INTEGER NOT NULL DEFAULT 0)"
-                        )
-
-                        database.execSQL("DROP TABLE IF EXISTS `paymen_table`")
-
-                        // Create a new table with the desired schema
-                        database.execSQL(
-                            "CREATE TABLE IF NOT EXISTS `paymen_table` (" +
-                                    "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                                    "`sum_id` INTEGER NOT NULL, " +
-                                    "`payment_ammount` INTEGER NOT NULL DEFAULT 0, " +
-                                    "`payment_date` TEXT, " +
-                                    "`ref` TEXT NOT NULL DEFAULT '', " +
-                                    "FOREIGN KEY(`sum_id`) REFERENCES `trans_sum_table`(`sum_id`) ON DELETE CASCADE ON UPDATE CASCADE)"
-                        )
-
-
-                        // Create the Expenses table
-                        database.execSQL("DROP TABLE IF EXISTS `expense_table`")
-
-                        database.execSQL(
-                            "CREATE TABLE IF NOT EXISTS `expenses_table` (" +
-                                    "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                                    "`sum_id` INTEGER, " +
-                                    "`expense_category_id` INTEGER NOT NULL, " +
-                                    "`expense_name` TEXT NOT NULL DEFAULT '', " +
-                                    "`expense_ammount` INTEGER, " +
-                                    "`expense_date` TEXT, " +
-                                    "`expense_ref` TEXT NOT NULL DEFAULT '', " +
-                                    "FOREIGN KEY(`sum_id`) REFERENCES `trans_sum_table`(`sum_id`) ON DELETE CASCADE ON UPDATE CASCADE, " +
-                                    "FOREIGN KEY(`expense_category_id`) REFERENCES `expense_category_table`(`id`) ON DELETE CASCADE ON UPDATE CASCADE)"
-                        )
+                        database.execSQL("ALTER TABLE trans_detail_table ADD COLUMN item_position INTEGER NOT NULL DEFAULT 0")
                     }
                 }
+
 
 
                 var instance = INSTANCE
@@ -107,7 +71,7 @@ abstract class VendibleDatabase:RoomDatabase(){
                             context.applicationContext,
                             VendibleDatabase::class.java,
                             "vendible_table"
-                    )
+                    ).addMigrations(MIGRATION_29_30)
 
                         .fallbackToDestructiveMigration().build()
                     INSTANCE = instance

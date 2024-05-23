@@ -3,6 +3,7 @@ package com.example.app21try6.transaction.transactiondetail
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +16,7 @@ class PaymentAdapter(
                       val longListener:TransPaymentLongListener):
     ListAdapter<PaymentModel, PaymentAdapter.MyViewHolder>(TransPaymentDiffCallBack())
 {
+    private var is_active = MutableLiveData<Boolean>(false)
     class MyViewHolder private constructor(val binding: TransactionPaymentItemListBinding) :
     RecyclerView.ViewHolder(binding.root) {
     fun bind(
@@ -44,8 +46,17 @@ class PaymentAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(getItem(position), clickListener, longListener,isPaidoff)
+        holder.bind(getItem(position), clickListener, longListener,is_active.value!!)
         // Update background color based on clickedItems
+    }
+
+    fun deActivate() {
+        this.is_active.value  = false
+    }
+
+    fun isActive(is_active:Boolean){
+        this.is_active.value  = is_active
+        //notifyDataSetChanged()
     }
     }
 

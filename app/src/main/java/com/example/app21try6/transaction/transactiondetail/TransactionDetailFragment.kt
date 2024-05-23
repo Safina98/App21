@@ -29,6 +29,7 @@ import com.example.app21try6.R
 import com.example.app21try6.database.SummaryDatabase
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionDetailBinding
+import com.example.app21try6.transaction.transactionactive.TransactionActiveAdapter
 import com.google.android.material.textfield.TextInputEditText
 import java.io.OutputStream
 import java.util.*
@@ -47,7 +48,7 @@ class TransactionDetailFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater,
-            com.example.app21try6.R.layout.fragment_transaction_detail,container,false)
+           R.layout.fragment_transaction_detail,container,false)
         val application= requireNotNull(this.activity).application
         val id= arguments?.let{ TransactionDetailFragmentArgs.fromBundle(it).id}
         val datasource1 = VendibleDatabase.getInstance(application).transSumDao
@@ -103,6 +104,19 @@ class TransactionDetailFragment : Fragment() {
                 exportTextToWhatsApp(exportedString)
             }
         }
+        viewModel.isBtnpaidOff.observe(this.viewLifecycleOwner, Observer {
+            Log.i("HIDEDATE","before ${it}")
+            if (it == true) {
+                Log.i("HIDEDATE","if ${it}")
+                (binding.recyclerViewDetailTrans.adapter as TransactionDetailAdapter).isActive(it)
+            } else {
+                Log.i("HIDEDATE","else ${it}")
+                (binding.recyclerViewDetailTrans.adapter as TransactionDetailAdapter).deActivate()
+            }
+            Log.i("HIDEDATE","after ${it}")
+            adapter.notifyDataSetChanged()
+        })
+
         viewModel.navigateToEdit.observe(viewLifecycleOwner, Observer {
             it?.let {
                 this.findNavController().navigate(TransactionDetailFragmentDirections.actionTransactionDetailFragmentToTransactionEditFragment(id))

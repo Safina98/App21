@@ -7,6 +7,7 @@ import androidx.lifecycle.*
 import com.example.app21try6.Constants
 import com.example.app21try6.database.*
 import com.example.app21try6.formatRupiah
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -36,19 +37,35 @@ class TransactionEditViewModel(
     var itemTransDetail = datasource2.selectATransDetail(id)
     //val transSum = MutableLiveData<TransactionSummary>()
     val transSum = datasource1.getTransSum(id)
+
     var mutableTransSum = MutableLiveData<TransactionSummary> ()
     val sdf = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT)
     val currentDate = sdf.format(Date())
     val totalSum = datasource2.getTotalTrans(id)
     val trans_total: LiveData<String> =
             Transformations.map(totalSum) { formatRupiah(it).toString() }
+
+    val updatePositionCallback: (List<TransactionDetail>) -> Unit = { updatedItems ->
+        // Update the positions in the database
+        viewModelScope.launch {
+            for ((index, item) in updatedItems.withIndex()) {
+                item.item_position = index
+                Log.i("drag","viewModel ${item.trans_item_name} ${item.item_position}")
+                //datasource2.updateItemPosition(item)
+                _updateTransDetail(item)
+            }
+        }
+    }
     init {
         setCustomerName(id)
         setMutableTransSum()
+
+
         //getTransactionSummary(id)
     }
 
     ////////////////////////////////Transacttion Detail/////////////////////////////
+
     fun updateTransDetail(transactionDetail: TransactionDetail,i: Double){
         viewModelScope.launch {
             transactionDetail.qty = transactionDetail.qty + i
@@ -63,6 +80,15 @@ class TransactionEditViewModel(
                 transactionDetail.unit = if(selectedItem =="NONE") null else selectedItem
                 _updateTransDetail(transactionDetail)
                 Log.i("unit_Spinner","viewModel ${transactionDetail}")
+            }
+        }
+    }
+    fun updateTransPosition(transList:List<TransactionDetail>){
+        viewModelScope.launch {
+            for ((index, item) in transList.withIndex()) {
+                // Assuming you have a method to update the item position in your database
+                item.item_position = index
+                _updateTransDetail(item)
             }
         }
     }

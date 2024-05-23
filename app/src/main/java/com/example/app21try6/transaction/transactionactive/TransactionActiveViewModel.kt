@@ -58,7 +58,7 @@ class TransactionActiveViewModel(
     private var checkedItemList = mutableListOf<TransactionSummary>()
 
     init {
-        Log.i("ACTIVETRANSPROB", "INIT: ${active_trans.value}")
+
     }
     fun getActiveTrans(){
         viewModelScope.launch {
@@ -216,10 +216,11 @@ class TransactionActiveViewModel(
         transactionDetail.unit = null //edit later token[14].toDouble()
         transactionDetail.trans_detail_date = null //edit later
         transactionDetail.unit_qty = 1.0 //token[15].toDouble()
+        transactionDetail.item_position = 0
        Log.i("INSERTCSVPROB","trans_detail: $transactionDetail")
         datasource1.insertIfNotExist(transactionSummary.cust_name,transactionSummary.total_trans,transactionSummary.paid,transactionSummary.trans_date,transactionSummary.is_taken_,transactionSummary.is_paid_off,transactionSummary.is_keeped,transactionSummary.ref)
         //datasource2.insert(transactionDetail)
-        datasource2.insertTransactionDetailWithRef(transactionSummary.ref, transactionDetail.trans_item_name, transactionDetail.qty, transactionDetail.trans_price, transactionDetail.total_price, transactionDetail.is_prepared,transactionDetail.trans_detail_date,transactionDetail.unit,transactionDetail.unit_qty)
+        datasource2.insertTransactionDetailWithRef(transactionSummary.ref, transactionDetail.trans_item_name, transactionDetail.qty, transactionDetail.trans_price, transactionDetail.total_price, transactionDetail.is_prepared,transactionDetail.trans_detail_date,transactionDetail.unit,transactionDetail.unit_qty,transactionDetail.item_position)
     }
     fun writeCSV(file: File) {
             try {

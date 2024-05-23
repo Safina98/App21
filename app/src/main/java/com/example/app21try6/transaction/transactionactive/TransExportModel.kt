@@ -13,6 +13,7 @@ data class TransExportModel (
     var trans_detail_date:Date? = null,
     var unit:String?=null,
     var unit_qty:Double?=null,
+    var item_position:Int?=null,
     var sum_id:Int? = null,
     var cust_name:String? = null,
     var total_trans:Double? = null,

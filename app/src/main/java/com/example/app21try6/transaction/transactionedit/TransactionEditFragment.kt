@@ -17,6 +17,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.Constants.Companion.UNITS
 import com.example.app21try6.R
 import com.example.app21try6.database.TransactionDetail
@@ -29,6 +31,7 @@ import com.google.android.material.textfield.TextInputEditText
 enum class Code(val text: String) {ZERO(""),LONGPLUS("Tambah"),LONGSUBS("Kurang"),TEXTITEM("Update Nama Barang"),TEXTPRICE("Update Harga barang"),UNITQTY("ISI")}
 class TransactionEditFragment : Fragment() {
     private lateinit var binding:FragmentTransactionEditBinding
+    private lateinit var adapter:TransactionEditAdapter
     val viewModel:TransactionEditViewModel by viewModels()
    // val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -68,7 +71,6 @@ class TransactionEditFragment : Fragment() {
            deleteDialog(it, viewModel)
        }, TransEditPriceLongListener {
            showDialog(it,viewModel,Code.TEXTPRICE)
-
        },
            UnitTransTextCliked{ edit_trans ->
           //    viewModel.updateUnitTransDetail(selectedItem,edit_trans)
@@ -76,10 +78,46 @@ class TransactionEditFragment : Fragment() {
 
            }, TransEditUnitQtyLongListener {
                showDialog(it,viewModel,Code.UNITQTY)
-           },
-           requireContext())
+           }, viewModel.updatePositionCallback
+          )
        //TODO create custom adapter that shows or hide checkbox for delete purpose
+       val itemTouchHelperCallback = object : ItemTouchHelper.Callback() {
+           override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+               val dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN
+               return makeMovementFlags(dragFlags, 0)
+           }
+
+           override fun onMove(
+               recyclerView: RecyclerView,
+               viewHolder: RecyclerView.ViewHolder,
+               target: RecyclerView.ViewHolder
+           ): Boolean {
+               val fromPosition = viewHolder.adapterPosition
+               val toPosition = target.adapterPosition
+               adapter.moveItem(fromPosition, toPosition)
+               return true
+           }
+
+           override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+               // No swipe action
+           }
+
+           override fun isLongPressDragEnabled(): Boolean {
+               return true
+           }
+
+           override fun isItemViewSwipeEnabled(): Boolean {
+               return false
+           }
+           override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+               super.clearView(recyclerView, viewHolder)
+               adapter.updatePositionCallback()
+           }
+       }
        binding.recyclerViewEditTrans.adapter = adapter
+       val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+       itemTouchHelper.attachToRecyclerView(binding.recyclerViewEditTrans)
+
 
        viewModel.navigateToDetail.observe(viewLifecycleOwner, Observer {
            it?.let {
@@ -90,10 +128,14 @@ class TransactionEditFragment : Fragment() {
 
        viewModel.itemTransDetail.observe(viewLifecycleOwner, Observer {
            it?.let {
-               adapter.submitList(it.sortedBy { it.trans_item_name })
+               //adapter.setItemsValue(viewModel.itemTransDetail.value!!)
+               Log.i("drag","transaction edit fragment ${it}")
+               adapter.submitList(it)
                adapter.notifyDataSetChanged()
+               adapter.setItemsValue(it)
            }
        })
+
 
        viewModel.navigateToVendible.observe(viewLifecycleOwner, Observer {
            if (it != null) {
@@ -235,6 +277,11 @@ class TransactionEditFragment : Fragment() {
             .setNegativeButton("Cancel", null)
             .create()
         dialog.show()
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
     }
 

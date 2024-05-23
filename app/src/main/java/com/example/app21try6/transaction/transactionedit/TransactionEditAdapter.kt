@@ -23,9 +23,10 @@ class TransactionEditAdapter(
     val priceLongListener:TransEditPriceLongListener,
     val selectedSpinnerListener: UnitTransTextCliked,
     val unitQtyLongListener: TransEditUnitQtyLongListener,
-    val context:Context
+    private val updatePositionCallback: (List<TransactionDetail>) -> Unit,
     )
     :ListAdapter<TransactionDetail,TransactionEditAdapter.MyViewHolder>(TransEditDiffCallBack()){
+    var items= mutableListOf<TransactionDetail>()
     class MyViewHolder private constructor(val binding:TransactionEditItemListBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(
             item:TransactionDetail,
@@ -38,7 +39,7 @@ class TransactionEditAdapter(
             priceLongListener:TransEditPriceLongListener,
             selectedSpinnerListener: UnitTransTextCliked,
             unitQtyLongListener: TransEditUnitQtyLongListener,
-            context: Context
+
                 ){
             binding.item = item
             binding.txtProductT.text = item.trans_item_name
@@ -47,14 +48,6 @@ class TransactionEditAdapter(
             binding.textSumsT.text = formatRupiah(item.total_price).toString()
             binding.txtUnitQty.text = item.unit_qty.toString()
             binding.textUnit.text = item.unit?: "-"
-           // val adapterMonth = ArrayAdapter(context, android.R.layout.simple_dropdown_item_1line,  UNITS)
-            //binding.spinnerUnit.adapter = adapterMonth
-            //val defaultPosition = UNITS.indexOf(item.unit)
-            //binding.spinnerUnit.setSelection(defaultPosition)
-
-// Set the selected item in the Spinner based on its value
-
-// Set the selected item in the Spinner
             binding.clickListener = clickListener
             binding.subsListener = subsTransClickListener
             binding.plusListener = plusTransClickListener
@@ -64,7 +57,6 @@ class TransactionEditAdapter(
             binding.priceLongListener = priceLongListener
             binding.selectedSpinnerListener = selectedSpinnerListener
             binding.unitQtyListener = unitQtyLongListener
-            Log.i("unit_Spinner","viewHolder bind ${item.unit}")
             binding.executePendingBindings()
         }
         companion object{
@@ -79,9 +71,35 @@ class TransactionEditAdapter(
         return MyViewHolder.from(parent)
     }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-       holder.bind(getItem(position),clickListener,subsTransClickListener,plusTransClickListener,subslongListener,plusLongListener,longListener,priceLongListener,selectedSpinnerListener,unitQtyLongListener, context)
+       holder.bind(getItem(position),clickListener,subsTransClickListener,plusTransClickListener,subslongListener,plusLongListener,longListener,priceLongListener,selectedSpinnerListener,unitQtyLongListener)
+        val item = getItem(position)
+        Log.d("drag", "Binding item at position: $position, item: $item")
+    }
+
+    fun setItemsValue(items_ : List<TransactionDetail>){
+        items = items_.toMutableList()
+        Log.i("drag","adapter setItemsValue")
+        for (i in items){
+            Log.i("drag","adapter item (${i.trans_item_name} [${i.item_position}])")
+        }
+    }
+
+    override fun getItemCount(): Int {
+        val count = super.getItemCount()
+        Log.d("drag", "Item count: $count")
+        return count
+    }
+    fun moveItem(fromPosition: Int, toPosition: Int) {
+        Log.i("drag","adapter $fromPosition (${items[fromPosition].trans_item_name}) -> $toPosition(${items[toPosition].trans_item_name})")
+        val item = items.removeAt(fromPosition)
+        items.add(if (toPosition > fromPosition) toPosition - 1 else toPosition, item)
+        notifyItemMoved(fromPosition, toPosition)
+    }
+    fun updatePositionCallback() {
+        updatePositionCallback(items)
     }
 }
+
 class TransEditDiffCallBack: DiffUtil.ItemCallback<TransactionDetail>(){
     override fun areItemsTheSame(oldItem: TransactionDetail, newItem: TransactionDetail): Boolean {
         return oldItem.trans_price == newItem.trans_price
@@ -117,6 +135,7 @@ class TransEditUnitQtyLongListener(val longListener:(edit_trans: TransactionDeta
 class SubsTransClickListener(val clickListener:(edit_trans: TransactionDetail)->Unit){
     fun onClick(edit_trans: TransactionDetail) = clickListener(edit_trans)
 }
+
 class PlusTransClickListener(val plusListener:(edit_trans:TransactionDetail)->Unit){
     fun onPlusButtonClick(edit_trans: TransactionDetail)= plusListener(edit_trans)
 }
@@ -135,5 +154,10 @@ class SubsTransLongListener(val longListener:(edit_trans: TransactionDetail)->Un
 class UnitTransTextCliked(val selectListener:(edit_trans: TransactionDetail)->Unit){
     fun onUnitTransClick( edit_trans: TransactionDetail) {
         selectListener(edit_trans)
+    }
+}
+class DragAndLongListener(val longListener:(edit_trans: List<TransactionDetail>)->Unit){
+    fun onLongClick(edit_trans:List<TransactionDetail>){
+        longListener(edit_trans)
     }
 }

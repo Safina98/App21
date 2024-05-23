@@ -45,6 +45,7 @@ class TransactionSelectViewModel(
 
     private val _unFilteredProduct = MutableLiveData<List<Product>>()
     private val _unFilteredSub = MutableLiveData<List<TransSelectModel>>()
+    private var pos:Int = 0
 
     init {
         getKategoriEntries()
@@ -106,6 +107,9 @@ class TransactionSelectViewModel(
         t.trans_item_name = s.item_name
         t.trans_price = s.item_price
         t.trans_detail_date = Date()
+        t.item_position = pos
+        Log.i("drag","insert pos $pos")
+        pos+=1
         return t
     }
 

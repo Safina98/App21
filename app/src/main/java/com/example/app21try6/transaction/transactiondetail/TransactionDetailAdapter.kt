@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.database.TransactionDetail
+import com.example.app21try6.database.TransactionSummary
 import com.example.app21try6.databinding.TransactionDetailItemListBinding
 import com.example.app21try6.formatRupiah
 import com.example.app21try6.transaction.transactionedit.TransactionEditDummyModel
@@ -20,7 +21,7 @@ class TransactionDetailAdapter(val isPaidOff:Boolean?,
                                 val clickListener: TransDetailClickListener,
                                val longListener:TransDetailLongListener):
     ListAdapter<TransactionDetail,TransactionDetailAdapter.MyViewHolder>(TransDetailDiffCallBack()) {
-
+    private var is_active = MutableLiveData<Boolean>(false)
     class MyViewHolder private constructor(val binding: TransactionDetailItemListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(
@@ -36,10 +37,9 @@ class TransactionDetailAdapter(val isPaidOff:Boolean?,
             binding.txtQtyTDetail.text = item.qty.toString()
             binding.txtUnitQtyDetail.text = item.unit_qty.toString()
             binding.txtUnitDetail.text = item.unit
-            if (isPaidOff ==true){
-                binding.txtItemTDate.visibility = View.VISIBLE
-            }else{
-                binding.txtItemTDate.visibility = View.GONE
+            binding.txtItemTDate.visibility = when(isPaidOff){
+                true ->View.VISIBLE
+                else -> View.GONE
             }
 
 
@@ -66,8 +66,16 @@ class TransactionDetailAdapter(val isPaidOff:Boolean?,
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(getItem(position), clickListener, longListener,isPaidOff)
+        holder.bind(getItem(position), clickListener, longListener, is_active.value!!)
         // Update background color based on clickedItems
+    }
+    fun deActivate() {
+        this.is_active.value  = false
+    }
+
+    fun isActive(is_active:Boolean){
+        this.is_active.value  = is_active
+        //notifyDataSetChanged()
     }
 }
 class TransDetailDiffCallBack:DiffUtil.ItemCallback<TransactionDetail>(){

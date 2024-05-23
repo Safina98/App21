@@ -19,14 +19,17 @@ interface TransDetailDao {
     @Update
     fun update(transactionDetail: TransactionDetail)
 
+    @Update
+    suspend fun updateItemPosition(item: TransactionDetail)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertN(transactionDetail: TransactionDetail):Long
 
-    @Query("SELECT * FROM trans_detail_table WHERE sum_id =:sum_id_")
+    @Query("SELECT * FROM trans_detail_table WHERE sum_id =:sum_id_  order BY item_position asc")
     fun selectATransDetail(sum_id_:Int):LiveData<List<TransactionDetail>>
     //@Query("INSERT INTO brand_table (brand_name,cath_code) SELECT :brand_name_ as brand_name, (SELECT category_id FROM category_table WHERE category_name = :caht_name_ limit 1) as cath_code WHERE NOT EXISTS (SELECT 1 FROM brand_table WHERE brand_name = :brand_name_)")
-    @Query("INSERT OR IGNORE INTO trans_detail_table (sum_id, trans_item_name, qty, trans_price, total_price, is_prepared,trans_detail_date,unit,unit_qty) " +
-            "SELECT sum_id, :transItemName, :qty, :transPrice, :totalPrice, :isPrepared,:trans_detail_date,:unit,:unit_qty FROM trans_sum_table WHERE ref = :ref")
+    @Query("INSERT OR IGNORE INTO trans_detail_table (sum_id, trans_item_name, qty, trans_price, total_price, is_prepared,trans_detail_date,unit,unit_qty,item_position) " +
+            "SELECT sum_id, :transItemName, :qty, :transPrice, :totalPrice, :isPrepared,:trans_detail_date,:unit,:unit_qty,:item_position FROM trans_sum_table WHERE ref = :ref")
     suspend fun insertTransactionDetailWithRef(
         ref: String,
         transItemName: String,
@@ -36,7 +39,8 @@ interface TransDetailDao {
         isPrepared: Boolean,
         trans_detail_date: Date?,
         unit:String?,
-        unit_qty:Double
+        unit_qty:Double,
+        item_position:Int
     )
 
     @Query("SELECT  IFNULL(SUM(total_price),0.0)  FROM TRANS_DETAIL_TABLE WHERE sum_id =:sum_id_ ")
@@ -62,6 +66,9 @@ interface TransDetailDao {
 
     @Query("SELECT s.sub_id AS sub_product_id,s.sub_name AS item_name,s.is_checked AS is_selected ,p.product_price AS item_price,t.qty as qty,t.trans_detail_id as trans_detail_id FROM sub_table s JOIN product_table p ON (S.product_code=P.product_id)  LEFT OUTER JOIN trans_detail_table t ON (S.sub_name = T.trans_item_name and T.sum_id =:sum_id_) WHERE s.product_code =:productId")
     fun getSubProductM(productId:Int,sum_id_: Int):List<TransSelectModel>
+
+    @Query("SELECT COUNT(*) FROM trans_detail_table WHERE sum_id = :sumId;")
+    fun getNumberOfData(sumId:Int):LiveData<Int>
 
    // @Query("SELECT trans_item_name as trans_item_name, qty as qty, trans_price as  trans_price, total_price as total_price, is_prepared as is_prepared, c as cust_name, product_price as price,best_selling as bestSelling,brand_name as brand, category_name as category FROM trans_detail_table INNER JOIN summary_table ON sum_id = trans_detail_table.sum_id")
    @Query("SELECT * FROM trans_sum_table LEFT JOIN trans_detail_table ON trans_sum_table.sum_id = trans_detail_table.sum_id")
