@@ -45,13 +45,9 @@ class TransactionDetailViewModel (application: Application,
     val trans_total_ = datasource2.getTotalTrans(id)
     val trans_total: LiveData<String> = Transformations.map(trans_total_) { formatRupiah(it).toString() }
     private val _sendReceipt = MutableLiveData<Boolean>()
-    /*
-    val sisa: Double = item.total_trans?.toDouble()?.let { total ->
-            item.paid?.toDouble()?.let { paid ->
-                total - paid
-            } ?: total
-        } ?: (item.paid?.toDouble() ?: 0.0)
-    * */
+    private var _uiMode = MutableLiveData<Int>(16)
+    val uiMode :LiveData<Int> get() =_uiMode
+
     var bayar :LiveData<String> = Transformations.map(trans_sum) {item->
        val a = item.total_trans.let { total ->
            item.paid.toDouble().let { paid ->
@@ -60,25 +56,40 @@ class TransactionDetailViewModel (application: Application,
        }
         formatRupiah(a.toDouble()).toString()
     }
+    var isn: LiveData<Boolean> = Transformations.map(trans_sum) { item ->
+        if(item?.sum_note.isNullOrEmpty()) false else true
+    }
+    var txtNote =MutableLiveData<String?>()
     //var bayar = formatRupiah(trans_sum.value?.paid?.toDouble())
     val sendReceipt:LiveData<Boolean> get() = _sendReceipt
 
     val paymentModel = datasource4.selectPaymentModelBySumId(id)
 
-    var _isBtnBayarClicked = MutableLiveData<Boolean>(false)
+    private var _isBtnBayarClicked = MutableLiveData<Boolean>(false)
     val isBtnBayarCLicked :LiveData<Boolean> get() = _isBtnBayarClicked
 
-    var _isBtnpaidOff = MutableLiveData<Boolean>()
+    private var _isBtnpaidOff = MutableLiveData<Boolean>()
     val isBtnpaidOff :LiveData<Boolean> get() = _isBtnpaidOff
 
+    private var _isCardViewShow = MutableLiveData<Boolean>()
+    val isCardViewShow :LiveData<Boolean> get() = _isCardViewShow
 
+    private var _isTxtNoteClick =MutableLiveData<Boolean>()
+    val isTxtNoteClick :LiveData<Boolean> get() = _isTxtNoteClick
 
+    init{
+        Log.i("NOTEPROB"," init isn ${isn.value}")
+    }
     fun onNavigateToEdit(){
         _navigateToEdit.value = id
     }
     fun onNavigatedToEdit(){this._navigateToEdit.value = null}
     private val _booleanValue = MutableLiveData<Boolean>()
     val decimalFormat = DecimalFormat("#.##")
+
+    fun setUiMode(mode:Int){
+        _uiMode.value = mode
+    }
 
     fun updateBooleanValue() {
        viewModelScope.launch {
@@ -87,19 +98,35 @@ class TransactionDetailViewModel (application: Application,
            transSum?.let { updataTransSumDB(it) }
        }
     }
+    fun setTxtNoteValue(note:String?){
+        txtNote.value = note
+    }
+    fun onTxtNoteClick(){
+        _isTxtNoteClick.value = _isTxtNoteClick.value?.not() ?: true
+        //Log.i("NOTEPROB"," onTXTCLICK ${_isCardViewShow.value}")
+    }
+    fun onTxtNoteOkClicked(){
+        viewModelScope.launch {
+            onTxtNoteClick()
+            var transum = trans_sum.value
+            transum?.sum_note = txtNote.value
+            updateTransSumDB(transum!!)
+        }
+    }
+    fun onBtnNoteClick(){
+        _isCardViewShow.value = _isCardViewShow.value?.not() ?: true
+    }
+    fun onBtnNoteClikced(){_isCardViewShow.value = false}
     fun updateIsPaidOffValue() {
         viewModelScope.launch {
             var transSum = trans_sum.value
             transSum?.is_paid_off = transSum?.is_paid_off?.not() ?: true
             transSum?.let { updataTransSumDB(it) }
             onImageClicked(transSum!!.is_paid_off)
-            Log.i("HIDEDATE","updateIsPaidOffValue ${transSum.is_paid_off}")
         }
     }
     fun onImageClicked(bool:Boolean){
         _isBtnpaidOff.value = bool
-        Log.i("HIDEDATE","onImageClickede isbtnPaidOff${_isBtnpaidOff.value}")
-        Log.i("HIDEDATE","onImageClicked bool ${bool}")
     }
 
     fun bayar(num:Int){

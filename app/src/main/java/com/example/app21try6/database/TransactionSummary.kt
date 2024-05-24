@@ -29,5 +29,7 @@ data class TransactionSummary (
         @ColumnInfo(name = "is_keeped")
         var is_keeped:Boolean=false,
         @ColumnInfo(name = "ref")
-        var ref:String=""
+        var ref:String="",
+        @ColumnInfo(name = "sum_note")
+        var sum_note:String?=null
 )

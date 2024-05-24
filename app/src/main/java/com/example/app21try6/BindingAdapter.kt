@@ -16,8 +16,9 @@ import java.util.Date
 
 import android.content.res.Configuration
 import android.view.View
-
-
+import android.widget.EditText
+import android.widget.ImageView
+import androidx.cardview.widget.CardView
 
 
 @BindingAdapter("textVisibility")
@@ -28,7 +29,14 @@ fun TextView.setTextVisibility(text: String?) {
         View.VISIBLE
     }
 }
-
+@BindingAdapter("cardViewVisibility")
+fun CardView.setCardVisibility(bool: Boolean){
+    visibility = if (bool ==false) {
+        View.GONE
+    } else {
+        View.VISIBLE
+    }
+}
 @BindingAdapter("textVisibility")
 fun TextView.setTextVisibility(bool: Boolean) {
     visibility = if (bool ==false) {
@@ -36,6 +44,20 @@ fun TextView.setTextVisibility(bool: Boolean) {
     } else {
         View.VISIBLE
     }
+}
+@BindingAdapter("viewVisibility")
+fun seViewVisibility(view: View,bool: Boolean) {
+    view.visibility = if (bool ==true) { View.GONE } else { View.VISIBLE
+    }
+}
+@BindingAdapter("app:noteColor")
+fun setNoteColor(imageView: ImageView, isActive: Boolean) {
+    val drawableRes = if (isActive) {
+        R.drawable.sticky_note_active
+    } else {
+        R.drawable.sticky_note_inactive
+    }
+    imageView.setImageResource(drawableRes)
 }
 
 @BindingAdapter("textVisibilityDetail")
@@ -47,8 +69,43 @@ fun setTextVisibilityDetail(textView: TextView,item:TransactionDetail) {
     } else {
         View.VISIBLE
     }
-
 }
+@BindingAdapter("dayModeResource", "nightModeResource", requireAll = true)
+fun setNightModeResource(imageView: ImageView, dayModeResource: Int, nightModeResource: Int) {
+    val nightModeFlags = imageView.context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+    when (nightModeFlags) {
+        Configuration.UI_MODE_NIGHT_YES -> {
+            imageView.setImageResource(nightModeResource)
+        }
+        Configuration.UI_MODE_NIGHT_NO -> {
+            imageView.setImageResource(dayModeResource)
+        }
+        Configuration.UI_MODE_NIGHT_UNDEFINED -> {
+            imageView.setImageResource(dayModeResource)
+        }
+    }
+}
+@BindingAdapter("app:imageBasedOnNightMode")
+fun setImageBasedOnNightMode(imageView: ImageView, uiMode: Int) {
+    when (uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+        Configuration.UI_MODE_NIGHT_YES -> {
+            when (imageView.id) {
+                R.id.btn_print_new -> imageView.setImageResource(R.drawable.baseline_print_light)
+                R.id.btn_edit_trans_new -> imageView.setImageResource(R.drawable.baseline_edit_light)
+                R.id.btn_send_new -> imageView.setImageResource(R.drawable.wa_vector_light)
+            }
+        }
+        Configuration.UI_MODE_NIGHT_NO, Configuration.UI_MODE_NIGHT_UNDEFINED -> {
+            when (imageView.id) {
+                R.id.btn_print_new -> imageView.setImageResource(R.drawable.baseline_print_24)
+                R.id.btn_edit_trans_new -> imageView.setImageResource(R.drawable.baseline_edit_24)
+                R.id.btn_send_new -> imageView.setImageResource(R.drawable.wa_vector)
+            }
+        }
+    }
+}
+
+
 @BindingAdapter("selectedItemValue")
 fun Spinner.setSelectedItemValue(selectedItemValue: String?) {
     val adapter = adapter as? ArrayAdapter<String>
@@ -57,6 +114,7 @@ fun Spinner.setSelectedItemValue(selectedItemValue: String?) {
         setSelection(position)
     }
 }
+
 @BindingAdapter("backgroundColor")
 fun setBackgroundColor(view: View, isPrepared: Boolean) {
     val parent = view.parent as? View
@@ -67,6 +125,7 @@ fun setBackgroundColor(view: View, isPrepared: Boolean) {
             ContextCompat.getColor(view.context, android.R.color.transparent)
         }
     } ?: ContextCompat.getColor(view.context, android.R.color.transparent)
+
     val color = if (isPrepared) {
         ContextCompat.getColor(view.context,R.color.pastel_green2)
     } else {

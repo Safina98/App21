@@ -22,5 +22,6 @@ data class TransExportModel (
     var is_taken:Boolean? = null,
     var is_paid_off:Boolean? = null,
     var is_keeped:Boolean?=null,
-    var ref:String? = null
+    var ref:String? = null,
+    var sum_note:String?=null
 )

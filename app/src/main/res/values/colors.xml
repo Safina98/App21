@@ -3,8 +3,8 @@
     <color name="primaryColor">#000000</color>
     <color name="primaryLightColor">#000000</color>
     <color name="primaryDarkColor">#000000</color>
-    <color name="secondaryColor">#4F4A57</color>
-    <color name="secondaryLightColor">#C5C1CC</color>
+    <color name="secondaryColor">#000000</color>
+    <color name="secondaryLightColor">#EAE7EE</color>
     <color name="secondaryDarkColor">#FFFFFF</color>
     <color name="primaryTextColor">#FFFFFF</color>
     <color name="secondaryTextColor">#000000</color>
@@ -42,6 +42,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="grey">#8E92A1</color>
     <color name="grey_green">#88DCE6DD</color>
     <color name="pastel_green2">#C5E1A5</color>
     <color name="dark_green">#576F58</color>

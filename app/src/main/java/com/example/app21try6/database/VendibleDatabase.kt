@@ -10,7 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 
 
-@Database(entities = [Brand::class,Product::class,SubProduct::class,Category::class,TransactionSummary::class,TransactionDetail::class,Payment::class,Expenses::class,ExpenseCategory::class],version=30, exportSchema = true)
+@Database(entities = [Brand::class,Product::class,SubProduct::class,Category::class,TransactionSummary::class,TransactionDetail::class,Payment::class,Expenses::class,ExpenseCategory::class],version=31, exportSchema = true)
 @TypeConverters(DateTypeConverter::class)
 abstract class VendibleDatabase:RoomDatabase(){
     abstract val brandDao :BrandDao
@@ -20,7 +20,7 @@ abstract class VendibleDatabase:RoomDatabase(){
     abstract val transDetailDao:TransDetailDao
     abstract val transSumDao:TransSumDao
     abstract val paymentDao:PaymentDao
-   abstract val expenseDao:ExpenseDao
+    abstract val expenseDao:ExpenseDao
     abstract val expenseCategoryDao:ExpenseCategoryDao
 
 
@@ -62,8 +62,11 @@ abstract class VendibleDatabase:RoomDatabase(){
                         database.execSQL("ALTER TABLE trans_detail_table ADD COLUMN item_position INTEGER NOT NULL DEFAULT 0")
                     }
                 }
-
-
+                val MIGRATION_30_31 = object : Migration(30, 31) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        database.execSQL("ALTER TABLE trans_sum_table ADD COLUMN sum_note TEXT")
+                    }
+                }
 
                 var instance = INSTANCE
                 if (instance == null) {
@@ -71,7 +74,7 @@ abstract class VendibleDatabase:RoomDatabase(){
                             context.applicationContext,
                             VendibleDatabase::class.java,
                             "vendible_table"
-                    ).addMigrations(MIGRATION_29_30)
+                    ).addMigrations(MIGRATION_30_31)
 
                         .fallbackToDestructiveMigration().build()
                     INSTANCE = instance

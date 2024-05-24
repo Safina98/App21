@@ -10,12 +10,14 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -88,10 +90,18 @@ class TransactionDetailFragment : Fragment() {
                 adapter.notifyDataSetChanged()
             }
         })
+
         val paymentAdapter = PaymentAdapter(viewModel.trans_sum.value?.is_paid_off,TransPaymentClickListener {  },TransPaymentLongListener {  })
         binding.recyclerViewBayar.adapter = paymentAdapter
         viewModel.trans_sum.observe(viewLifecycleOwner){
+            Log.i("NOTEPROB"," fragment isn ${it.sum_note}")
+            viewModel.setTxtNoteValue(it.sum_note)
         }
+        viewModel.isn.observe(this, Observer { isNoteActive ->
+            // Update your UI based on the value of isNoteActive
+            // For example, you can log the value to check if it's being updated correctly
+            Log.i("NOTEPROB"," fragment isn ${isNoteActive}")
+        })
         viewModel.paymentModel.observe(viewLifecycleOwner, Observer {
             it?.let{
                 paymentAdapter.submitList(it)
@@ -105,17 +115,22 @@ class TransactionDetailFragment : Fragment() {
             }
         }
         viewModel.isBtnpaidOff.observe(this.viewLifecycleOwner, Observer {
-            Log.i("HIDEDATE","before ${it}")
             if (it == true) {
-                Log.i("HIDEDATE","if ${it}")
                 (binding.recyclerViewDetailTrans.adapter as TransactionDetailAdapter).isActive(it)
             } else {
-                Log.i("HIDEDATE","else ${it}")
                 (binding.recyclerViewDetailTrans.adapter as TransactionDetailAdapter).deActivate()
             }
-            Log.i("HIDEDATE","after ${it}")
             adapter.notifyDataSetChanged()
         })
+
+        viewModel.isCardViewShow.observe(viewLifecycleOwner, Observer {
+           // viewModel.onBtnNoteClikced()
+
+        })
+        viewModel.isTxtNoteClick.observe(viewLifecycleOwner, Observer {
+            //viewModel.onTxtNoteClicked()
+        })
+
 
         viewModel.navigateToEdit.observe(viewLifecycleOwner, Observer {
             it?.let {
@@ -129,6 +144,12 @@ class TransactionDetailFragment : Fragment() {
                 viewModel.onBtnBayarClicked()
             }
         })
+        viewModel.uiMode.observe(viewLifecycleOwner, Observer {
+
+        })
+        val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        viewModel.setUiMode(nightModeFlags)
+
         return binding.root
     }
 

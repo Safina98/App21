@@ -206,6 +206,7 @@ class TransactionActiveViewModel(
         transactionSummary.is_paid_off  = token[5].toBooleanStrictOrNull() ?: true
         transactionSummary.ref = token[11]
         transactionSummary.is_keeped = token[12].toBooleanStrictOrNull() ?: true//token[12].toBooleanStrictOrNull() ?: false
+        transactionSummary.sum_note = token[16]
         val transactionDetail = TransactionDetail()
         // "${j.trans_item_name},${j.trans_price},${j.qty},${j.total_price},${j.is_prepared}"
         transactionDetail.trans_item_name = token[6]
@@ -213,12 +214,12 @@ class TransactionActiveViewModel(
         transactionDetail.qty = token[8].toDouble()
         transactionDetail.total_price = token[9].toDouble()
         transactionDetail.is_prepared =  token[10].toBooleanStrictOrNull() ?: false
-        transactionDetail.unit = null //edit later token[14].toDouble()
-        transactionDetail.trans_detail_date = null //edit later
-        transactionDetail.unit_qty = 1.0 //token[15].toDouble()
+        transactionDetail.unit = token[14]
+        transactionDetail.trans_detail_date =getDate(token[13])
+        transactionDetail.unit_qty = token[15].toDouble()
         transactionDetail.item_position = 0
        Log.i("INSERTCSVPROB","trans_detail: $transactionDetail")
-        datasource1.insertIfNotExist(transactionSummary.cust_name,transactionSummary.total_trans,transactionSummary.paid,transactionSummary.trans_date,transactionSummary.is_taken_,transactionSummary.is_paid_off,transactionSummary.is_keeped,transactionSummary.ref)
+        datasource1.insertIfNotExist(transactionSummary.cust_name,transactionSummary.total_trans,transactionSummary.paid,transactionSummary.trans_date,transactionSummary.is_taken_,transactionSummary.is_paid_off,transactionSummary.is_keeped,transactionSummary.ref,transactionSummary.sum_note)
         //datasource2.insert(transactionDetail)
         datasource2.insertTransactionDetailWithRef(transactionSummary.ref, transactionDetail.trans_item_name, transactionDetail.qty, transactionDetail.trans_price, transactionDetail.total_price, transactionDetail.is_prepared,transactionDetail.trans_detail_date,transactionDetail.unit,transactionDetail.unit_qty,transactionDetail.item_position)
     }
@@ -236,10 +237,16 @@ class TransactionActiveViewModel(
                         if (j.trans_detail_id!=null) {
 
                             val dateString = dateFormatter.format(j.trans_date)
+                            //          0               1               2
                             val line = "$dateString,${j.cust_name},${j.total_trans}," +
+                                    //      3           4               5               6
                                         "${j.paid},${j.is_taken},${j.is_paid_off},${j.trans_item_name}," +
+                                    //      7               8           9               10              11
                                         "${j.trans_price},${j.qty},${j.total_price},${j.is_prepared},${j.ref}," +
-                                        "${j.is_keeped},${j.trans_detail_date},${j.unit},${j.unit_qty}"
+                                    //      12                  13                 14           15
+                                        "${j.is_keeped},${j.trans_detail_date},${j.unit},${j.unit_qty}"+
+                                    //  16
+                                        "${j.sum_note}"
                             bw.write(line)
                             bw.newLine()
                         }
