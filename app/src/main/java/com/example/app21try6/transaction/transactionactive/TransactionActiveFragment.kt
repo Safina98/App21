@@ -139,7 +139,6 @@ class TransactionActiveFragment : Fragment() {
                 binding.recyclerViewActiveTrans.visibility  = View.VISIBLE
                 binding.progressBar.visibility = View.GONE
             }
-            //binding.progressBar.visibility = if (isLoading ==true) View.VISIBLE else View.GONE
         })
 
         viewModel.active_trans.observe(viewLifecycleOwner, Observer {

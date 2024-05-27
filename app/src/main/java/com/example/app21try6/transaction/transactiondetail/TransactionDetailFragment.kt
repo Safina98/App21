@@ -1,13 +1,10 @@
 package com.example.app21try6.transaction.transactiondetail
 
 import android.Manifest
-import android.R.attr.value
-import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothClass
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothSocket
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -17,9 +14,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -31,9 +26,7 @@ import com.example.app21try6.R
 import com.example.app21try6.database.SummaryDatabase
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionDetailBinding
-import com.example.app21try6.transaction.transactionactive.TransactionActiveAdapter
 import com.google.android.material.textfield.TextInputEditText
-import java.io.OutputStream
 import java.util.*
 
 
@@ -58,28 +51,32 @@ class TransactionDetailFragment : Fragment() {
         val datasource3 = SummaryDatabase.getInstance(application).summaryDbDao
         val datasource4 = VendibleDatabase.getInstance(application).paymentDao
         val datasource5 = VendibleDatabase.getInstance(application).subProductDao
-
+        val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         val viewModelFactory = TransactionDetailViewModelFactory(application,datasource1,datasource2,datasource3,datasource4,datasource5,id!!)
         viewModel =ViewModelProvider(this,viewModelFactory).get(TransactionDetailViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        val paymentAdapter = PaymentAdapter(viewModel.transSum.value?.is_paid_off,TransPaymentClickListener {  },TransPaymentLongListener {  })
+        //Transaction Detail Adapter
+        val adapter = TransactionDetailAdapter(
+            viewModel.transSum.value?.is_paid_off,
+            TransDetailClickListener {
+            },
+            TransDetailLongListener {it->
+                it.is_prepared = it.is_prepared.not()
+                viewModel.updateTransDetail(it)
+            }
+        )
 
         if (checkPermission()) {
-            Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show();
         } else {
             requestPermission()
         }
-        val adapter = TransactionDetailAdapter(
-            viewModel.trans_sum.value?.is_paid_off,
-            TransDetailClickListener {
 
-        }, TransDetailLongListener {it->
-            it.is_prepared = it.is_prepared.not()
-            viewModel.updateTransDetail(it)
-        }
-        )
         binding.recyclerViewDetailTrans.adapter = adapter
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+
 
         binding.btnPrintNew.setOnClickListener {
             printReceipt()
@@ -91,29 +88,29 @@ class TransactionDetailFragment : Fragment() {
             }
         })
 
-        val paymentAdapter = PaymentAdapter(viewModel.trans_sum.value?.is_paid_off,TransPaymentClickListener {  },TransPaymentLongListener {  })
         binding.recyclerViewBayar.adapter = paymentAdapter
-        viewModel.trans_sum.observe(viewLifecycleOwner){
-            Log.i("NOTEPROB"," fragment isn ${it.sum_note}")
+
+        viewModel.setUiMode(nightModeFlags)
+
+        viewModel.transSum.observe(viewLifecycleOwner){
             viewModel.setTxtNoteValue(it.sum_note)
         }
-        viewModel.isn.observe(this, Observer { isNoteActive ->
-            // Update your UI based on the value of isNoteActive
-            // For example, you can log the value to check if it's being updated correctly
-            Log.i("NOTEPROB"," fragment isn ${isNoteActive}")
-        })
+
+        viewModel.isn.observe(this, Observer { isNoteActive -> })
+
         viewModel.paymentModel.observe(viewLifecycleOwner, Observer {
             it?.let{
                 paymentAdapter.submitList(it)
-                Toast.makeText(context,it.toString(),Toast.LENGTH_SHORT).show()
             }
         })
+
         viewModel.sendReceipt.observe(viewLifecycleOwner){
             if (it==true){
-                var exportedString=viewModel.generateReceiptText()
+                val exportedString=viewModel.generateReceiptText()
                 exportTextToWhatsApp(exportedString)
             }
         }
+
         viewModel.isBtnpaidOff.observe(this.viewLifecycleOwner, Observer {
             if (it == true) {
                 (binding.recyclerViewDetailTrans.adapter as TransactionDetailAdapter).isActive(it)
@@ -123,14 +120,18 @@ class TransactionDetailFragment : Fragment() {
             adapter.notifyDataSetChanged()
         })
 
-        viewModel.isCardViewShow.observe(viewLifecycleOwner, Observer {
-           // viewModel.onBtnNoteClikced()
+        viewModel.isCardViewShow.observe(viewLifecycleOwner, Observer {})
 
-        })
-        viewModel.isTxtNoteClick.observe(viewLifecycleOwner, Observer {
-            //viewModel.onTxtNoteClicked()
+        viewModel.isTxtNoteClick.observe(viewLifecycleOwner, Observer {})
+
+        viewModel.isBtnBayarCLicked.observe(viewLifecycleOwner, Observer {
+            if (it==true){
+                showBayarDialog()
+                viewModel.onBtnBayarClicked()
+            }
         })
 
+        viewModel.uiMode.observe(viewLifecycleOwner) {}
 
         viewModel.navigateToEdit.observe(viewLifecycleOwner, Observer {
             it?.let {
@@ -138,17 +139,6 @@ class TransactionDetailFragment : Fragment() {
                 viewModel.onNavigatedToEdit()
             }
         })
-        viewModel.isBtnBayarCLicked.observe(viewLifecycleOwner, Observer {
-            if (it==true){
-                showBayarDialog()
-                viewModel.onBtnBayarClicked()
-            }
-        })
-        viewModel.uiMode.observe(viewLifecycleOwner, Observer {
-
-        })
-        val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        viewModel.setUiMode(nightModeFlags)
 
         return binding.root
     }

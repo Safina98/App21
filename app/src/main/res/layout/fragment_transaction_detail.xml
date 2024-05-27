@@ -17,7 +17,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/medium_margin"
-                android:text="@{viewModel.trans_sum.cust_name}"
+                android:text="@{viewModel.transSum.cust_name}"
                 style="@style/texr_detail_style"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -29,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAlignment="viewEnd"
-                app:dateFormatted="@{viewModel.trans_sum.trans_date}"
+                app:dateFormatted="@{viewModel.transSum.trans_date}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 style="@style/texr_detail_style" />
@@ -172,7 +172,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="viewEnd"
-                android:text="@{viewModel.trans_total}"
+                android:text="@{viewModel.transTotal}"
                 android:textSize="24sp" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -200,7 +200,7 @@
             android:contentDescription="@string/submit"
             android:text="diambil"
             android:onClick="@{()->viewModel.updateBooleanValue()}"
-            app:buttonBackgroundColor="@{viewModel.trans_sum.is_taken_}"
+            app:buttonBackgroundColor="@{viewModel.transSum.is_taken_}"
             app:layout_constraintEnd_toStartOf="@id/btn_insert_to_sum_"
             app:layout_constraintStart_toEndOf="@id/btn_bayar_trans"
             app:layout_constraintBottom_toBottomOf="parent" />
@@ -213,7 +213,7 @@
             android:contentDescription="@string/submit"
             android:onClick="@{()->viewModel.onBtnPembukuanClick()}"
             android:text="pembukuan"
-            app:buttonBackgroundColor="@{viewModel.trans_sum.is_keeped}"
+            app:buttonBackgroundColor="@{viewModel.transSum.is_keeped}"
             app:layout_constraintStart_toEndOf="@id/btn_add_new_brand_"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

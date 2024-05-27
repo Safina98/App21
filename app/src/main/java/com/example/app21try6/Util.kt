@@ -2,6 +2,7 @@ package com.example.app21try6
 
 import java.text.NumberFormat
 import java.util.*
+import kotlin.math.absoluteValue
 
 fun formatRupiah(number: Double?): String? {
     val localeID = Locale("in", "ID")
