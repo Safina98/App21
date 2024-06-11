@@ -22,12 +22,16 @@
         <variable
             name="subsLongListener"
             type="com.example.app21try6.transaction.transactionselect.SubsSelectLongListener" />
+        <variable
+            name="longListener"
+            type="com.example.app21try6.transaction.transactionselect.SelectLongListener" />
 
     </data>
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onLongClick="@{(view) ->longListener.onLongClick(view,item)}"
         android:layout_margin="2dp">
         <!--  android:onClick="@{()->clickListener.onClick(item)}"-->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -38,6 +42,7 @@
                 android:id="@+id/txt_product_t"
                 style="@style/text_product_title"
                 android:text="Benang K roll B GOGO BLUE"
+                android:onLongClick="@{(view) ->longListener.onLongClick(view,item)}"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toEndOf="@id/checkBox3"
                 />

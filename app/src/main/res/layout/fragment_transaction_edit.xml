@@ -54,7 +54,7 @@
                         android:text="@{viewModel.trans_total}"
                         app:layout_constraintEnd_toStartOf="@+id/btn_add_new_item"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintBottom_toTopOf="@+id/btn_bayar"
+                        app:layout_constraintBottom_toTopOf="@id/btn_selesai"
                         android:textSize="36sp" />
                     <com.google.android.material.floatingactionbutton.FloatingActionButton
                         android:id="@+id/btn_add_new_item"
@@ -70,17 +70,6 @@
                         android:onClick="@{()->viewModel.onNavigatetoVendible()}"
                         android:src="@drawable/ic_baseline_add_circle_outline_24" />
 
-                <Button
-                    android:id="@+id/btn_bayar"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Bayar"
-                    android:layout_marginBottom="0dp"
-                    app:layout_constraintEnd_toStartOf="@+id/btn_add_new_item"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintBottom_toTopOf="@+id/btn_selesai"
-                    android:onClick="@{()->viewModel.onBtnBayarClick()}"
-                    />
 
                 <Button
                     android:id="@+id/btn_selesai"

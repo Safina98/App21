@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.app21try6.grafik.StockModel
 import com.example.app21try6.transaction.transactionactive.TransExportModel
 import com.example.app21try6.transaction.transactionselect.TransSelectModel
 import java.util.Date
@@ -75,6 +76,24 @@ interface TransDetailDao {
     fun getExportedData():List<TransExportModel>
     @Query("SELECT * FROM trans_sum_table LEFT JOIN trans_detail_table ON trans_sum_table.sum_id = trans_detail_table.sum_id")
     fun getExportedDataNew():LiveData<List<TransExportModel>>
+
+
+    @Query("""
+        SELECT
+            COALESCE(strftime('%Y', trans_detail_table.trans_detail_date), '2024') AS year,
+            COALESCE(strftime('%m', trans_detail_table.trans_detail_date), '05') AS month,
+            trans_detail_table.trans_item_name AS item_name,
+            trans_detail_table.qty AS itemCount,
+            category_table.category_name AS category_name,
+            product_table.product_name AS product_name
+        FROM trans_detail_table
+        JOIN sub_table ON trans_detail_table.trans_item_name = sub_table.sub_name
+        JOIN category_table ON sub_table.cath_code = category_table.category_id
+        JOIN product_table ON sub_table.product_code = product_table.product_id
+    """)
+    fun getTransactionDetails(): LiveData<List<StockModel>>
+
+
 /*
 SELECT u.user_name,c.name,i.name,used.frequency
 FROM users u

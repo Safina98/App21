@@ -7,7 +7,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.app21try6.Constants
 import com.example.app21try6.database.TransDetailDao
 import com.example.app21try6.database.TransSumDao
 import com.example.app21try6.database.TransactionDetail
@@ -19,47 +18,43 @@ import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class TransactionActiveViewModel(
     application: Application,
     val datasource1: TransSumDao,
     val datasource2: TransDetailDao
 ):AndroidViewModel(application){
+
+    private val _insertionCompleted = MutableLiveData<Boolean>()
+    val insertionCompleted: LiveData<Boolean> get() = _insertionCompleted
+    //Show or hide loading image when insert csv
+    private val _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
+    //All  trans for export
+    var allTransFromDB =datasource2.getExportedDataNew()
+    //All active trans to populate rv
+    private var _active_trans = MutableLiveData<List<TransactionSummary>>()
+    val active_trans :LiveData<List<TransactionSummary>> get() = _active_trans
+    //toggle Delete icon in toolbar for delete
+    private var _is_image_clicked = MutableLiveData<Boolean>(false)
+    val is_image_clicked:LiveData<Boolean>get() = _is_image_clicked
+    //List checked transaction for delete purpose
+    private var checkedItemList = mutableListOf<TransactionSummary>()
+
+    //Navigation
     private val _navigateToTransEdit = MutableLiveData<Int>()
     val navigateToTransEdit: LiveData<Int> get() = _navigateToTransEdit
     private val _navigateToTransDetail = MutableLiveData<Int>()
     val navigateToTransDetail: LiveData<Int> get() = _navigateToTransDetail
-
-    private val _insertionCompleted = MutableLiveData<Boolean>()
-    val insertionCompleted: LiveData<Boolean>
-        get() = _insertionCompleted
-
-    private val _isLoading = MutableLiveData<Boolean>(false)
-    val isLoading: LiveData<Boolean>
-        get() = _isLoading
-
-   var allTransFromDB =datasource2.getExportedDataNew()
-
     private val _navigateToAllTrans = MutableLiveData<Boolean>()
     val navigatToAllTrans: LiveData<Boolean> get() = _navigateToAllTrans
 
- //  var active_trans = datasource1.getActiveSum(false)
-    private var _active_trans = MutableLiveData<List<TransactionSummary>>()
-    val active_trans :LiveData<List<TransactionSummary>> get() = _active_trans
 
-    val sdf = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT)
-    val currentDate = sdf.format(Date())
-
-    private var _is_image_clicked = MutableLiveData<Boolean>(false)
-   val is_image_clicked:LiveData<Boolean>get() = _is_image_clicked
-
-    private var checkedItemList = mutableListOf<TransactionSummary>()
-
-    init {
-
-    }
+   //Get active transaction from database
     fun getActiveTrans(){
         viewModelScope.launch {
             var list = withContext(Dispatchers.IO){
@@ -68,60 +63,28 @@ class TransactionActiveViewModel(
             _active_trans.value = list
         }
     }
-    fun onImageClicked(){
-        _is_image_clicked.value = true
-    }
-    fun onButtonClicked(){
-        _is_image_clicked.value = false
-       unchecked()
-    }
 
+    //Add or remove checked item from checkedItemList
     fun onCheckBoxClicked(stok: TransactionSummary,bool:Boolean){
         viewModelScope.launch {
-            if(bool == true){
-                checkedItemList.add(stok)
-            }
-            else{
-                checkedItemList.remove(stok) }
+            if(bool == true){ checkedItemList.add(stok) } else{ checkedItemList.remove(stok) }
         }
     }
+    //delete checked item from rv
     fun delete(){
         viewModelScope.launch {
             delete_(checkedItemList)
             onButtonClicked()
         }
     }
+    //clear checkedItemList
     fun unchecked(){
         viewModelScope.launch {
-            for (a in checkedItemList){
-                a.is_paid_off = false
-            }
             checkedItemList.clear()
         }
     }
-    suspend fun delete_(list: MutableList<TransactionSummary>){
-        withContext(Dispatchers.IO){
-           datasource1.delete_(*list.toTypedArray())
-        }
-    }
-    fun initiateNewId(){
-        var id:Int = -1
-        viewModelScope.launch {
-            var trans =   TransactionSummary()
-           // trans.trans_date = currentDate
-            insertNewSumAndGetId(trans)
-        }
-    }
-    suspend fun insertNewSumAndGetId(transactionSummary: TransactionSummary):Long{
-       return withContext(Dispatchers.IO){
-            datasource1.insertNew(transactionSummary)
-        }
-    }
-    suspend fun getLastInsertedID():Int{
-        return withContext(Dispatchers.IO){
-            datasource1.getLastInsertedIdN()
-        }
-    }
+
+    //Add new transsummary on button click and navigate to trans edit
     fun onAddNewTransactionClick(){
         viewModelScope.launch {
             var trans =   TransactionSummary()
@@ -129,41 +92,38 @@ class TransactionActiveViewModel(
             trans.ref =UUID.randomUUID().toString()
             var id =insertNewSumAndGetId(trans).toInt()
             trans.sum_id = id
-            _navigateToTransEdit.value = id
+            onNavigatetoTransEdit(id)
         }
     }
 
-    fun onNavigatetoTransEdit(id:Int){
-        _navigateToTransEdit.value=id
+    //on delete icon from toolbar click
+    fun onImageClicked(){
+        _is_image_clicked.value = true
+    }
+    //on delete icon from toolbar click
+    fun onButtonClicked(){
+        _is_image_clicked.value = false
+        unchecked()
+    }
+    //Suspends
+    suspend fun insertNewSumAndGetId(transactionSummary: TransactionSummary):Long{
+        return withContext(Dispatchers.IO){
+            datasource1.insertNew(transactionSummary)
+        }
+    }
+    suspend fun delete_(list: MutableList<TransactionSummary>){
+        withContext(Dispatchers.IO){
+            datasource1.delete_(*list.toTypedArray())
+        }
+    }
 
-    }
-    fun onNavigatedToTransEdit(){
-        this._navigateToTransEdit.value=null
-    }
-    fun onNavigatetoTransDetail(id:Int){
-        _navigateToTransDetail.value = id
-    }
-    fun onNavigatedToTransDetail(){
-        this._navigateToTransDetail.value = null
-    }
-    fun onNavigateToAllTrans(){
-        _navigateToAllTrans.value=true
-    }
-    fun onNavigatedToAllTrans(){
-        _navigateToAllTrans.value=false
-    }
-    fun getAllTransactions(){
-        viewModelScope.launch {
-             var list = getAllTransactionsFromDB()
-            //allTransFromDB.value = list
-        }
-    }
-    private suspend fun getAllTransactionsFromDB():List<TransExportModel>{
-        return withContext(Dispatchers.IO)
-        {
-            datasource2.getExportedData()
-        }
-    }
+    //Navigations
+    fun onNavigatetoTransEdit(id:Int){ _navigateToTransEdit.value=id }
+    fun onNavigatedToTransEdit(){ this._navigateToTransEdit.value=null }
+    fun onNavigatetoTransDetail(id:Int){ _navigateToTransDetail.value = id }
+    fun onNavigatedToTransDetail(){ this._navigateToTransDetail.value = null }
+    fun onNavigateToAllTrans(){ _navigateToAllTrans.value=true }
+    fun onNavigatedToAllTrans(){ _navigateToAllTrans.value=false }
     fun insertCSVBatch(tokensList: List<List<String>>) {
         viewModelScope.launch {
             try {
@@ -191,14 +151,31 @@ class TransactionActiveViewModel(
             insertCSVN(tokens)
         }
     }
-    fun getDate(dateString:String):Date{
+    fun parseDate(dateString: String): Date? {
+        // Specify the format pattern
+        val pattern = "EEE MMM dd HH:mm:ss zzz yyyy"
+        // Create a SimpleDateFormat instance with the specified pattern and locale
+        val dateFormat = SimpleDateFormat(pattern, Locale.ENGLISH)
+
+        return try {
+            // Parse the date string into a Date object
+            dateFormat.parse(dateString)
+        } catch (e: ParseException) {
+            // Handle the exception if the date string is unparseable
+            e.printStackTrace()
+            Log.i("INSERTCSVPROB","parse date catch: $e")
+            null
+        }
+    }
+    fun getDate(dateString:String?):Date?{
         val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        return inputFormat.parse(dateString)
+        return if (dateString!==null)inputFormat.parse(dateString) else null
     }
     private suspend fun insertCSVN(token: List<String>) {
        // Log.i("INSERTCSVPROB","token: $token")
+        Log.i("INSERTCSVPROB","trans_detail: $token")
         val transactionSummary=TransactionSummary()
-        transactionSummary.trans_date =getDate(token[0])
+        transactionSummary.trans_date =getDate(token[0])!!
         transactionSummary.cust_name = token[1]
         transactionSummary.total_trans = token[2].toDouble()
         transactionSummary.paid = token[3].toInt()
@@ -214,9 +191,9 @@ class TransactionActiveViewModel(
         transactionDetail.qty = token[8].toDouble()
         transactionDetail.total_price = token[9].toDouble()
         transactionDetail.is_prepared =  token[10].toBooleanStrictOrNull() ?: false
-        transactionDetail.unit = token[14]
-        transactionDetail.trans_detail_date =getDate(token[13])
-        transactionDetail.unit_qty = token[15].toDouble()
+        transactionDetail.unit = if (token[14]!="null") token[14] else null
+        transactionDetail.trans_detail_date =if (token[13]!="null")parseDate(token[13]) else null
+        transactionDetail.unit_qty ==if (token[15]!="null") token[15].toDouble() else null
         transactionDetail.item_position = 0
        Log.i("INSERTCSVPROB","trans_detail: $transactionDetail")
         datasource1.insertIfNotExist(transactionSummary.cust_name,transactionSummary.total_trans,transactionSummary.paid,transactionSummary.trans_date,transactionSummary.is_taken_,transactionSummary.is_paid_off,transactionSummary.is_keeped,transactionSummary.ref,transactionSummary.sum_note)
@@ -244,7 +221,7 @@ class TransactionActiveViewModel(
                                     //      7               8           9               10              11
                                         "${j.trans_price},${j.qty},${j.total_price},${j.is_prepared},${j.ref}," +
                                     //      12                  13                 14           15
-                                        "${j.is_keeped},${j.trans_detail_date},${j.unit},${j.unit_qty}"+
+                                        "${j.is_keeped},${j.trans_detail_date},${j.unit},${j.unit_qty},"+
                                     //  16
                                         "${j.sum_note}"
                             bw.write(line)

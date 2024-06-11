@@ -16,6 +16,10 @@ interface PaymentDao{
     @Update
     fun update(payment: Payment)
 
+    @Query("DELETE FROM paymen_table WHERE id =:id")
+    fun deletePayment(id:Int)
+
+
     @Query("SELECT SUM(payment_ammount) FROM paymen_table WHERE sum_id =:sumId")
     fun selectSumFragmentBySumId(sumId:Int):Int
 

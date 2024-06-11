@@ -4,14 +4,11 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
-import com.example.app21try6.Constants
 import com.example.app21try6.database.*
 import com.example.app21try6.formatRupiah
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
 import java.util.*
 
 class TransactionEditViewModel(
@@ -20,52 +17,48 @@ class TransactionEditViewModel(
     val datasource2: TransDetailDao,
     var id:Int
 ):AndroidViewModel(application){
-    //Navigation
-    private val _navigateToVendible = MutableLiveData<Array<String>>()
-    val navigateToVendible: LiveData<Array<String>> get() = _navigateToVendible
+
 
     private val _isBtnBayarClicked = MutableLiveData<Boolean>()
     val isBtnBayarClicked: LiveData<Boolean> get() = _isBtnBayarClicked
+    //Customer Name two way binding
+    var custName  =MutableLiveData<String>("")
+    var itemTransDetail = datasource2.selectATransDetail(id)
 
-    private val _navigateToDetail = MutableLiveData<Int>()
-    val navigateToDetail: LiveData<Int> get() = _navigateToDetail
+    val transSum = datasource1.getTransSum(id)
+    //Mutable transaction summary for edit purpose
+    var mutableTransSum = MutableLiveData<TransactionSummary> ()
+    //get total transaction
+    val totalSum = datasource2.getTotalTrans(id)
+    //format total transaction
+    val trans_total: LiveData<String> = Transformations.map(totalSum) { formatRupiah(it).toString() }
+    //show or hide popupDialog
     private val _showDialog = MutableLiveData<TransactionDetail>()
     val showDialog:LiveData<TransactionDetail> get() = _showDialog
+    //Navigation
+    private val _navigateToVendible = MutableLiveData<Array<String>>()
+    val navigateToVendible: LiveData<Array<String>> get() = _navigateToVendible
+    private val _navigateToDetail = MutableLiveData<Int>()
+    val navigateToDetail: LiveData<Int> get() = _navigateToDetail
 
-   var custName  =MutableLiveData<String>("")
-
-    var itemTransDetail = datasource2.selectATransDetail(id)
-    //val transSum = MutableLiveData<TransactionSummary>()
-    val transSum = datasource1.getTransSum(id)
-
-    var mutableTransSum = MutableLiveData<TransactionSummary> ()
-    val sdf = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT)
-    val currentDate = sdf.format(Date())
-    val totalSum = datasource2.getTotalTrans(id)
-    val trans_total: LiveData<String> =
-            Transformations.map(totalSum) { formatRupiah(it).toString() }
-
+    //change item position on drag
     val updatePositionCallback: (List<TransactionDetail>) -> Unit = { updatedItems ->
-        // Update the positions in the database
         viewModelScope.launch {
             for ((index, item) in updatedItems.withIndex()) {
                 item.item_position = index
                 Log.i("drag","viewModel ${item.trans_item_name} ${item.item_position}")
-                //datasource2.updateItemPosition(item)
                 _updateTransDetail(item)
             }
         }
     }
+
     init {
-        setCustomerName(id)
+        getCustomerName(id)
         setMutableTransSum()
-
-
-        //getTransactionSummary(id)
     }
 
     ////////////////////////////////Transacttion Detail/////////////////////////////
-
+    //update transactionDetail qty and total price
     fun updateTransDetail(transactionDetail: TransactionDetail,i: Double){
         viewModelScope.launch {
             transactionDetail.qty = transactionDetail.qty + i
@@ -73,71 +66,50 @@ class TransactionEditViewModel(
             _updateTransDetail(transactionDetail)
         }
     }
+
+    //update unit on radio button click
     fun updateUnitTransDetail(selectedItem:String?,transactionDetail: TransactionDetail){
         viewModelScope.launch {
-
             if (transactionDetail.unit!=selectedItem){
-                transactionDetail.unit = if(selectedItem =="NONE") null else selectedItem
+                if (selectedItem=="NONE"){
+                    transactionDetail.unit = null
+                    updateUitQty(transactionDetail,1.0)
+                }
+                else {
+                    transactionDetail.unit = selectedItem
+                }
                 _updateTransDetail(transactionDetail)
-                Log.i("unit_Spinner","viewModel ${transactionDetail}")
-            }
-        }
-    }
-    fun updateTransPosition(transList:List<TransactionDetail>){
-        viewModelScope.launch {
-            for ((index, item) in transList.withIndex()) {
-                // Assuming you have a method to update the item position in your database
-                item.item_position = index
-                _updateTransDetail(item)
             }
         }
     }
 
     /////////////////////////////////Transaction Summary////////////////////////////
-    fun setCustomerName(id:Int){
+    //get custName value
+    fun getCustomerName(id:Int){
         viewModelScope.launch {
             var customerName = withContext(Dispatchers.IO){datasource1.getCustName(id)}
             custName.value = customerName
-            Log.e("SUMVM","transum in TransEditVm custName is "+custName.value+"")
         }
     }
+    //get transaction summary
     fun setMutableTransSum(){
         viewModelScope.launch {
             var transactionSummary = withContext(Dispatchers.IO){datasource1.getTrans(id)}
             mutableTransSum.value = transactionSummary
         }
     }
-    fun onNavigatetoDetail(idm:Int){
-        viewModelScope.launch {
-            updateSum(transSum.value!!)
-            _navigateToDetail.value=id
-        }
-    }
+    //set trasactionSummary customername from editText
     fun setCustomerName(){
         transSum.value?.cust_name = custName.value ?: "-"
     }
-    fun bayar(bayar : Int){
-        viewModelScope.launch {
-            transSum.value?.paid =bayar
-            mutableTransSum.value?.paid = bayar
-            Log.i("PROBBayar","mutable "+mutableTransSum.value.toString())
-            Log.i("PROBBayar","live "+transSum.value.toString())
-            mutableTransSum.value?.let { updateSum(it) }
-        }
-    }
-
-    ////Suspend
-    private suspend fun updateSum(transactionSummary: TransactionSummary){
-        withContext(Dispatchers.IO){
-            datasource1.update(transactionSummary)
-        }
-    }
+    //update Transaction Detail recyclerview item name
     fun updateTransDetailItemName(transactionDetail: TransactionDetail,itemName: String){
         viewModelScope.launch {
             transactionDetail.trans_item_name = itemName
             _updateTransDetail(transactionDetail)
         }
     }
+    // update Transaction Detail recyclerview price
     fun updateTransDetailItemPrice(transactionDetail: TransactionDetail,itemPrice: Int){
         viewModelScope.launch {
             transactionDetail.trans_price = itemPrice
@@ -145,6 +117,7 @@ class TransactionEditViewModel(
             _updateTransDetail(transactionDetail)
         }
     }
+    //update Transaction Detail unitQty
     fun updateUitQty(transactionDetail: TransactionDetail,unit_qyt: Double){
         viewModelScope.launch {
             transactionDetail.unit_qty = unit_qyt
@@ -153,6 +126,7 @@ class TransactionEditViewModel(
         }
 
     }
+    //update transaction Summary totalSum
     fun updateTotalSum(){
         viewModelScope.launch {
             var transSumS: TransactionSummary = datasource1.getTrans(id)
@@ -160,23 +134,54 @@ class TransactionEditViewModel(
             updateSum(transSumS)
         }
     }
-    fun onBtnBayarClick(){
-        _isBtnBayarClicked.value = true
+    //update transactionSUmmary CustomerName
+    fun updateCustNameSum(){
+        viewModelScope.launch {
+            var transSumS: TransactionSummary = datasource1.getTrans(id)
+            transSumS.cust_name = custName.value ?: ""
+            updateSum(transSumS)
+        }
     }
-    fun onBtnBayarClicked(){
-        _isBtnBayarClicked.value = false
+    //show or hide dialog
+    fun onShowDialog(transactionDetail: TransactionDetail){
+        _showDialog.value = transactionDetail
     }
+    @SuppressLint("NullSafeMutableLiveData")
+    fun onCloseDialog(){
+        _showDialog.value = null
+    }
+    // delete transaction Detail item
+    fun delete(idm: Long){
+        viewModelScope.launch {
+            delete_(idm)
+        }
+    }
+
     ////suspend
     private suspend fun _updateTransDetail(transactionDetail: TransactionDetail){
         withContext(Dispatchers.IO){
             datasource2.update(transactionDetail)
         }
     }
+    private suspend fun updateSum(transactionSummary: TransactionSummary){
+        withContext(Dispatchers.IO){
+            datasource1.update(transactionSummary)
+        }
+    }
+    private suspend fun delete_(idm: Long){
+        withContext(Dispatchers.IO){
+            datasource2.deleteAnItemTransDetail(idm)
+        }
+    }
     ////////////////////////////////Navigation//////////////////////////////////////
-
+    fun onNavigatetoDetail(idm:Int){
+        viewModelScope.launch {
+            updateSum(transSum.value!!)
+            _navigateToDetail.value=id
+        }
+    }
     fun onNavigatetoVendible(){
         _navigateToVendible.value= arrayOf(transSum.value!!.sum_id.toString(),"-1")
-        Log.i("SUMIDPROB","TransactionEditViewModel onnavigateTotransactionProduct $_navigateToVendible")
     }
     @SuppressLint("NullSafeMutableLiveData")
     fun onNavigatedtoVendible(){
@@ -188,26 +193,9 @@ class TransactionEditViewModel(
         this._navigateToDetail.value =null
     }
 
-    private suspend fun delete_(idm: Long){
-        withContext(Dispatchers.IO){
-            datasource2.deleteAnItemTransDetail(idm)
-        }
-    }
-    fun delete(idm: Long){
-        viewModelScope.launch {
-          delete_(idm)
-        }
-    }
-    fun onShowDialog(transactionDetail: TransactionDetail){
-        _showDialog.value = transactionDetail
-    }
-    @SuppressLint("NullSafeMutableLiveData")
-    fun onCloseDialog(){
-        _showDialog.value = null
-    }
 
-    fun onFragmentStart(){
 
-    }
+
+
 
 }

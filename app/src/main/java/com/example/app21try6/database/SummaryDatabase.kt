@@ -1,5 +1,5 @@
 package com.example.app21try6.database
-
+/*
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
@@ -71,4 +71,6 @@ abstract class SummaryDatabase :RoomDatabase(){
     }
 
 }
+
+ */
 

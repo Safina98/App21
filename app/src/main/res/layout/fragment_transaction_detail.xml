@@ -29,6 +29,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAlignment="viewEnd"
+                android:onClick="@{()->viewModel.updateDate()}"
+                android:onLongClickListener="@{(view)->viewModel.onTxtTransSumLongClikc(view)}"
                 app:dateFormatted="@{viewModel.transSum.trans_date}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -39,22 +41,22 @@
             android:layout_height="36dp"
             android:layout_margin="@dimen/medium_margin"
             android:elevation="@dimen/medium_margin"
-
             app:imageBasedOnNightMode="@{viewModel.uiMode}"
             android:onClick="@{() -> viewModel.onNavigateToEdit()}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/txt_cust_name" />
+
         <ImageView
             android:id="@+id/btn_is_paid_off"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_margin="@dimen/medium_margin"
-            app:tint="@color/white"
             android:elevation="@dimen/medium_margin"
             android:onClick="@{() -> viewModel.updateIsPaidOffValue()}"
             app:imageBasedOnNightMode="@{viewModel.uiMode}"
             app:layout_constraintEnd_toStartOf="@id/btn_edit_trans_new"
-            app:layout_constraintTop_toBottomOf="@id/txt_cust_name" />
+            app:layout_constraintTop_toBottomOf="@id/txt_cust_name"
+           />
         <ImageView
             android:id="@+id/btn_print_new"
             android:layout_width="36dp"
@@ -81,7 +83,6 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_margin="@dimen/big_margin"
-
             android:elevation="@dimen/medium_margin"
             app:noteColor="@{viewModel.isn}"
             android:onClick="@{()->viewModel.onBtnNoteClick()}"
@@ -136,7 +137,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:elevation="@dimen/medium_margin"
-                    app:textVisibility="@{viewModel.isTxtNoteClick()}"
                     android:onClick="@{()->viewModel.onTxtNoteOkClicked()}"
                     style="@style/text_subproduct_small_style"
                     app:viewVisibility="@{viewModel.isTxtNoteClick()}"
@@ -177,8 +177,9 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView_bayar"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="end"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
         </LinearLayout>
         </androidx.core.widget.NestedScrollView>

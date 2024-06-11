@@ -1,7 +1,6 @@
 package com.example.app21try6.transaction.transactionedit
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.database.TransactionDetail
 import com.example.app21try6.databinding.TransactionEditItemListBinding
+
 import com.example.app21try6.formatRupiah
 
 class TransactionEditAdapter(
@@ -20,14 +20,14 @@ class TransactionEditAdapter(
     val subslongListener: SubsTransLongListener,
     val plusLongListener: PlusTransLongListener,
     val longListener: TransEditDeleteLongListener,
-    val priceLongListener:TransEditPriceLongListener,
+    val priceLongListener:TransEditPriceClickListener,
     val selectedSpinnerListener: UnitTransTextCliked,
-    val unitQtyLongListener: TransEditUnitQtyLongListener,
+    val unitQtyLongListener: TransEditUnitQtyClickListener,
     private val updatePositionCallback: (List<TransactionDetail>) -> Unit,
     )
     :ListAdapter<TransactionDetail,TransactionEditAdapter.MyViewHolder>(TransEditDiffCallBack()){
     var items= mutableListOf<TransactionDetail>()
-    class MyViewHolder private constructor(val binding:TransactionEditItemListBinding):RecyclerView.ViewHolder(binding.root){
+    class MyViewHolder private constructor(val binding: TransactionEditItemListBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(
             item:TransactionDetail,
             clickListener: TransEditClickListener,
@@ -36,11 +36,11 @@ class TransactionEditAdapter(
             subslongListener: SubsTransLongListener,
             plusLongListener: PlusTransLongListener,
             longListener: TransEditDeleteLongListener,
-            priceLongListener:TransEditPriceLongListener,
+            priceLongListener:TransEditPriceClickListener,
             selectedSpinnerListener: UnitTransTextCliked,
-            unitQtyLongListener: TransEditUnitQtyLongListener,
+            unitQtyLongListener: TransEditUnitQtyClickListener,
 
-                ){
+            ){
             binding.item = item
             binding.txtProductT.text = item.trans_item_name
             binding.textSellsT.text = item.qty.toString()
@@ -120,16 +120,15 @@ class TransEditDeleteLongListener(val longListener:(edit_trans: TransactionDetai
         return true
     }
 }
-class TransEditPriceLongListener(val longListener:(edit_trans: TransactionDetail)->Unit){
-    fun onLongClick(v: View, edit_trans: TransactionDetail):Boolean{
-        longListener(edit_trans)
-        return true
+class TransEditPriceClickListener(val clickListener:(edit_trans: TransactionDetail)->Unit){
+    fun onClick(edit_trans: TransactionDetail){
+        clickListener(edit_trans)
+
     }
 }
-class TransEditUnitQtyLongListener(val longListener:(edit_trans: TransactionDetail)->Unit){
-    fun onLongClick(v: View, edit_trans: TransactionDetail):Boolean{
-        longListener(edit_trans)
-        return true
+class TransEditUnitQtyClickListener(val clickListener:(edit_trans: TransactionDetail)->Unit){
+    fun onClick(edit_trans: TransactionDetail){
+        clickListener(edit_trans)
     }
 }
 class SubsTransClickListener(val clickListener:(edit_trans: TransactionDetail)->Unit){

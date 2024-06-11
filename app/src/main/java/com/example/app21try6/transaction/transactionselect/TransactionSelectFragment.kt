@@ -21,7 +21,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.app21try6.R
 import com.example.app21try6.bookkeeping.editdetail.BookkeepingViewModel
 import com.example.app21try6.bookkeeping.vendiblelist.VendibleFragmentArgs
-import com.example.app21try6.database.SummaryDatabase
 import com.example.app21try6.database.TransactionDetail
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionSelectBinding
@@ -48,15 +47,10 @@ class TransactionSelectFragment : Fragment() {
 
         var datee  = date!!.toMutableList()
 
-        //val viewModelFactory = TransactionSelectViewModelFactory(date[0].toInt()!!,dataSource1,dataSource2,dataSource4,date,dataSource6,application)
-        //val viewModel = ViewModelProvider(this, viewModelFactory).get(TransactionSelectViewModel::class.java)
-         
-
         viewModel = ViewModelProvider(requireActivity(), TransactionSelectViewModelFactory(date[0].toInt()!!,dataSource1,dataSource2,dataSource4,date,dataSource6,application))
             .get(TransactionSelectViewModel::class.java)
         var i = date!![1].toInt()
         viewModel.setProductId(i)
-        Log.i("CHECKBOXPROB","selectFragment date: $date")
         var code: Code = Code.ZERO
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -80,6 +74,11 @@ class TransactionSelectFragment : Fragment() {
             SubsSelectLongListener {
                 code = Code.LONGSUBS
                 viewModel.onShowDialog(it)
+            },
+            SelectLongListener {
+                it.trans_detail_id = 0L
+                showDialog(it,viewModel,Code.ZERO)
+                //viewModel.insertDuplicateSubProduct(it)
             }
         )
         binding.transselectRv.adapter = adapter
@@ -122,13 +121,7 @@ class TransactionSelectFragment : Fragment() {
         })
         return binding.root
     }
-/*
-    override fun onDestroyView() {
-        super.onDestroyView()
-        viewModel.unCheckedAllSubs()
-    }
 
- */
 
     private fun showDialog(transSelectModel: TransSelectModel, viewModel: TransactionSelectViewModel, code: Code) {
         val builder = AlertDialog.Builder(context)
@@ -136,6 +129,7 @@ class TransactionSelectFragment : Fragment() {
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.update, null)
         val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
+        textKet.requestFocus()
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
         when (code) {
@@ -164,7 +158,9 @@ class TransactionSelectFragment : Fragment() {
                     viewModel.updateTransDetail(transSelectModel)
 
                 }
-                Code.TEXTITEM -> {
+                Code.ZERO -> {
+                    transSelectModel.qty  = v.toDouble()
+                    viewModel.insertDuplicateSubProduct(transSelectModel)
                 }
                 Code.TEXTPRICE -> {
                 }
@@ -180,11 +176,9 @@ class TransactionSelectFragment : Fragment() {
             imm.hideSoftInputFromWindow(view?.windowToken, 0)
             viewModel.onCloseDialog()
         }
-
         val alert = builder.create()
         alert.show()
 
     }
-
 
 }

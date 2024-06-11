@@ -21,7 +21,8 @@ class TransactionSelectAdapter (
    val subsSelectListener: SubsSelectListener,
    val checkBoxListener: CheckBoxSelectListener,
    val plusSelectLongListener: PlusSelectLongListener,
-   val subSelectLongListener: SubsSelectLongListener
+   val subSelectLongListener: SubsSelectLongListener,
+    val selectLongListener: SelectLongListener
 ): ListAdapter<TransSelectModel,
         TransactionSelectAdapter.MyViewHolder>(SelectDiffCallback()){
     class MyViewHolder private constructor(val binding: TransactionSelectItemListBinding): RecyclerView.ViewHolder(binding.root){
@@ -31,7 +32,8 @@ class TransactionSelectAdapter (
                  subsSelectListener: SubsSelectListener,
                  checkBoxListener: CheckBoxSelectListener,
                  plusSelectLongListener: PlusSelectLongListener,
-                 subSelectLongListener: SubsSelectLongListener
+                 subSelectLongListener: SubsSelectLongListener,
+                 selectLongListener:SelectLongListener
         ){
             binding.item = item
             binding.plusClickListener = plusSelectListener
@@ -39,6 +41,7 @@ class TransactionSelectAdapter (
             binding.checkboxListener =checkBoxListener
             binding.plusLongListener = plusSelectLongListener
             binding.subsLongListener = subSelectLongListener
+            binding.longListener = selectLongListener
             binding.txtProductT.text = item.item_name
             binding.textSellsT.text = item.qty.toString()
             binding.checkBox3.isChecked = item.is_selected or if (item.qty>0){true}else { false }
@@ -65,7 +68,8 @@ class TransactionSelectAdapter (
             subsSelectListener,
             checkBoxListener,
             plusSelectLongListener,
-            subSelectLongListener
+            subSelectLongListener,
+            selectLongListener
           )
     }
 }
@@ -112,6 +116,12 @@ class PlusSelectLongListener(val longListener:(edit_trans: TransSelectModel)->Un
     }
 }
 class SubsSelectLongListener(val longListener:(edit_trans: TransSelectModel)->Unit){
+    fun onLongClick(v: View, edit_trans: TransSelectModel):Boolean{
+        longListener(edit_trans)
+        return true
+    }
+}
+class SelectLongListener(val longListener:(edit_trans: TransSelectModel)->Unit){
     fun onLongClick(v: View, edit_trans: TransSelectModel):Boolean{
         longListener(edit_trans)
         return true

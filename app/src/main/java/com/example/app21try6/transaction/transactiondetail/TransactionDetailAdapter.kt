@@ -14,7 +14,7 @@ import com.example.app21try6.database.TransactionDetail
 import com.example.app21try6.database.TransactionSummary
 import com.example.app21try6.databinding.TransactionDetailItemListBinding
 import com.example.app21try6.formatRupiah
-import com.example.app21try6.transaction.transactionedit.TransactionEditDummyModel
+
 
 
 class TransactionDetailAdapter(val isPaidOff:Boolean?,
@@ -41,8 +41,6 @@ class TransactionDetailAdapter(val isPaidOff:Boolean?,
                 true ->View.VISIBLE
                 else -> View.GONE
             }
-
-
             binding.txtPriceTDetail.text =
                 if (item.qty >= 1) formatRupiah(item.trans_price.toDouble()).toString() else "-"
             binding.txtTotalTDetail.text = formatRupiah(item.total_price).toString()
@@ -87,9 +85,12 @@ class TransDetailDiffCallBack:DiffUtil.ItemCallback<TransactionDetail>(){
         return oldItem == newItem
     }
 }
-class TransDetailClickListener(val clickListener:(detail_trans:TransactionEditDummyModel)->Unit){
-    fun onClick(detail_trans: TransactionEditDummyModel)=clickListener(detail_trans)
+
+class TransDetailClickListener(val clickListener:(detail_trans:TransactionDetail)->Unit){
+    fun onClick(detail_trans: TransactionDetail)=clickListener(detail_trans)
 }
+
+
 
 
 class TransDetailLongListener(val longListener:(trans_detail: TransactionDetail)->Unit){

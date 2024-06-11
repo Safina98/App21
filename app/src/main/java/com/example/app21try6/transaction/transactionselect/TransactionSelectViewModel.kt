@@ -32,16 +32,20 @@ class TransactionSelectViewModel(
 
     /////////////////////////////////////////Product////////////////////////////////////////////
     private var _allProduct = MutableLiveData<List<Product>>()
-    private var _productId = MutableLiveData<Int>(-1)
-    private var _sumId = MutableLiveData<Int>(-1)
-    val productId:LiveData<Int> get()=_productId
     val allProduct :LiveData<List<Product>> get() = _allProduct
+    private var _sumId = MutableLiveData<Int>(-1)
+
+    private var _productId = MutableLiveData<Int>(-1)
+    val productId:LiveData<Int> get()=_productId
+
     private var _categoryEntries = MutableLiveData<List<String>>()
     val categoryEntries : LiveData<List<String>> get() = _categoryEntries
-    private val _navigateToTransSelect = MutableLiveData<Array<String>>()
-    val navigateToTransSelect: LiveData<Array<String>> get() = _navigateToTransSelect
+
     private val _selectedKategoriSpinner = MutableLiveData<String>()
     val selectedKategoriSpinner: LiveData<String> get() = _selectedKategoriSpinner
+
+    private val _navigateToTransSelect = MutableLiveData<Array<String>>()
+    val navigateToTransSelect: LiveData<Array<String>> get() = _navigateToTransSelect
 
     private val _unFilteredProduct = MutableLiveData<List<Product>>()
     private val _unFilteredSub = MutableLiveData<List<TransSelectModel>>()
@@ -55,9 +59,6 @@ class TransactionSelectViewModel(
         transSelectModel.value = updatedList
     }
 
-    fun update(trans: TransSelectModel) {
-        updateTransDetaill(trans)
-    }
     fun updateTransDetaill(trans: TransSelectModel) {
         viewModelScope.launch {
             val updatedList = transSelectModel.value?.toMutableList() ?: mutableListOf()
@@ -81,14 +82,13 @@ class TransactionSelectViewModel(
     /////////////////////////////////////old functions///////////////////////////////////////////
     fun setProductId(id:Int){
         _productId.value = id
-
     }
     fun setProductSumId(id:Int?){
         if (id!=null)
         { _sumId.value = id!!
         }
     }
-
+    //update on btn + or - click
     fun updateTransDetail(s:TransSelectModel){
         viewModelScope.launch {
             var t = converter(s)
@@ -130,6 +130,14 @@ class TransactionSelectViewModel(
         }
 
     }
+    fun insertDuplicateSubProduct(s:TransSelectModel){
+        viewModelScope.launch {
+            var t = converter(s)
+            var id = insertDetailToDBandGetId(t)
+            s.trans_detail_id  = id ?: -1L
+            updateTransDetaill(s)
+        }
+    }
     private suspend fun insertDetailToDBandGetId(t:TransactionDetail):Long{
        return withContext(Dispatchers.IO){
             database6.insertN(t)
@@ -149,15 +157,6 @@ class TransactionSelectViewModel(
     private suspend fun _delete(s:TransSelectModel){
         withContext(Dispatchers.IO){
             database6.deleteAnItemTransDetail(s.trans_detail_id)
-        }
-    }
-
-    fun insertTransDetail(s:TransSelectModel){
-        viewModelScope.launch {
-            var t = converter(s)
-            Log.i("DataProb","insertTransDetail $t")
-            _insertTransDetail(t)
-
         }
     }
 

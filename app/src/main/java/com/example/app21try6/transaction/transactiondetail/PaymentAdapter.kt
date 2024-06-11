@@ -13,7 +13,8 @@ import com.example.app21try6.formatRupiah
 class PaymentAdapter(
     var isPaidoff:Boolean?,
     val clickListener: TransPaymentClickListener,
-                      val longListener:TransPaymentLongListener):
+    val longListener:TransPaymentLongListener,
+    val datePaymentClickListener: TransDatePaymentClickListener):
     ListAdapter<PaymentModel, PaymentAdapter.MyViewHolder>(TransPaymentDiffCallBack())
 {
     private var is_active = MutableLiveData<Boolean>(false)
@@ -23,11 +24,13 @@ class PaymentAdapter(
         item: PaymentModel,
         clickListener: TransPaymentClickListener,
         longListener: TransPaymentLongListener,
-        isPaidOff:Boolean?
+        isPaidOff:Boolean?,
+        datePaymentClickListener: TransDatePaymentClickListener
     ) {
         binding.item = item
         binding.clickListener = clickListener
         binding.longClickListener = longListener
+        binding.dateClickListener = datePaymentClickListener
         binding.txtBayarItemList.text = formatRupiah(item.payment_ammount?.toDouble())
         binding.executePendingBindings()
     }
@@ -46,7 +49,7 @@ class PaymentAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(getItem(position), clickListener, longListener,is_active.value!!)
+        holder.bind(getItem(position), clickListener, longListener,is_active.value!!,datePaymentClickListener)
         // Update background color based on clickedItems
     }
 
@@ -74,6 +77,9 @@ class TransPaymentClickListener(val clickListener:(paymentModel:PaymentModel)->U
     fun onClick(paymentModel:PaymentModel)=clickListener(paymentModel)
 }
 
+class TransDatePaymentClickListener(val clickListener:(paymentModel:PaymentModel)->Unit){
+    fun onClick(paymentModel:PaymentModel)=clickListener(paymentModel)
+}
 class TransPaymentLongListener(val longListener:(paymentModel:PaymentModel)->Unit){
     fun onLongClick(v: View, paymentModel:PaymentModel):Boolean{
         longListener(paymentModel)

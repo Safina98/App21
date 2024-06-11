@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="bulan">
+    <string-array name="bulan_number">
         <item>ALL</item>
         <item>01</item>
         <item>02</item>
@@ -27,6 +27,29 @@
         <item>BKS</item>
         <item>ROLL</item>
         <item>DOS</item>
+    </string-array>
+
+    <string-array name="bulan">
+        <item>ALL</item>
+        <item>Januari</item>
+        <item>Februari</item>
+        <item>Maret</item>
+        <item>April</item>
+        <item>Mei</item>
+        <item>Juni</item>
+        <item>Juli</item>
+        <item>Agustus</item>
+        <item>September</item>
+        <item>Oktober</item>
+        <item>November</item>
+        <item>Desember</item>
+    </string-array>
+    <string-array name="tahun">
+        <item>ALL</item>
+        <item>2021</item>
+        <item>2022</item>
+        <item>2023</item>
+        <item>2024</item>
     </string-array>
 
 

@@ -28,7 +28,7 @@ import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.*
 
-
+/*
 class SummaryViewModel (val database: SummaryDbDao, application: Application):AndroidViewModel(application){
 
     //devine an instance JOB
@@ -320,4 +320,6 @@ class SummaryViewModel (val database: SummaryDbDao, application: Application):An
         viewModelJob.cancel()
     }
 }
+
+ */
 

@@ -51,8 +51,8 @@ class AllTransactionsFragment : Fragment() {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedItem = parent.getItemAtPosition(position).toString()
                 viewModel.setSelectedSpinner(selectedItem)
-                viewModel.setStartDateRange(null)
-                viewModel.setEndDateRange(null)
+                //viewModel.setStartDateRange(null)
+                //viewModel.setEndDateRange(null)
             }
             override fun onNothingSelected(parent: AdapterView<*>) {
             }
@@ -122,6 +122,11 @@ class AllTransactionsFragment : Fragment() {
             .create()
 
         dialog.show()
+    }
+
+    override fun onPause() {
+
+        super.onPause()
     }
 
 }

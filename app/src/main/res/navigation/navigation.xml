@@ -157,9 +157,17 @@
     <fragment
         android:id="@+id/allTransactionsFragment"
         android:name="com.example.app21try6.transaction.transactionall.AllTransactionsFragment"
-        android:label="AllTransactionsFragment" >
+        android:label="Semua Nota">
         <action
             android:id="@+id/action_allTransactionsFragment_to_transactionDetailFragment"
             app:destination="@id/transactionDetailFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/graphicFragment"
+        android:name="com.example.app21try6.grafik.GraphicFragment"
+        android:label="Grafik" />
+    <fragment
+        android:id="@+id/graphicMainFragment"
+        android:name="com.example.app21try6.grafik.grafikmain.GraphicMainFragment"
+        android:label="Grafik n" />
 </navigation>

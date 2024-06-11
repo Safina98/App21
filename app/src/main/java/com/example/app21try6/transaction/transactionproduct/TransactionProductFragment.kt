@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
 import com.example.app21try6.bookkeeping.vendiblelist.VendibleFragmentArgs
-import com.example.app21try6.database.SummaryDatabase
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionProductBinding
 import com.example.app21try6.transaction.transactionselect.TransactionSelectViewModel
@@ -33,7 +32,7 @@ class TransactionProductFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_transaction_product,container,false)
         val application = requireNotNull(this.activity).application
-        val dataSource = SummaryDatabase.getInstance(application).summaryDbDao
+        val dataSource = VendibleDatabase.getInstance(application).summaryDbDao
         val dataSource1 = VendibleDatabase.getInstance(application).categoryDao
         val dataSource2 = VendibleDatabase.getInstance(application).productDao
         val dataSource3 = VendibleDatabase.getInstance(application).brandDao
@@ -62,6 +61,8 @@ class TransactionProductFragment : Fragment() {
 
         })
         binding.transproductRv.adapter  = adapter
+
+
         binding.searchBarProduct.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true
@@ -71,26 +72,24 @@ class TransactionProductFragment : Fragment() {
                 return true
             }
         })
-
-
+        //selected spinner
         binding.spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedItem = parent.getItemAtPosition(position).toString()
-                // Update the selected value in your ViewModel
+                Log.i("PRODUCTBUG","selected item $selectedItem")
                 viewModel.setSelectedKategoriValue(selectedItem)
             }
-            override fun onNothingSelected(parent: AdapterView<*>) {
-                // Handle the case when nothing is selected
-            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
+        //spinner entries
         viewModel.categoryEntries.observe(viewLifecycleOwner){it?.let {
             val adapterCategory = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
-            binding.spinnerCategory.adapter = adapterCategory
-
+            binding.spinnerCategory.adapter = adapterCategory }
         }
-        }
+        //Observe selected spinner value
         viewModel.selectedKategoriSpinner.observe(viewLifecycleOwner) {
             // Handle the selected value
+            Log.i("PRODUCTBUG","Observer Selected Category Spinner $it")
             viewModel.updateRv(it)
         }
         viewModel.productId.observe(viewLifecycleOwner){
@@ -99,18 +98,16 @@ class TransactionProductFragment : Fragment() {
 
         viewModel.allProduct.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it.sortedBy { it.product_name })
+            Log.i("PRODUCTBUG","TransactionpPRODDUCT PRODUCT $it")
         })
 
         viewModel.navigateToTransSelect.observe(viewLifecycleOwner, Observer {
             if (it != null) {
-                Log.i("SUMIDPROB","TransactionEditViewModel navigateTOSelect $it")
                 this.findNavController().navigate(TransactionProductFragmentDirections.actionTransactionProductFragmentToTransactionSelectFragment(it))
                 viewModel.onNavigatedtoTransSelect()
 
             }
         })
-
-
 
         return binding.root
     }

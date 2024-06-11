@@ -2,6 +2,7 @@ package com.example.app21try6.transaction.transactiondetail
 
 import android.app.Application
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -22,6 +23,7 @@ import com.example.app21try6.utils.TextGenerator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.Math.abs
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -37,8 +39,11 @@ class TransactionDetailViewModel (application: Application,
                                   private val datasource5: SubProductDao,
                                   var id:Int):AndroidViewModel(application){
 
+    //transaction detail for recyclerview
     val transDetail = datasource2.selectATransDetail(id)
+    //Transaction Summary
     val transSum = datasource1.getTransSum(id)
+    //Total Trans
     val transTotalDouble = datasource2.getTotalTrans(id)
     val transTotal: LiveData<String> = Transformations.map(transTotalDouble) { formatRupiah(it).toString() }
    //To update icons color on night mode or liht mode
@@ -54,8 +59,10 @@ class TransactionDetailViewModel (application: Application,
                total - paid
            } ?: total
        }
-        formatRupiah(a).toString()
+       var b =if(a<=0)"Kembalian: " else if(item.paid==0) "Total: " else "Sisa"
+        b +formatRupiah(abs(a)).toString()
     }
+    //Transaction Summary note on edit text and carview
     var txtNote =MutableLiveData<String?>()
     val paymentModel = datasource4.selectPaymentModelBySumId(id)
 
@@ -65,15 +72,20 @@ class TransactionDetailViewModel (application: Application,
 
     private var _isBtnpaidOff = MutableLiveData<Boolean>()
     val isBtnpaidOff :LiveData<Boolean> get() = _isBtnpaidOff
-
+    //hide or show card view
     private var _isCardViewShow = MutableLiveData<Boolean>()
     val isCardViewShow :LiveData<Boolean> get() = _isCardViewShow
-
-    private var _isTxtNoteClick =MutableLiveData<Boolean>()
+    // toggle text view and edit text
+    private var _isTxtNoteClick =MutableLiveData<Boolean>(false)
     val isTxtNoteClick :LiveData<Boolean> get() = _isTxtNoteClick
-
+    // button send to wa
     private val _sendReceipt = MutableLiveData<Boolean>()
     val sendReceipt:LiveData<Boolean> get() = _sendReceipt
+    //trans sum data long click
+    private val _transSumDateLongClick = MutableLiveData<Boolean>()
+    val transSumDateLongClick:LiveData<Boolean> get() = _transSumDateLongClick
+
+    // change the note icon collor if note not empty
     var isn: LiveData<Boolean> = Transformations.map(transSum) { item ->
         if(item?.sum_note.isNullOrEmpty()) false else true
     }
@@ -82,13 +94,12 @@ class TransactionDetailViewModel (application: Application,
     private val _navigateToEdit = MutableLiveData<Int>()
     val navigateToEdit: LiveData<Int> get() = _navigateToEdit
 
-
-
-    /******************************************** CRUD **************************************/
     //Set ui to change icons color when night mode or day mode on
     fun setUiMode(mode:Int){
         _uiMode.value = mode
     }
+    /******************************************** CRUD **************************************/
+
     //Toggle and update Transaction Summary is_taken value when btn_is_taken clicked
     fun updateBooleanValue() {
        viewModelScope.launch {
@@ -97,14 +108,17 @@ class TransactionDetailViewModel (application: Application,
            transSum?.let { updataTransSumDB(it) }
        }
     }
+
     //Set mutable txt Note value after trans_sum.value updated
     fun setTxtNoteValue(note:String?){
         txtNote.value = note
     }
+
     //Toggle is_note Clicked value when Text View note_Textview is clicked
     fun onTxtNoteClick(){
         _isTxtNoteClick.value = _isTxtNoteClick.value?.not() ?: true
     }
+
     //Toggle is_note Clicked value and update transSum note value when Text View ok_Textview is clicked
     fun onTxtNoteOkClicked(){
         viewModelScope.launch {
@@ -114,10 +128,12 @@ class TransactionDetailViewModel (application: Application,
             updateTransSumDB(transum!!)
         }
     }
+
     //Hide and show card view on click
     fun onBtnNoteClick(){
         _isCardViewShow.value = _isCardViewShow.value?.not() ?: true
     }
+
     //Toggle and update TransSUm is paid off on btn click
     fun updateIsPaidOffValue() {
         viewModelScope.launch {
@@ -127,15 +143,27 @@ class TransactionDetailViewModel (application: Application,
             onImageClicked(transSum!!.is_paid_off)
         }
     }
+
     //set mutable isPaidOff value upter update transSum is paid off
     private fun onImageClicked(bool:Boolean){
         _isBtnpaidOff.value = bool
     }
+
     // update Payment table
-    fun bayar(num:Int){
+    fun bayar(paymentModel:PaymentModel){
         viewModelScope.launch {
-            val bayar = Payment()
-            bayar.payment_ammount= num
+            val bayar = modelToPaymentConverter(paymentModel)
+            if (paymentModel.id!=null){
+                bayar.id = paymentModel.id!!
+                updatePaymentDB(bayar) }
+            else{
+                    insertPayment(bayar)
+                }
+            updateTransSum()
+        }
+    }
+    private fun insertPayment(bayar:Payment){
+        viewModelScope.launch {
             bayar.payment_date =Date()
             bayar.sum_id = transSum.value?.sum_id ?:-1
             bayar.payment_ref = UUID.randomUUID().toString()
@@ -143,6 +171,22 @@ class TransactionDetailViewModel (application: Application,
             updateTransSum()
         }
     }
+    fun deletePayment(id:Int){
+        viewModelScope.launch {
+            deletePaymentDB(id)
+            updateTransSum()
+        }
+    }
+    //Convert PaymentModel to PaymentTable for insert or update purpose
+    private fun modelToPaymentConverter(paymentModel: PaymentModel):Payment{
+        val bayar = Payment()
+        bayar.payment_ammount= paymentModel.payment_ammount!!
+        bayar.payment_date =paymentModel.payment_date
+        bayar.sum_id = transSum.value?.sum_id ?:-1
+        bayar.payment_ref = paymentModel.ref?:""
+        return bayar
+    }
+
     // update Transum value
     private fun updateTransSum(){
         viewModelScope.launch {
@@ -154,14 +198,16 @@ class TransactionDetailViewModel (application: Application,
             updateTransSumDB(transSum)
         }
     }
+
+
     //update transum is keeped value and insert call insert To Summary Function when btn pembukuan click
     fun onBtnPembukuanClick(){
         viewModelScope.launch {
             val transsummary = transSum.value
             if (transsummary?.is_keeped==false){
-            transsummary.is_keeped = transsummary.is_keeped.not() ?: true
-            updataTransSumDB(transsummary)
-               insertToSummary()
+                transsummary.is_keeped = transsummary.is_keeped.not() ?: true
+                updataTransSumDB(transsummary)
+                insertToSummary()
             }
         }
     }
@@ -171,10 +217,8 @@ class TransactionDetailViewModel (application: Application,
             val calendar = Calendar.getInstance()
             calendar.time = transSum.value!!.trans_date
             val dateFormat = SimpleDateFormat("MMMM", Locale.getDefault())
-
             transDetail.value?.forEach {it->
                val summary = Summary()
-                Log.i("INSERTSUMMARYBUG","insertSummary summary ${summary}")
                summary.year= calendar.get(Calendar.YEAR)
                summary.month = dateFormat.format(transSum.value!!.trans_date)
                summary.month_number = calendar.get(Calendar.MONTH)+1
@@ -188,6 +232,26 @@ class TransactionDetailViewModel (application: Application,
            }
         }
     }
+    //update Todays Date onClick
+    fun updateDate(){
+        viewModelScope.launch {
+            if (transSum.value!=null) {
+                val transsummary = transSum.value!!
+                transsummary.trans_date = Date()
+                updateTransSumDB(transsummary)
+            }
+        }
+    }
+    fun updateLongClickedDate(date:Date){
+        viewModelScope.launch {
+            if (transSum.value!=null) {
+                val transsummary = transSum.value!!
+                transsummary.trans_date = date
+                updateTransSumDB(transsummary)
+            }
+        }
+    }
+
     //Update Trans Detail value
     fun updateTransDetail(transdetail:TransactionDetail){
         viewModelScope.launch {
@@ -195,6 +259,17 @@ class TransactionDetailViewModel (application: Application,
         }
     }
     /******************************************** Suspend **************************************/
+
+    private suspend fun updatePaymentDB(payment: Payment) {
+        withContext(Dispatchers.IO) {
+             datasource4.update(payment)
+        }
+    }
+    private suspend fun deletePaymentDB(id:Int){
+        withContext(Dispatchers.IO){
+            datasource4.deletePayment(id)
+        }
+    }
     private suspend fun updateTransSumDB(transSum: TransactionSummary){
         withContext(Dispatchers.IO){
             datasource1.update(transSum)
@@ -225,6 +300,7 @@ class TransactionDetailViewModel (application: Application,
             datasource4.insert(payment)
         }
     }
+
     fun generateReceiptText(): String {
         textGenerator = TextGenerator(transDetail.value,transSum.value,paymentModel.value)
         return textGenerator.generateReceiptText()
@@ -246,11 +322,17 @@ class TransactionDetailViewModel (application: Application,
         _navigateToEdit.value = id
     }
     fun onNavigatedToEdit(){this._navigateToEdit.value = null}
+    //Toggle
     fun onBtnBayarClick(){
         _isBtnBayarClicked.value = true
     }
     fun onBtnBayarClicked(){
         _isBtnBayarClicked.value = false
     }
-
+    fun onLongClick(v: View): Boolean { return true }
+    fun onTxtTransSumLongClikc(v:View):Boolean{
+        _transSumDateLongClick.value = true
+    return true
+    }
+    fun onTxtTransSumLongClikced(){_transSumDateLongClick.value = false}
 }

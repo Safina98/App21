@@ -5,16 +5,21 @@ import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothClass
 import android.bluetooth.BluetoothDevice
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.DatePicker
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -23,13 +28,15 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
-import com.example.app21try6.database.SummaryDatabase
+import com.example.app21try6.database.TransactionDetail
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionDetailBinding
+import com.example.app21try6.transaction.transactionedit.Code
+import com.example.app21try6.transaction.transactionedit.TransactionEditViewModel
 import com.google.android.material.textfield.TextInputEditText
 import java.util.*
 
-
+@RequiresApi(Build.VERSION_CODES.O)
 class TransactionDetailFragment : Fragment() {
     private lateinit var binding:FragmentTransactionDetailBinding
     private val PERMISSION_REQUEST_CODE = 201
@@ -48,7 +55,7 @@ class TransactionDetailFragment : Fragment() {
         val id= arguments?.let{ TransactionDetailFragmentArgs.fromBundle(it).id}
         val datasource1 = VendibleDatabase.getInstance(application).transSumDao
         val datasource2 = VendibleDatabase.getInstance(application).transDetailDao
-        val datasource3 = SummaryDatabase.getInstance(application).summaryDbDao
+        val datasource3 = VendibleDatabase.getInstance(application).summaryDbDao
         val datasource4 = VendibleDatabase.getInstance(application).paymentDao
         val datasource5 = VendibleDatabase.getInstance(application).subProductDao
         val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
@@ -57,7 +64,15 @@ class TransactionDetailFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-        val paymentAdapter = PaymentAdapter(viewModel.transSum.value?.is_paid_off,TransPaymentClickListener {  },TransPaymentLongListener {  })
+        val paymentAdapter = PaymentAdapter(viewModel.transSum.value?.is_paid_off,
+            TransPaymentClickListener {
+              showBayarDialog(it)
+            },TransPaymentLongListener {
+                deleteDialog(it.id!!)
+            },
+            TransDatePaymentClickListener {
+                showDatePickerDialog(it)
+            })
         //Transaction Detail Adapter
         val adapter = TransactionDetailAdapter(
             viewModel.transSum.value?.is_paid_off,
@@ -76,7 +91,6 @@ class TransactionDetailFragment : Fragment() {
         }
 
         binding.recyclerViewDetailTrans.adapter = adapter
-
 
         binding.btnPrintNew.setOnClickListener {
             printReceipt()
@@ -100,14 +114,21 @@ class TransactionDetailFragment : Fragment() {
 
         viewModel.paymentModel.observe(viewLifecycleOwner, Observer {
             it?.let{
+                Log.i("updatepayment", "rv observer: $it")
                 paymentAdapter.submitList(it)
+                adapter.notifyDataSetChanged()
             }
         })
-
+        viewModel.transSumDateLongClick.observe(viewLifecycleOwner){
+            if (it==true){
+                showDatePickerDialog(null)
+            }
+        }
         viewModel.sendReceipt.observe(viewLifecycleOwner){
             if (it==true){
                 val exportedString=viewModel.generateReceiptText()
                 exportTextToWhatsApp(exportedString)
+                viewModel.onKirimBtnClicked()
             }
         }
 
@@ -121,12 +142,10 @@ class TransactionDetailFragment : Fragment() {
         })
 
         viewModel.isCardViewShow.observe(viewLifecycleOwner, Observer {})
-
         viewModel.isTxtNoteClick.observe(viewLifecycleOwner, Observer {})
-
         viewModel.isBtnBayarCLicked.observe(viewLifecycleOwner, Observer {
             if (it==true){
-                showBayarDialog()
+                showBayarDialog(PaymentModel(null,null,null,null,null,null,null))
                 viewModel.onBtnBayarClicked()
             }
         })
@@ -143,18 +162,29 @@ class TransactionDetailFragment : Fragment() {
         return binding.root
     }
 
-    private fun showBayarDialog(){
+    private fun showBayarDialog(paymentModel: PaymentModel){
         val builder = AlertDialog.Builder(context)
-        builder.setTitle("Update")
+        builder.setTitle("Bayar")
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.update, null)
         val textPrice = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
+
+        if (paymentModel.payment_ammount!=null){
+            textPrice.setText(paymentModel.payment_ammount.toString())
+        }
+
+
         textPrice.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+        textPrice.requestFocus()
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
         builder.setView(view)
-        builder.setPositiveButton("Update") { dialog, which ->
+        builder.setPositiveButton("Ok") { dialog, which ->
             if(textPrice.text.toString().toIntOrNull()!=null){
-                viewModel.bayar(textPrice.text.toString().toInt())
-            }            }
+                paymentModel.payment_ammount = textPrice.text.toString().toInt()
+                viewModel.bayar(paymentModel)
+            }
+        }
         builder.setNegativeButton("No") { dialog, which ->
         }
         val alert = builder.create()
@@ -194,7 +224,6 @@ class TransactionDetailFragment : Fragment() {
 
     private fun generateReceiptData(): ByteArray {
         receiptText = viewModel.generateReceiptTextNew()
-        Log.i("PRINTB",receiptText)
         return receiptText.toByteArray()
     }
 
@@ -228,8 +257,45 @@ class TransactionDetailFragment : Fragment() {
 
     }
 
+    private fun showDatePickerDialog(paymentModel: PaymentModel?) {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.pop_up_date_picker, null)
+        val datePickerStart = dialogView.findViewById<DatePicker>(R.id.date_picker)
+        val dialog = AlertDialog.Builder(requireContext())
+            .setTitle("Select Date Range")
+            .setView(dialogView)
+            .setPositiveButton("OK") { _, _ ->
+                val startDate = Calendar.getInstance().apply {
+                    set(datePickerStart.year, datePickerStart.month, datePickerStart.dayOfMonth)
+                }.time
+                if (paymentModel!=null) {
+                    paymentModel.payment_date = startDate
+                    viewModel.bayar(paymentModel)
+                }
+                else viewModel.updateLongClickedDate(startDate)
+
+            }
+            .setNegativeButton("Cancel", null)
+            .create()
+
+        dialog.show()
+    }
+    private fun deleteDialog(p_id:Int) {
+        val builder = AlertDialog.Builder(context)
+        builder.setMessage("Are you sure you want to Delete?")
+            .setCancelable(true)
+            .setPositiveButton("Yes") { dialog, id ->
+                viewModel.deletePayment(p_id)
+                Toast.makeText(context, "Deleted!!", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("No") { dialog, id ->
+                // Dismiss the dialog
+                dialog.dismiss()
+            }
+        val alert = builder.create()
+        alert.show()
+    }
     override fun onDestroy() {
-        //printerService.disconnect()
+       // printerService?.let { it.disconnect() }
         super.onDestroy()
     }
 

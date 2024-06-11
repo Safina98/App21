@@ -45,7 +45,7 @@ class TransactionActiveFragment : Fragment() {
     private val viewModel:TransactionActiveViewModel by viewModels()
     private val PERMISSION_REQUEST_CODE = 200
     val requestcode = 1
-
+    //insert csv
     var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         Log.i("Insert Csv", "result Launcher")
         if (result.resultCode == Activity.RESULT_OK) {
@@ -114,23 +114,22 @@ class TransactionActiveFragment : Fragment() {
                 viewModel.onButtonClicked()
             }
         }
-        val adapter = TransactionActiveAdapter(ActiveClickListener {
-
-            viewModel.onNavigatetoTransDetail(it.sum_id)
-        }
-            ,CheckBoxListenerTransActive{view, stok ->
+        val adapter = TransactionActiveAdapter(
+            ActiveClickListener {
+            viewModel.onNavigatetoTransDetail(it.sum_id) },
+            CheckBoxListenerTransActive{view, stok ->
             val cb = view as CheckBox
-            viewModel.onCheckBoxClicked(stok, cb.isChecked)
-        }
-        )
+            viewModel.onCheckBoxClicked(stok, cb.isChecked) })
+
+        //set grid rv
         val displayMetrics = resources.displayMetrics
         val screenWidthPx = displayMetrics.widthPixels
         val itemWidthPx = resources.getDimensionPixelSize(R.dimen.rv_width) // Change this to the width of your item
-
         val spanCount = screenWidthPx / itemWidthPx
         binding.recyclerViewActiveTrans.adapter = adapter
         binding.recyclerViewActiveTrans.layoutManager = GridLayoutManager(context, spanCount, RecyclerView.VERTICAL, false)
 
+        //show or hide loading image and recyclerview from fragmetn
         viewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
             if(isLoading==true){
                 binding.recyclerViewActiveTrans.visibility = View.GONE
@@ -141,16 +140,18 @@ class TransactionActiveFragment : Fragment() {
             }
         })
 
+        //observe recyclerview data
         viewModel.active_trans.observe(viewLifecycleOwner, Observer {
             it?.let {
                 adapter.submitList(it.sortedByDescending { it.sum_id })
                 adapter.notifyDataSetChanged()
             }
         })
+        //Obverve exported data
         viewModel.allTransFromDB.observe(viewLifecycleOwner){
             //Log.i("INSERTCSVPROB","AllTansSum: $it")
             }
-
+        //hide or chow checbox on rv
         viewModel.is_image_clicked.observe(this.viewLifecycleOwner, Observer {
             if (it == true) {
                 (binding.recyclerViewActiveTrans.adapter as TransactionActiveAdapter).isActive(it)
@@ -163,19 +164,21 @@ class TransactionActiveFragment : Fragment() {
             viewModel.getActiveTrans()
         })
 
-
+        //Navigate to TransactinEdit
         viewModel.navigateToTransEdit.observe(viewLifecycleOwner, Observer {
             it?.let {
             this.findNavController().navigate(TransactionActiveFragmentDirections.actionTransactionActiveFragmentToTransactionEditFragment(it))
             viewModel.onNavigatedToTransEdit()
           }
         })
+        //Navigate to TransactionAll
         viewModel.navigatToAllTrans.observe(viewLifecycleOwner, Observer {
            if(it==true) {
                 this.findNavController().navigate(TransactionActiveFragmentDirections.actionTransactionActiveFragmentToAllTransactionsFragment())
                 viewModel.onNavigatedToAllTrans()
             }
         })
+        //Navigate to TransactinDetail
         viewModel.navigateToTransDetail.observe(viewLifecycleOwner, Observer {
             it?.let {
                 this.findNavController().navigate(TransactionActiveFragmentDirections.actionTransactionActiveFragmentToTransactionDetailFragment(it))
@@ -216,7 +219,6 @@ class TransactionActiveFragment : Fragment() {
         val id = item.itemId
         when (id) {
             R.id.menu_export_csv -> {
-                viewModel.getAllTransactions()
                 exportTransCSV()
                 return true
             }

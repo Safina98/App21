@@ -152,8 +152,8 @@ class BrandStockViewModel(
             bw.newLine()
 
             for (j in all_item.value!!){
-                //bw.newLine()
-                var content = "${j.category},${j.brand},${j.product},${j.price},${j.bestSelling},${j.subProduct},${j.roll_u},${j.roll_b_t},${j.roll_s_t},${j.roll_k_t},${j.roll_b_g},${j.roll_s_g},${j.roll_k_g}.${j.capital}"
+                //bw.newLine()   0                  1        2           3           4                   5           6               7           8               9          10              11          12          13
+                var content = "${j.category},${j.brand},${j.product},${j.price},${j.bestSelling},${j.subProduct},${j.roll_u},${j.roll_b_t},${j.roll_s_t},${j.roll_k_t},${j.roll_b_g},${j.roll_s_g},${j.roll_k_g},${j.capital}"
                 bw.write(content)
                 bw.newLine()
             }
@@ -199,7 +199,7 @@ class BrandStockViewModel(
         product.product_name = token[2].uppercase().trim()
         product.product_price = token[3].toInt()
         product.bestSelling = token[4]=="TRUE"
-        product.product_capital = 0//token[13].toInt()
+        product.product_capital = token[13].toInt()
         val subProduct = SubProduct()
         subProduct.sub_name = token[5].uppercase().trim()
         subProduct.roll_u = token[6].toInt()

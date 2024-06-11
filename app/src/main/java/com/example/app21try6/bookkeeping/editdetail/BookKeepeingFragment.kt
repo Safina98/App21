@@ -15,9 +15,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
-import com.example.app21try6.bookkeeping.summary.SummaryViewModel
 import com.example.app21try6.database.Summary
-import com.example.app21try6.database.SummaryDatabase
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentBookKeepeingBinding
 import com.google.android.material.textfield.TextInputEditText
@@ -34,7 +32,7 @@ class BookKeepeingFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_book_keepeing,container,false)
 
         val application = requireNotNull(this.activity).application
-        val dataSource = SummaryDatabase.getInstance(application).summaryDbDao
+        val dataSource = VendibleDatabase.getInstance(application).summaryDbDao
         val dataSource2 = VendibleDatabase.getInstance(application).productDao
 
         val date= arguments?.let { BookKeepeingFragmentArgs.fromBundle(it).date }

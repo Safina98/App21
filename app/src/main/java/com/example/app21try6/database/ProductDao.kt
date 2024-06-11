@@ -25,6 +25,13 @@ interface ProductDao {
     //@Query("SELECT * FROM product_table WHERE cath_code = :c_id_")
     @Query("SELECT * FROM product_table WHERE :c_id_ IS NULL OR cath_code = :c_id_")
     fun getProductByCategory(c_id_:Int?): List<Product>
+    @Query("""
+        SELECT product_table.product_name
+        FROM product_table
+        JOIN category_table ON product_table.cath_code = category_table.category_id
+        WHERE category_table.category_name = :name
+    """)
+    fun getProductNameByCategoryName(name:String):List<String>
     @Query("SELECT * FROM product_table")
     fun getAllProducts(): List<Product>
     @Query("SELECT * FROM product_table")

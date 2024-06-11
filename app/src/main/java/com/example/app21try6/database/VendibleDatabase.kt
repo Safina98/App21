@@ -10,7 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 
 
-@Database(entities = [Brand::class,Product::class,SubProduct::class,Category::class,TransactionSummary::class,TransactionDetail::class,Payment::class,Expenses::class,ExpenseCategory::class],version=31, exportSchema = true)
+@Database(entities = [Brand::class,Product::class,SubProduct::class,Category::class,TransactionSummary::class,TransactionDetail::class,Payment::class,Expenses::class,ExpenseCategory::class,Summary::class],version=32, exportSchema = true)
 @TypeConverters(DateTypeConverter::class)
 abstract class VendibleDatabase:RoomDatabase(){
     abstract val brandDao :BrandDao
@@ -22,7 +22,7 @@ abstract class VendibleDatabase:RoomDatabase(){
     abstract val paymentDao:PaymentDao
     abstract val expenseDao:ExpenseDao
     abstract val expenseCategoryDao:ExpenseCategoryDao
-
+    abstract val summaryDbDao:SummaryDbDao
 
     companion object{
         @Volatile
@@ -67,6 +67,28 @@ abstract class VendibleDatabase:RoomDatabase(){
                         database.execSQL("ALTER TABLE trans_sum_table ADD COLUMN sum_note TEXT")
                     }
                 }
+                val MIGRATION_31_32 = object : Migration(1, 2) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        // Create the new table with the added 'date' column
+                        database.execSQL(
+                            "CREATE TABLE IF NOT EXISTS summary_table (" +
+                                    "id_m INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                                    "year INTEGER NOT NULL DEFAULT 2030, " +
+                                    "month TEXT NOT NULL DEFAULT 'empty', " +
+                                    "month_number INTEGER NOT NULL DEFAULT 0, " +
+                                    "day INTEGER NOT NULL DEFAULT 0, " +
+                                    "day_name TEXT NOT NULL DEFAULT 'empty', " +
+                                    "date TEXT NOT NULL DEFAULT '1970-01-01', " +  // Default date value
+                                    "item_name TEXT NOT NULL DEFAULT 'empty', " +
+                                    "item_sold REAL NOT NULL DEFAULT 0.0, " +
+                                    "price REAL NOT NULL DEFAULT 0.0, " +
+                                    "total_income REAL NOT NULL DEFAULT 0.0" +
+                                    ")"
+                        )
+
+                    }
+                }
+
 
                 var instance = INSTANCE
                 if (instance == null) {
@@ -74,9 +96,9 @@ abstract class VendibleDatabase:RoomDatabase(){
                             context.applicationContext,
                             VendibleDatabase::class.java,
                             "vendible_table"
-                    ).addMigrations(MIGRATION_30_31)
-
-                        .fallbackToDestructiveMigration().build()
+                    ).addMigrations(MIGRATION_31_32)
+                      //  .fallbackToDestructiveMigration()
+                    .build()
                     INSTANCE = instance
                     //instance = Room.databaseBuilder(context.applicationContext,VendibleDatabase::class.java,"mymaindb").allowMainThreadQueries().build()
                 }

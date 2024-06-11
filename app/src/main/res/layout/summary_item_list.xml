@@ -10,7 +10,7 @@
             type="com.example.app21try6.bookkeeping.summary.SummaryListener" />
         <variable
             name="summaryViewModel"
-            type="com.example.app21try6.bookkeeping.summary.SummaryViewModel" />
+            type="com.example.app21try6.bookkeeping.editdetail.BookkeepingViewModel" />
     </data>
 
     <androidx.cardview.widget.CardView

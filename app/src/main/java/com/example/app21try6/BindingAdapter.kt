@@ -93,6 +93,7 @@ fun setImageBasedOnNightMode(imageView: ImageView, uiMode: Int) {
                 R.id.btn_print_new -> imageView.setImageResource(R.drawable.baseline_print_light)
                 R.id.btn_edit_trans_new -> imageView.setImageResource(R.drawable.baseline_edit_light)
                 R.id.btn_send_new -> imageView.setImageResource(R.drawable.wa_vector_light)
+                R.id.btn_is_paid_off->imageView.setImageResource(R.drawable.baseline_calendar_month_light)
             }
         }
         Configuration.UI_MODE_NIGHT_NO, Configuration.UI_MODE_NIGHT_UNDEFINED -> {
@@ -100,6 +101,7 @@ fun setImageBasedOnNightMode(imageView: ImageView, uiMode: Int) {
                 R.id.btn_print_new -> imageView.setImageResource(R.drawable.baseline_print_24)
                 R.id.btn_edit_trans_new -> imageView.setImageResource(R.drawable.baseline_edit_24)
                 R.id.btn_send_new -> imageView.setImageResource(R.drawable.wa_vector)
+                R.id.btn_is_paid_off->imageView.setImageResource(R.drawable.baseline_calendar_month_24)
             }
         }
     }
@@ -136,7 +138,7 @@ fun setBackgroundColor(view: View, isPrepared: Boolean) {
 @BindingAdapter("buttonBackgroundColor")
 fun setButtontBackgroundColor(view: View, isPrepared: Boolean) {
     val color = if (isPrepared) {
-        ContextCompat.getColor(view.context,R.color.pastel_green2)
+        ContextCompat.getColor(view.context,R.color.pastel_green_dark)
     } else {
         ContextCompat.getColor(view.context, R.color.black)
     }

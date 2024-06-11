@@ -22,6 +22,7 @@ import com.example.app21try6.PDFGenerator
 import com.example.app21try6.bookkeeping.summary.ListModel
 import com.example.app21try6.database.*
 import com.example.app21try6.formatRupiah
+import com.example.app21try6.getDateFromComponents
 //import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.*
 import java.io.BufferedWriter
@@ -423,6 +424,7 @@ fun insertCSVBatch(tokensList: List<List<String>>) {
             month_number = token[2].toInt()
             day_name= token[4]
             day = token[3].toInt()
+            date = getDateFromComponents(year, month, month_number, day, day_name)
             item_name = token[5]
             item_sold = token[7].toDouble()
             price = token[6].toDouble()
@@ -451,7 +453,7 @@ fun insertCSVBatch(tokensList: List<List<String>>) {
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
                 // Create a SavedStateHandle for this ViewModel from extras
                 val savedStateHandle = extras.createSavedStateHandle()
-                val dataSource = SummaryDatabase.getInstance(application).summaryDbDao
+                val dataSource = VendibleDatabase.getInstance(application).summaryDbDao
                 val dataSource2 = VendibleDatabase.getInstance(application).productDao
 
                 return BookkeepingViewModel(

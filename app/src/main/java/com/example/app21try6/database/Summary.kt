@@ -3,11 +3,13 @@ package com.example.app21try6.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
 import java.time.Month
 import java.time.Year
 import java.util.*
 
 @Entity(tableName = "summary_table")
+@TypeConverters(DateTypeConverter::class)
 data class Summary(
         @PrimaryKey(autoGenerate = true)
         var id_m :Int=0,
@@ -21,6 +23,8 @@ data class Summary(
         var day: Int = 0,
         @ColumnInfo(name = "day_name")
         var day_name: String = "empty",
+        @ColumnInfo(name = "date")
+        var date:Date=Date(),
         @ColumnInfo(name = "item_name")
         var item_name:String = "empty",
         @ColumnInfo(name = "item_sold")

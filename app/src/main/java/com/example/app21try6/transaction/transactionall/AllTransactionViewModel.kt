@@ -18,9 +18,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.YearMonth
-import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -54,6 +51,7 @@ class AllTransactionViewModel(application: Application,var dataSource1:TransSumD
         _selectedSpinner.value = value
     }
 
+
     fun setStartDateRange(startDate: Date?){
         _selectedStartDate.value = startDate
         if (selectedEndDate.value ==null)
@@ -69,6 +67,7 @@ class AllTransactionViewModel(application: Application,var dataSource1:TransSumD
         Log.i("DATEPROB","setEndDateRange enddate mutable ${_selectedEndDate.value .toString()}")
 
     }
+    //Filter data based on search query
     fun filterData(query: String?) {
         val list = mutableListOf<TransactionSummary>()
         if(!query.isNullOrEmpty()) {
@@ -81,7 +80,7 @@ class AllTransactionViewModel(application: Application,var dataSource1:TransSumD
     }
 
 
-
+    //convert date to string
     private fun formatDate(date: Date?): String? {
         if (date != null) {
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -89,62 +88,55 @@ class AllTransactionViewModel(application: Application,var dataSource1:TransSumD
         }
         return null
     }
+
+    //get today's date
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun constructStartDate(month: Int): String? {
+    private fun constructTodaysDate(month: Int): String? {
         val date =Date()
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return dateFormat.format(date)
     }
+    //get yesterday's date
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun constructEndDate(month: Int): String? {
+    private fun constructYesterdayDate(month: Int): String? {
         val calendar = Calendar.getInstance()
-        // Subtract one day from the current date
         calendar.add(Calendar.DAY_OF_YEAR, -1)
         val date = calendar.time
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return dateFormat.format(date)
     }
 
+    //Construcnt startDate and endDate spinner select or date picker select
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateRv4(){
         var startDate: String?
         var endDate: String?
-        Log.i("DATEPROB","updateRV4 ${selectedSpinner.value}")
         if (selectedSpinner.value != "Date Range") {
             // Extract the month value from the selected date spinner
-            Log.i("DATEPROB","if selectedSpinner.value != \"Date Range\"")
-            val selectedMonth =selectedSpinner.value
-            if (selectedMonth == "Hari Ini") {
-                Log.i("DATEPROB","if if selectedSpinner.value == \"Hari Ini\"")
-                startDate = constructStartDate(0)
-                endDate =constructStartDate(0)
+            if (selectedSpinner.value == "Hari Ini") {
+                startDate = constructTodaysDate(0)
+                endDate =constructTodaysDate(0)
             }
             else {
                 if (selectedSpinner.value=="Kemarin")
                 {
-                    Log.i("DATEPROB","if else if selectedSpinner.value == \"kemarin\"")
-                    startDate = constructEndDate(1)
-                    endDate = constructEndDate(12)}
+                    startDate = constructYesterdayDate(1)
+                    endDate = constructYesterdayDate(12)}
                 else{
                     // Invalid month value, handle the error case
-                    Log.i("DATEPROB","if else else selectedSpinner.value == \"All\"")
                     startDate = null
                     endDate = null
                 }
             }
         } else {
             // Date range option selected, use the selected start and end dates
-            Log.i("DATEPROB","else selectedSpinner.value == \"Date Range\"")
             startDate = formatDate(selectedStartDate.value)
             endDate = formatDate(selectedEndDate.value)
         }
-
-        Log.i("DATEPROB","updateRV4 ${startDate.toString()}")
-        Log.i("DATEPROB","updateRV4 ${endDate.toString()}")
         performDataFiltering(startDate, endDate)
 
                 }
-
+    //filter data from database by date
     private fun performDataFiltering(startDate: String?, endDate: String?) {
         viewModelScope.launch {
             val filteredData = withContext(Dispatchers.IO) {
@@ -163,7 +155,6 @@ class AllTransactionViewModel(application: Application,var dataSource1:TransSumD
     //Navigation
     fun onNavigatetoTransDetail(id:Int){ _navigateToTransDetail.value = id }
     fun onNavigatedToTransDetail(){ this._navigateToTransDetail.value = null }
-
 
     companion object {
         @JvmStatic

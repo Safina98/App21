@@ -78,7 +78,8 @@ class TextGenerator(
             for (p in payments){
                 paymentAmmountSum +=p.payment_ammount?:0
                 var sisa = transsum!!.total_trans - paymentAmmountSum
-                builder.append(String.format("%-24s%14s\n", "Bayar:", formatRupiah(p.payment_ammount?.toDouble())))
+                builder.append(String.format("%-22s%14s\n", "Bayar :", formatRupiah(p.payment_ammount?.toDouble())))
+                builder.append("-".repeat(getPadding("","Left",50))+"\n")
                 if (transsum.total_trans!!>paymentAmmountSum)
                 {
                     builder.append(String.format("%-24s%14s\n", "Sisa:", formatRupiah(sisa)))
@@ -154,6 +155,7 @@ class TextGenerator(
                 paymentAmmountSum +=p.payment_ammount?:0
                 var sisa = transsum!!.total_trans - paymentAmmountSum
                 builder.append(String.format("%-10s%19s\n", "Bayar:", formatRupiah(p.payment_ammount?.toDouble())))
+                builder.append("-".repeat(getPadding("","Left",c))+"\n")
                 if (transsum.total_trans!!>paymentAmmountSum)
                 {
                     builder.append(String.format("%-10s%19s\n", "Sisa:", formatRupiah(sisa)))

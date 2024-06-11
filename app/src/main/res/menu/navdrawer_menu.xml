@@ -9,5 +9,8 @@
     <item
         android:id="@+id/transactionActiveFragment"
         android:title="Transaksi"/>
+    <item
+        android:id="@+id/graphicMainFragment"
+        android:title="Grafik"/>
 
 </menu>
