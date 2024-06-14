@@ -17,11 +17,14 @@ import com.example.app21try6.formatRupiah
 
 
 
-class TransactionDetailAdapter(val isPaidOff:Boolean?,
-                                val clickListener: TransDetailClickListener,
+class TransactionDetailAdapter(
+                               val clickListener: TransDetailClickListener,
                                val longListener:TransDetailLongListener):
     ListAdapter<TransactionDetail,TransactionDetailAdapter.MyViewHolder>(TransDetailDiffCallBack()) {
+
     private var is_active = MutableLiveData<Boolean>(false)
+
+
     class MyViewHolder private constructor(val binding: TransactionDetailItemListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(
@@ -69,10 +72,12 @@ class TransactionDetailAdapter(val isPaidOff:Boolean?,
     }
     fun deActivate() {
         this.is_active.value  = false
+        notifyDataSetChanged()
     }
 
     fun isActive(is_active:Boolean){
         this.is_active.value  = is_active
+        notifyDataSetChanged()
         //notifyDataSetChanged()
     }
 }

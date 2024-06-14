@@ -1,6 +1,8 @@
 package com.example.app21try6.database
 
+import android.util.Log
 import androidx.room.TypeConverter
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -18,9 +20,12 @@ class DateTypeConverter {
 
         @TypeConverter
         @JvmStatic
+
         fun toDate(dateString: String?): Date? {
             return dateString?.let { formatter.parse(it) }
         }
+
+
     }
 }
 

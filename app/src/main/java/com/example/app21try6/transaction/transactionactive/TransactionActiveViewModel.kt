@@ -44,6 +44,8 @@ class TransactionActiveViewModel(
     val is_image_clicked:LiveData<Boolean>get() = _is_image_clicked
     //List checked transaction for delete purpose
     private var checkedItemList = mutableListOf<TransactionSummary>()
+    //todays date
+    var todaysdate = Date()
 
     //Navigation
     private val _navigateToTransEdit = MutableLiveData<Int>()
@@ -88,7 +90,7 @@ class TransactionActiveViewModel(
     fun onAddNewTransactionClick(){
         viewModelScope.launch {
             var trans =   TransactionSummary()
-            trans.trans_date = Date()
+            trans.trans_date = todaysdate
             trans.ref =UUID.randomUUID().toString()
             var id =insertNewSumAndGetId(trans).toInt()
             trans.sum_id = id

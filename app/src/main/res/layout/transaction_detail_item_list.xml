@@ -25,7 +25,6 @@
             android:onLongClick="@{(view) -> longClickListener.onLongClick(view,item)}"
             android:id="@+id/txt_item_t_date"
             style="@style/texr_detail_style"
-            app:textVisibility="@{isPaidOff}"
             app:dateFormatted="@{item.trans_detail_date}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

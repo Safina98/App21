@@ -172,11 +172,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="viewEnd"
+                android:layout_marginEnd="48dp"
+                style="@style/text_subproduct_small_style"
                 android:text="@{viewModel.transTotal}"
                 android:textSize="24sp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView_bayar"
+                android:layout_marginEnd="32dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
@@ -189,7 +192,8 @@
             android:layout_height="wrap_content"
             android:textAlignment="viewEnd"
             android:text="@{viewModel.bayar}"
-            app:layout_constraintEnd_toEndOf="parent"
+            style="@style/text_subproduct_small_style"
+            app:layout_constraintEnd_toStartOf="@id/btn_send_new"
             app:layout_constraintBottom_toTopOf="@+id/btn_bayar_trans"
             android:textSize="24sp" />
 

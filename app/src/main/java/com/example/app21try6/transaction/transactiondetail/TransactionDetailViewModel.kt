@@ -1,7 +1,6 @@
 package com.example.app21try6.transaction.transactiondetail
 
 import android.app.Application
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -59,7 +58,7 @@ class TransactionDetailViewModel (application: Application,
                total - paid
            } ?: total
        }
-       var b =if(a<=0)"Kembalian: " else if(item.paid==0) "Total: " else "Sisa"
+       var b =if(a<=0)"Kembalian: " else if(item.paid==0) "Total: " else "Sisa: "
         b +formatRupiah(abs(a)).toString()
     }
     //Transaction Summary note on edit text and carview
@@ -139,15 +138,16 @@ class TransactionDetailViewModel (application: Application,
         viewModelScope.launch {
             val transSum = transSum.value
             transSum?.is_paid_off = transSum?.is_paid_off?.not() ?: true
-            transSum?.let { updataTransSumDB(it) }
-            onImageClicked(transSum!!.is_paid_off)
+            //transSum?.let { updataTransSumDB(it) }
+            onImageClick(transSum!!.is_paid_off)
         }
     }
 
     //set mutable isPaidOff value upter update transSum is paid off
-    private fun onImageClicked(bool:Boolean){
+    fun onImageClick(bool:Boolean){
         _isBtnpaidOff.value = bool
     }
+
 
     // update Payment table
     fun bayar(paymentModel:PaymentModel){

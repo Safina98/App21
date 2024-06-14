@@ -1,8 +1,10 @@
 package com.example.app21try6.transaction.transactionall
 
 import android.app.AlertDialog
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.DatePicker
+import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
@@ -31,6 +34,9 @@ class AllTransactionsFragment : Fragment() {
         // Inflate the layout for this fragment
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
+        val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        val img =  requireActivity().findViewById<ImageView>(R.id.delete_image)
+        img.visibility = View.GONE
         val adapter = AllTransactionAdapter(
             AllTransClickListener {
             viewModel.onNavigatetoTransDetail(it.sum_id)
@@ -41,8 +47,9 @@ class AllTransactionsFragment : Fragment() {
         val adapterSpinnerTransAll = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line,getResources().getStringArray(R.array.spinner_all_trans) )
         binding.spinnerD.adapter = adapterSpinnerTransAll
         binding.recyclerViewAllTrans.adapter = adapter
+        viewModel.setUiMode(nightModeFlags)
         viewModel.allTransactionSummary.observe(viewLifecycleOwner){
-            if (it!=null) {
+            it?.let {
                 adapter.submitList(it)
             }
         }
@@ -51,8 +58,6 @@ class AllTransactionsFragment : Fragment() {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedItem = parent.getItemAtPosition(position).toString()
                 viewModel.setSelectedSpinner(selectedItem)
-                //viewModel.setStartDateRange(null)
-                //viewModel.setEndDateRange(null)
             }
             override fun onNothingSelected(parent: AdapterView<*>) {
             }
@@ -62,6 +67,7 @@ class AllTransactionsFragment : Fragment() {
                 viewModel.updateRv4()
             }
         }
+        binding.searchAllTrans.setQueryHint("Search here...");
         binding.searchAllTrans.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true
@@ -72,7 +78,6 @@ class AllTransactionsFragment : Fragment() {
                 return true
             }
         })
-
         viewModel.isStartDatePickerClicked.observe(viewLifecycleOwner) {
            if (it==true){
                showDatePickerDialog(1)
@@ -115,8 +120,6 @@ class AllTransactionsFragment : Fragment() {
                 viewModel.setSelectedSpinner("Date Range")
                 if (code==1) viewModel.setStartDateRange(startDate)
                 else if (code==2) viewModel.setEndDateRange(startDate)
-              //  viewModel.setSelectedBulanValue("Date Range")
-
             }
             .setNegativeButton("Cancel", null)
             .create()
@@ -124,9 +127,20 @@ class AllTransactionsFragment : Fragment() {
         dialog.show()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onResume() {
+        super.onResume()
+        val startDate = viewModel.selectedStartDate.value
+        var endDate = viewModel.selectedEndDate.value
+        viewModel.updateRv4()
+        var list = viewModel.allTransactionSummary.value
+        Log.i("DateProb","on resume")
+        Log.i("DateProb","on resume start date: $startDate")
+        Log.i("DateProb","on resume End date: $endDate")
+    }
     override fun onPause() {
-
+       // viewModel.cancelJob()
+        Log.i("DateProb","on pause")
         super.onPause()
     }
-
 }

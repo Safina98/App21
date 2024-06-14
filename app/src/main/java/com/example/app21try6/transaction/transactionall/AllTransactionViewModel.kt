@@ -14,9 +14,13 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.app21try6.database.TransSumDao
 import com.example.app21try6.database.TransactionSummary
 import com.example.app21try6.database.VendibleDatabase
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -24,6 +28,10 @@ import java.util.Locale
 
 class AllTransactionViewModel(application: Application,var dataSource1:TransSumDao):AndroidViewModel(application) {
 
+
+    private var viewModelJob = Job()
+    //ui scope for coroutines
+    private val uiScope = CoroutineScope(Dispatchers.Main +  viewModelJob)
     //all transactionSummary
     private var _allTransactionSummary = MutableLiveData<List<TransactionSummary>>()
     val allTransactionSummary :LiveData<List<TransactionSummary>> get() = _allTransactionSummary
@@ -43,6 +51,9 @@ class AllTransactionViewModel(application: Application,var dataSource1:TransSumD
     //show or hide end date picker dialog
     private var _isEndDatePickerClicked = MutableLiveData<Boolean>()
     val isEndDatePickerClicked :LiveData<Boolean>get() = _isEndDatePickerClicked
+    //To update icons color on night mode or liht mode
+    private var _uiMode = MutableLiveData<Int>(16)
+    val uiMode :LiveData<Int> get() =_uiMode
 
     private val _navigateToTransDetail = MutableLiveData<Int>()
     val navigateToTransDetail: LiveData<Int> get() = _navigateToTransDetail
@@ -52,31 +63,40 @@ class AllTransactionViewModel(application: Application,var dataSource1:TransSumD
     }
 
 
+    //Set ui to change icons color when night mode or day mode on
+    fun setUiMode(mode:Int){
+        _uiMode.value = mode
+    }
     fun setStartDateRange(startDate: Date?){
-        _selectedStartDate.value = startDate
-        if (selectedEndDate.value ==null)
-        {_selectedEndDate.value=startDate}
-        Log.i("DATEPROB","setStartDateRange stardate ${startDate.toString()}")
-        Log.i("DATEPROB","setStartDateRange stardate mutable ${_selectedStartDate.value .toString()}")
-        Log.i("DATEPROB","setStartDateRange enddate mutable ${_selectedEndDate.value .toString()}")
+        uiScope.launch {
+            _selectedStartDate.value = startDate
+            if (selectedEndDate.value ==null)
+            {_selectedEndDate.value=startDate}
+            Log.i("DATEPROB","setStartDateRange stardate ${startDate.toString()}")
+            Log.i("DATEPROB","setStartDateRange stardate mutable ${_selectedStartDate.value .toString()}")
+            Log.i("DATEPROB","setStartDateRange enddate mutable ${_selectedEndDate.value .toString()}")
+        }
     }
     fun setEndDateRange(startDate: Date?){
-        _selectedEndDate.value=startDate
-        Log.i("DATEPROB","setEndDateRange stardate ${startDate.toString()}")
-        Log.i("DATEPROB","setEndDateRange stardate mutable ${_selectedStartDate.value .toString()}")
-        Log.i("DATEPROB","setEndDateRange enddate mutable ${_selectedEndDate.value .toString()}")
-
+        uiScope.launch {
+            _selectedEndDate.value=startDate
+            Log.i("DATEPROB","setEndDateRange stardate ${startDate.toString()}")
+            Log.i("DATEPROB","setEndDateRange stardate mutable ${_selectedStartDate.value .toString()}")
+            Log.i("DATEPROB","setEndDateRange enddate mutable ${_selectedEndDate.value .toString()}")
+        }
     }
     //Filter data based on search query
     fun filterData(query: String?) {
-        val list = mutableListOf<TransactionSummary>()
-        if(!query.isNullOrEmpty()) {
-            list.addAll(_unFilteredrecyclerViewData.value!!.filter {
-                it.cust_name.lowercase(Locale.getDefault()).contains(query.toString().lowercase(Locale.getDefault()))})
-        } else {
-            list.addAll(_unFilteredrecyclerViewData.value!!)
+        uiScope.launch {
+            val list = mutableListOf<TransactionSummary>()
+            if(!query.isNullOrEmpty()) {
+                list.addAll(_unFilteredrecyclerViewData.value!!.filter {
+                    it.cust_name.lowercase(Locale.getDefault()).contains(query.toString().lowercase(Locale.getDefault()))})
+            } else {
+                list.addAll(_unFilteredrecyclerViewData.value!!)
+            }
+            _allTransactionSummary.value =list
         }
-        _allTransactionSummary.value =list
     }
 
 
@@ -109,42 +129,70 @@ class AllTransactionViewModel(application: Application,var dataSource1:TransSumD
     //Construcnt startDate and endDate spinner select or date picker select
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateRv4(){
-        var startDate: String?
-        var endDate: String?
-        if (selectedSpinner.value != "Date Range") {
-            // Extract the month value from the selected date spinner
-            if (selectedSpinner.value == "Hari Ini") {
-                startDate = constructTodaysDate(0)
-                endDate =constructTodaysDate(0)
-            }
-            else {
-                if (selectedSpinner.value=="Kemarin")
-                {
-                    startDate = constructYesterdayDate(1)
-                    endDate = constructYesterdayDate(12)}
-                else{
-                    // Invalid month value, handle the error case
-                    startDate = null
-                    endDate = null
+        uiScope.launch {
+            var startDate: String?
+            var endDate: String?
+            if (selectedSpinner.value != "Date Range") {
+                // Extract the month value from the selected date spinner
+                if (selectedSpinner.value == "Hari Ini") {
+                    startDate = constructTodaysDate(0)
+                    endDate =constructTodaysDate(0)
                 }
+                else {
+                    if (selectedSpinner.value=="Kemarin")
+                    {
+                        startDate = constructYesterdayDate(1)
+                        endDate = constructYesterdayDate(12)}
+                    else{
+                        // Invalid month value, handle the error case
+                        startDate = null
+                        endDate = null
+                    }
+                }
+            } else {
+                // Date range option selected, use the selected start and end dates
+                startDate = formatDate(selectedStartDate.value)
+                endDate = formatDate(selectedEndDate.value)
             }
-        } else {
-            // Date range option selected, use the selected start and end dates
-            startDate = formatDate(selectedStartDate.value)
-            endDate = formatDate(selectedEndDate.value)
+            performDataFiltering(startDate, endDate)
         }
-        performDataFiltering(startDate, endDate)
-
                 }
     //filter data from database by date
     private fun performDataFiltering(startDate: String?, endDate: String?) {
-        viewModelScope.launch {
+
+            if ((startDate != null && !isValidDateFormat(startDate)) ||
+                (endDate != null && !isValidDateFormat(endDate))) {
+                Log.e("AllTransactionViewModel", "Invalid date format: startDate=$startDate, endDate=$endDate")
+                return
+            }
+
+            viewModelScope.launch {
+                val filteredData = withContext(Dispatchers.IO) {
+                    dataSource1.getFilteredData3(startDate, endDate)
+                }
+                _allTransactionSummary.value = filteredData
+                _unFilteredrecyclerViewData.value = filteredData
+            }
+            /*
             val filteredData = withContext(Dispatchers.IO) {
                 dataSource1.getFilteredData3( startDate, endDate)
             }
             _allTransactionSummary.value = filteredData
             _unFilteredrecyclerViewData.value = filteredData
 
+             */
+
+
+    }
+    fun isValidDateFormat(date: String, format: String = "yyyy-MM-dd"): Boolean {
+        return try {
+            val sdf = SimpleDateFormat(format, Locale.US)
+            sdf.isLenient = false
+            sdf.parse(date)
+            true
+        } catch (e: ParseException) {
+            Log.e("DateProb", " Invalid date format: $date", e)
+            false
         }
     }
     //show hide date picker dialog
@@ -155,6 +203,13 @@ class AllTransactionViewModel(application: Application,var dataSource1:TransSumD
     //Navigation
     fun onNavigatetoTransDetail(id:Int){ _navigateToTransDetail.value = id }
     fun onNavigatedToTransDetail(){ this._navigateToTransDetail.value = null }
+
+
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
+    }
 
     companion object {
         @JvmStatic

@@ -12,8 +12,9 @@ import com.example.app21try6.database.TransactionSummary
 import com.example.app21try6.databinding.TransactionActiveItemListBinding
 import com.example.app21try6.formatRupiah
 
-class TransactionActiveAdapter(val clickListener:ActiveClickListener,
-                              val checkBoxListener: CheckBoxListenerTransActive
+class TransactionActiveAdapter(
+    val clickListener:ActiveClickListener,
+    val checkBoxListener: CheckBoxListenerTransActive
 
 )
     :ListAdapter<TransactionSummary,TransactionActiveAdapter.MyViewHolder>(TransActiveDiffCallBack()) {

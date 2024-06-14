@@ -18,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.DatePicker
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
@@ -31,6 +32,7 @@ import com.example.app21try6.R
 import com.example.app21try6.database.TransactionDetail
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionDetailBinding
+import com.example.app21try6.transaction.transactionactive.TransactionActiveAdapter
 import com.example.app21try6.transaction.transactionedit.Code
 import com.example.app21try6.transaction.transactionedit.TransactionEditViewModel
 import com.google.android.material.textfield.TextInputEditText
@@ -62,6 +64,8 @@ class TransactionDetailFragment : Fragment() {
         val viewModelFactory = TransactionDetailViewModelFactory(application,datasource1,datasource2,datasource3,datasource4,datasource5,id!!)
         viewModel =ViewModelProvider(this,viewModelFactory).get(TransactionDetailViewModel::class.java)
         binding.lifecycleOwner = this
+        val img =  requireActivity().findViewById<ImageView>(R.id.delete_image)
+        img.visibility = View.GONE
         binding.viewModel = viewModel
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         val paymentAdapter = PaymentAdapter(viewModel.transSum.value?.is_paid_off,
@@ -75,7 +79,7 @@ class TransactionDetailFragment : Fragment() {
             })
         //Transaction Detail Adapter
         val adapter = TransactionDetailAdapter(
-            viewModel.transSum.value?.is_paid_off,
+
             TransDetailClickListener {
             },
             TransDetailLongListener {it->
@@ -114,7 +118,6 @@ class TransactionDetailFragment : Fragment() {
 
         viewModel.paymentModel.observe(viewLifecycleOwner, Observer {
             it?.let{
-                Log.i("updatepayment", "rv observer: $it")
                 paymentAdapter.submitList(it)
                 adapter.notifyDataSetChanged()
             }
@@ -133,12 +136,25 @@ class TransactionDetailFragment : Fragment() {
         }
 
         viewModel.isBtnpaidOff.observe(this.viewLifecycleOwner, Observer {
+
+            if (it == true) {
+                (binding.recyclerViewDetailTrans.adapter as TransactionDetailAdapter).isActive(it)
+               //// binding.btnAddNewTrans.visibility = View.GONE
+            } else {
+              //  binding.recyclerViewDetailTrans.visibility = View.VISIBLE
+                (binding.recyclerViewDetailTrans.adapter as TransactionDetailAdapter).deActivate()
+            }
+            adapter.notifyDataSetChanged()
+            //viewModel.getActiveTrans()
+        /*
             if (it == true) {
                 (binding.recyclerViewDetailTrans.adapter as TransactionDetailAdapter).isActive(it)
             } else {
                 (binding.recyclerViewDetailTrans.adapter as TransactionDetailAdapter).deActivate()
             }
             adapter.notifyDataSetChanged()
+
+             */
         })
 
         viewModel.isCardViewShow.observe(viewLifecycleOwner, Observer {})

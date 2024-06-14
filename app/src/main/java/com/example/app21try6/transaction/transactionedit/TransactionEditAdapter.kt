@@ -19,7 +19,7 @@ class TransactionEditAdapter(
     val plusTransClickListener: PlusTransClickListener,
     val subslongListener: SubsTransLongListener,
     val plusLongListener: PlusTransLongListener,
-    val longListener: TransEditDeleteLongListener,
+    val longListener: TransEditDeleteListener,
     val priceLongListener:TransEditPriceClickListener,
     val selectedSpinnerListener: UnitTransTextCliked,
     val unitQtyLongListener: TransEditUnitQtyClickListener,
@@ -35,11 +35,10 @@ class TransactionEditAdapter(
             plusTransClickListener: PlusTransClickListener,
             subslongListener: SubsTransLongListener,
             plusLongListener: PlusTransLongListener,
-            longListener: TransEditDeleteLongListener,
+            longListener: TransEditDeleteListener,
             priceLongListener:TransEditPriceClickListener,
             selectedSpinnerListener: UnitTransTextCliked,
             unitQtyLongListener: TransEditUnitQtyClickListener,
-
             ){
             binding.item = item
             binding.txtProductT.text = item.trans_item_name
@@ -73,26 +72,24 @@ class TransactionEditAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
        holder.bind(getItem(position),clickListener,subsTransClickListener,plusTransClickListener,subslongListener,plusLongListener,longListener,priceLongListener,selectedSpinnerListener,unitQtyLongListener)
         val item = getItem(position)
-        Log.d("drag", "Binding item at position: $position, item: $item")
+        //Log.d("drag", "Binding item at position: $position, item: $item")
     }
 
     fun setItemsValue(items_ : List<TransactionDetail>){
         items = items_.toMutableList()
-        Log.i("drag","adapter setItemsValue")
-        for (i in items){
-            Log.i("drag","adapter item (${i.trans_item_name} [${i.item_position}])")
-        }
+        notifyDataSetChanged()
+       // Log.i("drag","adapter setItemsValue")
     }
 
     override fun getItemCount(): Int {
         val count = super.getItemCount()
-        Log.d("drag", "Item count: $count")
+       // Log.d("drag", "Item count: $count")
         return count
     }
     fun moveItem(fromPosition: Int, toPosition: Int) {
         Log.i("drag","adapter $fromPosition (${items[fromPosition].trans_item_name}) -> $toPosition(${items[toPosition].trans_item_name})")
         val item = items.removeAt(fromPosition)
-        items.add(if (toPosition > fromPosition) toPosition - 1 else toPosition, item)
+        items.add(if (toPosition > fromPosition) toPosition  else toPosition, item)
         notifyItemMoved(fromPosition, toPosition)
     }
     fun updatePositionCallback() {
@@ -114,10 +111,9 @@ class TransEditClickListener(val clickListener:(edit_trans: TransactionDetail)->
     fun onClick(edit_trans: TransactionDetail) = clickListener(edit_trans)
 
 }
-class TransEditDeleteLongListener(val longListener:(edit_trans: TransactionDetail)->Unit){
-    fun onLongClick(v: View, edit_trans: TransactionDetail):Boolean{
-        longListener(edit_trans)
-        return true
+class TransEditDeleteListener(val clickListener:(edit_trans: TransactionDetail)->Unit){
+    fun onClick(edit_trans: TransactionDetail){
+        clickListener(edit_trans)
     }
 }
 class TransEditPriceClickListener(val clickListener:(edit_trans: TransactionDetail)->Unit){

@@ -67,7 +67,7 @@ abstract class VendibleDatabase:RoomDatabase(){
                         database.execSQL("ALTER TABLE trans_sum_table ADD COLUMN sum_note TEXT")
                     }
                 }
-                val MIGRATION_31_32 = object : Migration(1, 2) {
+                val MIGRATION_31_32 = object : Migration(31, 32) {
                     override fun migrate(database: SupportSQLiteDatabase) {
                         // Create the new table with the added 'date' column
                         database.execSQL(
@@ -97,7 +97,7 @@ abstract class VendibleDatabase:RoomDatabase(){
                             VendibleDatabase::class.java,
                             "vendible_table"
                     ).addMigrations(MIGRATION_31_32)
-                      //  .fallbackToDestructiveMigration()
+                       // .fallbackToDestructiveMigration()
                     .build()
                     INSTANCE = instance
                     //instance = Room.databaseBuilder(context.applicationContext,VendibleDatabase::class.java,"mymaindb").allowMainThreadQueries().build()

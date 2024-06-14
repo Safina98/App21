@@ -1,6 +1,7 @@
 package com.example.app21try6.grafik.grafikprofit
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -55,12 +56,17 @@ class GrapichProfitFragment : Fragment() {
         }
 
         viewModel.filteredmodelListProfit.observe(viewLifecycleOwner){it?.let {
+            Log.i("ChartProb","filteredmodeListProfit: $it")
             val monthlyIncome = viewModel.calculateTotalItemCountProfit(it)
                 //viewModel.mapAndSumByMonth(it)
+           // Log.i("ChartProb","monhtly income: $it")
             setupLineChart(monthlyIncome)
         }
 
         }
+        viewModel.monthIncomeMap.observe(viewLifecycleOwner){it?.let {
+
+        }}
 
         viewModel.selectedProfitYearSpinner.observe(viewLifecycleOwner){ value->
             viewModel.filterModelListProfit()

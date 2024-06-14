@@ -1,5 +1,6 @@
 package com.example.app21try6.transaction.transactionedit
 
+
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
@@ -8,6 +9,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
@@ -34,7 +37,7 @@ class TransactionEditFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-       binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transaction_edit, container, false)
+       binding = DataBindingUtil.inflate(inflater, com.example.app21try6.R.layout.fragment_transaction_edit, container, false)
 
         val application = requireNotNull(this.activity).application
 
@@ -63,7 +66,7 @@ class TransactionEditFragment : Fragment() {
        }, PlusTransLongListener {
            code = Code.LONGPLUS
            viewModel.onShowDialog(it)
-       }, TransEditDeleteLongListener {
+       }, TransEditDeleteListener {
            deleteDialog(it, viewModel)
        }, TransEditPriceClickListener {
            showDialog(it,viewModel,Code.TEXTPRICE)
@@ -110,10 +113,19 @@ class TransactionEditFragment : Fragment() {
        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
        itemTouchHelper.attachToRecyclerView(binding.recyclerViewEditTrans)
 
+        val autoCompleteTextView: AutoCompleteTextView = binding.custNameEdit
+        val suggestions = arrayOf("Jabal", "Susan Jok", "Alyka Jok", "Dyna Jok",
+            "Eka Jok", "Pak Maliang", "Bandung Jok","Auto 354",
+            "Sun Variasi","Aisya Jok","Pak Ilham","dr Jok","Wendy","Makassar Variasi",
+            "Sumber Jok","AMV","Fakhri Jok","Fiesta Jok","King Variasi","Surabaya Motor")
+        val adapterr: ArrayAdapter<String> =
+            ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, suggestions)
+        autoCompleteTextView.setAdapter(adapterr)
+
        viewModel.itemTransDetail.observe(viewLifecycleOwner, Observer {
            it?.let {
                adapter.submitList(it)
-               adapter.notifyDataSetChanged()
+
                adapter.setItemsValue(it)
            }
        })
@@ -159,8 +171,8 @@ class TransactionEditFragment : Fragment() {
         val builder = AlertDialog.Builder(context)
         builder.setTitle(code.text)
         val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.update, null)
-        val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
+        val view = inflater.inflate(com.example.app21try6.R.layout.update, null)
+        val textKet = view.findViewById<TextInputEditText>(com.example.app21try6.R.id.textUpdateKet)
 
         when (code) {
             Code.TEXTITEM -> {

@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
@@ -83,6 +84,13 @@ class GraphicViewModel(application: Application,
 
     private val _filteredmodelListProfit = MutableLiveData<List<StockModel>>()
     val filteredmodelListProfit: LiveData<List<StockModel>> get() = _filteredmodelListProfit
+
+    val monthIncomeMap: LiveData<Map<String, Double>> = Transformations.map(transDetailModel) { list ->
+        list.groupBy { it.month }
+            .mapValues { entry ->
+                entry.value.sumOf { it.total_income ?: 0.0 }
+            }
+    }
     init {
         getKategoriEntries()
         getCombinedStockLiveData()
