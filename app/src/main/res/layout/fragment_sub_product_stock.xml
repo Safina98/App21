@@ -7,7 +7,6 @@
         <variable
             name="subViewModel"
             type="com.example.app21try6.stock.subproductstock.SubViewModel" />
-
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -15,28 +14,33 @@
         android:layout_height="match_parent"
         tools:context=".stock.subproductstock.SubProductStockFragment">
 
-        <com.example.app21try6.DraggableFloatingActionButton
-            android:id="@+id/btn_add_new_brand_"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:src="@drawable/ic_baseline_add_circle_outline_24"
-
-            android:contentDescription="@string/submit"
-            android:onClick="@{() -> subViewModel.onAddItem()}"
-            android:onLongClick="@{(view) -> subViewModel.onLongClick(view)}"
-            android:clickable="true"
-            android:focusable="true"
-            android:layout_margin="16dp"
-
-            />
-        <!--android:tint="@color/dark_green2"-->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_brand_stock"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:visibility="visible" />
+
+        <com.example.app21try6.DraggableFloatingActionButton
+            android:id="@+id/btn_add_new_brand_"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:src="@drawable/ic_baseline_add_circle_outline_24"
+            android:contentDescription="@string/submit"
+            android:onClick="@{() -> subViewModel.onAddItem()}"
+            android:onLongClick="@{(view) -> subViewModel.onLongClick(view)}"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_margin="16dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reset"
+            android:onClick="@{()->subViewModel.resetAllSubProductStock()}"
+            android:layout_gravity="end|top" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

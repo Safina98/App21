@@ -27,7 +27,8 @@
             android:fontFamily="@font/alegreya_sc"
             android:gravity="center_vertical"
             android:text="Brand"
-
+            android:ellipsize="end"
+            android:maxLines="2"
             android:textSize="30dp" />
 <!-- android:textColor="@color/black"-->
     </androidx.cardview.widget.CardView>

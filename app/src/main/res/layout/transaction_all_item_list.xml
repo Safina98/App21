@@ -31,6 +31,8 @@
             style="@style/active_transaction_text_style"
             android:onClick="@{()->clickListener.onClick(item)}"
             android:layout_marginStart="4dp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:layout_marginTop="8dp"
             android:text="Rezky Jok"
             app:layout_constraintStart_toStartOf="parent"
@@ -49,12 +51,11 @@
         <TextView
             android:id="@+id/txt_tgl_trans"
             style="@style/active_transaction_text_style"
-            android:layout_marginEnd="64dp"
+            android:layout_marginEnd="8dp"
             android:onClick="@{()->clickListener.onClick(item)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:dateFormatted="@{item.trans_date}"
             />
 
         <CheckBox

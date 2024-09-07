@@ -20,7 +20,7 @@
         android:layout_width="@dimen/rv_width"
         android:layout_height="@dimen/rv_height"
         android:layout_margin="@dimen/medium_margin"
-        android:onClick="@{()->clickListener.onClick(item)}"
+        android:onClick="@{(view) -> clickListener.onClick(view, item)}"
         >
         <!-- android:onClick="@{()->clickListener.onClick(item)}"-->
 
@@ -33,6 +33,8 @@
                 style="@style/active_transaction_text_style"
                 android:layout_marginStart="2dp"
                 android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:maxLines="2"
                 android:text="Anugrah Mebel Sidrap"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"

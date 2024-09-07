@@ -76,6 +76,14 @@
         <!--<item name="android:textColor">@color/dark_green3</item>-->
         <item name="android:textSize">18sp</item>
     </style>
+    <style name="text_note_small_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/architects_daughter</item>
+        <item name="android:textStyle">bold</item>
+        <!--<item name="android:textColor">@color/dark_green3</item>-->
+        <item name="android:textSize">20sp</item>
+    </style>
     <style name="add_subs_btn_detail">
         <item name="android:layout_width">50dp</item>
         <item name="android:layout_height">50dp</item>

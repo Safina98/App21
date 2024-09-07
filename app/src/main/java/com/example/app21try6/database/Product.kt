@@ -31,4 +31,5 @@ data class Product(
         var brand_code:Int=0,
         @ColumnInfo(name = "cath_code")
         var cath_code:Int = 0
+
 )

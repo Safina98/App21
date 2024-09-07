@@ -32,23 +32,19 @@ class SubProductStockFragment : Fragment() {
         val dataSource3 = VendibleDatabase.getInstance(application).transDetailDao
         var id = arguments?.let { SubProductStockFragmentArgs.fromBundle(it).productId }
         (activity as AppCompatActivity).supportActionBar?.title = id?.last()
-
         id?.set(4,"0")
-
         val id_ = id?.map { it.toInt() }?.toTypedArray()
         Toast.makeText(context,  id?.get(0).toString() +"",Toast.LENGTH_LONG).show()
         val viewModelFactory = SubViewModelFactory(dataSource2,application,id_!!,dataSource3,
           0)
         binding.lifecycleOwner =this
-        val viewModel = ViewModelProvider(this,viewModelFactory)
-            .get(SubViewModel::class.java)
+        val viewModel = ViewModelProvider(this,viewModelFactory).get(SubViewModel::class.java)
         binding.subViewModel = viewModel
         var adapter = SubAdapter(id_[3],
                 CheckBoxListenerSub({view:View,subProduct:SubProduct->
                     val cb = view as CheckBox
                     subProduct.is_checked = cb.isChecked
                     viewModel.onCheckBoxClicked(subProduct,cb.isChecked)
-
                 }),
                 SubStokLongListener{
             subProduct->
@@ -159,13 +155,11 @@ class SubProductStockFragment : Fragment() {
         if (i==1){ text = subProduct.sub_name.toString()
         }else if(i==2){text = subProduct.warna.toString()
         }else{text = subProduct.ket.toString()}
-        if (text!="click to add"){
-        textKet.setText(text)
-        }
+        if (text!="click to add"){ textKet.setText(text) }
         builder.setView(view)
         builder.setPositiveButton("Update") { dialog, which ->
-            var text = textKet.text.toString().toUpperCase().trim()
-                viewModel.updateSubProduct(subProduct, text, i)
+            val textV = textKet.text.toString().uppercase().trim()
+            viewModel.updateSubProduct(subProduct, textV, i)
         }
         builder.setNegativeButton("No") { dialog, which ->
         }

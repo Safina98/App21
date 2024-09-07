@@ -12,20 +12,25 @@ class DateTypeConverter {
         private const val dateFormat = "yyyy-MM-dd"
         private val formatter = SimpleDateFormat(dateFormat, Locale.getDefault())
 
-        @TypeConverter
         @JvmStatic
-        fun fromDate(date: Date?): String? {
-            return date?.let { formatter.format(it) }
-        }
-
         @TypeConverter
-        @JvmStatic
-
         fun toDate(dateString: String?): Date? {
-            return dateString?.let { formatter.parse(it) }
+            return dateString?.let {
+                try {
+                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(it)
+                } catch (e: ParseException) {
+                    e.printStackTrace()
+                    null
+                }
+            }
         }
-
-
+        @JvmStatic
+        @TypeConverter
+        fun fromDate(date: Date?): String? {
+            return date?.let {
+                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(it)
+            }
+        }
     }
 }
 

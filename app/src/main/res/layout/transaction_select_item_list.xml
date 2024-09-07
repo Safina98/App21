@@ -41,6 +41,8 @@
             <TextView
                 android:id="@+id/txt_product_t"
                 style="@style/text_product_title"
+                android:ellipsize="end"
+                android:maxLines="2"
                 android:text="Benang K roll B GOGO BLUE"
                 android:onLongClick="@{(view) ->longListener.onLongClick(view,item)}"
                 app:layout_constraintTop_toTopOf="parent"

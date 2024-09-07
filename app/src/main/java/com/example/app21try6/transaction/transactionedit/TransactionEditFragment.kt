@@ -114,10 +114,27 @@ class TransactionEditFragment : Fragment() {
        itemTouchHelper.attachToRecyclerView(binding.recyclerViewEditTrans)
 
         val autoCompleteTextView: AutoCompleteTextView = binding.custNameEdit
-        val suggestions = arrayOf("Jabal", "Susan Jok", "Alyka Jok", "Dyna Jok",
-            "Eka Jok", "Pak Maliang", "Bandung Jok","Auto 354",
-            "Sun Variasi","Aisya Jok","Pak Ilham","dr Jok","Wendy","Makassar Variasi",
-            "Sumber Jok","AMV","Fakhri Jok","Fiesta Jok","King Variasi","Surabaya Motor")
+        val suggestions = arrayOf(
+            "Asia Jok", "Alyka Jok","Aisya Jok","Auto 354","AMV","Akbar Sengkang","Asep Ramlan","Anugrah Mebel","AT Jok",
+            "Bandung Jok","Bandung Jok Gowa","Bagus Jok","Beo","Berkah Variasi",
+            "Cahaya Variasi",
+            "dr Jok","Dyna Jok","D'fun Kendari","Densus 99",
+            "Eka Jok",
+            "Fiesta Jok","Fakhri Jok",
+            "Green Design",
+            "HSR Auto",
+            "Jabal","Jok 88",
+            "King Variasi","Karya Jok","Kubis Mebel",
+            "Makassar Variasi","Mega Buana","Mas Tono",
+            "Laquna",
+            "Pak Maliang", "Pak Ilham", "Pak Ramli Sidrap","Pak Ibet","Pak Agus Saputra","Pattalassang Variasi","Prima leather",
+            "Rajawali Motor Timika","Rumah Kursi","Rumah Sofa Kolut","RGARAGE","Rezky Jok","Riski Jok",
+            "Sun Variasi","Susan Jok", "Sumber Jok","Surabaya Motor","Selayar","SKAAD Bintuni","Sam & Sons",
+            "Terminal Jok",
+            "Unang",
+            "Variasi 77",
+            "Wendy",
+            "Yusdar Motor")
         val adapterr: ArrayAdapter<String> =
             ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, suggestions)
         autoCompleteTextView.setAdapter(adapterr)

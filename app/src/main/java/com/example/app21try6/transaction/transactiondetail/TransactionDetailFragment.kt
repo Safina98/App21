@@ -9,8 +9,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.media.AudioManager
+import android.media.ToneGenerator
 import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
@@ -79,7 +84,6 @@ class TransactionDetailFragment : Fragment() {
             })
         //Transaction Detail Adapter
         val adapter = TransactionDetailAdapter(
-
             TransDetailClickListener {
             },
             TransDetailLongListener {it->
@@ -97,6 +101,7 @@ class TransactionDetailFragment : Fragment() {
         binding.recyclerViewDetailTrans.adapter = adapter
 
         binding.btnPrintNew.setOnClickListener {
+           fibrateOnClick()
             printReceipt()
         }
         viewModel.transDetail.observe(viewLifecycleOwner, Observer {
@@ -136,17 +141,6 @@ class TransactionDetailFragment : Fragment() {
         }
 
         viewModel.isBtnpaidOff.observe(this.viewLifecycleOwner, Observer {
-
-            if (it == true) {
-                (binding.recyclerViewDetailTrans.adapter as TransactionDetailAdapter).isActive(it)
-               //// binding.btnAddNewTrans.visibility = View.GONE
-            } else {
-              //  binding.recyclerViewDetailTrans.visibility = View.VISIBLE
-                (binding.recyclerViewDetailTrans.adapter as TransactionDetailAdapter).deActivate()
-            }
-            adapter.notifyDataSetChanged()
-            //viewModel.getActiveTrans()
-        /*
             if (it == true) {
                 (binding.recyclerViewDetailTrans.adapter as TransactionDetailAdapter).isActive(it)
             } else {
@@ -154,7 +148,6 @@ class TransactionDetailFragment : Fragment() {
             }
             adapter.notifyDataSetChanged()
 
-             */
         })
 
         viewModel.isCardViewShow.observe(viewLifecycleOwner, Observer {})
@@ -310,6 +303,20 @@ class TransactionDetailFragment : Fragment() {
         val alert = builder.create()
         alert.show()
     }
+    fun fibrateOnClick(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { // API level 31 and above
+            val vibratorManager = requireContext().getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            val vibrator = vibratorManager.defaultVibrator
+
+            if (vibrator.hasVibrator()) {
+                val vibrationEffect = VibrationEffect.createOneShot(200, 255)
+                vibrator.vibrate(vibrationEffect)
+            }
+        }
+        val toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 500)
+        toneGenerator.startTone(ToneGenerator.TONE_CDMA_CONFIRM, 300)
+    }
+
     override fun onDestroy() {
        // printerService?.let { it.disconnect() }
         super.onDestroy()

@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -57,6 +58,9 @@ class AllTransactionViewModel(application: Application,var dataSource1:TransSumD
 
     private val _navigateToTransDetail = MutableLiveData<Int>()
     val navigateToTransDetail: LiveData<Int> get() = _navigateToTransDetail
+    var itemCount :LiveData<String> = Transformations.map(allTransactionSummary) { items->
+        "${items.size} transaksi"
+    }
 
     fun setSelectedSpinner(value:String){
         _selectedSpinner.value = value
@@ -125,7 +129,11 @@ class AllTransactionViewModel(application: Application,var dataSource1:TransSumD
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return dateFormat.format(date)
     }
-
+    private fun constructMonthDate(isStart: Boolean): String? {
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.DAY_OF_MONTH, if (isStart) 1 else calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+        return formatDate(calendar.time)
+    }
     //Construcnt startDate and endDate spinner select or date picker select
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateRv4(){
@@ -139,14 +147,15 @@ class AllTransactionViewModel(application: Application,var dataSource1:TransSumD
                     endDate =constructTodaysDate(0)
                 }
                 else {
-                    if (selectedSpinner.value=="Kemarin")
-                    {
+                    if (selectedSpinner.value=="Kemarin") {
                         startDate = constructYesterdayDate(1)
-                        endDate = constructYesterdayDate(12)}
-                    else{
-                        // Invalid month value, handle the error case
+                        endDate = constructYesterdayDate(12)
+                    } else if (selectedSpinner.value=="Semua"){
                         startDate = null
                         endDate = null
+                    } else{
+                        startDate = constructMonthDate(isStart = true)  // First day of the current month
+                        endDate = constructMonthDate(isStart = false)
                     }
                 }
             } else {
@@ -173,16 +182,6 @@ class AllTransactionViewModel(application: Application,var dataSource1:TransSumD
                 _allTransactionSummary.value = filteredData
                 _unFilteredrecyclerViewData.value = filteredData
             }
-            /*
-            val filteredData = withContext(Dispatchers.IO) {
-                dataSource1.getFilteredData3( startDate, endDate)
-            }
-            _allTransactionSummary.value = filteredData
-            _unFilteredrecyclerViewData.value = filteredData
-
-             */
-
-
     }
     fun isValidDateFormat(date: String, format: String = "yyyy-MM-dd"): Boolean {
         return try {

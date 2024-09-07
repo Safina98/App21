@@ -42,7 +42,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAlignment="viewEnd"
-                    app:dateFormatted="@{viewModel.transSum.trans_date}"
+                    app:dateFormatted="@{viewModel.mutableTransSum.trans_date}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/cust_name_edit"
                     android:textSize="24sp" />

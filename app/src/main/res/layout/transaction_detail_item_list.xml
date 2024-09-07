@@ -42,6 +42,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/medium_margin"
             android:text="TextView"
+            android:ellipsize="end"
+            android:maxLines="1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/txt_item_t_date"
             app:layout_constraintTop_toTopOf="parent"

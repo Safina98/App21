@@ -1,9 +1,17 @@
 package com.example.app21try6
 
+import android.view.View
+import android.widget.ImageView
+import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.FragmentActivity
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.absoluteValue
 
+val SIMPLE_DATE_FORMAT ="dd/MM/yyyy"
+val DATE_FORMAT = SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault())
 fun formatRupiah(number: Double?): String? {
     val localeID = Locale("in", "ID")
     val formatRupiah: NumberFormat = NumberFormat.getCurrencyInstance(localeID)
@@ -39,4 +47,14 @@ fun getDateFromComponents(year: Int, month: String, monthNumber: Int, day: Int, 
 
     // Return the Date object
     return calendar.time
+}
+object ToolbarUtil {
+    fun hideToolbarButtons(activity: FragmentActivity) {
+        val toolbar = activity.findViewById<Toolbar>(com.example.app21try6.R.id.toolbar)
+        val img = activity.findViewById<ImageView>(com.example.app21try6.R.id.delete_image)
+        img.visibility = View.VISIBLE
+        toolbar.visibility=View.VISIBLE
+        val btnLinear = activity.findViewById<ConstraintLayout>(com.example.app21try6.R.id.linear_btn)
+        btnLinear.visibility = View.GONE
+    }
 }

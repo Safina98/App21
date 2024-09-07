@@ -44,8 +44,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#8E92A1</color>
     <color name="grey_green">#88DCE6DD</color>
-    <color name="pastel_green2">#C5E1A5</color>
-    <color name="pastel_green_dark">#8eb15c</color>
+    <color name="pastel_green2">#D8C5E1A5</color>
+    <color name="pastel_green_dark">#BF8EB15C</color>
     <color name="dark_green">#576F58</color>
     <color name="dark_green2">#586648</color>
     <color name="dark_green3">#393C36</color>

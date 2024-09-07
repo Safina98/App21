@@ -53,11 +53,14 @@
                 android:id="@+id/txt_product_t"
                 android:onClick="@{()->clickListener.onClick(item)}"
                 style="@style/text_product_title_bookkeeping"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:ellipsize="end"
+                android:maxLines="1"
+                app:layout_constraintEnd_toStartOf="@id/img_delete"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
+                android:id="@+id/img_delete"
                 android:layout_width="30dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/medium_margin"
@@ -117,19 +120,7 @@
                 app:layout_constraintStart_toEndOf="@+id/text_unit"
                 app:layout_constraintTop_toBottomOf="@id/txt_product_t"
                 app:textVisibility="@{item.unit}" />
-            <!--
-            <Spinner
-                android:id="@+id/spinner_unit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:entries="@array/spinner_units"
-                android:onItemSelected="@{(parent, view, position, id) -> selectedSpinnerListener. onSpinnerItemSelected(parent.getItemAtPosition(position).toString(),item)}"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/txt_product_t"
-                />
-                -->
+
             <TextView
                 android:id="@+id/text_unit"
                 android:layout_width="50dp"

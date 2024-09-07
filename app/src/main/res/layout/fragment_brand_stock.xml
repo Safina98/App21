@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -14,6 +13,59 @@
         android:layout_height="match_parent"
         tools:context=".stock.brandstock.BrandStockFragment">
 
+        <!-- Main Content -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Spinner
+                    android:id="@+id/spinner_m"
+                    android:layout_width="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_horizontal"
+                    android:foregroundGravity="center_horizontal"
+                    android:gravity="center_horizontal"
+                    />
+
+                <Button
+                    style="@style/add_btn_style"
+                    android:id="@+id/btn_add_cat"
+                    android:text="-"
+                    android:onClick="@{()-> brandStockViewModel.onDeleteCathClick()}"/>
+                <Button
+                    style="@style/add_btn_style"
+                    android:id="@+id/btn_import"
+                    android:text="+"
+                    android:onClick="@{()-> brandStockViewModel.onAddCath()}"
+                    />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_brand_stock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:visibility="visible"
+                />
+        </LinearLayout>
+
+        <!-- Centered ProgressBar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+        <!-- Floating Action Button -->
         <com.example.app21try6.DraggableFloatingActionButton
             android:id="@+id/btn_add_new_brand_"
             android:layout_width="wrap_content"
@@ -27,48 +79,5 @@
             android:focusable="true"
             android:layout_margin="16dp"
             />
-        <!--android:tint="@color/dark_green2"-->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <Spinner
-                    android:id="@+id/spinner_m"
-                    android:layout_width="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center_horizontal"
-                    android:foregroundGravity="center_horizontal"
-                    android:gravity="center_horizontal"
-                    />
-
-                <Button
-                    style="@style/add_btn_style"
-                    android:text="-"
-                    android:onClick="@{()-> brandStockViewModel.onDeleteCathClick()}"/>
-                <Button
-                    style="@style/add_btn_style"
-                    android:id="@+id/btn_import"
-                    android:text="+"
-                    android:onClick="@{()-> brandStockViewModel.onAddCath()}"
-                    />
-                <!-- android:onClick="@{()-> brandStockViewModel.onAddCath()}"-->
-            </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_brand_stock"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                android:visibility="visible"
-                />
-        </LinearLayout>
-
-
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

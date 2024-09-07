@@ -13,9 +13,14 @@ import android.util.Log
 import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -77,6 +82,14 @@ class BookSummaryFragment : Fragment(){
             Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show()
         } else {
            requestPermission()
+        }
+        val act = activity as AppCompatActivity?
+        if (act!!.supportActionBar != null) {
+            val toolbar = requireActivity().findViewById<Toolbar>(com.example.app21try6.R.id.toolbar)
+            val img =  requireActivity().findViewById<ImageView>(com.example.app21try6.R.id.delete_image)
+            img.visibility = View.GONE
+            val btn_linear =  requireActivity().findViewById<ConstraintLayout>(com.example.app21try6.R.id.linear_btn)
+            btn_linear.visibility=View.GONE
         }
         summaryViewModel.initialRv()
         val adapter = SummaryAdapter(SummaryListener {

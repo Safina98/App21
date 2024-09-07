@@ -38,6 +38,10 @@ class TransactionDetailViewModel (application: Application,
                                   private val datasource5: SubProductDao,
                                   var id:Int):AndroidViewModel(application){
 
+    //TODO
+    //1. ubah viewmodel scope jadi ui scope
+    //2. cancel job when back pressed in transaction product fragment
+
     //transaction detail for recyclerview
     val transDetail = datasource2.selectATransDetail(id)
     //Transaction Summary
@@ -61,6 +65,10 @@ class TransactionDetailViewModel (application: Application,
        var b =if(a<=0)"Kembalian: " else if(item.paid==0) "Total: " else "Sisa: "
         b +formatRupiah(abs(a)).toString()
     }
+    var itemCount :LiveData<String> = Transformations.map(transDetail) { items->
+        "${items.size} item"
+    }
+
     //Transaction Summary note on edit text and carview
     var txtNote =MutableLiveData<String?>()
     val paymentModel = datasource4.selectPaymentModelBySumId(id)
@@ -111,6 +119,9 @@ class TransactionDetailViewModel (application: Application,
     //Set mutable txt Note value after trans_sum.value updated
     fun setTxtNoteValue(note:String?){
         txtNote.value = note
+        if (note!=null && note!=""){
+           showCardDialog()
+        }
     }
 
     //Toggle is_note Clicked value when Text View note_Textview is clicked
@@ -131,6 +142,10 @@ class TransactionDetailViewModel (application: Application,
     //Hide and show card view on click
     fun onBtnNoteClick(){
         _isCardViewShow.value = _isCardViewShow.value?.not() ?: true
+    }
+    fun showCardDialog(){
+        _isCardViewShow.value = true
+        _isTxtNoteClick.value=true
     }
 
     //Toggle and update TransSUm is paid off on btn click

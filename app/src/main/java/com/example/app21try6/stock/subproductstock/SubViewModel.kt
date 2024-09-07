@@ -98,6 +98,27 @@ class SubViewModel (
             update(subProduct)
         }
     }
+    fun resetAllSubProductStock(){
+        uiScope.launch {
+            val pList=all_product_from_db.value
+            resetSupProductSuspend(pList!!)
+
+        }
+    }
+    private suspend fun resetSupProductSuspend(pList:List<SubProduct>){
+        withContext(Dispatchers.IO){
+            for(p in pList){
+                p.roll_bg=0
+                p.roll_bt=0
+                p.roll_kg=0
+                p.roll_kt=0
+                p.roll_sg=0
+                p.roll_st=0
+                p.roll_u=0
+                update(p)
+            }
+        }
+    }
     /////////////////////////////////////////////////////////////////////////////////
 
     fun onAddItem(){ _addItem.value = true }

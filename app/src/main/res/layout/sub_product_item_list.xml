@@ -49,11 +49,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="4dp"
+                android:layout_marginEnd="128dp"
+                android:ellipsize="end"
                 android:fontFamily="@font/alegreya_sc"
+                android:maxLines="1"
                 android:onClick="@{() -> subProductListener.onSubProductClick(subProduct)}"
                 android:text="TextView"
-                
                 android:textSize="30sp"
+                app:layout_constraintEnd_toStartOf="@+id/subs_n_stock_btn"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
              <!-- android:textColor="@color/black"-->

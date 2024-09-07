@@ -96,12 +96,16 @@ class TransactionEditViewModel(
         viewModelScope.launch {
             var transactionSummary = withContext(Dispatchers.IO){datasource1.getTrans(id)}
             mutableTransSum.value = transactionSummary
+            Log.i("CustNameProbs","setMutableTransSum transSumS ${transactionSummary}")
         }
     }
+
     //set trasactionSummary customername from editText
     fun setCustomerName(){
         transSum.value?.cust_name = custName.value ?: "-"
+        mutableTransSum.value?.cust_name=custName.value ?: "-"
     }
+
     //update Transaction Detail recyclerview item name
     fun updateTransDetailItemName(transactionDetail: TransactionDetail,itemName: String){
         viewModelScope.launch {
@@ -132,14 +136,17 @@ class TransactionEditViewModel(
             var transSumS: TransactionSummary = datasource1.getTrans(id)
             transSumS.total_trans = totalSum.value ?: 0.0
             updateSum(transSumS)
+            setMutableTransSum()
         }
     }
     //update transactionSUmmary CustomerName
     fun updateCustNameSum(){
         viewModelScope.launch {
-            var transSumS: TransactionSummary = datasource1.getTrans(id)
-            transSumS.cust_name = custName.value ?: ""
+            var transSumS: TransactionSummary = withContext(Dispatchers.IO){ datasource1.getTrans(id)}
+            transSumS.cust_name=custName.value?: "-"
+            Log.i("CustNameProbs","updateCustNameSum transSumS ${transSumS}")
             updateSum(transSumS)
+            setMutableTransSum()
         }
     }
     //show or hide dialog
@@ -176,12 +183,13 @@ class TransactionEditViewModel(
     ////////////////////////////////Navigation//////////////////////////////////////
     fun onNavigatetoDetail(idm:Int){
         viewModelScope.launch {
-            updateSum(transSum.value!!)
+            Log.i("CustNameProbs","onNavigateToDetail ${mutableTransSum.value}")
+            updateSum(mutableTransSum.value!!)
             _navigateToDetail.value=id
         }
     }
     fun onNavigatetoVendible(){
-        _navigateToVendible.value= arrayOf(transSum.value!!.sum_id.toString(),"-1")
+        _navigateToVendible.value= arrayOf(mutableTransSum.value!!.sum_id.toString(),"-1")
     }
     @SuppressLint("NullSafeMutableLiveData")
     fun onNavigatedtoVendible(){
@@ -192,10 +200,5 @@ class TransactionEditViewModel(
     fun onNavigatedtoDetail(){
         this._navigateToDetail.value =null
     }
-
-
-
-
-
-
+    
 }

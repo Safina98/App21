@@ -3,6 +3,7 @@ package com.example.app21try6.transaction.transactionactive
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -35,6 +36,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.R
+import com.example.app21try6.ToolbarUtil
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionActiveBinding
 import java.io.File
@@ -115,11 +117,19 @@ class TransactionActiveFragment : Fragment() {
             }
         }
         val adapter = TransactionActiveAdapter(
-            ActiveClickListener {
-            viewModel.onNavigatetoTransDetail(it.sum_id) },
+            ActiveClickListener { view, trans ->
+                if (viewModel.is_image_clicked.value == true) {
+                    val checkBox = view.findViewById<CheckBox>(R.id.checkbox_trans_active)
+                    checkBox.isChecked = !checkBox.isChecked
+                    viewModel.onCheckBoxClicked(trans, checkBox.isChecked)
+                } else {
+                    viewModel.onNavigatetoTransDetail(trans.sum_id)
+                }
+            },
             CheckBoxListenerTransActive{view, stok ->
-            val cb = view as CheckBox
-            viewModel.onCheckBoxClicked(stok, cb.isChecked) })
+                val cb = view as CheckBox
+                viewModel.onCheckBoxClicked(stok, cb.isChecked)
+            })
 
         //set grid rv
         val displayMetrics = resources.displayMetrics
@@ -167,7 +177,8 @@ class TransactionActiveFragment : Fragment() {
         //Navigate to TransactinEdit
         viewModel.navigateToTransEdit.observe(viewLifecycleOwner, Observer {
             it?.let {
-            this.findNavController().navigate(TransactionActiveFragmentDirections.actionTransactionActiveFragmentToTransactionEditFragment(it))
+                ToolbarUtil.hideToolbarButtons(requireActivity())
+                this.findNavController().navigate(TransactionActiveFragmentDirections.actionTransactionActiveFragmentToTransactionEditFragment(it))
             viewModel.onNavigatedToTransEdit()
           }
         })
@@ -194,6 +205,12 @@ class TransactionActiveFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         viewModel.getActiveTrans()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.onButtonClicked()
+        ToolbarUtil.hideToolbarButtons(requireActivity())
     }
 
 

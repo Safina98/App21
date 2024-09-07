@@ -5,6 +5,7 @@ import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -26,16 +27,25 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.BuildConfig
 import com.example.app21try6.R
+import com.example.app21try6.ToolbarUtil
 import com.example.app21try6.database.Brand
 import com.example.app21try6.database.Category
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentBrandStockBinding
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.*
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
 
 
 class BrandStockFragment : Fragment() {
@@ -43,25 +53,7 @@ class BrandStockFragment : Fragment() {
     private val PERMISSION_REQUEST_CODE = 200
     val requestcode = 1
     private val viewModel:BrandStockViewModel by viewModels()
-/*
-    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val data: Intent? = result.data
-            var i = 1
-            try {
-                context?.contentResolver?.openInputStream(data!!.data!!)?.bufferedReader()?.forEachLine {
-                    val tokens: List<String> = it.split(",")
-                    if (i!=1) { viewModel.insertCSV(tokens) }
-                    i+=1
-                }
-            }catch (e: Exception){
-                Toast.makeText(context,e.toString(),Toast.LENGTH_SHORT).show()
-                Log.e("message_e", ""+e)
-            }
-        }
-    }
 
- */
     var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         Log.i("Insert Csv", "result Launcher")
         if (result.resultCode == Activity.RESULT_OK) {
@@ -157,6 +149,7 @@ class BrandStockFragment : Fragment() {
                         viewModel.onDeleteCathCliked() } })
                 viewModel.navigateProduct.observe(viewLifecycleOwner, Observer {id ->
                     id?.let {
+                        //ToolbarUtil.hideToolbarButtons(requireActivity())
                        this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToProductStockFragment(id))
                         viewModel.onBrandNavigated() } })
                 setHasOptionsMenu(true)
@@ -281,6 +274,14 @@ class BrandStockFragment : Fragment() {
                 importCSVStock()
                 return  true
             }
+            R.id.menu_export_database->{
+                shareDatabaseBackup(requireContext())
+                return true
+            }
+            R.id.menu_import_database->{
+                importZipFile()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item) // important line
     }
@@ -314,5 +315,195 @@ class BrandStockFragment : Fragment() {
         }
     }
 
+    private fun shareDatabaseBackup(context: Context) {
+        //viewModel.writingInProgress()
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                // Perform background work
+                val zipFile = withContext(Dispatchers.IO) {
+                    zipDatabaseFiles(context, "vendible_table")
+                }
+                // Update UI with the result
+                val fileUri: Uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", zipFile)
+                val shareIntent: Intent = Intent(Intent.ACTION_SEND).apply {
+                    putExtra(Intent.EXTRA_STREAM, fileUri)
+                    type = "application/zip"
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                context.startActivity(Intent.createChooser(shareIntent, "Share database file"))
 
+            } catch (e: Exception) {
+                Log.e("ZipDB", "Error sharing database file: ${e.localizedMessage}", e)
+            } finally {
+                // Ensure UI is updated whether success or failure
+                loaded()
+            }
+        }
+        // Show loading UI
+        loading()
+    }
+    fun zipDatabaseFiles(context: Context, databaseName: String): File {
+        val dbPath = context.getDatabasePath(databaseName).absolutePath
+        Log.i("ZipDB","zipFile ${dbPath}.db")
+        val walPath = "$dbPath-wal"
+        Log.i("ZipDB","walPath ${walPath}")
+        val shmPath = "$dbPath-shm"
+        Log.i("ZipDB","shmPath ${shmPath}")
+        val zipFile = File(context.externalCacheDir, "database_backup.zip")
+        Log.i("ZipDB","zipFile ${zipFile.absolutePath}")
+        Log.i("ZipDB","zipFile ${zipFile.name}")
+        ZipOutputStream(FileOutputStream(zipFile)).use { zipOut ->
+            addFileToZip(zipOut, File(dbPath), "")
+            addFileToZip(zipOut, File(walPath), "")
+            addFileToZip(zipOut, File(shmPath), "")
+        }
+        Log.i("ZipDB","zipFile ${zipFile.absolutePath}")
+        Log.i("ZipDB","zipFile ${zipFile.name}")
+        // viewModel.writingDone()
+        return zipFile
+    }
+    private fun addFileToZip(zipOut: ZipOutputStream, file: File, parentDir: String) {
+        FileInputStream(file).use { fis ->
+            val zipEntry = ZipEntry("$parentDir${file.name}")
+            zipOut.putNextEntry(zipEntry)
+            fis.copyTo(zipOut)
+            zipOut.closeEntry()
+        }
+    }
+
+    private fun importZipFile() {
+        loading()
+        Log.i("ZipDB", "importZipFile started")
+        val fileIntent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "application/zip"
+        }
+        try {
+            resultLauncherNew.launch(fileIntent.type)
+        } catch (e: Exception) {
+            loaded()
+            Toast.makeText(context, "Error selecting file", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private val resultLauncherNew = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) {
+            Toast.makeText(context,"result launcher",Toast.LENGTH_SHORT).show()
+            Log.i("ZipDB", "result Launcher new")
+            lifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    val tempFile = readFileFromUri(requireContext(), uri)
+                    Log.i("ZipDB", "file ${tempFile?.name}")
+                    Log.i("ZipDB", "file path ${tempFile?.absolutePath}")
+                    if (tempFile?.exists() == true) {
+                        try {
+                            extractZipFile(tempFile)
+                        } catch (e: IOException) {
+                            Log.e("ZipDB", "Error extracting zip file", e)
+                            withContext(Dispatchers.Main) {
+                                loaded()
+                                Toast.makeText(requireContext(), "Error extracting file", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            loaded()
+                            Toast.makeText(requireContext(), "File does not exist", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+                // Ensure progress bar is hidden after processing
+                withContext(Dispatchers.Main) {
+                    loaded()
+                }
+            }
+        } else {
+            // User didn't pick any file and went back to the app
+            Log.i("ZipDB", "No file selected")
+            loaded() // Hide loading indicator
+            Toast.makeText(requireContext(), "No file selected", Toast.LENGTH_SHORT).show()
+        }
+    }
+    private fun readFileFromUri(context: Context, uri: Uri): File? {
+        return try {
+            // Get the content resolver to open an input stream from the URI
+            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                // Create a temporary file to store the contents
+                val tempFile = File.createTempFile("imported_db", ".zip", context.cacheDir)
+                FileOutputStream(tempFile).use { outputStream ->
+                    inputStream.copyTo(outputStream)
+                }
+                tempFile
+            }
+        } catch (e: SecurityException) {
+
+            Log.e("FileReadError", "SecurityException while reading file from URI: ${e.localizedMessage}", e)
+            null
+        } catch (e: IOException) {
+
+            Log.e("FileReadError", "IOException while reading file from URI: ${e.localizedMessage}", e)
+            null
+        } catch (e: Exception) {
+
+            Log.e("FileReadError", "Exception while reading file from URI: ${e.localizedMessage}", e)
+            null
+        }
+    }
+    private fun extractZipFile(zipFile: File) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val zipInputStream = ZipInputStream(FileInputStream(zipFile))
+                var zipEntry: ZipEntry? = zipInputStream.nextEntry
+                while (zipEntry != null) {
+                    val outputFile = File(requireContext().getDatabasePath(zipEntry.name).parent, zipEntry.name)
+                    if (zipEntry.isDirectory) {
+                        outputFile.mkdirs()
+                    } else {
+                        FileOutputStream(outputFile).use { outputStream ->
+                            val buffer = ByteArray(1024)
+                            var length: Int
+                            while (zipInputStream.read(buffer).also { length = it } > 0) {
+                                outputStream.write(buffer, 0, length)
+                            }
+                        }
+                    }
+                    zipEntry = zipInputStream.nextEntry
+                }
+                zipInputStream.closeEntry()
+                zipInputStream.close()
+                Log.i("ZipDB", "Files extracted successfully")
+                withContext(Dispatchers.Main) {
+                    loaded()
+                    Toast.makeText(requireContext(), "Files extracted successfully", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: IOException) {
+                Log.e("ZipDB", "Error extracting zip file", e)
+                withContext(Dispatchers.Main) {
+                    loaded()
+                    Toast.makeText(requireContext(), "Error extracting file", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+
+    fun loading(){
+        binding.rvBrandStock.visibility = View.GONE
+        binding.spinnerM.visibility = View.GONE
+        binding.btnAddNewBrand.visibility = View.GONE
+        binding.btnAddCat.visibility = View.GONE
+        binding.btnImport.visibility = View.GONE
+        binding.progressBar.visibility=View.VISIBLE
+    }
+    fun loaded(){
+        binding.rvBrandStock.visibility = View.VISIBLE
+        binding.spinnerM.visibility = View.VISIBLE
+        binding.btnAddNewBrand.visibility = View.VISIBLE
+        binding.btnAddCat.visibility = View.VISIBLE
+        binding.btnImport.visibility = View.VISIBLE
+        binding.progressBar.visibility=View.GONE
+    }
+    override fun onPause() {
+        super.onPause()
+        ToolbarUtil.hideToolbarButtons(requireActivity())
+    }
 }

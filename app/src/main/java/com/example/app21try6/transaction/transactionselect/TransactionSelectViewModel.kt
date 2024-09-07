@@ -51,6 +51,10 @@ class TransactionSelectViewModel(
     private val _unFilteredSub = MutableLiveData<List<TransSelectModel>>()
     private var pos:Int = 0
 
+    private var _selectedItemId: Int? = null
+    private var _selectedItemPosition: Int = 0
+    val selectedItemPosition: Int get() = _selectedItemPosition
+
     init {
         getKategoriEntries()
         unCheckedAllSubs()
@@ -87,6 +91,15 @@ class TransactionSelectViewModel(
         if (id!=null)
         { _sumId.value = id!!
         }
+    }
+    fun saveSelectedItemId(itemId: Int) {
+        _selectedItemId = itemId
+    }
+
+    fun saveSelectedItemPosition(itemId: Int) {
+        _selectedItemPosition = _unFilteredProduct.value?.sortedBy { it.product_name }?.indexOfFirst { it.product_id == itemId }
+            ?: 0
+        Log.i("SelectedRvPos","selected position: ${_selectedItemPosition}")
     }
     //update on btn + or - click
     fun updateTransDetail(s:TransSelectModel){
@@ -244,6 +257,9 @@ class TransactionSelectViewModel(
       //  unCheckedAllSubs()
         super.onCleared()
 
+    }
+    fun resetSelectedSpinnerValue(){
+        _selectedKategoriSpinner.value="ALL"
     }
 
 

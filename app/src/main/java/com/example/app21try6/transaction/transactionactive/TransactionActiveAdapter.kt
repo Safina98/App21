@@ -87,9 +87,10 @@ class TransActiveDiffCallBack: DiffUtil.ItemCallback<TransactionSummary>(){
         return oldItem ==newItem
     }
 }
-class ActiveClickListener(val clickListener:(active_trans:TransactionSummary)->Unit){
-    fun onClick(active_trans: TransactionSummary) = clickListener(active_trans)
+class ActiveClickListener(val clickListener: (view: View, activeTrans: TransactionSummary) -> Unit) {
+    fun onClick(view: View, activeTrans: TransactionSummary) = clickListener(view, activeTrans)
 }
+
 
 
 class CheckBoxListenerTransActive(val checkBoxListener:(view: View, stok:TransactionSummary)->Unit){

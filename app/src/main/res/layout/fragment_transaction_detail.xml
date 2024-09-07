@@ -12,29 +12,35 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".transaction.transactiondetail.TransactionDetailFragment">
-            <TextView
-                android:id="@+id/txt_cust_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/medium_margin"
-                android:text="@{viewModel.transSum.cust_name}"
-                style="@style/texr_detail_style"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:textAlignment="viewEnd"
-                />
-            <TextView
-                android:id="@+id/txt_date"
-                android:layout_margin="@dimen/medium_margin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAlignment="viewEnd"
-                android:onClick="@{()->viewModel.updateDate()}"
-                android:onLongClickListener="@{(view)->viewModel.onTxtTransSumLongClikc(view)}"
-                app:dateFormatted="@{viewModel.transSum.trans_date}"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                style="@style/texr_detail_style" />
+
+        <TextView
+            android:id="@+id/txt_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/medium_margin"
+            android:textAlignment="viewEnd"
+            android:onClick="@{()->viewModel.updateDate()}"
+            android:onLongClickListener="@{(view)->viewModel.onTxtTransSumLongClikc(view)}"
+            app:dateFormatted="@{viewModel.transSum.trans_date}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/txt_cust_name"
+            style="@style/texr_detail_style" />
+
+        <TextView
+            android:id="@+id/txt_cust_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/medium_margin"
+            android:text="@{viewModel.transSum.cust_name}"
+            android:textAlignment="viewEnd"
+            android:ellipsize="end"
+            android:maxLines="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/txt_date"
+            app:layout_constraintTop_toTopOf="parent"
+            style="@style/texr_detail_style" />
+
         <ImageView
             android:id="@+id/btn_edit_trans_new"
             android:layout_width="36dp"
@@ -95,8 +101,8 @@
             app:layout_constraintTop_toTopOf="@id/trans_sum_note"
             app:cardViewVisibility="@{viewModel.isCardViewShow()}"
             android:elevation="@dimen/medium_margin"
-            android:layout_width="170dp"
-            android:layout_height="120dp">
+            android:layout_width="190dp"
+            android:layout_height="130dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -104,7 +110,7 @@
 
                 <TextView
                     android:id="@+id/note_textView"
-                    style="@style/text_subproduct_small_style"
+                    style="@style/text_note_small_style"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_margin="@dimen/medium_margin"
@@ -124,8 +130,9 @@
                     android:layout_height="0dp"
                     android:layout_margin="@dimen/medium_margin"
                     android:elevation="@dimen/medium_margin"
+                    android:fontFamily="@font/architects_daughter"
                     android:text="@={viewModel.txtNote}"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     app:layout_constraintBottom_toTopOf="@+id/ok_textView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -194,6 +201,18 @@
             android:text="@{viewModel.bayar}"
             style="@style/text_subproduct_small_style"
             app:layout_constraintEnd_toStartOf="@id/btn_send_new"
+            app:layout_constraintBottom_toTopOf="@+id/btn_bayar_trans"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/txt_item_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="viewEnd"
+            android:text="@{viewModel.itemCount}"
+            android:layout_marginLeft="@dimen/medium_margin"
+            style="@style/text_subproduct_small_style"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/btn_bayar_trans"
             android:textSize="24sp" />
 
