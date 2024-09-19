@@ -65,10 +65,13 @@ class TransactionSelectViewModel(
 
     fun updateTransDetaill(trans: TransSelectModel) {
         viewModelScope.launch {
+            Log.i("DuplicateProbs","model $trans")
             val updatedList = transSelectModel.value?.toMutableList() ?: mutableListOf()
             val index = updatedList.indexOfFirst { it.sub_product_id == trans.sub_product_id }
+            Log.i("DuplicateProbs","index $index")
             if (index != -1) {
                 updatedList[index] = trans
+                Log.i("DuplicateProbs","updatedlist $updatedList")
                 updateTransDetailList(updatedList)
             }
         }
@@ -145,9 +148,12 @@ class TransactionSelectViewModel(
     }
     fun insertDuplicateSubProduct(s:TransSelectModel){
         viewModelScope.launch {
+            Log.i("DuplicateProbs","s id ${s.trans_detail_id}")
             var t = converter(s)
             var id = insertDetailToDBandGetId(t)
+            Log.i("DuplicateProbs","inserted id $id")
             s.trans_detail_id  = id ?: -1L
+            getTransModel(_productId.value!!)
             updateTransDetaill(s)
         }
     }

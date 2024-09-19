@@ -203,7 +203,7 @@ class BookSummaryFragment : Fragment(){
             TODO("VERSION.SDK_INT < FROYO")
         }
         Log.i("filepath",""+file.path.toString())
-        summaryViewModel.generatePDF(file)
+
         val photoURI:Uri = FileProvider.getUriForFile(this.requireContext(), requireContext().applicationContext.packageName + ".provider",file)
         val shareIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND

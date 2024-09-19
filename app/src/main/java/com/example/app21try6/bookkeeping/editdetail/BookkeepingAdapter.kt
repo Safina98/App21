@@ -38,7 +38,7 @@ class  BookkeepingAdapter(
             //binding.item = item
             binding.book = item
             //binding.txtProductB.text = item.product.toString()
-            binding.txtProductB.text = item.item_name.toString()
+            binding.txtProductB.text = item.item_name
             binding.textSellsB.text = item.item_sold.toString()
             binding.textSumsB.text = formatRupiah(item.total_income).toString()
             binding.txtPrice.text = formatRupiah(item.price).toString()

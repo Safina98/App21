@@ -1,6 +1,6 @@
 package com.example.app21try6.grafik
 
-import java.util.Date
+
 
 data class StockModel(
     var year:Int,

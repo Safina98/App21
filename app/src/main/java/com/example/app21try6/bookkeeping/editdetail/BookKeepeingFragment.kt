@@ -3,7 +3,6 @@ package com.example.app21try6.bookkeeping.editdetail
 import android.app.AlertDialog
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,11 +11,9 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
 import com.example.app21try6.database.Summary
-import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentBookKeepeingBinding
 import com.google.android.material.textfield.TextInputEditText
 
@@ -27,13 +24,13 @@ class BookKeepeingFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_book_keepeing,container,false)
 
-        val application = requireNotNull(this.activity).application
-        val dataSource = VendibleDatabase.getInstance(application).summaryDbDao
-        val dataSource2 = VendibleDatabase.getInstance(application).productDao
+        //val application = requireNotNull(this.activity).application
+        //val dataSource = VendibleDatabase.getInstance(application).summaryDbDao
+        //val dataSource2 = VendibleDatabase.getInstance(application).productDao
 
         val date= arguments?.let { BookKeepeingFragmentArgs.fromBundle(it).date }
         binding.lifecycleOwner = this
@@ -48,7 +45,7 @@ class BookKeepeingFragment : Fragment() {
             //Toast.makeText(context,"plus long clicked",Toast.LENGTH_SHORT).show()
             updateDialog(it,1,bookKeepingViewModel)
         }, SubsBookLongListener {
-            val details = arrayOf(it.id_m.toString(),it.item_sold.toString())
+           // val details = arrayOf(it.id_m.toString(),it.item_sold.toString())
             //Toast.makeText(context,"subs long clicked",Toast.LENGTH_SHORT).show()
             updateDialog(it,2,bookKeepingViewModel)
         }, LongListener {
@@ -59,7 +56,7 @@ class BookKeepeingFragment : Fragment() {
         })
         binding.recyclerViewBook.adapter = adapter
 
-        bookKeepingViewModel.dayly_sells.observe(viewLifecycleOwner, Observer {
+        bookKeepingViewModel.daylySells.observe(viewLifecycleOwner, Observer {
             //Toast.makeText(context,bookKeepingViewModel.dayly_sells.value.toString(),Toast.LENGTH_SHORT).show()
             it?.let {
                 adapter.submitList(it.sortedBy { it.item_name})
@@ -71,9 +68,7 @@ class BookKeepeingFragment : Fragment() {
         })
         bookKeepingViewModel.selectedMonth.observe(viewLifecycleOwner){
         }
-        bookKeepingViewModel.date.observe(viewLifecycleOwner) { date ->
-            // Perform actions based on the selected date
-        }
+        bookKeepingViewModel.date.observe(viewLifecycleOwner) {}
         bookKeepingViewModel.navigateToVendible.observe(viewLifecycleOwner, Observer {
             if (it==true) {
                 this.findNavController().navigate(BookKeepeingFragmentDirections.actionBookKeepeingFragmentToVendibleFragment(date!!))
@@ -98,7 +93,7 @@ class BookKeepeingFragment : Fragment() {
         textKet.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         builder.setView(view)
         builder.setPositiveButton("OK") { dialog, which ->
-            val v = textKet.text.toString().toUpperCase().trim()
+            val v = textKet.text.toString().uppercase().trim()
             bookKeepingViewModel.btnLongClick(summary,v.toDouble(),text_number)
         }
         builder.setNegativeButton("No") { dialog, which ->

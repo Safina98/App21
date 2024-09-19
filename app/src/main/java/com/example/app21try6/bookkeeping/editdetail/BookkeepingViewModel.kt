@@ -2,28 +2,22 @@ package com.example.app21try6.bookkeeping.editdetail
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.database.sqlite.SQLiteException
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ReportFragment
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.example.app21try6.PDFGenerator
 import com.example.app21try6.bookkeeping.summary.ListModel
 import com.example.app21try6.database.*
 import com.example.app21try6.formatRupiah
 import com.example.app21try6.getDateFromComponents
-//import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.*
 import java.io.BufferedWriter
 import java.io.File
@@ -34,33 +28,33 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.*
-import kotlin.collections.ArrayList
 
 class BookkeepingViewModel(val database: SummaryDbDao,
-                           val database2:ProductDao,
+                           database2:ProductDao,
                            application: Application,
-                           val dare:Array<String>): AndroidViewModel(application) {
+                           ): AndroidViewModel(application) {
 
-    private var viewModelJob = Job()
-    private val _insertionStatus = MutableLiveData<Boolean>()
-    val insertionStatus: LiveData<Boolean> = _insertionStatus
+    //private var viewModelJob = Job()
+    //private val _insertionStatus = MutableLiveData<Boolean>()
+    //val insertionStatus: LiveData<Boolean> = _insertionStatus
     //ui scope for coroutines
     //private val uiScope = CoroutineScope(Dispatchers.Main +  viewModelJob)
     private val months = arrayOf("all","Januari", "Februari", "Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember")
-    private val _date = MutableLiveData<Array<String>>(arrayOf("0","","0"))
+    private val _date = MutableLiveData(arrayOf("0","","0"))
     val date: LiveData<Array<String>> = _date
     //val dayly_sells = database.getToday(_date.value!![0].toInt(), _date.value!![1], _date.value!![2].toInt())
-    val dayly_sells: LiveData<List<Summary>> = Transformations.switchMap(date) { date ->
+    val daylySells: LiveData<List<Summary>> = Transformations.switchMap(date) { date ->
         database.getToday(date[0].toInt(),date[1],date[2].toInt())
     }
-    val totalToday:LiveData<Double> =
+    private val totalToday:LiveData<Double> =
         Transformations.switchMap(date) { date ->
             database.getTotalToday(date[0].toInt(), date[1], date[2].toInt())
         }
     val playerName: LiveData<String> = Transformations.map(totalToday) { formatRupiah(it).toString() }
-    val inFormat = SimpleDateFormat("dd-MM-yyyy")
-    val day = android.text.format.DateFormat.format("EEEE",inFormat.parse(date.value!![2].toString()+"-"+months.indexOf(date.value!![1]).toString()+"-"+date.value!![0].toString())) as String
-    val day_string :LiveData<String> = Transformations.map(date){date->
+    private val inFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+
+    val day = android.text.format.DateFormat.format("EEEE",inFormat.parse(date.value!![2]+"-"+months.indexOf(date.value!![1]).toString()+"-"+date.value!![0])) as String
+    val dayString :LiveData<String> = Transformations.map(date){ date->
         day+date[2]+date[1]+date[0]
    }
     var all_item_from_db = database2.getAllProduct()
@@ -81,7 +75,7 @@ class BookkeepingViewModel(val database: SummaryDbDao,
     val year_list = arrayOf("2021","2022","2023","2024","2025","2026","2027","2028","2029","2030","2031")
     val year = Calendar.getInstance().get(Calendar.YEAR)
     //to create pdf
-    var _itemPosition = MutableLiveData<Int>(year_list.indexOf(year.toString()))
+
     val allItemFromSummary = database.getAllSummary()
     //selected spinner
     private val _selectedYear= MutableLiveData<Int>(year)
@@ -102,8 +96,8 @@ class BookkeepingViewModel(val database: SummaryDbDao,
         val list_item_to_add_new =all_item_from_db.value
         viewModelScope.launch {
             val summary = Summary()
-            val inFormat = SimpleDateFormat("dd-MM-yyyy")
-            val day = android.text.format.DateFormat.format("EEEE",inFormat.parse(_date.value!![2].toString()+"-"+months.indexOf(_date.value!![1]).toString()+"-"+_date.value!![0].toString())) as String
+            val inFormat  = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+            val day = android.text.format.DateFormat.format("EEEE",inFormat.parse(_date.value!![2]+"-"+months.indexOf(_date.value!![1]).toString()+"-"+_date.value!![0])) as String
             if (list_item_to_add_new != null) {
                 for(v in list_item_to_add_new){
                     if (v.bestSelling){
@@ -121,8 +115,7 @@ class BookkeepingViewModel(val database: SummaryDbDao,
         }
     }
 
-    fun clearProduct(){
-        viewModelScope.launch { clear()} }
+    //fun clearProduct(){ viewModelScope.launch { clear()} }
     //delete today
     fun clearSummary(){
    viewModelScope.launch { clearToday(date.value!![0].toInt(), date.value!![1], date.value!![2].toInt())}
@@ -185,11 +178,7 @@ class BookkeepingViewModel(val database: SummaryDbDao,
             database.clearToday(year, month, day)
         }
     }
-    suspend fun clear() {
-        withContext(Dispatchers.IO) {
-            //database2.deleteAll()
-        }
-    }
+    //suspend fun clear() { withContext(Dispatchers.IO) { //database2.deleteAll() } }
     private suspend fun insertItemToSummary_(summary: Summary){
         withContext(Dispatchers.IO) {
             database.insert(summary)
@@ -205,7 +194,7 @@ class BookkeepingViewModel(val database: SummaryDbDao,
     ////////////////////////////////////Summary Functions////////////////////////////////////
     fun onRvClick(listModel: ListModel){
         if (selectedMonth.value!="All"){
-            var clickedDate = arrayOf(listModel.year_n.toString(),listModel.month_n,listModel.day_n.toString())
+            val clickedDate = arrayOf(listModel.year_n.toString(),listModel.month_n,listModel.day_n.toString())
             onDayClick(clickedDate)
         }else{
             setSelectedMonth(listModel.month_n)
@@ -235,10 +224,10 @@ class BookkeepingViewModel(val database: SummaryDbDao,
         )
         val month = monthNumbers[monthString]
             ?: throw IllegalArgumentException("Invalid month name: $monthString")
-        return month ?: 0
+        return month
     }
     @RequiresApi(Build.VERSION_CODES.O)
-    fun getNumberOfDaysInMonth(year: Int, month: Int, locale: Locale = Locale("id")): Int {
+    fun getNumberOfDaysInMonth(year: Int, month: Int): Int {
         val yearMonth = YearMonth.of(year, month)
         return yearMonth.lengthOfMonth()
     }
@@ -249,7 +238,7 @@ class BookkeepingViewModel(val database: SummaryDbDao,
         return date.dayOfWeek.getDisplayName(TextStyle.FULL, localeIndonesia)
     }
     fun initialRv(){
-        var initialList = mutableListOf<ListModel>()
+        val initialList = mutableListOf<ListModel>()
         for(i in months_list){
             if(i!="All"){
                 initialList.add(ListModel(0,i,0,0,i,"",0.0))
@@ -319,31 +308,9 @@ class BookkeepingViewModel(val database: SummaryDbDao,
         }
     }
 
-    fun onClear() { viewModelScope.launch {clear() } }
+   // fun onClear() { viewModelScope.launch {clear() } }
     //suspend fun clear() { withContext(Dispatchers.IO) { database.clear() } }
 
-    fun insertCSV(token: List<String>){
-        viewModelScope.launch {
-            try {
-
-                val summary = Summary()
-                summary.year = token[0].toInt()
-                summary.month = token[1]
-                summary.month_number = token[2].toInt()
-                summary.day_name= token[4]
-                summary.day = token[3].toInt()
-                summary.item_name = token[5]
-                summary.item_sold = token[7].toDouble()
-                summary.price = token[6].toDouble()
-                summary.total_income = token[8].toDouble()
-                Log.i("Insert Csv", "viewModel try $summary")
-                insert(summary)
-            } catch (e: SQLiteException) {
-                Toast.makeText(getApplication(),e.toString(),Toast.LENGTH_LONG).show()
-                Log.i("Insert Csv", "viewModel catch $e")
-            }
-        }
-    }
     fun writeCSV(file: File) {
         try {
             val content = "Tahun,Bulan,Bulan, Tanggal, Hari,Nama Produk,Harga,Jumlah,Total"
@@ -353,9 +320,9 @@ class BookkeepingViewModel(val database: SummaryDbDao,
             for (j in allItemFromSummary.value!!){
                 if (j.item_name!="empty") {
                     bw.newLine()
-                    var content = "${j.year},${j.month},${j.month_number},${j.day},${j.day_name},${j.item_name},${j.price},${j.item_sold},${j.total_income}"
+                    val sumLine = "${j.year},${j.month},${j.month_number},${j.day},${j.day_name},${j.item_name},${j.price},${j.item_sold},${j.total_income}"
                     Log.i("new_", j.toString())
-                    bw.write(content)
+                    bw.write(sumLine)
                 }
             }
             bw.close()
@@ -365,10 +332,7 @@ class BookkeepingViewModel(val database: SummaryDbDao,
         }
 
     }
-    private  suspend fun insert(summary: Summary){
-        withContext(Dispatchers.IO) {
-            database.insert(summary) }
-    }
+
     //fun onClear() { viewModelScope.launch {clear() } }
     //suspend fun clear() { withContext(Dispatchers.IO) { database.clear() } }
     fun onDayClick(id: Array<String>){
@@ -438,8 +402,7 @@ fun insertCSVBatch(tokensList: List<List<String>>) {
     @SuppressLint("NullSafeMutableLiveData")
     fun onDayNavigated() { _navigateBookKeeping.value  = null }
 
-    fun generatePDF(file: File){
-    }
+
     companion object {
 
         @JvmStatic
@@ -452,12 +415,12 @@ fun insertCSVBatch(tokensList: List<List<String>>) {
                 // Get the Application object from extras
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
                 // Create a SavedStateHandle for this ViewModel from extras
-                val savedStateHandle = extras.createSavedStateHandle()
+               // val savedStateHandle = extras.createSavedStateHandle()
                 val dataSource = VendibleDatabase.getInstance(application).summaryDbDao
                 val dataSource2 = VendibleDatabase.getInstance(application).productDao
 
                 return BookkeepingViewModel(
-                    dataSource,dataSource2,application, arrayOf("0","0","0")
+                    dataSource,dataSource2,application,
                 ) as T
             }
         }

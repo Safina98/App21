@@ -50,7 +50,7 @@ class TransactionSelectFragment : Fragment() {
         viewModel = ViewModelProvider(requireActivity(), TransactionSelectViewModelFactory(date[0].toInt()!!,dataSource1,dataSource2,dataSource4,date,dataSource6,application))
             .get(TransactionSelectViewModel::class.java)
         var i = date!![1].toInt()
-        viewModel.setProductId(i)
+        //viewModel.setProductId(i)
         var code: Code = Code.ZERO
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -59,9 +59,11 @@ class TransactionSelectFragment : Fragment() {
                 it.qty = it.qty+1
                 viewModel.updateTransDetail(it)
 
+
         }, SubsSelectListener {
                 it.qty = it.qty-1
                 viewModel.updateTransDetail(it)
+
         },
             CheckBoxSelectListener{view:View, trans:TransSelectModel ->
                 val cb = view as CheckBox
@@ -70,10 +72,12 @@ class TransactionSelectFragment : Fragment() {
             PlusSelectLongListener {
                 code = Code.LONGPLUS
                 viewModel.onShowDialog(it)
+                clearSearchQuery()
             },
             SubsSelectLongListener {
                 code = Code.LONGSUBS
                 viewModel.onShowDialog(it)
+                clearSearchQuery()
             },
             SelectLongListener {
                 it.trans_detail_id = 0L
@@ -108,7 +112,7 @@ class TransactionSelectFragment : Fragment() {
             }
         })
         viewModel.productId.observe(viewLifecycleOwner){it?.let {
-            viewModel.getTransModel(it)
+           // viewModel.getTransModel(it)
         }
         }
         viewModel.showDialog.observe(viewLifecycleOwner, Observer {
@@ -125,7 +129,7 @@ class TransactionSelectFragment : Fragment() {
 
     private fun showDialog(transSelectModel: TransSelectModel, viewModel: TransactionSelectViewModel, code: Code) {
         val builder = AlertDialog.Builder(context)
-        builder.setTitle(code.text)
+        if (code==Code.ZERO) builder.setTitle(transSelectModel.item_name) else builder.setTitle(code.text)
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.update, null)
         val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
@@ -151,12 +155,10 @@ class TransactionSelectFragment : Fragment() {
                 Code.LONGSUBS -> {
                     transSelectModel.qty = transSelectModel.qty -v.toDouble()
                     viewModel.updateTransDetail(transSelectModel)
-
                 }
                 Code.LONGPLUS -> {
                     transSelectModel.qty = transSelectModel.qty +v.toDouble()
                     viewModel.updateTransDetail(transSelectModel)
-
                 }
                 Code.ZERO -> {
                     transSelectModel.qty  = v.toDouble()
@@ -179,6 +181,10 @@ class TransactionSelectFragment : Fragment() {
         val alert = builder.create()
         alert.show()
 
+    }
+    fun clearSearchQuery() {
+       // binding.searchBarSub.setQuery("", false)
+        binding.searchBarSub.clearFocus()
     }
 
 }

@@ -61,9 +61,7 @@ class GrapichProfitFragment : Fragment() {
                 //viewModel.mapAndSumByMonth(it)
            // Log.i("ChartProb","monhtly income: $it")
             setupLineChart(monthlyIncome)
-        }
-
-        }
+        } }
         viewModel.monthIncomeMap.observe(viewLifecycleOwner){it?.let {
 
         }}
@@ -94,7 +92,6 @@ class GrapichProfitFragment : Fragment() {
         val lineData = LineData(dataSet)
         lineChart.data = lineData
 
-
         val xAxis = lineChart.xAxis
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.granularity = 1f
@@ -121,8 +118,5 @@ class GrapichProfitFragment : Fragment() {
         )
         return months.indexOf(month) + 1
     }
-
-
-
 
 }

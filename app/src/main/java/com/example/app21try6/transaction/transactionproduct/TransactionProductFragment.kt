@@ -63,6 +63,7 @@ class TransactionProductFragment : Fragment() {
 
         val adapter = TransactionProductAdapter(ProductTransListener {
             Log.i("SelectedRvPos","id: ${it.product_id}")
+            viewModel.getTransModel(it.product_id)
             viewModel.setProductId(it.product_id)
             viewModel.saveSelectedItemId(it.product_id)
             viewModel.saveSelectedItemPosition(it.product_id)
