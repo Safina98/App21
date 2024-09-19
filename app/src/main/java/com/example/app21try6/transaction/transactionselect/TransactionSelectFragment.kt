@@ -12,12 +12,14 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
 import com.example.app21try6.bookkeeping.editdetail.BookkeepingViewModel
 import com.example.app21try6.bookkeeping.vendiblelist.VendibleFragmentArgs
@@ -50,6 +52,12 @@ class TransactionSelectFragment : Fragment() {
         viewModel = ViewModelProvider(requireActivity(), TransactionSelectViewModelFactory(date[0].toInt()!!,dataSource1,dataSource2,dataSource4,date,dataSource6,application))
             .get(TransactionSelectViewModel::class.java)
         var i = date!![1].toInt()
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            // Set transSelectModel to an empty list
+            // Optionally, pop the fragment from the back stack
+            viewModel.resetTransModel()
+            findNavController().popBackStack()
+        }
         //viewModel.setProductId(i)
         var code: Code = Code.ZERO
         binding.lifecycleOwner = this
@@ -120,7 +128,7 @@ class TransactionSelectFragment : Fragment() {
                 showDialog(it,viewModel,code)
             }
             else{
-                adapter.notifyDataSetChanged()
+               // adapter.notifyDataSetChanged()
             }
         })
         return binding.root
@@ -150,7 +158,7 @@ class TransactionSelectFragment : Fragment() {
         }
         builder.setView(view)
         builder.setPositiveButton("OK") { dialog, which ->
-            var v = textKet.text.toString().toUpperCase().trim()
+            val v = textKet.text.toString().uppercase().trim()
             when (code) {
                 Code.LONGSUBS -> {
                     transSelectModel.qty = transSelectModel.qty -v.toDouble()
@@ -166,6 +174,8 @@ class TransactionSelectFragment : Fragment() {
                 }
                 Code.TEXTPRICE -> {
                 }
+
+                else -> {}
             }
             imm.hideSoftInputFromWindow(view?.windowToken, 0)
             viewModel.onCloseDialog()
@@ -186,5 +196,7 @@ class TransactionSelectFragment : Fragment() {
        // binding.searchBarSub.setQuery("", false)
         binding.searchBarSub.clearFocus()
     }
+
+
 
 }

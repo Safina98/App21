@@ -86,6 +86,9 @@ class TransactionSelectViewModel(
             transSelectModel.value = list
         }
     }
+    fun resetTransModel(){
+        transSelectModel.value =  emptyList()
+    }
     /////////////////////////////////////old functions///////////////////////////////////////////
     fun setProductId(id:Int){
         _productId.value = id
