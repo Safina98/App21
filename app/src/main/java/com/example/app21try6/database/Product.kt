@@ -13,7 +13,16 @@ import androidx.room.*
                         parentColumns = ["category_id"],
                         childColumns = ["cath_code"],
                         onDelete = ForeignKey.CASCADE,
-                        onUpdate = ForeignKey.CASCADE)])
+                        onUpdate = ForeignKey.CASCADE),
+                //recently added
+                ForeignKey(entity = DiscountTable::class,
+                        parentColumns = ["discountId"],
+                        childColumns = ["discountId"],
+                        onDelete = ForeignKey.SET_NULL,
+                        onUpdate = ForeignKey.CASCADE),
+
+        ]
+)
 data class Product(
         @PrimaryKey(autoGenerate = true)
         var product_id:Int = 0,
@@ -30,6 +39,9 @@ data class Product(
         @ColumnInfo(name="brand_code")
         var brand_code:Int=0,
         @ColumnInfo(name = "cath_code")
-        var cath_code:Int = 0
+        var cath_code:Int = 0,
+        //recently added
+        @ColumnInfo(name = "discountId")
+        var discountId:Int?=null,
 
 )

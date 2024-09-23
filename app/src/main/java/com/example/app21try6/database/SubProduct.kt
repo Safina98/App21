@@ -17,7 +17,15 @@ import androidx.room.*
                 parentColumns = ["category_id"],
                 childColumns = ["cath_code"],
                 onDelete = ForeignKey.CASCADE,
-                onUpdate = ForeignKey.CASCADE)])
+                onUpdate = ForeignKey.CASCADE),
+        ForeignKey(entity = DiscountTable::class,
+            parentColumns = ["discountId"],
+            childColumns = ["discountId"],
+            onDelete = ForeignKey.SET_NULL,
+            onUpdate = ForeignKey.CASCADE),
+
+    ]
+)
 data class SubProduct(
     @PrimaryKey(autoGenerate = true)
     var sub_id:Int = 0,
@@ -48,5 +56,7 @@ data class SubProduct(
     @ColumnInfo(name="cath_code")
     var cath_code:Int = 0,
     @ColumnInfo(name="is_checked")
-    var is_checked:Boolean = false
+    var is_checked:Boolean = false,
+    @ColumnInfo(name = "discountId")
+    var discountId:Int?=null,
 )

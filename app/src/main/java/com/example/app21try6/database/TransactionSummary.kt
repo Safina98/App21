@@ -3,13 +3,21 @@ package com.example.app21try6.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import java.util.*
 import androidx.room.TypeConverters
 
 
-@Entity(tableName = "trans_sum_table")
+@Entity(tableName = "trans_sum_table",
+        foreignKeys = [
+                ForeignKey(entity = CustomerTable::class,
+                        parentColumns = ["custId"],
+                        childColumns = ["custId"],
+                        onDelete = ForeignKey.SET_NULL,
+                        onUpdate = ForeignKey.CASCADE)]
+        )
 @TypeConverters(DateTypeConverter::class)
 data class TransactionSummary (
         @PrimaryKey(autoGenerate = true)
@@ -31,5 +39,7 @@ data class TransactionSummary (
         @ColumnInfo(name = "ref")
         var ref:String="",
         @ColumnInfo(name = "sum_note")
-        var sum_note:String?=null
+        var sum_note:String?=null,
+        @ColumnInfo(name = "custId")
+        var custId:Int?=null
 )

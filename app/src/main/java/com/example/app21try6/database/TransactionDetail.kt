@@ -13,7 +13,12 @@ import java.util.Date
                 parentColumns = ["sum_id"],
                 childColumns = ["sum_id"],
                 onDelete = ForeignKey.CASCADE,
-                onUpdate = ForeignKey.CASCADE)
+                onUpdate = ForeignKey.CASCADE),
+                ForeignKey(entity = SubProduct::class,
+                        parentColumns = ["sub_id"],
+                        childColumns = ["sub_id"],
+                        onDelete = ForeignKey.SET_NULL,
+                        onUpdate = ForeignKey.CASCADE),
         ])
 data class TransactionDetail(
         @PrimaryKey(autoGenerate = true)
@@ -37,6 +42,8 @@ data class TransactionDetail(
         @ColumnInfo(name = "unit_qty")
         var unit_qty:Double=1.0,
         @ColumnInfo(name = "item_position")
-        var item_position:Int=0
+        var item_position:Int=0,
+        @ColumnInfo(name = "sub_id")
+        var sub_id:Int? = null,
         )
 

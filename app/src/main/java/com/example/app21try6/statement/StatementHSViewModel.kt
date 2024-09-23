@@ -16,11 +16,11 @@ class StatementHSViewModel(application: Application):AndroidViewModel(applicatio
 
     fun insertDiscount(value:Double,name:String,minQty:Double?,tipe:String){
         val discountTable=DiscountTable()
-        discountTable.discId=getautoIncrementId()
-        discountTable.discValue = value
-        discountTable.discName=name
+        discountTable.discountId=getautoIncrementId()
+        discountTable.discountValue = value
+        discountTable.discountName=name
         discountTable.minimumQty=minQty
-        discountTable.discType=tipe
+        discountTable.discountType=tipe
         dummyDiscList.add(discountTable)
         Log.i("Disc","$dummyDiscList")
     }

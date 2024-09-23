@@ -1,24 +1,39 @@
 package com.example.app21try6.database
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
 import java.util.Date
 
-@Entity
-data class DiscountTable (
-    var discId:Int=0,//autoIncrement
-    //val custId:Int?=null,//customer id
-    var discName:String="",//unique
-    var discValue:Double=0.0,
-    var discType:String="",
-    var minimumQty:Double?=null,
-    var minimumTranscation:Double?=null,
-    var vendibleLevel:String?=null,
-    var custLevel:String?=null,
-    var custTag1:String?=null,
-    var custTag2:String?=null,
-    var discDuration:Date?=null,
-    var custLocation:String?=null
-)
+    @Entity(tableName = "discount_table",
+            indices = [Index(value = ["discountName"], unique = true)])
+    data class DiscountTable (
+        @PrimaryKey(autoGenerate = true)
+        var discountId:Int=0,//autoIncrement
+        @ColumnInfo(name = "discountName" )
+        var discountName:String="",//unique
+        @ColumnInfo(name = "discountValue")
+        var discountValue:Double=0.0,
+        @ColumnInfo(name = "discountType")
+        var discountType:String="",
+        @ColumnInfo(name = "minimumQty")
+        var minimumQty:Double?=null,
+        @ColumnInfo(name = "minimumTranscation")
+        var minimumTranscation:Double?=null,
+        @ColumnInfo(name = "vendibleLevel")
+        var vendibleLevel:String?=null,
+        @ColumnInfo(name = "custLevel")
+        var custLevel:String?=null,
+        @ColumnInfo(name = "custTag1")
+        var custTag1:String?=null,
+        @ColumnInfo(name = "custTag2")
+        var custTag2:String?=null,
+        @ColumnInfo(name = "discountDuration")
+        var discountDuration:Date?=null,
+        @ColumnInfo(name = "custLocation")
+        var custLocation:String?=null
+    )
 
 /***************************************Cashback & Discount******************************************/
 // 1. mbtech camaro, fiesta & carrera discount 2000 untuk cust local dan pembelian diatas 5 m
@@ -34,10 +49,10 @@ data class DiscountTable (
             * insert cashback di discTransaction
         *
      2. table to alter
-     * product table tambah discount id nullabe
-     * cust table tambah disc id nullable
-     * sub product table tambah discount id nullable?
-     * tambah sub product id di transdetail tablle nullable
+     * product table tambah discount id nullabe check
+     * cust table tambah disc id nullable nope
+     * sub product table tambah discount id nullable? CHECK
+     * tambah sub product id di transdetail tablle nullable check
      * tambah customer id di trans sum
 
     * pas insert discount, update semua merk, product, sub product

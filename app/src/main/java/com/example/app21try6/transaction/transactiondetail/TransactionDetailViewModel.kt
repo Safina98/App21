@@ -124,7 +124,7 @@ class TransactionDetailViewModel (application: Application,
 // Calculate the discount value for products that match the discount conditions
             val discountValues = dummyDiscList.mapNotNull { discount ->
                 // Get the transaction details for the product name matching the discount name
-                val productTransactions = groupedByProduct!![discount.discName]
+                val productTransactions = groupedByProduct!![discount.discountName]
 
                 // If there are matching transactions for the discount
                 if (productTransactions != null) {
@@ -134,9 +134,9 @@ class TransactionDetailViewModel (application: Application,
                     // Check if the total quantity meets the minimumQty condition
                     if (totalQty >= (discount.minimumQty ?: 0.0)) {
                         // Calculate the discount value (qty * discValue)
-                        val discountValue = totalQty * discount.discValue
+                        val discountValue = totalQty * discount.discountValue
                         // Return the result as a pair (product name, discount value)
-                        discount.discName to discountValue
+                        discount.discountName to discountValue
                     } else {
                         null // No discount if minimumQty condition is not met
                     }
