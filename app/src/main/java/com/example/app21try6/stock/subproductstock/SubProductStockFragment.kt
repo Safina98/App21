@@ -100,7 +100,7 @@ class SubProductStockFragment : Fragment() {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Tambah Item")
         val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.update, null)
+        val view = inflater.inflate(R.layout.pop_up_update, null)
         val textBrand = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
         builder.setView(view)
         builder.setPositiveButton("OK") { dialog, which ->
@@ -148,7 +148,7 @@ class SubProductStockFragment : Fragment() {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Update")
         val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.update, null)
+        val view = inflater.inflate(R.layout.pop_up_update, null)
 
         val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
         var text=""

@@ -6,14 +6,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.database.Brand
-
-import com.example.app21try6.databinding.BrandItemListBinding
+import com.example.app21try6.databinding.ItemListBrandBinding
 
 class BrandStockAdapter(
     val brandListener:BrandStockListener,
     val longListener: BrandStockLongListener
 ):ListAdapter<Brand,BrandStockAdapter.MyViewHolder>(BrandStockDiffCallback()){
-    class MyViewHolder private constructor(val binding: BrandItemListBinding):RecyclerView.ViewHolder(binding.root){
+    class MyViewHolder private constructor(val binding: ItemListBrandBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(item:Brand,brandListener: BrandStockListener,longListener: BrandStockLongListener){
             binding.brandStock = item
             binding.brandText.text = item.brand_name.toString()
@@ -24,7 +23,7 @@ class BrandStockAdapter(
         companion object{
             fun from(parent: ViewGroup): MyViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding =BrandItemListBinding.inflate(layoutInflater,parent,false)
+                val binding =ItemListBrandBinding.inflate(layoutInflater,parent,false)
                 return MyViewHolder(binding)
             }
         }

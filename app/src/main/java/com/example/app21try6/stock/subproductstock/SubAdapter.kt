@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.database.SubProduct
-import com.example.app21try6.databinding.SubProductItemListBinding
+import com.example.app21try6.databinding.ItemListSubproductBinding
 
 class SubAdapter (val code:Int,
                   val checkBoxListenerSub: CheckBoxListenerSub,
@@ -21,7 +21,7 @@ class SubAdapter (val code:Int,
 ) :
     ListAdapter<SubProduct,
             SubAdapter.MyViewHolder>(SubDiffCallback()){
-    class MyViewHolder private constructor( val binding: SubProductItemListBinding): RecyclerView.ViewHolder(binding.root){
+    class MyViewHolder private constructor( val binding: ItemListSubproductBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(code: Int,longListener :SubStokLongListener,
                  plusListener:PlusStokListener,
                  subsListener : SubsStokListener,
@@ -67,7 +67,7 @@ class SubAdapter (val code:Int,
         companion object{
             fun from(parent: ViewGroup):MyViewHolder{
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = SubProductItemListBinding.inflate(layoutInflater,parent,false)
+                val binding = ItemListSubproductBinding.inflate(layoutInflater,parent,false)
                 return MyViewHolder(binding)
             }
         }

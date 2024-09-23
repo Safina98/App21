@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.database.Product
-import com.example.app21try6.databinding.ProductItemListBinding
-import com.example.app21try6.databinding.VendibleItemListBinding
+
+import com.example.app21try6.databinding.ItemListVendibleBinding
 
 class VendibleAdapter (
         val code:Int,
@@ -18,7 +18,7 @@ class VendibleAdapter (
     val delLongListenerV:DelLongListenerV
 ): ListAdapter<Product,
         VendibleAdapter.MyViewHolder>(BookDiffCallback()){
-    class MyViewHolder private constructor(val binding: VendibleItemListBinding): RecyclerView.ViewHolder(binding.root){
+    class MyViewHolder private constructor(val binding: ItemListVendibleBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(code: Int,
                 item:Product,
                  checkBoxListener: CheckBoxListener,
@@ -37,7 +37,7 @@ class VendibleAdapter (
         companion object{
             fun from(parent: ViewGroup): MyViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding =VendibleItemListBinding.inflate(layoutInflater,parent,false)
+                val binding =ItemListVendibleBinding.inflate(layoutInflater,parent,false)
                 return MyViewHolder(binding)
             }
         }

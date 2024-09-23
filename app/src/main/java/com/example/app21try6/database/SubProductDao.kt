@@ -52,7 +52,7 @@ interface SubProductDao {
     @Query("INSERT INTO sub_table (sub_name,roll_u,roll_b_t,roll_s_t,roll_k_t,roll_b_g,roll_s_g,roll_k_g,warna,ket,is_checked,product_code,brand_code,cath_code) SELECT :sub_name_ as sub_name,:u_ as roll_u, :bt_ as roll_b_t,:st_ as roll_s_t,:kt_ as roll_k_t,:bg_ as roll_b_g,:sg_ as roll_s_g,:kg_ as roll_k_g,:warna_ as warna,:ket_ as ket,0 as is_checked,(SELECT product_id FROM product_table WHERE product_name = :product_name_ LIMIT 1) as product_code,(SELECT brand_id FROM brand_table WHERE brand_name = :brand_code_ LIMIT 1) as brand_code,(SELECT category_id FROM category_table WHERE category_name = :cath_code_ LIMIT 1) as cath_code")
     fun insertIfNotExist(sub_name_:String,warna_:String,ket_:String,u_:Int,bt_:Int,st_:Int,kt_:Int,bg_:Int,sg_:Int,kg_:Int,product_name_: String,brand_code_:String,cath_code_:String)
     @Query("SELECT product_name FROM sub_table INNER JOIN PRODUCT_TABLE ON product_id = sub_table.product_code WHERE sub_name = :subName limit 1")
-    fun getProductName(subName:String):String
+    fun getProductName(subName:String):String?
 
     @Query("DELETE FROM sub_table WHERE sub_id= :id_")
     fun delete(id_:Int)

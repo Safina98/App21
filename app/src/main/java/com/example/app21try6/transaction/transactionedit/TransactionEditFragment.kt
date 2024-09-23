@@ -21,11 +21,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.R
 import com.example.app21try6.database.TransactionDetail
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionEditBinding
-import com.example.app21try6.databinding.UnitPopUpBinding
+import com.example.app21try6.databinding.PopUpUnitBinding
 import com.google.android.material.textfield.TextInputEditText
 
 
@@ -119,7 +118,7 @@ class TransactionEditFragment : Fragment() {
             "Bandung Jok","Bandung Jok Gowa","Bagus Jok","Beo","Berkah Variasi",
             "Cahaya Variasi",
             "dr Jok","Dyna Jok","D'fun Kendari","Densus 99",
-            "Eka Jok",
+            "Eka Jok","Evolution",
             "Fiesta Jok","Fakhri Jok",
             "Green Design",
             "HSR Auto",
@@ -188,7 +187,7 @@ class TransactionEditFragment : Fragment() {
         val builder = AlertDialog.Builder(context)
         builder.setTitle(code.text)
         val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(com.example.app21try6.R.layout.update, null)
+        val view = inflater.inflate(com.example.app21try6.R.layout.pop_up_update, null)
         val textKet = view.findViewById<TextInputEditText>(com.example.app21try6.R.id.textUpdateKet)
 
         when (code) {
@@ -258,7 +257,7 @@ class TransactionEditFragment : Fragment() {
         alert.show()
     }
     fun showInputCoiceDialog(item:TransactionDetail) {
-        val binding :UnitPopUpBinding = UnitPopUpBinding.inflate(LayoutInflater.from(context))
+        val binding :PopUpUnitBinding = PopUpUnitBinding.inflate(LayoutInflater.from(context))
 
         val dialog = AlertDialog.Builder(context).setTitle("PILIH").setView(binding.root)
             .setPositiveButton("OK") { _, _ ->

@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -30,9 +29,9 @@ class   ProductStockFragment : Fragment() {
 
         val application = requireNotNull(this.activity).application
         val dataSource2 = VendibleDatabase.getInstance(application).productDao
-        var id = arguments?.let { ProductStockFragmentArgs.fromBundle(it).id }
-        var new_id = id?.map { it }?.toMutableList()
-        var title = new_id?.get(new_id.size-1)
+        val id = arguments?.let { ProductStockFragmentArgs.fromBundle(it).id }
+        val new_id = id?.map { it }?.toMutableList()
+        val title = new_id?.get(new_id.size-1)
         new_id?.remove(title)
         (activity as AppCompatActivity).supportActionBar?.title = title
         val id_ = new_id?.map { it.toInt() }?.toTypedArray()
@@ -103,7 +102,7 @@ class   ProductStockFragment : Fragment() {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Update")
         val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.update_product_dialog, null)
+        val view = inflater.inflate(R.layout.pop_up_update_product_dialog, null)
         val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
         val textPrice = view.findViewById<TextInputEditText>(R.id.textUpdatePrice)
         val textCapital = view.findViewById<TextInputEditText>(R.id.textCapital)
@@ -164,7 +163,7 @@ class   ProductStockFragment : Fragment() {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Tambah Item")
         val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.update_product_dialog, null)
+        val view = inflater.inflate(R.layout.pop_up_update_product_dialog, null)
         val textBrand = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
         val textPrice = view.findViewById<TextInputEditText>(R.id.textUpdatePrice)
         builder.setView(view)

@@ -8,11 +8,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.database.Category
-import com.example.app21try6.databinding.CategoryItemListBinding
+import com.example.app21try6.databinding.ItemListCategoryBinding
 
 
 class CategoryAdapter (val checkBoxListener: CheckBoxListenerDoalog):ListAdapter<Category,CategoryAdapter.MyViewHolder>(BookDiffCallback()) {
-    class MyViewHolder private constructor(val binding: CategoryItemListBinding): RecyclerView.ViewHolder(binding.root){
+    class MyViewHolder private constructor(val binding: ItemListCategoryBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(item:Category,
                  checkBoxListener: CheckBoxListenerDoalog
         ){
@@ -25,7 +25,7 @@ class CategoryAdapter (val checkBoxListener: CheckBoxListenerDoalog):ListAdapter
         companion object{
             fun from(parent: ViewGroup): MyViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding =CategoryItemListBinding.inflate(layoutInflater,parent,false)
+                val binding =ItemListCategoryBinding.inflate(layoutInflater,parent,false)
                 return MyViewHolder(binding)
             }
         }

@@ -170,4 +170,8 @@
         android:id="@+id/graphicMainFragment"
         android:name="com.example.app21try6.grafik.grafikmain.GraphicMainFragment"
         android:label="Grafik n" />
+    <fragment
+        android:id="@+id/statementHsFragment"
+        android:name="com.example.app21try6.statement.StatementHsFragment"
+        android:label="StatementHsFragment" />
 </navigation>

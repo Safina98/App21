@@ -10,10 +10,11 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
 import com.example.app21try6.database.Summary
+import com.example.app21try6.databinding.ItemListBookkeepingBinding
 //import com.example.app21try6.database.Vendible
 
 
-import com.example.app21try6.databinding.BookkeepingItemListBinding
+
 import com.example.app21try6.formatRupiah
 
 class  BookkeepingAdapter(
@@ -26,7 +27,7 @@ class  BookkeepingAdapter(
 ) :
         ListAdapter<Summary,
                 BookkeepingAdapter.MyViewHolder>(BookDiffCallback()){
-    class MyViewHolder private constructor(val binding: BookkeepingItemListBinding):RecyclerView.ViewHolder(binding.root){
+    class MyViewHolder private constructor(val binding: ItemListBookkeepingBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(
             item: Summary,
             plusListener: PlusBookListener,
@@ -53,7 +54,7 @@ class  BookkeepingAdapter(
         companion object{
             fun from(parent: ViewGroup): MyViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding =BookkeepingItemListBinding.inflate(layoutInflater,parent,false)
+                val binding =ItemListBookkeepingBinding.inflate(layoutInflater,parent,false)
                 return MyViewHolder(binding)
             }
         }

@@ -6,11 +6,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.database.SubProduct
-import com.example.app21try6.databinding.VendibleItemListBinding
+import com.example.app21try6.databinding.ItemListVendibleBinding
 
 class SubAdapter2 (val code:Int,val checkBoxListener2: CheckBoxListener2):  ListAdapter<SubProduct,
         SubAdapter2.MyViewHolder>(SubDiffCallback()){
-    class MyViewHolder private constructor( val binding: VendibleItemListBinding): RecyclerView.ViewHolder(binding.root){
+    class MyViewHolder private constructor( val binding: ItemListVendibleBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(code:Int,checkBoxListener2: CheckBoxListener2,
                  item: SubProduct){
             binding.subProduct = item
@@ -21,7 +21,7 @@ class SubAdapter2 (val code:Int,val checkBoxListener2: CheckBoxListener2):  List
         companion object{
             fun from(parent: ViewGroup):MyViewHolder{
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = VendibleItemListBinding.inflate(layoutInflater,parent,false)
+                val binding = ItemListVendibleBinding.inflate(layoutInflater,parent,false)
                 return MyViewHolder(binding)
             }
         }

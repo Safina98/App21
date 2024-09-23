@@ -14,8 +14,8 @@ import com.example.app21try6.bookkeeping.vendiblelist.TextListener
 import com.example.app21try6.database.Product
 import com.example.app21try6.database.SubProduct
 import com.example.app21try6.database.TransactionDetail
-import com.example.app21try6.databinding.TransactionSelectItemListBinding
-import com.example.app21try6.databinding.VendibleItemListBinding
+import com.example.app21try6.databinding.ItemListTransactionSelectBinding
+
 class TransactionSelectAdapter (
    val plusSelectListener: PlusSelectListener,
    val subsSelectListener: SubsSelectListener,
@@ -25,7 +25,7 @@ class TransactionSelectAdapter (
     val selectLongListener: SelectLongListener
 ): ListAdapter<TransSelectModel,
         TransactionSelectAdapter.MyViewHolder>(SelectDiffCallback()){
-    class MyViewHolder private constructor(val binding: TransactionSelectItemListBinding): RecyclerView.ViewHolder(binding.root){
+    class MyViewHolder private constructor(val binding: ItemListTransactionSelectBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(
                  item:TransSelectModel,
                  plusSelectListener: PlusSelectListener,
@@ -51,7 +51,7 @@ class TransactionSelectAdapter (
         companion object{
             fun from(parent: ViewGroup): MyViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding =TransactionSelectItemListBinding.inflate(layoutInflater,parent,false)
+                val binding =ItemListTransactionSelectBinding.inflate(layoutInflater,parent,false)
                 return MyViewHolder(binding)
             }
         }

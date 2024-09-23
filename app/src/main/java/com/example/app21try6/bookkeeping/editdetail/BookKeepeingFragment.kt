@@ -88,7 +88,7 @@ class BookKeepeingFragment : Fragment() {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Update")
         val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.update, null)
+        val view = inflater.inflate(R.layout.pop_up_update, null)
         val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
         textKet.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         builder.setView(view)

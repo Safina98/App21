@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.databinding.TransactionPaymentItemListBinding
+import com.example.app21try6.databinding.ItemListTransactionPaymentBinding
 import com.example.app21try6.formatRupiah
 
 class PaymentAdapter(
@@ -18,7 +18,7 @@ class PaymentAdapter(
     ListAdapter<PaymentModel, PaymentAdapter.MyViewHolder>(TransPaymentDiffCallBack())
 {
     private var is_active = MutableLiveData<Boolean>(false)
-    class MyViewHolder private constructor(val binding: TransactionPaymentItemListBinding) :
+    class MyViewHolder private constructor(val binding: ItemListTransactionPaymentBinding) :
     RecyclerView.ViewHolder(binding.root) {
     fun bind(
         item: PaymentModel,
@@ -38,7 +38,7 @@ class PaymentAdapter(
             fun from(parent: ViewGroup): PaymentAdapter.MyViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val binding =
-                    TransactionPaymentItemListBinding.inflate(layoutInflater, parent, false)
+                    ItemListTransactionPaymentBinding.inflate(layoutInflater, parent, false)
                 return PaymentAdapter.MyViewHolder(binding)
             }
         }

@@ -5,9 +5,11 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.example.app21try6.grafik.StockModel
 import com.example.app21try6.transaction.transactionactive.TransExportModel
+import com.example.app21try6.transaction.transactiondetail.TransactionDetailWithProduct
 import com.example.app21try6.transaction.transactionselect.TransSelectModel
 import java.util.Date
 
@@ -25,6 +27,17 @@ interface TransDetailDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertN(transactionDetail: TransactionDetail):Long
+
+    @Transaction
+    @Query("""
+    SELECT td.*, p.product_id, p.product_name
+    FROM trans_detail_table td
+    INNER JOIN sub_table sp ON td.trans_item_name = sp.sub_name
+    INNER JOIN product_table p ON sp.product_code = p.product_id
+    WHERE td.sum_id = :transactionSummaryId
+""")
+    fun getTransactionDetailsWithProduct(transactionSummaryId: Int): LiveData<List<TransactionDetailWithProduct>>
+
 
     @Query("SELECT * FROM trans_detail_table WHERE sum_id =:sum_id_  order BY item_position asc")
     fun selectATransDetail(sum_id_:Int):LiveData<List<TransactionDetail>>

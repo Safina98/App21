@@ -4,30 +4,23 @@ import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
-import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
-import com.example.app21try6.bookkeeping.editdetail.BookkeepingViewModel
 import com.example.app21try6.bookkeeping.vendiblelist.VendibleFragmentArgs
-import com.example.app21try6.database.TransactionDetail
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionSelectBinding
 import com.example.app21try6.transaction.transactionedit.Code
-import com.example.app21try6.transaction.transactionedit.TransactionEditViewModel
 import com.google.android.material.textfield.TextInputEditText
 
 
@@ -53,8 +46,6 @@ class TransactionSelectFragment : Fragment() {
             .get(TransactionSelectViewModel::class.java)
         var i = date!![1].toInt()
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            // Set transSelectModel to an empty list
-            // Optionally, pop the fragment from the back stack
             viewModel.resetTransModel()
             findNavController().popBackStack()
         }
@@ -139,7 +130,7 @@ class TransactionSelectFragment : Fragment() {
         val builder = AlertDialog.Builder(context)
         if (code==Code.ZERO) builder.setTitle(transSelectModel.item_name) else builder.setTitle(code.text)
         val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.update, null)
+        val view = inflater.inflate(R.layout.pop_up_update, null)
         val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
         textKet.requestFocus()
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager

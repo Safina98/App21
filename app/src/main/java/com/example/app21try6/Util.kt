@@ -12,6 +12,8 @@ import kotlin.math.absoluteValue
 
 val SIMPLE_DATE_FORMAT ="dd/MM/yyyy"
 val DATE_FORMAT = SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault())
+enum class DISCTYPE (val text: String) {CashbackPrinted("Cashback Printed"),CashbackNotPrinted("Cashback NotPrinted"),Others("Others")}
+
 fun formatRupiah(number: Double?): String? {
     val localeID = Locale("in", "ID")
     val formatRupiah: NumberFormat = NumberFormat.getCurrencyInstance(localeID)

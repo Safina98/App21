@@ -14,10 +14,8 @@ import android.media.ToneGenerator
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
-import android.os.Vibrator
 import android.os.VibratorManager
 import android.text.InputType
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,12 +32,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
-import com.example.app21try6.database.TransactionDetail
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionDetailBinding
-import com.example.app21try6.transaction.transactionactive.TransactionActiveAdapter
-import com.example.app21try6.transaction.transactionedit.Code
-import com.example.app21try6.transaction.transactionedit.TransactionEditViewModel
 import com.google.android.material.textfield.TextInputEditText
 import java.util.*
 
@@ -101,8 +95,9 @@ class TransactionDetailFragment : Fragment() {
         binding.recyclerViewDetailTrans.adapter = adapter
 
         binding.btnPrintNew.setOnClickListener {
-           fibrateOnClick()
-            printReceipt()
+           //fibrateOnClick()
+            //printReceipt()
+            viewModel.calculateDisc()
         }
         viewModel.transDetail.observe(viewLifecycleOwner, Observer {
             it?.let {
@@ -110,7 +105,11 @@ class TransactionDetailFragment : Fragment() {
                 adapter.notifyDataSetChanged()
             }
         })
+        viewModel.transDetailWithProduct.observe(viewLifecycleOwner, Observer {
+            it?.let {
 
+            }
+        })
         binding.recyclerViewBayar.adapter = paymentAdapter
 
         viewModel.setUiMode(nightModeFlags)
@@ -175,7 +174,7 @@ class TransactionDetailFragment : Fragment() {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Bayar")
         val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.update, null)
+        val view = inflater.inflate(R.layout.pop_up_update, null)
         val textPrice = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
 
         if (paymentModel.payment_ammount!=null){

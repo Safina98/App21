@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.database.TransactionDetail
 import com.example.app21try6.database.TransactionSummary
-import com.example.app21try6.databinding.TransactionDetailItemListBinding
+import com.example.app21try6.databinding.ItemListTransactionDetailBinding
 import com.example.app21try6.formatRupiah
 
 
@@ -25,7 +25,7 @@ class TransactionDetailAdapter(
     private var is_active = MutableLiveData<Boolean>(false)
 
 
-    class MyViewHolder private constructor(val binding: TransactionDetailItemListBinding) :
+    class MyViewHolder private constructor(val binding: ItemListTransactionDetailBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(
             item: TransactionDetail,
@@ -56,7 +56,7 @@ class TransactionDetailAdapter(
             fun from(parent: ViewGroup): MyViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val binding =
-                    TransactionDetailItemListBinding.inflate(layoutInflater, parent, false)
+                    ItemListTransactionDetailBinding.inflate(layoutInflater, parent, false)
                 return MyViewHolder(binding)
             }
         }

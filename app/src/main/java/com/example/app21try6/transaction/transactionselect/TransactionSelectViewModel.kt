@@ -152,8 +152,8 @@ class TransactionSelectViewModel(
     fun insertDuplicateSubProduct(s:TransSelectModel){
         viewModelScope.launch {
             Log.i("DuplicateProbs","s id ${s.trans_detail_id}")
-            var t = converter(s)
-            var id = insertDetailToDBandGetId(t)
+            val t = converter(s)
+            val id = insertDetailToDBandGetId(t)
             Log.i("DuplicateProbs","inserted id $id")
             s.trans_detail_id  = id ?: -1L
             getTransModel(_productId.value!!)

@@ -9,7 +9,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
 import com.example.app21try6.database.Summary
-import com.example.app21try6.databinding.SummaryItemListBinding
+import com.example.app21try6.databinding.ItemListBookkeepingBinding
+import com.example.app21try6.databinding.ItemListSumaryBinding
+
 import com.example.app21try6.formatRupiah
 
 class SummaryAdapter(
@@ -17,7 +19,7 @@ class SummaryAdapter(
 ):
         ListAdapter<ListModel, SummaryAdapter.MyViewHolder>(ProductDiffCallback())
 {
-    class MyViewHolder private constructor( val binding: SummaryItemListBinding): RecyclerView.ViewHolder(binding.root){
+    class MyViewHolder private constructor( val binding: ItemListSumaryBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(clickListener: SummaryListener, item: ListModel){
            //if (item.day_n!=0)
            //{
@@ -40,7 +42,7 @@ class SummaryAdapter(
         companion object{
             fun from(parent: ViewGroup):MyViewHolder{
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = SummaryItemListBinding.inflate(layoutInflater,parent,false)
+                val binding = ItemListSumaryBinding.inflate(layoutInflater,parent,false)
                 return MyViewHolder(binding)
             }
         }

@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.DATE_FORMAT
 import com.example.app21try6.database.TransactionSummary
-import com.example.app21try6.databinding.TransactionAllItemListBinding
+import com.example.app21try6.databinding.ItemListTransactionAllBinding
 import com.example.app21try6.formatRupiah
 
 class AllTransactionAdapter(val clickListener:AllTransClickListener,
@@ -21,7 +21,7 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
     private var is_active = MutableLiveData<Boolean>(false)
     private var unfilteredList = listOf<TransactionSummary>()
 
-    class MyViewHolder private constructor(val binding: TransactionAllItemListBinding):RecyclerView.ViewHolder(binding.root){
+    class MyViewHolder private constructor(val binding: ItemListTransactionAllBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(
             item:TransactionSummary,
             clickListener: AllTransClickListener,
@@ -45,7 +45,7 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
         companion object{
             fun from(parent:ViewGroup):MyViewHolder{
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = TransactionAllItemListBinding.inflate(layoutInflater,parent,false)
+                val binding = ItemListTransactionAllBinding.inflate(layoutInflater,parent,false)
                 return MyViewHolder(binding)
             }
         }
@@ -53,7 +53,7 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
 
     fun deActivate() {
         val list = mutableListOf<TransactionSummary>()
-        var l = unfilteredList.toMutableList()
+        val l = unfilteredList.toMutableList()
         this.is_active.value  = false
         l.filter { it.is_paid_off.equals(true)}.forEach { it.is_paid_off=false }
         submitList(l)

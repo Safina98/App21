@@ -6,8 +6,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.database.Product
-import com.example.app21try6.databinding.ProductItemListBinding
-import com.example.app21try6.databinding.TransactionProductItemListBinding
+
+import com.example.app21try6.databinding.ItemListTransactionProductBinding
 import com.example.app21try6.stock.productstock.ProductStockListener
 import com.example.app21try6.stock.productstock.ProductStockLongListener
 
@@ -15,7 +15,7 @@ class TransactionProductAdapter (
     val clickListener:ProductTransListener
         ): ListAdapter<Product,TransactionProductAdapter.MyViewHolder>(ProductTransDiffCallBack()){
 
-    class MyViewHolder private constructor(val binding: TransactionProductItemListBinding): RecyclerView.ViewHolder(binding.root){
+    class MyViewHolder private constructor(val binding: ItemListTransactionProductBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(item: Product, produtListener: ProductTransListener){
             binding.product = item
             binding.clickListener = produtListener
@@ -24,7 +24,7 @@ class TransactionProductAdapter (
         companion object{
             fun from(parent: ViewGroup): MyViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = TransactionProductItemListBinding.inflate(layoutInflater,parent,false)
+                val binding = ItemListTransactionProductBinding.inflate(layoutInflater,parent,false)
                 return MyViewHolder(binding)
             }
         }

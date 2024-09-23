@@ -1,12 +1,16 @@
 package com.example.app21try6.transaction.transactiondetail
 
 import android.app.Application
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
+import com.example.app21try6.DISCTYPE
+import com.example.app21try6.database.CustomerTable
+import com.example.app21try6.database.DiscountTable
 import com.example.app21try6.database.Payment
 
 import com.example.app21try6.database.PaymentDao
@@ -38,12 +42,11 @@ class TransactionDetailViewModel (application: Application,
                                   private val datasource5: SubProductDao,
                                   var id:Int):AndroidViewModel(application){
 
-    //TODO
-    //1. ubah viewmodel scope jadi ui scope
-    //2. cancel job when back pressed in transaction product fragment
+
 
     //transaction detail for recyclerview
     val transDetail = datasource2.selectATransDetail(id)
+    val transDetailWithProduct= datasource2.getTransactionDetailsWithProduct(id)
     //Transaction Summary
     val transSum = datasource1.getTransSum(id)
     //Total Trans
@@ -101,11 +104,59 @@ class TransactionDetailViewModel (application: Application,
     private val _navigateToEdit = MutableLiveData<Int>()
     val navigateToEdit: LiveData<Int> get() = _navigateToEdit
 
+    val dummyDiscList= listOf<DiscountTable>(DiscountTable(0,"MB CAMARO",2000.0,DISCTYPE.CashbackNotPrinted.text,5.0,null,null,null,null,null,null,"Makassar"),
+        DiscountTable(0,"Excelent",2000.0,DISCTYPE.CashbackNotPrinted.text,5.0,null,null,null,null,null,null,"Makassar"))
+    val dummyCustList= listOf<CustomerTable>(CustomerTable(0,"Bandung Jok","Bandung Jok","Makassar"))
+
     //Set ui to change icons color when night mode or day mode on
     fun setUiMode(mode:Int){
         _uiMode.value = mode
     }
     /******************************************** CRUD **************************************/
+
+    fun calculateDisc(){
+        viewModelScope.launch {
+            //get customer table
+            //check if customer get cashback
+            val list = mutableListOf<DiscountTable>()
+            var prQty=0.0
+            val groupedByProduct = transDetailWithProduct.value?.groupBy { it.productName }
+// Calculate the discount value for products that match the discount conditions
+            val discountValues = dummyDiscList.mapNotNull { discount ->
+                // Get the transaction details for the product name matching the discount name
+                val productTransactions = groupedByProduct!![discount.discName]
+
+                // If there are matching transactions for the discount
+                if (productTransactions != null) {
+                    // Calculate the total quantity for this product
+                    val totalQty = productTransactions.sumOf { it.transactionDetail.qty }
+                    Log.i("DiscProbs","totalQty: $totalQty")
+                    // Check if the total quantity meets the minimumQty condition
+                    if (totalQty >= (discount.minimumQty ?: 0.0)) {
+                        // Calculate the discount value (qty * discValue)
+                        val discountValue = totalQty * discount.discValue
+                        // Return the result as a pair (product name, discount value)
+                        discount.discName to discountValue
+                    } else {
+                        null // No discount if minimumQty condition is not met
+                    }
+                } else {
+                    null // No matching transactions for this discount
+                }
+            }
+
+// Now, discountValues contains a list of pairs with product name and discount value
+            discountValues.forEach { (productName, discountValue) ->
+                Log.i("DiscProbs","Product: $productName, Discount Value: $discountValue")
+            }
+            // Sum the qty for each product group
+            //val productQtySums = groupedByProduct?.mapValues { entry -> entry.value.sumOf { it.transactionDetail.qty } }
+            //Log.i("DiscProbs","ProductQtySums: $productQtySums")
+            // Now, productQtySums contains a map where the key is the product ID
+            // and the value is the sum of qty for that product.
+            //productQtySums?.forEach { (productName, totalQty) -> Log.i("DiscProbs","Product ID: $productName, Total Quantity: $totalQty") }
+                    }
+    }
 
     //Toggle and update Transaction Summary is_taken value when btn_is_taken clicked
     fun updateBooleanValue() {
@@ -239,7 +290,7 @@ class TransactionDetailViewModel (application: Application,
                summary.month_number = calendar.get(Calendar.MONTH)+1
                summary.day = calendar.get(Calendar.DATE)
                summary.day_name = transSum.value!!.trans_date.toString()
-               summary.item_name = getProductName(it.trans_item_name)
+               summary.item_name = getProductName(it.trans_item_name)?: it.trans_item_name
                summary.price = it.trans_price.toDouble()
                summary.item_sold = it.qty
                summary.total_income = it.total_price
@@ -295,7 +346,7 @@ class TransactionDetailViewModel (application: Application,
             datasource1.update(transSum)
         }
     }
-    private suspend fun getProductName(subName:String):String{
+    private suspend fun getProductName(subName:String):String?{
         return withContext(Dispatchers.IO){
             datasource5.getProductName(subName)
         }

@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.database.TransactionDetail
-import com.example.app21try6.databinding.TransactionEditItemListBinding
+import com.example.app21try6.databinding.ItemListTransactionEditBinding
 
 import com.example.app21try6.formatRupiah
 
@@ -27,7 +27,7 @@ class TransactionEditAdapter(
     )
     :ListAdapter<TransactionDetail,TransactionEditAdapter.MyViewHolder>(TransEditDiffCallBack()){
     var items= mutableListOf<TransactionDetail>()
-    class MyViewHolder private constructor(val binding: TransactionEditItemListBinding):RecyclerView.ViewHolder(binding.root){
+    class MyViewHolder private constructor(val binding: ItemListTransactionEditBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(
             item:TransactionDetail,
             clickListener: TransEditClickListener,
@@ -61,7 +61,7 @@ class TransactionEditAdapter(
         companion object{
             fun from(parent:ViewGroup): MyViewHolder{
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = TransactionEditItemListBinding.inflate(layoutInflater,parent,false)
+                val binding = ItemListTransactionEditBinding.inflate(layoutInflater,parent,false)
                 return MyViewHolder(binding)
             }
         }

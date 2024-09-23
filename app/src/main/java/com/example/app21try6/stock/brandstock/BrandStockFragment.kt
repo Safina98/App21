@@ -4,7 +4,6 @@ package com.example.app21try6.stock.brandstock
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -15,7 +14,6 @@ import android.util.Log
 import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.CheckBox
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -30,7 +28,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.BuildConfig
 import com.example.app21try6.R
 import com.example.app21try6.ToolbarUtil
 import com.example.app21try6.database.Brand
@@ -160,7 +157,7 @@ class BrandStockFragment : Fragment() {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Choose to delete")
         val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.list_dialog, null)
+        val view = inflater.inflate(R.layout.pop_up_list_dialog, null)
         val rv = view.findViewById<RecyclerView>(R.id.recyclerView_vendibleDialog)
         val adapter = CategoryAdapter(CheckBoxListenerDoalog{ view: View, category: Category ->
             val cb = view as CheckBox
@@ -212,7 +209,7 @@ class BrandStockFragment : Fragment() {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Update")
         val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.update, null)
+        val view = inflater.inflate(R.layout.pop_up_update, null)
         val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
         if (code==1){textKet.setText(vendible.brand_name.toString())}else{textKet.setText(category.category_name.toString())}
         builder.setView(view)
@@ -234,7 +231,7 @@ class BrandStockFragment : Fragment() {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Tambah Item")
         val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.update, null)
+        val view = inflater.inflate(R.layout.pop_up_update, null)
         val textBrand = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
         builder.setView(view)
         builder.setPositiveButton("OK") { dialog, which ->
