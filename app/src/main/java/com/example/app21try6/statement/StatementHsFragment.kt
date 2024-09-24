@@ -1,30 +1,22 @@
 package com.example.app21try6.statement
 
 import android.app.AlertDialog
-import android.content.Context
 import android.os.Bundle
 import android.text.InputType
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.app21try6.R
-import com.example.app21try6.bindDateFormatted
+import com.example.app21try6.database.CustomerTable
+import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentStatementHsBinding
-import com.example.app21try6.databinding.FragmentTransactionSelectBinding
 import com.example.app21try6.databinding.PopUpDiscBinding
-import com.example.app21try6.stock.productstock.ProductStockAdapter
-import com.example.app21try6.stock.productstock.ProductStockListener
-import com.example.app21try6.stock.productstock.ProductStockLongListener
-import com.example.app21try6.transaction.transactiondetail.TransactionDetailViewModel
-import com.example.app21try6.transaction.transactiondetail.TransactionDetailViewModelFactory
-import com.example.app21try6.transaction.transactionedit.Code
-import com.example.app21try6.transaction.transactionselect.TransSelectModel
-import com.example.app21try6.transaction.transactionselect.TransactionSelectViewModel
-import com.google.android.material.textfield.TextInputEditText
 
 
 class StatementHsFragment : Fragment() {
@@ -37,16 +29,64 @@ class StatementHsFragment : Fragment() {
         // Inflate the layout for this fragment
         binding =DataBindingUtil.inflate(inflater,R.layout.fragment_statement_hs,container,false)
         val application= requireNotNull(this.activity).application
-        val viewModelFactory = StatementHSViewModelFactory(application)
+        val dataSource1 = VendibleDatabase.getInstance(application).discountDao
+        val dataSource2 = VendibleDatabase.getInstance(application).customerDao
+        val viewModelFactory = StatementHSViewModelFactory(application,dataSource1,dataSource2)
         viewModel = ViewModelProvider(this,viewModelFactory).get(StatementHSViewModel::class.java)
         binding.viewModel=viewModel
-        val adapter = DiscountAdapter(DiscountListener {  }, DiscountLongListener {  })
-        binding.btnAddExpense.setOnClickListener {
+
+        val adapter = DiscountAdapter(DiscountListener {  }, DiscountLongListener {  },
+            DiscountDelListener {viewModel.deleteDiscountTable(it)  })
+        binding.btnAddDiscount.setOnClickListener {
             showDiscountDialog()
-            adapter.notifyDataSetChanged()
         }
+        val adapterCustomer = CustomerAdapter(
+            CustomerListener {  },
+            CustomerLongListener {  },
+            CustomerDelListener {  }
+        )
+        binding.btnAddDiscount.setOnClickListener {
+            showDiscountDialog()
+        }
+        binding.btnAddCustomer.setOnClickListener {
+            viewModel.insertBatch()
+        }
+        val suggestions = arrayOf(
+            "Asia Jok", "Alyka Jok","Aisya Jok","Auto 354","AMV","Akbar Sengkang","Asep Ramlan","Anugrah Mebel","AT Jok",
+            "Bandung Jok","Bandung Jok Gowa","Bagus Jok","Beo","Berkah Variasi",
+            "Cahaya Variasi",
+            "dr Jok","Dyna Jok","D'fun Kendari","Densus 99",
+            "Eka Jok","Evolution",
+            "Fiesta Jok","Fakhri Jok",
+            "Green Design",
+            "HSR Auto",
+            "Jabal","Jok 88",
+            "King Variasi","Karya Jok","Kubis Mebel",
+            "Makassar Variasi","Mega Buana","Mas Tono",
+            "Laquna",
+            "Pak Maliang", "Pak Ilham", "Pak Ramli Sidrap","Pak Ibet","Pak Agus Saputra","Pattalassang Variasi","Prima leather","Pak Alim",
+            "Rajawali Motor Timika","Rumah Kursi","Rumah Sofa Kolut","RGARAGE","Rezky Jok","Riski Jok",
+            "Sun Variasi","Susan Jok", "Sumber Jok","Surabaya Motor","Selayar","SKAAD Bintuni","Sam & Sons",
+            "Terminal Jok",
+            "Unang",
+            "Variasi 77",
+            "Wendy",
+            "Yusdar Motor")
+
+        val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
         binding.rvDisc.adapter = adapter
-        adapter.submitList(viewModel.dummyDiscList)
+        binding.rvCust.adapter=adapterCustomer
+        binding.rvDisc.addItemDecoration(dividerItemDecoration)
+        binding.rvCust.addItemDecoration(dividerItemDecoration)
+        viewModel.allDiscountFromDB.observe(viewLifecycleOwner, Observer {
+            adapter.submitList(it)
+            adapter.notifyDataSetChanged()
+        })
+        viewModel.allCustomerFromDb.observe(viewLifecycleOwner, Observer {
+            adapterCustomer.submitList(it)
+            adapter.notifyDataSetChanged()
+        })
+
         return binding.root
     }
     private fun showDiscountDialog() {
@@ -66,11 +106,12 @@ class StatementHsFragment : Fragment() {
             .setTitle("Enter Discount Details")
             .setPositiveButton("OK") { dialog, _ ->
                 // Get values from the input fields
-                val discName = binding.textDiscName.text.toString()
-                val discValue = binding.textDiscValue.text.toString().toDouble()
-                val discMinQty = binding.textDiscValue.text.toString().toDoubleOrNull()
-                val selectedDiscType = binding.spinnerM.selectedItem.toString()
-                viewModel.insertDiscount(discValue,discName,discMinQty,selectedDiscType)
+                val discName = binding.textDiscName.text.toString().uppercase().trim()
+                val discValue = binding.textDiscValue.text.toString().trim().toDouble()
+                val discMinQty = binding.textDiscValue.text.toString().trim().toDoubleOrNull()
+                val selectedDiscType = binding.spinnerM.selectedItem.toString().trim()
+                val custLocation = binding.textCustLoc.text.toString().uppercase().trim()
+                viewModel.insertDiscount(discValue,discName,discMinQty,selectedDiscType,custLocation)
                 // Do something with the input data, e.g., save or pass it
                 // ...
 

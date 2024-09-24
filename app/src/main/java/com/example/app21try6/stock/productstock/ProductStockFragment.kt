@@ -9,6 +9,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -19,25 +21,29 @@ import com.example.app21try6.R
 import com.example.app21try6.database.Product
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentProductStockBinding
+import com.example.app21try6.databinding.PopUpUpdateProductDialogBinding
 import com.google.android.material.textfield.TextInputEditText
 
 class   ProductStockFragment : Fragment() {
     private lateinit var binding: FragmentProductStockBinding
+    private lateinit var discountNames: List<String>
+    private lateinit var viewModel: ProductViewModel
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_product_stock,container,false)
 
         val application = requireNotNull(this.activity).application
         val dataSource2 = VendibleDatabase.getInstance(application).productDao
+        val dataSource1 = VendibleDatabase.getInstance(application).discountDao
         val id = arguments?.let { ProductStockFragmentArgs.fromBundle(it).id }
         val new_id = id?.map { it }?.toMutableList()
         val title = new_id?.get(new_id.size-1)
         new_id?.remove(title)
         (activity as AppCompatActivity).supportActionBar?.title = title
         val id_ = new_id?.map { it.toInt() }?.toTypedArray()
-        val viewModelFactory = ProductViewModelFactory(dataSource2,application,id_!!)
+        val viewModelFactory = ProductViewModelFactory(dataSource2,dataSource1,application,id_!!)
         binding.lifecycleOwner =this
-        val viewModel = ViewModelProvider(this,viewModelFactory)
+       viewModel = ViewModelProvider(this,viewModelFactory)
                 .get(ProductViewModel::class.java)
         binding.productViewModel = viewModel
 
@@ -53,6 +59,16 @@ class   ProductStockFragment : Fragment() {
                 adapter.submitList(it.sortedBy { it.product_name})
                 adapter.notifyDataSetChanged()
             }
+        })
+        viewModel.allDiscountFromDB.observe(viewLifecycleOwner, Observer {discounts ->
+            Log.i("DiscProbs", "Discounts loaded: $discounts")
+
+            if (discounts != null && discounts.isNotEmpty()) {
+                discountNames = discounts // Store the discounts list
+            } else {
+                discountNames = emptyList()
+            }
+
         })
 
         viewModel.addItem.observe(viewLifecycleOwner, Observer {
@@ -98,18 +114,31 @@ class   ProductStockFragment : Fragment() {
         alert.show()
     }
 
-    private fun updateDialog(viewModel: ProductViewModel, vendible: Product) {
+    private fun updateDialog(viewModell: ProductViewModel, vendible: Product) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Update")
-        val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.pop_up_update_product_dialog, null)
-        val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
-        val textPrice = view.findViewById<TextInputEditText>(R.id.textUpdatePrice)
-        val textCapital = view.findViewById<TextInputEditText>(R.id.textCapital)
+        Log.i("DiscProbs","updateDialogShows")
+        val dialogBinding = DataBindingUtil.inflate<PopUpUpdateProductDialogBinding>(
+            LayoutInflater.from(context), R.layout.pop_up_update_product_dialog, null, false)
 
+        val textKet = dialogBinding.textUpdateKet
+        val textPrice = dialogBinding.textUpdatePrice
+        val textCapital = dialogBinding.textCapital
+        val textDisc=dialogBinding.textDiscount
+
+        val merkAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, emptyList())
+        textDisc.setAdapter(merkAdapter)
+        viewModel.allDiscountFromDB.observe(viewLifecycleOwner) { allMerk ->allMerk?.let {
+            Log.i("DiscProbs","oberver in dialog: $allMerk")
+            merkAdapter.clear()
+            merkAdapter.addAll(allMerk.sortedBy { it })
+        }
+
+        }
         textKet.setText(vendible.product_name.toString())
         textPrice.setText(vendible.product_price.toString())
         textCapital.setText(vendible.product_capital.toString())
+        if(vendible!=null) textDisc.setText(vendible.discountId.toString())
         textKet.requestFocus()
 
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -127,8 +156,6 @@ class   ProductStockFragment : Fragment() {
             if (price != null) {
                 vendible.product_price = price
             } else {
-                // Handle the case where the price is not a valid integer
-                // e.g., show an error message to the user
                 Log.i("capitalErr","else Price :$price")
             }
 
@@ -136,22 +163,19 @@ class   ProductStockFragment : Fragment() {
                 vendible.product_capital = capital
             } else {
                 Log.i("capitalErr","else Price :$capital")
-                // Handle the case where the capital is not a valid integer
-                // e.g., show an error message to the user
             }
-
-            vendible.product_name = textKet.text.toString().toUpperCase().trim()
-
+            vendible.product_name = textKet.text.toString().uppercase().trim()
+            val discName=textDisc.text.toString().uppercase().trim()
             if (vendible.product_name.isNotEmpty()) {
-                viewModel.updateProduct(vendible)
+                viewModel.updateProduct(vendible,discName)
             }
 
-            imm.hideSoftInputFromWindow(view.windowToken, 0)
+                //imm.hideSoftInputFromWindow(windowToken, 0)
         }
 
         builder.setNegativeButton("Cancel") { dialog, which ->
             dialog.dismiss()
-            imm.hideSoftInputFromWindow(view.windowToken, 0)
+            //imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
 
         builder.create().show()
@@ -166,6 +190,14 @@ class   ProductStockFragment : Fragment() {
         val view = inflater.inflate(R.layout.pop_up_update_product_dialog, null)
         val textBrand = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
         val textPrice = view.findViewById<TextInputEditText>(R.id.textUpdatePrice)
+        val txtDiscount =view.findViewById<AutoCompleteTextView>(R.id.text_discount)
+        val adapter: ArrayAdapter<String> = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            discountNames
+        )
+        txtDiscount.setAdapter(adapter)
+        Log.i("DiscProbs", "Adapter set with discounts: $discountNames")
         builder.setView(view)
         builder.setPositiveButton("OK") { dialog, which ->
             val product_name = textBrand.text.toString().toUpperCase().trim()

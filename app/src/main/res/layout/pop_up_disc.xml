@@ -45,6 +45,18 @@
                 android:id="@+id/textDiscQty"
                 />
         </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:foregroundGravity="center_horizontal"
+            android:gravity="center_horizontal">
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="lokasi: "
+                android:id="@+id/textCustLoc"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
         <Spinner
             android:id="@+id/spinner_m"
             android:layout_width="300dp"

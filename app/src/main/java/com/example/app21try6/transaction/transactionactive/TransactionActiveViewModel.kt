@@ -242,10 +242,6 @@ class TransactionActiveViewModel(
                 Log.i("INSERTCSVPROB", "$e" )
                 Toast.makeText(getApplication(),"An unexpected error occurred", Toast.LENGTH_SHORT).show()
             }
-
     }
-
-
-
 }
 

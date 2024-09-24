@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.app21try6.database.DiscountDao
 import com.example.app21try6.database.Product
 import com.example.app21try6.database.ProductDao
 //import com.example.app21try6.database.ProductDao
@@ -14,6 +15,7 @@ import kotlinx.coroutines.*
 
 class ProductViewModel (
         private val database2: ProductDao,
+        private val discountDao: DiscountDao,
         application: Application,
         val brand_id:Array<Int>
 ): AndroidViewModel(application){
@@ -27,6 +29,7 @@ class ProductViewModel (
     private val _navigateProduct = MutableLiveData<Array<String>>()
     val navigateProduct:LiveData<Array<String>>
         get() = _navigateProduct
+    val allDiscountFromDB=discountDao.getAllDiscountName()
     fun insertAnItemProductStock(product_name:String,price:Int){
         uiScope.launch {
             if (product_name!="") {
@@ -40,7 +43,17 @@ class ProductViewModel (
             }
         }
     }
-    fun updateProduct(product:Product){uiScope.launch{ update(product)}}
+    fun updateProduct(product:Product,discName:String){
+        uiScope.launch{
+            product.discountId=getDiscIdByName(discName)
+            update(product)
+        }
+    }
+    private suspend fun getDiscIdByName(discName:String):Int?{
+        return withContext(Dispatchers.IO){
+            discountDao.getDiscountIdByName(discName)
+        }
+    }
     private suspend fun update(product:Product){ withContext(Dispatchers.IO){ database2.update(product) } }
     fun deleteProduct(product:Product){ uiScope.launch { delete(product) } }
     private suspend fun delete(product:Product){ withContext(Dispatchers.IO){ database2.delete(product.product_id) } }

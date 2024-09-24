@@ -13,12 +13,13 @@ import com.example.app21try6.databinding.ItemListSDiscountBinding
 
 class DiscountAdapter(
     val discountListener:DiscountListener,
-    val longListener: DiscountLongListener
+    val longListener: DiscountLongListener,
+    val delListener: DiscountDelListener
 ): ListAdapter<DiscountTable, DiscountAdapter.MyViewHolder>(DiscountDiffCallback()){
     class MyViewHolder private constructor(val binding: ItemListSDiscountBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(item: DiscountTable, discountListener: DiscountListener, longListener: DiscountLongListener){
-            //binding.Discount = item
-
+        fun bind(item: DiscountTable, discountListener: DiscountListener, longListener: DiscountLongListener,delListener: DiscountDelListener){
+            binding.item=item
+            binding.delListener=delListener
             binding.executePendingBindings()
         }
         companion object{
@@ -38,7 +39,7 @@ class DiscountAdapter(
     }
 
     override fun onBindViewHolder(holder: DiscountAdapter.MyViewHolder, position: Int) {
-        holder.bind(getItem(position),discountListener,longListener)
+        holder.bind(getItem(position),discountListener,longListener,delListener)
     }
 
 }
@@ -55,6 +56,9 @@ class DiscountDiffCallback: DiffUtil.ItemCallback<DiscountTable>(){
 class DiscountListener(val clickListener: (discountTable: DiscountTable) -> Unit) {
     fun onClick(discount: DiscountTable) = clickListener(discount)
 
+}
+class DiscountDelListener(val clickListener: (discountTable: DiscountTable) -> Unit) {
+    fun onClick(discount: DiscountTable) = clickListener(discount)
 }
 class  DiscountLongListener(val longListener: (discount: DiscountTable) -> Unit){
     fun onLongClick(v: View, discount: DiscountTable): Boolean {

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="item"
+            type="com.example.app21try6.database.CustomerTable" />
+        <variable
+            name="delListener"
+            type="com.example.app21try6.statement.CustomerDelListener" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
+
+        <TextView
+            android:id="@+id/lbl_business_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/medium_margin"
+            android:text="Nama Usaha:"
+            style="@style/texr_detail_style"
+            android:textSize="@dimen/_15sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txt_bussiness_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{item.customerBussinessName}"
+            style="@style/texr_detail_style"
+            android:textSize="@dimen/_15sp"
+            android:layout_margin="@dimen/medium_margin"
+            app:layout_constraintStart_toEndOf="@id/lbl_business_name"
+            app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/lbl_business_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/medium_margin"
+            android:text="Lokasi:"
+            style="@style/texr_detail_style"
+            android:textSize="@dimen/_15sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_business_name" />
+
+        <TextView
+            android:id="@+id/txt_bussiness_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{item.customerLocation}"
+            style="@style/texr_detail_style"
+            android:textSize="@dimen/_15sp"
+            android:layout_margin="@dimen/medium_margin"
+            app:layout_constraintStart_toEndOf="@id/lbl_business_location"
+            app:layout_constraintTop_toBottomOf="@id/lbl_business_name"
+            />
+        <TextView
+            android:id="@+id/lbl_business_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/medium_margin"
+            android:text="Alamat: "
+            style="@style/texr_detail_style"
+            android:textSize="@dimen/_15sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_business_location"/>
+
+        <TextView
+            android:id="@+id/txt_bussiness_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{item.customerAddress}"
+            style="@style/texr_detail_style"
+            android:textSize="@dimen/_15sp"
+            android:layout_margin="@dimen/medium_margin"
+            app:layout_constraintStart_toEndOf="@id/lbl_business_address"
+            app:layout_constraintTop_toBottomOf="@id/lbl_business_location" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

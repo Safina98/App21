@@ -17,7 +17,7 @@
         tools:context=".statement.StatementHsFragment">
 
         <Button
-            android:id="@+id/btn_add_expense_category"
+            android:id="@+id/btn_add_discount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Add discount" />
@@ -29,7 +29,7 @@
             android:visibility="visible"
             />
         <Button
-            android:id="@+id/btn_add_expense"
+            android:id="@+id/btn_add_customer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Add Customer" />
