@@ -28,6 +28,23 @@ interface TransDetailDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertN(transactionDetail: TransactionDetail):Long
 
+    @Query("""
+        UPDATE trans_detail_table
+        SET sub_id = (
+            SELECT sub_id FROM sub_table
+            WHERE sub_name = trans_detail_table.trans_item_name
+        )
+        WHERE trans_item_name IN (SELECT sub_name FROM sub_table)
+    """)
+    suspend fun updateSubIdBasedOnItemName()
+
+    @Query("""
+        UPDATE trans_detail_table
+        SET trans_item_name =:updatedName
+        WHERE trans_item_name =:name
+    """)
+    suspend fun updateTransItemName(name:String,updatedName:String)
+
     @Transaction
     @Query("""
     SELECT td.*, p.product_id, p.product_name
@@ -72,6 +89,9 @@ interface TransDetailDao {
 
     @Query("SELECT trans_detail_id from trans_detail_table order by sum_id DESC limit 1")
     suspend fun getLastInsertedId():Int?
+
+    @Query("SELECT * FROM trans_detail_table WHERE sub_id IS null")
+    fun selectAllNullId():List<TransactionDetail>
 
     //@Query("SELECT year as year_n,month as month_n,month_number as month_nbr, month as nama,day as day_n,day_name as day_name,SUM(total_income) as total FROM SUMMARY_TABLE  WHERE year = :year_  GROUP BY month ORDER BY month_nbr ASC")
    // @Query("SELECT sub_id as sub_product_id, sub_name as item_name FROM sub_table where product_code = :productId  ")

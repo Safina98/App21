@@ -60,10 +60,14 @@ class SubViewModel (
         uiScope.launch {
             var text = text_
             if (text ==""){text="click to add"}
-            if (i==1){subProduct.sub_name = text}
+            if (i==1){
+                val oldName=subProduct.sub_name
+                subProduct.sub_name = text
+                updateSubName(oldName,subProduct)
+            }
             else if(i==2){subProduct.warna =text }
             else if(i==3){subProduct.ket=text}
-            update(subProduct)
+            if (i!=1)update(subProduct)
         }
     }
     private suspend fun update(subProduct: SubProduct){ withContext(Dispatchers.IO){ database2.update(subProduct) } }
@@ -103,6 +107,11 @@ class SubViewModel (
             val pList=all_product_from_db.value
             resetSupProductSuspend(pList!!)
 
+        }
+    }
+    private suspend fun updateSubName(oldName:String,subProduct: SubProduct){
+        withContext(Dispatchers.IO){
+            database2.updateSubProductAndTransDetail(oldName,subProduct)
         }
     }
     private suspend fun resetSupProductSuspend(pList:List<SubProduct>){

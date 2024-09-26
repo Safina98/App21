@@ -66,6 +66,42 @@ class TransactionActiveViewModel(
         }
     }
 
+    fun checkTransDetaill(){
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                datasource2.updateTransItemName("CITROEN BLACK","AUTOLEDER CITROON BLACK")
+                datasource2.updateTransItemName("CITROEN SADDLE","AUTOLEDER CITROON SADDLE")
+                datasource2.updateTransItemName("AUTOLEDER CITROON  LIGHT GREY","AUTOLEDER CITROON  L.GREY")
+                datasource2.updateTransItemName("BUSA 4MM PARIS","BUSA 4MM PRS")
+                datasource2.updateTransItemName("BURGUNDY -002","BENANG B BURGUNDY -002")
+                datasource2.updateTransItemName("KAIN PARIS HITAM","KAIN PARIS")
+                datasource2.updateTransItemName("BUSA 1 CM PARIS","BUSA 1 CM PRS")
+                datasource2.updateTransItemName("MB 6001","MB 6001  BLACK")
+                datasource2.updateTransItemName("MB 6027","MB 6027 SCARLET")
+                datasource2.updateTransItemName("KARPET A IGUANA","KARPET AUTOLEDER IGUANA")
+                datasource2.updateTransItemName("KARPET A DARK GREY","KARPET AUTOLEDER GREY")
+                datasource2.updateTransItemName("7010-GOGO BLUE","ZEUS 7010-GOGO BLUE")
+                datasource2.updateTransItemName("BBENANG K ROLL B EIGI-148","BENANG K ROLL B BEIGI-148")
+                datasource2.updateTransItemName("9012 - SADDLE","ZEUS 9012 - SADDLE")
+                datasource2.updateTransItemName("KANCING BERLIAN BESAR","KANCING BERLIAN B")
+                datasource2.updateTransItemName("KARPET F BLACK","KARPET FORCE BLACK")
+                datasource2.updateTransItemName("KARPTER F BEIGI","KARPET FORCE BEIGI")
+                datasource2.updateTransItemName("AGERA","AGGERA BLACK")
+                datasource2.updateTransItemName("LL 8901 PURPLE","LL 8985 PURPLE")
+                datasource2.updateTransItemName("AUTOLEDER DODGE","AUTOLEDER DODGE BLACK")
+                datasource2.updateTransItemName("BENANG K ROLL BESAR ROADSTAR/SADDLE-016","BENANG K ROLL BESAR SADDLE-016")
+                datasource2.updateTransItemName("IONIC BIRU","IONIC BIRU")
+                datasource2.updateSubIdBasedOnItemName()
+                val list =datasource2.selectAllNullId()
+                Log.i("TransDetailProbs","count ${list.size} " )
+                for (i in list){
+                    Log.i("TransDetailProbs","item_name:  ${i.trans_item_name} " )
+                }
+
+            }
+        }
+    }
+
     //Add or remove checked item from checkedItemList
     fun onCheckBoxClicked(stok: TransactionSummary,bool:Boolean){
         viewModelScope.launch {

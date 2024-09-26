@@ -90,6 +90,7 @@ class TransactionActiveFragment : Fragment() {
         } else {
             requestPermission()
         }
+        viewModel.checkTransDetaill()
 
 
         val act = activity as AppCompatActivity?

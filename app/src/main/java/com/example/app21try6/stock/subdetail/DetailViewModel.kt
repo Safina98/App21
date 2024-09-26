@@ -93,7 +93,9 @@ class DetailViewModel (
     fun updateSubProduct(subProduct: SubProduct, text: String, i: Int
     ){
         uiScope.launch {
-            if (i==1){subProduct.sub_name = text}
+            if (i==1){subProduct.sub_name = text
+
+            }
             else if(i==2){subProduct.warna =text }
             else if(i==3){subProduct.ket=text}
             update(subProduct)
@@ -104,6 +106,7 @@ class DetailViewModel (
             database2.update(subProduct)
         }
     }
+
     fun deleteSubProduct(subProduct: SubProduct){
         uiScope.launch {
             delete(subProduct)

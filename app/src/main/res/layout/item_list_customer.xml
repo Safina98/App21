@@ -10,7 +10,6 @@
         <variable
             name="delListener"
             type="com.example.app21try6.statement.CustomerDelListener" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

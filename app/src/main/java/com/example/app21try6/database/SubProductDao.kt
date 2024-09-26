@@ -1,9 +1,11 @@
 package com.example.app21try6.database
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 
 @Dao
@@ -57,4 +59,24 @@ interface SubProductDao {
     @Query("DELETE FROM sub_table WHERE sub_id= :id_")
     fun delete(id_:Int)
 
+    @Query("""
+        UPDATE trans_detail_table
+        SET trans_item_name =:updatedName
+        WHERE trans_item_name =:name
+    """)
+    suspend fun updateTransItemName(name:String,updatedName:String)
+
+    @Transaction
+    suspend fun updateSubProductAndTransDetail(
+        oldName:String,
+        subProduct: SubProduct
+
+    ) {
+
+        update(subProduct)
+
+        updateTransItemName(oldName, subProduct.sub_name)
+
+
+    }
 }
