@@ -31,7 +31,8 @@ interface PaymentDao{
             "    p.payment_date,\n" +
             "    p.ref,\n" +
             "    t.total_trans,\n" +
-            "    t.paid\n" +
+            "    'Bayar: ' as name,\n"+
+        "    t.paid\n" +
             "FROM\n" +
             "    paymen_table p\n" +
             "INNER JOIN\n" +

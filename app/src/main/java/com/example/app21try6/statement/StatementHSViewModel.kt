@@ -129,7 +129,7 @@ class StatementHSViewModel(application: Application,
             discountTable.discountName=name
             discountTable.minimumQty=minQty
             discountTable.discountType=tipe
-            discountTable.custLocation= location
+            discountTable.custLocation= if(location.isNotEmpty()) location else null
             insertDiscountToDB(discountTable)
             //dummyDiscList.add(discountTable)
             Log.i("Disc","$allDiscountFromDB")

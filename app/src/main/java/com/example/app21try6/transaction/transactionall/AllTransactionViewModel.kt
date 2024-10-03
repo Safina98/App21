@@ -56,6 +56,8 @@ class AllTransactionViewModel(application: Application,var dataSource1:TransSumD
     private var _uiMode = MutableLiveData<Int>(16)
     val uiMode :LiveData<Int> get() =_uiMode
 
+    val queryM=MutableLiveData<String?>()
+
     private val _navigateToTransDetail = MutableLiveData<Int>()
     val navigateToTransDetail: LiveData<Int> get() = _navigateToTransDetail
     var itemCount :LiveData<String> = Transformations.map(allTransactionSummary) { items->
@@ -92,16 +94,22 @@ class AllTransactionViewModel(application: Application,var dataSource1:TransSumD
     //Filter data based on search query
     fun filterData(query: String?) {
         uiScope.launch {
+            queryM.value=query
             val list = mutableListOf<TransactionSummary>()
             if(!query.isNullOrEmpty()) {
+                val listFilterByTransName= withContext(Dispatchers.IO){dataSource1.getTransactionSummariesByItemName(query)}
                 list.addAll(_unFilteredrecyclerViewData.value!!.filter {
                     it.cust_name.lowercase(Locale.getDefault()).contains(query.toString().lowercase(Locale.getDefault()))})
+                list.addAll(listFilterByTransName)
+                val distinctList = list.distinctBy { it.sum_id }
+                _allTransactionSummary.value =distinctList
             } else {
                 list.addAll(_unFilteredrecyclerViewData.value!!)
+                _allTransactionSummary.value =list
             }
-            _allTransactionSummary.value =list
         }
     }
+
 
 
     //convert date to string
@@ -163,22 +171,24 @@ class AllTransactionViewModel(application: Application,var dataSource1:TransSumD
                 startDate = formatDate(selectedStartDate.value)
                 endDate = formatDate(selectedEndDate.value)
             }
-            performDataFiltering(startDate, endDate)
+            val query=queryM.value
+            performDataFiltering(startDate, endDate,query)
         }
                 }
     //filter data from database by date
-    private fun performDataFiltering(startDate: String?, endDate: String?) {
+    private fun performDataFiltering(startDate: String?, endDate: String?,query: String?) {
 
             if ((startDate != null && !isValidDateFormat(startDate)) ||
                 (endDate != null && !isValidDateFormat(endDate))) {
                 Log.e("AllTransactionViewModel", "Invalid date format: startDate=$startDate, endDate=$endDate")
                 return
             }
-
             viewModelScope.launch {
+                Log.e("AllTransactionViewModel", "query:=$query")
                 val filteredData = withContext(Dispatchers.IO) {
-                    dataSource1.getFilteredData3(startDate, endDate)
+                    dataSource1.getFilteredData3(startDate, endDate,query)
                 }
+                Log.e("AllTransactionViewModel", "filteredData $filteredData")
                 _allTransactionSummary.value = filteredData
                 _unFilteredrecyclerViewData.value = filteredData
             }

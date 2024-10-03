@@ -62,20 +62,19 @@ interface SubProductDao {
     @Query("""
         UPDATE trans_detail_table
         SET trans_item_name =:updatedName
-        WHERE trans_item_name =:name
+        WHERE sub_id =:sub_id
     """)
-    suspend fun updateTransItemName(name:String,updatedName:String)
+    suspend fun updateTransItemName(sub_id:Int,updatedName:String)
 
     @Transaction
     suspend fun updateSubProductAndTransDetail(
-        oldName:String,
+
         subProduct: SubProduct
 
     ) {
 
         update(subProduct)
-
-        updateTransItemName(oldName, subProduct.sub_name)
+        updateTransItemName(subProduct.sub_id, subProduct.sub_name)
 
 
     }

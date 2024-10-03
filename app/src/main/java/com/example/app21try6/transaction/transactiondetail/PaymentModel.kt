@@ -9,6 +9,7 @@ data class PaymentModel (
     var payment_ammount:Int?,
     var payment_date: Date?,
     var ref:String?,
-    var paid:Int?,
+    var paid:Int?=null,
+    var name:String?="Bayar: ",
     var total_trans:Double?
 )

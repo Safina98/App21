@@ -11,11 +11,10 @@ class MyApplication: Application()  {
     override fun onCreate() {
         super.onCreate()
         val wmbPreference = PreferenceManager.getDefaultSharedPreferences(this)
-
         val isFirstRun = wmbPreference.getBoolean("FIRSTRUN", true)
-
         if (isFirstRun) {
-            scheduleOneTimeUpdateMerkWarna()
+            scheduleOneTimeMigrateDB()
+            //scheduleOneTimeUpdateMerkWarna()
             markFirstRunCompleted() // Set the flag after scheduling
         }
 
@@ -25,6 +24,21 @@ class MyApplication: Application()  {
         wmbPreference.edit().putBoolean("FIRSTRUN", false).apply()
     }
     private fun scheduleOneTimeUpdateMerkWarna() {
+        val workManager = WorkManager.getInstance(this)
+
+        // Create a OneTimeWorkRequest for the worker
+        val workRequest = OneTimeWorkRequestBuilder<UpdateCustomerIdWorker>()
+            .setInitialDelay(1, TimeUnit.SECONDS) // Optional: Adjust delay if needed
+            .build()
+
+        // Enqueue unique work, ensuring it runs only once
+        workManager.enqueueUniqueWork(
+            "UpdateCustomerIdWorker",
+            ExistingWorkPolicy.KEEP, // This ensures the worker runs only once
+            workRequest
+        )
+    }
+    private fun scheduleOneTimeMigrateDB() {
         val workManager = WorkManager.getInstance(this)
 
         // Create a OneTimeWorkRequest for the worker

@@ -131,10 +131,9 @@ class AllTransactionsFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         val startDate = viewModel.selectedStartDate.value
-        var endDate = viewModel.selectedEndDate.value
+        val endDate = viewModel.selectedEndDate.value
         viewModel.updateRv4()
-        var list = viewModel.allTransactionSummary.value
-        Log.i("DateProb","on resume")
+
         Log.i("DateProb","on resume start date: $startDate")
         Log.i("DateProb","on resume End date: $endDate")
     }

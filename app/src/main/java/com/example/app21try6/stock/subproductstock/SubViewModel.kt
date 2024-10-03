@@ -61,9 +61,8 @@ class SubViewModel (
             var text = text_
             if (text ==""){text="click to add"}
             if (i==1){
-                val oldName=subProduct.sub_name
                 subProduct.sub_name = text
-                updateSubName(oldName,subProduct)
+                updateSubName(subProduct)
             }
             else if(i==2){subProduct.warna =text }
             else if(i==3){subProduct.ket=text}
@@ -109,9 +108,9 @@ class SubViewModel (
 
         }
     }
-    private suspend fun updateSubName(oldName:String,subProduct: SubProduct){
+    private suspend fun updateSubName(subProduct: SubProduct){
         withContext(Dispatchers.IO){
-            database2.updateSubProductAndTransDetail(oldName,subProduct)
+            database2.updateSubProductAndTransDetail(subProduct)
         }
     }
     private suspend fun resetSupProductSuspend(pList:List<SubProduct>){

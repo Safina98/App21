@@ -1,5 +1,6 @@
 package com.example.app21try6.transaction.transactiondetail
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +32,7 @@ class PaymentAdapter(
         binding.clickListener = clickListener
         binding.longClickListener = longListener
         binding.dateClickListener = datePaymentClickListener
+        Log.i("DiscProbs","${formatRupiah(item.payment_ammount?.toDouble())}")
         binding.txtBayarItemList.text = formatRupiah(item.payment_ammount?.toDouble())
         binding.executePendingBindings()
     }

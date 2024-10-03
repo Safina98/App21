@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/medium_margin"
             android:layout_marginEnd="@dimen/medium_margin"
-            android:text="Bayar"
+            android:text="@{item.name}"
             android:onLongClick="@{(view) -> longClickListener.onLongClick(view,item)}"
             android:onClick="@{()->clickListener.onClick(item)}"
             style="@style/texr_detail_style"

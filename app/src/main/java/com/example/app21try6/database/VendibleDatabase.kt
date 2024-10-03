@@ -230,9 +230,6 @@ abstract class VendibleDatabase:RoomDatabase(){
                             VendibleDatabase::class.java,
                             "vendible_table"
                     )
-                        .allowMainThreadQueries()
-                        .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
-                        .enableMultiInstanceInvalidation()
                         .addMigrations(MIGRATION_32_33)
 
                         // .fallbackToDestructiveMigration()

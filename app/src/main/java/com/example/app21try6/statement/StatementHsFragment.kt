@@ -108,7 +108,7 @@ class StatementHsFragment : Fragment() {
                 // Get values from the input fields
                 val discName = binding.textDiscName.text.toString().uppercase().trim()
                 val discValue = binding.textDiscValue.text.toString().trim().toDouble()
-                val discMinQty = binding.textDiscValue.text.toString().trim().toDoubleOrNull()
+                val discMinQty = binding.textDiscQty.text.toString().trim().toDoubleOrNull()
                 val selectedDiscType = binding.spinnerM.selectedItem.toString().trim()
                 val custLocation = binding.textCustLoc.text.toString().uppercase().trim()
                 viewModel.insertDiscount(discValue,discName,discMinQty,selectedDiscType,custLocation)

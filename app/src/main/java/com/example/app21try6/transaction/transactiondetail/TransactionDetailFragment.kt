@@ -16,6 +16,7 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.VibratorManager
 import android.text.InputType
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -59,8 +60,11 @@ class TransactionDetailFragment : Fragment() {
         val datasource3 = VendibleDatabase.getInstance(application).summaryDbDao
         val datasource4 = VendibleDatabase.getInstance(application).paymentDao
         val datasource5 = VendibleDatabase.getInstance(application).subProductDao
+        val datasource6 = VendibleDatabase.getInstance(application).discountDao
+        val datasource7 = VendibleDatabase.getInstance(application).customerDao
+        val datasource8 = VendibleDatabase.getInstance(application).discountTransDao
         val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        val viewModelFactory = TransactionDetailViewModelFactory(application,datasource1,datasource2,datasource3,datasource4,datasource5,id!!)
+        val viewModelFactory = TransactionDetailViewModelFactory(application,datasource1,datasource2,datasource3,datasource4,datasource5,datasource6,datasource8,datasource7,id!!)
         viewModel =ViewModelProvider(this,viewModelFactory).get(TransactionDetailViewModel::class.java)
         binding.lifecycleOwner = this
         val img =  requireActivity().findViewById<ImageView>(R.id.delete_image)
@@ -75,6 +79,15 @@ class TransactionDetailFragment : Fragment() {
             },
             TransDatePaymentClickListener {
                 showDatePickerDialog(it)
+            })
+        val discAdapter = PaymentAdapter(viewModel.transSum.value?.is_paid_off,
+            TransPaymentClickListener {
+               // showBayarDialog(it)
+            },TransPaymentLongListener {
+                //deleteDialog(it.id!!)
+            },
+            TransDatePaymentClickListener {
+                //showDatePickerDialog(it)
             })
         //Transaction Detail Adapter
         val adapter = TransactionDetailAdapter(
@@ -93,12 +106,20 @@ class TransactionDetailFragment : Fragment() {
         }
 
         binding.recyclerViewDetailTrans.adapter = adapter
+        binding.recyclerViewDiscount.adapter=discAdapter
 
         binding.btnPrintNew.setOnClickListener {
            //fibrateOnClick()
             //printReceipt()
-            viewModel.calculateDisc()
+            //viewModel.calculateDisc()
+            viewModel.deleteAllTrans()
         }
+        viewModel.transDetail.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                adapter.submitList(it)
+                adapter.notifyDataSetChanged()
+            }
+        })
         viewModel.transDetail.observe(viewLifecycleOwner, Observer {
             it?.let {
                 adapter.submitList(it)
@@ -108,6 +129,12 @@ class TransactionDetailFragment : Fragment() {
         viewModel.transDetailWithProduct.observe(viewLifecycleOwner, Observer {
             it?.let {
 
+            }
+        })
+        viewModel.discountTransBySumId.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                discAdapter.submitList(it)
+                Log.i("DiscProbs","Observer $it")
             }
         })
         binding.recyclerViewBayar.adapter = paymentAdapter
@@ -153,7 +180,7 @@ class TransactionDetailFragment : Fragment() {
         viewModel.isTxtNoteClick.observe(viewLifecycleOwner, Observer {})
         viewModel.isBtnBayarCLicked.observe(viewLifecycleOwner, Observer {
             if (it==true){
-                showBayarDialog(PaymentModel(null,null,null,null,null,null,null))
+                showBayarDialog(PaymentModel(null,null,null,null,null,null,"Bayar:",null))
                 viewModel.onBtnBayarClicked()
             }
         })
@@ -316,9 +343,10 @@ class TransactionDetailFragment : Fragment() {
         toneGenerator.startTone(ToneGenerator.TONE_CDMA_CONFIRM, 300)
     }
 
-    override fun onDestroy() {
-       // printerService?.let { it.disconnect() }
-        super.onDestroy()
+    override fun onResume() {
+        super.onResume()
+        //viewModel.calculateDisc()
     }
+
 
 }

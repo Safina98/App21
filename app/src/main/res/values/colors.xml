@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--
     <color name="primaryColor">#000000</color>
     <color name="primaryLightColor">#000000</color>
     <color name="primaryDarkColor">#000000</color>
@@ -12,9 +13,25 @@
     <color name="secondaryLightTextColor">#FFFFFF</color>
     <color name="primaryDarkTextColor">#FFFFFF</color>
     <color name="secondaryDarkTextColor">#FFFFFF</color>
+    -->
+    <color name="primaryColor">#8C3061</color>
+    <color name="primaryLightColor">#F7522258</color>
+    <color name="primaryDarkColor">#F7522258</color>
+    <color name="secondaryColor">#C9C63C51</color>
+    <color name="secondaryLightColor">#F2613F</color>
+    <color name="secondaryDarkColor">#9B3922</color>
+    <color name="primaryTextColor">#FFFFFF</color>
+    <color name="secondaryTextColor">#000000</color>
+    <color name="primaryLightTextColor">#FFFFFF</color>
+    <color name="secondaryLightTextColor">#FFFFFF</color>
+    <color name="primaryDarkTextColor">#FFFFFF</color>
+    <color name="secondaryDarkTextColor">#FFFFFF</color>
+
 
     <color name="nightModeBackgroundColor">#121212</color>
     <color name="lightModeBackgroundColor">#FFFFFF</color>
+
+    <color name="transActiveBgColor">#88BE7B72</color>
 
 
 

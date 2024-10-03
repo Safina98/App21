@@ -70,7 +70,7 @@ class   ProductStockFragment : Fragment() {
             }
 
         })
-
+       // Log.i("DiscProbs", "fragment: ${discountNames.toString()}")
         viewModel.addItem.observe(viewLifecycleOwner, Observer {
             if (it==true){
                 showAddDialog(viewModel)
@@ -114,68 +114,78 @@ class   ProductStockFragment : Fragment() {
         alert.show()
     }
 
-    private fun updateDialog(viewModell: ProductViewModel, vendible: Product) {
+    private fun updateDialog(viewModel: ProductViewModel, vendible: Product) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Update")
-        Log.i("DiscProbs","updateDialogShows")
-        val dialogBinding = DataBindingUtil.inflate<PopUpUpdateProductDialogBinding>(
-            LayoutInflater.from(context), R.layout.pop_up_update_product_dialog, null, false)
+        Log.i("DiscProbs", "updateDialogShows")
+        Log.i("DiscProbs", "updatedialog: discountnames $discountNames")
 
+        // Inflate the custom view for the dialog
+        val dialogBinding = DataBindingUtil.inflate<PopUpUpdateProductDialogBinding>(
+            LayoutInflater.from(context), R.layout.pop_up_update_product_dialog, null, false
+        )
+
+        // Initialize views from the binding
         val textKet = dialogBinding.textUpdateKet
         val textPrice = dialogBinding.textUpdatePrice
         val textCapital = dialogBinding.textCapital
-        val textDisc=dialogBinding.textDiscount
+        val textDisc = dialogBinding.textDiscount
 
-        val merkAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, emptyList())
+        // Set up the AutoCompleteTextView with a mutable adapter
+        val merkAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, mutableListOf())
         textDisc.setAdapter(merkAdapter)
-        viewModel.allDiscountFromDB.observe(viewLifecycleOwner) { allMerk ->allMerk?.let {
-            Log.i("DiscProbs","oberver in dialog: $allMerk")
-            merkAdapter.clear()
-            merkAdapter.addAll(allMerk.sortedBy { it })
+
+        // Observe the ViewModel LiveData and update the adapter
+        viewModel.allDiscountFromDB.observe(viewLifecycleOwner) { allMerk ->
+            allMerk?.let {
+                Log.i("DiscProbs", "observer in dialog: $allMerk")
+                merkAdapter.clear() // Clear the adapter's data
+                merkAdapter.addAll(allMerk.sortedBy { it }) // Add the sorted data to the adapter
+                merkAdapter.notifyDataSetChanged() // Notify the adapter about the data change
+            }
         }
 
-        }
+        // Set the data for the dialog fields
         textKet.setText(vendible.product_name.toString())
         textPrice.setText(vendible.product_price.toString())
         textCapital.setText(vendible.product_capital.toString())
-        if(vendible!=null) textDisc.setText(vendible.discountId.toString())
+        if (vendible != null) textDisc.setText(vendible.discountId.toString())
         textKet.requestFocus()
 
+        // Show the soft keyboard
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
 
-        builder.setView(view)
+        // Use dialogBinding.root instead of view
+        builder.setView(dialogBinding.root)
         builder.setPositiveButton("Update") { dialog, which ->
             val priceString = textPrice.text.toString()
             val capitalString = textCapital.text.toString()
 
             val price = priceString.toIntOrNull()
             val capital = capitalString.toIntOrNull()
-            Log.i("capitalErr","Price :$capital")
+            Log.i("capitalErr", "Price :$capital")
 
             if (price != null) {
                 vendible.product_price = price
             } else {
-                Log.i("capitalErr","else Price :$price")
+                Log.i("capitalErr", "else Price :$price")
             }
 
             if (capital != null) {
                 vendible.product_capital = capital
             } else {
-                Log.i("capitalErr","else Price :$capital")
+                Log.i("capitalErr", "else Price :$capital")
             }
             vendible.product_name = textKet.text.toString().uppercase().trim()
-            val discName=textDisc.text.toString().uppercase().trim()
+            val discName = textDisc.text.toString().uppercase().trim()
             if (vendible.product_name.isNotEmpty()) {
-                viewModel.updateProduct(vendible,discName)
+                viewModel.updateProduct(vendible, discName)
             }
-
-                //imm.hideSoftInputFromWindow(windowToken, 0)
         }
 
         builder.setNegativeButton("Cancel") { dialog, which ->
             dialog.dismiss()
-            //imm.hideSoftInputFromWindow(view.windowToken, 0)
         }
 
         builder.create().show()
@@ -196,6 +206,7 @@ class   ProductStockFragment : Fragment() {
             android.R.layout.simple_dropdown_item_1line,
             discountNames
         )
+
         txtDiscount.setAdapter(adapter)
         Log.i("DiscProbs", "Adapter set with discounts: $discountNames")
         builder.setView(view)

@@ -12,6 +12,8 @@ interface DiscountDao {
     fun insert(discountTable: DiscountTable)
     @Query("SELECT * FROM discount_table")
     fun getAllDiscount():LiveData<List<DiscountTable>>
+    @Query("SELECT * FROM discount_table")
+    fun getAllDiscountList():List<DiscountTable>
     @Query("SELECT discountName FROM discount_table")
     fun getAllDiscountName():LiveData<List<String>>
     @Query("SELECT * FROM discount_table WHERE discountId =:id")

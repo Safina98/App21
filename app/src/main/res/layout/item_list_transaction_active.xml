@@ -20,9 +20,10 @@
         android:layout_width="@dimen/rv_width"
         android:layout_height="@dimen/rv_height"
         android:layout_margin="@dimen/medium_margin"
+        android:background="@color/transActiveBgColor"
         android:onClick="@{(view) -> clickListener.onClick(view, item)}"
-        >
-        <!-- android:onClick="@{()->clickListener.onClick(item)}"-->
+        app:cardBackgroundColor="@color/transActiveBgColor">
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

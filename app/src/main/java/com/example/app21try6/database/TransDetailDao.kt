@@ -47,14 +47,22 @@ interface TransDetailDao {
 
     @Transaction
     @Query("""
-    SELECT td.*, p.product_id, p.product_name
+    SELECT td.*, p.product_id, p.product_name,p.discountId as discount_id
     FROM trans_detail_table td
-    INNER JOIN sub_table sp ON td.trans_item_name = sp.sub_name
+    INNER JOIN sub_table sp ON td.sub_id = sp.sub_id
     INNER JOIN product_table p ON sp.product_code = p.product_id
     WHERE td.sum_id = :transactionSummaryId
 """)
     fun getTransactionDetailsWithProduct(transactionSummaryId: Int): LiveData<List<TransactionDetailWithProduct>>
 
+    @Query("""
+    SELECT td.*, p.product_id, p.product_name,p.discountId as discount_id
+    FROM trans_detail_table td
+    INNER JOIN sub_table sp ON td.sub_id = sp.sub_id
+    INNER JOIN product_table p ON sp.product_code = p.product_id
+    WHERE td.sum_id = :transactionSummaryId
+""")
+    fun getTransactionDetailsWithProductList(transactionSummaryId: Int): List<TransactionDetailWithProduct>?
 
     @Query("SELECT * FROM trans_detail_table WHERE sum_id =:sum_id_  order BY item_position asc")
     fun selectATransDetail(sum_id_:Int):LiveData<List<TransactionDetail>>

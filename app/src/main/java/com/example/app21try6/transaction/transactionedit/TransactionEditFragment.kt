@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,10 +43,12 @@ class TransactionEditFragment : Fragment() {
 
         val datasource1 = VendibleDatabase.getInstance(application).transSumDao
         val datasource2 = VendibleDatabase.getInstance(application).transDetailDao
-
+        val datasource3 = VendibleDatabase.getInstance(application).discountDao
+        val datasource4 = VendibleDatabase.getInstance(application).customerDao
+        val datasource5 = VendibleDatabase.getInstance(application).discountTransDao
         val id= arguments?.let{TransactionEditFragmentArgs.fromBundle(it).id}
 
-        val viewModelFactory = TransactionEditViewModelFactory(application, datasource1, datasource2, id!!)
+        val viewModelFactory = TransactionEditViewModelFactory(application, datasource1, datasource2,datasource3,datasource5,datasource4, id!!)
         val viewModel = ViewModelProvider(this, viewModelFactory).get(TransactionEditViewModel::class.java)
 
         binding.lifecycleOwner = this
@@ -134,9 +137,8 @@ class TransactionEditFragment : Fragment() {
             "Variasi 77",
             "Wendy",
             "Yusdar Motor")
-        val adapterr: ArrayAdapter<String> =
-            ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, suggestions)
-        autoCompleteTextView.setAdapter(adapterr)
+        //val adapterr: ArrayAdapter<String> = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, suggestions)
+        //autoCompleteTextView.setAdapter(adapterr)
 
        viewModel.itemTransDetail.observe(viewLifecycleOwner, Observer {
            it?.let {
@@ -146,6 +148,12 @@ class TransactionEditFragment : Fragment() {
            }
        })
 
+        viewModel.allCustomerTable.observe(viewLifecycleOwner, Observer { customerList ->
+
+            val customerNames = customerList.map { it.customerBussinessName }
+            val adapterr = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, customerNames)
+            autoCompleteTextView.setAdapter(adapterr)
+        })
        viewModel.showDialog.observe(viewLifecycleOwner, Observer {
            if (it != null) {
                showDialog(it, viewModel, code)
@@ -169,6 +177,10 @@ class TransactionEditFragment : Fragment() {
                viewModel.onNavigatedtoDetail()
            }
        })
+        viewModel.transDetailWithProduct.observe(viewLifecycleOwner, Observer {
+            it?.let {
+            }
+        })
        viewModel.navigateToVendible.observe(viewLifecycleOwner, Observer {
            if (it != null) {
                this.findNavController().navigate(TransactionEditFragmentDirections.actionTransactionEditFragmentToTransactionProductFragment(it))
