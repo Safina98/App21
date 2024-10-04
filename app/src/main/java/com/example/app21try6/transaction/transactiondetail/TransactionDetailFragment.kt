@@ -172,7 +172,6 @@ class TransactionDetailFragment : Fragment() {
                 viewModel.onKirimBtnClicked()
             }
         }
-
         viewModel.isBtnpaidOff.observe(this.viewLifecycleOwner, Observer {
             if (it == true) {
                 (binding.recyclerViewDetailTrans.adapter as TransactionDetailAdapter).isActive(it)

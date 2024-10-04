@@ -5,11 +5,15 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface DiscountDao {
     @Insert
     fun insert(discountTable: DiscountTable)
+    @Update
+    fun update(discountTable: DiscountTable)
+
     @Query("SELECT * FROM discount_table")
     fun getAllDiscount():LiveData<List<DiscountTable>>
     @Query("SELECT * FROM discount_table")

@@ -3,6 +3,7 @@ package com.example.app21try6.statement
 import android.app.AlertDialog
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,9 +15,11 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.app21try6.R
 import com.example.app21try6.database.CustomerTable
+import com.example.app21try6.database.DiscountTable
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentStatementHsBinding
 import com.example.app21try6.databinding.PopUpDiscBinding
+import kotlin.reflect.typeOf
 
 
 class StatementHsFragment : Fragment() {
@@ -35,18 +38,23 @@ class StatementHsFragment : Fragment() {
         viewModel = ViewModelProvider(this,viewModelFactory).get(StatementHSViewModel::class.java)
         binding.viewModel=viewModel
 
-        val adapter = DiscountAdapter(DiscountListener {  }, DiscountLongListener {  },
-            DiscountDelListener {viewModel.deleteDiscountTable(it)  })
-        binding.btnAddDiscount.setOnClickListener {
-            showDiscountDialog()
-        }
+        val adapter = DiscountAdapter(
+            DiscountListener {
+                             showDiscountDialog(it)
+            }, DiscountLongListener {
+
+            },
+            DiscountDelListener {
+                viewModel.deleteDiscountTable(it)
+            })
+
         val adapterCustomer = CustomerAdapter(
             CustomerListener {  },
             CustomerLongListener {  },
             CustomerDelListener {  }
         )
         binding.btnAddDiscount.setOnClickListener {
-            showDiscountDialog()
+            showDiscountDialog(null)
         }
         binding.btnAddCustomer.setOnClickListener {
             viewModel.insertBatch()
@@ -89,8 +97,10 @@ class StatementHsFragment : Fragment() {
 
         return binding.root
     }
-    private fun showDiscountDialog() {
+    private fun showDiscountDialog(discountTable: DiscountTable?) {
         // Inflate the layout using data binding
+
+        val spinnerItems = resources.getStringArray(R.array.disc_Tipe)
         val binding: PopUpDiscBinding = DataBindingUtil.inflate(
             LayoutInflater.from(requireContext()),
             R.layout.pop_up_disc, // Replace with your dialog layout file
@@ -101,6 +111,17 @@ class StatementHsFragment : Fragment() {
         binding.textDiscValue.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         binding.textDiscQty.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         // Create the dialog using AlertDialog.Builder
+        if (discountTable!=null){
+            binding.textDiscName.setText( discountTable.discountName)
+            binding.textDiscValue.setText( discountTable.discountValue.toString())
+            binding.textDiscQty.setText( discountTable.minimumQty.toString())
+            binding.textCustLoc.setText( discountTable.custLocation ?: "")
+            Log.i("DiscProbs","all array: $spinnerItems")
+            Log.i("DiscProbs","discountType: ${discountTable.discountType}")
+            val position = spinnerItems.indexOf(discountTable.discountType)
+            Log.i("DiscProbs","position = $position")
+            binding.spinnerM.setSelection(position)
+        }
         val dialogBuilder = AlertDialog.Builder(requireContext())
             .setView(binding.root)
             .setTitle("Enter Discount Details")
@@ -111,7 +132,13 @@ class StatementHsFragment : Fragment() {
                 val discMinQty = binding.textDiscQty.text.toString().trim().toDoubleOrNull()
                 val selectedDiscType = binding.spinnerM.selectedItem.toString().trim()
                 val custLocation = binding.textCustLoc.text.toString().uppercase().trim()
-                viewModel.insertDiscount(discValue,discName,discMinQty,selectedDiscType,custLocation)
+
+                if (discountTable==null){
+                    viewModel.insertDiscount(discValue,discName,discMinQty,selectedDiscType,custLocation)
+                }else{
+                    viewModel.updateDiscount(discountTable.discountId,discValue,discName,discMinQty,selectedDiscType,custLocation)
+                }
+
                 // Do something with the input data, e.g., save or pass it
                 // ...
 

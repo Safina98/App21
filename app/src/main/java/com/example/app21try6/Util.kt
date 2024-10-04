@@ -13,9 +13,9 @@ import kotlin.math.absoluteValue
 val SIMPLE_DATE_FORMAT ="dd/MM/yyyy"
 val DATE_FORMAT = SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault())
 object DISCTYPE {
-    const val CashbackPrinted = "Cashback Printed"
-    const val CashbackNotPrinted = "Cashback Not Printed"
-    const val Others = "Others"
+    const val CashbackPrinted = "Printed"
+    const val CashbackNotPrinted = "Not Printed"
+
 }
 
 fun formatRupiah(number: Double?): String? {

@@ -9,12 +9,17 @@
         <variable
             name="delListener"
             type="com.example.app21try6.statement.DiscountDelListener" />
+        <variable
+            name="clickListener"
+            type="com.example.app21try6.statement.DiscountListener" />
 
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> clickListener.onClick(item)}"
+        >
         <ImageView
             android:id="@+id/img_delete"
             android:layout_width="30dp"

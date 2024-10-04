@@ -20,6 +20,7 @@ class DiscountAdapter(
         fun bind(item: DiscountTable, discountListener: DiscountListener, longListener: DiscountLongListener,delListener: DiscountDelListener){
             binding.item=item
             binding.delListener=delListener
+            binding.clickListener=discountListener
             binding.executePendingBindings()
         }
         companion object{
@@ -62,7 +63,7 @@ class DiscountDelListener(val clickListener: (discountTable: DiscountTable) -> U
 }
 class  DiscountLongListener(val longListener: (discount: DiscountTable) -> Unit){
     fun onLongClick(v: View, discount: DiscountTable): Boolean {
-        //logic goes here
+
         longListener(discount)
         return true}
 }

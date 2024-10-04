@@ -123,17 +123,27 @@ class StatementHSViewModel(application: Application,
 
     fun insertDiscount(value:Double,name:String,minQty:Double?,tipe:String,location:String){
         viewModelScope.launch {
-            val discountTable=DiscountTable()
-            //discountTable.discountId=getautoIncrementId()
-            discountTable.discountValue = value
-            discountTable.discountName=name
-            discountTable.minimumQty=minQty
-            discountTable.discountType=tipe
-            discountTable.custLocation= if(location.isNotEmpty()) location else null
+            val discountTable=populateDiscount(null,value,name, minQty, tipe, location)
             insertDiscountToDB(discountTable)
-            //dummyDiscList.add(discountTable)
             Log.i("Disc","$allDiscountFromDB")
         }
+    }
+    fun updateDiscount(id:Int,value:Double,name:String,minQty:Double?,tipe:String,location:String){
+        viewModelScope.launch {
+            val discountTable=populateDiscount(id,value,name, minQty, tipe, location)
+            updateDiscountFromDB(discountTable)
+        }
+    }
+    fun populateDiscount(id:Int?,value:Double,name:String,minQty:Double?,tipe:String,location:String):DiscountTable{
+        val discountTable=DiscountTable()
+        //discountTable.discountId=getautoIncrementId()
+        if (id!=null) discountTable.discountId=id
+        discountTable.discountValue = value
+        discountTable.discountName=name
+        discountTable.minimumQty=minQty
+        discountTable.discountType=tipe
+        discountTable.custLocation= if(location.isNotEmpty()) location else null
+        return discountTable
     }
     fun deleteDiscountTable(discountTable: DiscountTable){viewModelScope.launch { deleteDiscountFromDB(discountTable) }}
     private suspend fun insertDiscountToDB(discountTable: DiscountTable){
@@ -144,6 +154,11 @@ class StatementHSViewModel(application: Application,
     private suspend fun deleteDiscountFromDB(discountTable: DiscountTable){
         withContext(Dispatchers.IO){
             discountDao.delete(discountTable)
+        }
+    }
+    private suspend fun updateDiscountFromDB(discountTable: DiscountTable){
+        withContext(Dispatchers.IO){
+            discountDao.update(discountTable)
         }
     }
     private suspend fun insertCustomerToDB(customerTable: CustomerTable){
