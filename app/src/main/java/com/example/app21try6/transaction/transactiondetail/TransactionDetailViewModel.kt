@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
@@ -64,16 +65,47 @@ class TransactionDetailViewModel (application: Application,
     //Text Generator to send receipt
     private lateinit var textGenerator: TextGenerator
 
-    // trans sum total - trans sum paid
-    var bayar :LiveData<String> = Transformations.map(transSum) { item->
-       val a = item.total_trans.let { total ->
-           item.paid.toDouble().let { paid ->
-               total - paid
-           } ?: total
-       }
-       var b =if(a<=0)"Kembalian: " else if(item.paid==0) "Total: " else "Sisa: "
-        b +formatRupiah(abs(a)).toString()
+    // Get the total discount from the database
+    // Get the total discount from the database
+    val discSum: LiveData<Double> = discountTransDao.getTotalDiscountBySumId(id)
+
+    // Calculate 'bayar' with the discount applied
+    var bayar: MediatorLiveData<String> = MediatorLiveData<String>().apply {
+        var transactionTotal: Double = 0.0
+        var paidAmount: Double = 0.0
+        var discountValue: Double = 0.0
+
+        // Update 'bayar' based on 'transSum' and 'discSum'
+        fun updateBayar() {
+            val remaining = transactionTotal - paidAmount // Remaining after payment
+            val finalAmount = remaining - discountValue // Subtract the discount
+            val label = when {
+                finalAmount <= 0 -> "Kembalian: "
+                paidAmount == 0.0 -> "Total: "
+                else -> "Sisa: "
+            }
+            value = label + formatRupiah(abs(finalAmount)).toString()
+        }
+
+        // Observe 'transSum' to get total transaction amount
+        addSource(transSum) { item ->
+            transactionTotal = item.total_trans ?: 0.0
+            paidAmount = item.paid.toDouble() ?: 0.0 // Get paid amount
+            updateBayar()
+        }
+
+        // Observe 'discSum' to get total discount
+        addSource(discSum) { discountAmount ->
+            discountValue = discountAmount ?: 0.0
+            updateBayar()
+        }
     }
+
+    // Get the total discount from the database
+
+    // Combine 'bayar' and 'discSum' into a single LiveData
+
+
     var itemCount :LiveData<String> = Transformations.map(transDetail) { items->
         "${items.size} item"
     }
@@ -105,16 +137,10 @@ class TransactionDetailViewModel (application: Application,
     var isn: LiveData<Boolean> = Transformations.map(transSum) { item ->
         if(item?.sum_note.isNullOrEmpty()) false else true
     }
-
     //Navigations
     private val _navigateToEdit = MutableLiveData<Int>()
     val navigateToEdit: LiveData<Int> get() = _navigateToEdit
 
-    val dummyDiscList= listOf<DiscountTable>(DiscountTable(0,"MB CAMARO",2000.0,DISCTYPE.CashbackNotPrinted.text,5.0,null,null,null,null,null,null,"Makassar"),
-        DiscountTable(0,"Excelent",2000.0,DISCTYPE.CashbackNotPrinted.text,5.0,null,null,null,null,null,null,"Makassar"))
-    val dummyCustList= listOf<CustomerTable>(CustomerTable(0,"Bandung Jok","Bandung Jok","Makassar"))
-
-    var discountTransactionList =  mutableListOf <DiscountTransaction>()
 
     //val discountTransBySumId=discountTransDao.selectAllDiscTrans(id)
     val discountTransBySumId=discountTransDao.selectDiscAsPaymentModel(id)
@@ -124,95 +150,16 @@ class TransactionDetailViewModel (application: Application,
     }
     /******************************************** CRUD **************************************/
 
-    fun deleteAllTrans(){
-        viewModelScope.launch {
-            withContext(Dispatchers.IO){
-                discountTransDao.deleteAll()
-            }
-        }
-    }
-    fun calculateDisc() {
-        viewModelScope.launch {
-            val startTime = System.currentTimeMillis()
-            // Use async to perform parallel fetching of data
-            val discountListDeferred = async(Dispatchers.IO) { discountDao.getAllDiscountList() }
-            val custId = transSum.value?.cust_name ?: "-1"
-            val customerDeferred = async(Dispatchers.IO) { customerDao.getCustomerByName(custId) }
-
-            // Await the results from the async calls
-            val discountList = discountListDeferred.await()
-            val customer = customerDeferred.await()
-            val transactionSummary = transSum.value // Assume this is a valid TransactionSummary object
-
-            if (transDetailWithProduct.value==null || transactionSummary == null) {
-                Log.i("DiscProbs", "No customer, discounts or transaction summary found, skipping calculation.")
-                return@launch
-            }
-            // Group transactions by discountId once to avoid repeated grouping
-            val groupedByProduct = transDetailWithProduct.value?.groupBy { it.discountId }
-                ?: return@launch
-
-            // Calculate the discount value for products that match the discount conditions
-            val discountTransactions = discountList.mapNotNull { discount ->
-                // Check location first to avoid unnecessary computations
-                Log.i("DiscProbs", "customerLocation : ${customer?.customerLocation}")
-                Log.i("DiscProbs", "discount location : ${discount.custLocation}")
-                if (discount.custLocation?.lowercase() == customer?.customerLocation?.lowercase()||discount.custLocation==null) {
-                    // Get the transaction details for the discount
-
-                    val productTransactions = groupedByProduct[discount.discountId]
-                    // If there are matching transactions for the discount, calculate the total quantity
-                    if (productTransactions != null) {
-                        val totalQty = productTransactions.sumOf { it.transactionDetail.qty }
-
-                        // Check if the total quantity meets the minimumQty condition
-                        if (totalQty >= (discount.minimumQty ?: 0.0)) {
-                            val discountAppliedValue = productTransactions.sumOf { it.transactionDetail.qty * discount.discountValue }
-                            DiscountTransaction(
-                                discountId = discount.discountId,
-                                discTransRef = UUID.randomUUID().toString(),
-                                discTransName = discount.discountName,
-                                sum_id = transactionSummary.sum_id,
-                                discTransDate = transactionSummary.trans_date,
-                                discountAppliedValue = discountAppliedValue
-                            )
-                        } else {
-                            null // No discount if minimumQty condition is not met
-                        }
-                    } else {
-                        null // No matching transactions for this discount
-                    }
-                } else {
-                    null // Location does not match
-                }
-            }
-            // Log the DiscountTransaction list
-            discountTransactions.forEach { discountTransaction ->
-                Log.i("DiscProbs", "DiscountTransaction: $discountTransaction")
-            }
-
-            // Save the DiscountTransaction list to the appropriate variable or database
-            // For example, if you want to assign it to a variable
-            discountTransactionList = discountTransactions.toMutableList()
-
-            val endTime = System.currentTimeMillis()
-            val duration = endTime - startTime
-            Log.i("DiscProbs", "Time taken to calculate discounts: $duration ms")
-        }
-    }
-
-    fun insertDiscount(){
-        viewModelScope.launch {
-
-
-        }
-    }
-   private suspend fun insertDiscountFromDB(){
-        withContext(Dispatchers.IO){
-
-        }
-    }
-
+   fun deleteDiscount(id:Int){
+       viewModelScope.launch {
+           deleteDiscTransToDB(id)
+       }
+   }
+   private suspend fun deleteDiscTransToDB(id: Int){
+       withContext(Dispatchers.IO){
+           discountTransDao.delete(id)
+       }
+   }
 
     //Toggle and update Transaction Summary is_taken value when btn_is_taken clicked
     fun updateBooleanValue() {
@@ -260,7 +207,6 @@ class TransactionDetailViewModel (application: Application,
         viewModelScope.launch {
             val transSum = transSum.value
             transSum?.is_paid_off = transSum?.is_paid_off?.not() ?: true
-            //transSum?.let { updataTransSumDB(it) }
             onImageClick(transSum!!.is_paid_off)
         }
     }
@@ -269,7 +215,6 @@ class TransactionDetailViewModel (application: Application,
     fun onImageClick(bool:Boolean){
         _isBtnpaidOff.value = bool
     }
-
 
     // update Payment table
     fun bayar(paymentModel:PaymentModel){
@@ -284,6 +229,17 @@ class TransactionDetailViewModel (application: Application,
             updateTransSum()
         }
     }
+    fun updateDiscount(paymentModel:PaymentModel){
+        viewModelScope.launch {
+            updateDiscountToDb(paymentModel.id!!,paymentModel.payment_ammount!!.toDouble())
+        }
+    }
+    private suspend fun updateDiscountToDb(id:Int,ammount:Double){
+        withContext(Dispatchers.IO){
+            discountTransDao.updateById(id,ammount)
+        }
+    }
+
     private fun insertPayment(bayar:Payment){
         viewModelScope.launch {
             bayar.payment_date =Date()

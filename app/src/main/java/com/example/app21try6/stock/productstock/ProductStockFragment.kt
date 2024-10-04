@@ -51,6 +51,7 @@ class   ProductStockFragment : Fragment() {
         val adapter = ProductStockAdapter(ProductStockListener {
             viewModel.onBrandCLick(arrayOf(it.product_id.toString(),it.brand_code.toString(),it.cath_code.toString(),"0",it.product_name))
         }, ProductStockLongListener {
+            viewModel.getDiscNameById(it.discountId)
             showDialogBox(viewModel,it)
         })
         binding.rvProductStock.adapter = adapter
@@ -149,7 +150,8 @@ class   ProductStockFragment : Fragment() {
         textKet.setText(vendible.product_name.toString())
         textPrice.setText(vendible.product_price.toString())
         textCapital.setText(vendible.product_capital.toString())
-        if (vendible != null) textDisc.setText(vendible.discountId.toString())
+        val discName=viewModel.discountName.value
+        if (discName!=null) textDisc.setText(discName)
         textKet.requestFocus()
 
         // Show the soft keyboard

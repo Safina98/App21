@@ -45,14 +45,14 @@
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="300dp"
-            android:paddingStart="@dimen/medium_margin"
-            android:paddingEnd="@dimen/medium_margin"
-            android:layout_height="40dp">
+            android:hint="Diskon"
+            android:layout_height="60dp">
             <AutoCompleteTextView
                 android:id="@+id/text_discount"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:layout_margin="@dimen/small_margin"
+                android:paddingStart="@dimen/big_margin"
+                android:paddingEnd="@dimen/big_margin"
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>

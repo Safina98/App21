@@ -20,6 +20,9 @@ interface CustomerDao {
     @Query("SELECT * FROM customer_table WHERE custId=:id")
     fun getCustomerById(id:Int):CustomerTable?
 
+    @Query("SELECT custId FROM customer_table WHERE customerBussinessName=:name")
+    fun getIdByName(name:String):Int?
+
     @Query("SELECT * FROM customer_table WHERE customerBussinessName=:id")
     fun getCustomerByName(id:String):CustomerTable?
 

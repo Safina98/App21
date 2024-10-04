@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.app21try6.database.DiscountDao
 import com.example.app21try6.database.Product
 import com.example.app21try6.database.ProductDao
@@ -30,6 +31,7 @@ class ProductViewModel (
     val navigateProduct:LiveData<Array<String>>
         get() = _navigateProduct
     val allDiscountFromDB=discountDao.getAllDiscountName()
+    val discountName=MutableLiveData<String?>("")
     fun insertAnItemProductStock(product_name:String,price:Int){
         uiScope.launch {
             if (product_name!="") {
@@ -41,6 +43,12 @@ class ProductViewModel (
                 product.product_capital = price
                 insert(product)
             }
+        }
+    }
+    fun getDiscNameById(id:Int?){
+        viewModelScope.launch {
+            val disc = withContext(Dispatchers.IO){discountDao.getDiscountNameById(id)}
+        discountName.value=disc
         }
     }
     fun updateProduct(product:Product,discName:String){

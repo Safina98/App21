@@ -153,6 +153,13 @@ class TransactionEditViewModel(
             val endTime = System.currentTimeMillis()
             val duration = endTime - startTime
             Log.i("DiscProbs", "Time taken to calculate discounts: $duration ms")
+            _navigateToDetail.value=id
+        }
+    }
+
+    private suspend fun getCustomerId(name:String):Int?{
+        return withContext(Dispatchers.IO){
+            customerDao.getIdByName(name)
         }
     }
 
@@ -303,6 +310,8 @@ class TransactionEditViewModel(
     ////////////////////////////////Navigation//////////////////////////////////////
     fun onNavigatetoDetail(idm:Int){
         viewModelScope.launch {
+            val id = getCustomerId(custName.value?:"")
+            mutableTransSum.value?.custId=id
             updateSum(mutableTransSum.value!!)
             calculateDisc()
            // _navigateToDetail.value=id

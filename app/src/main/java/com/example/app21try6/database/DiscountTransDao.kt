@@ -24,6 +24,10 @@ interface DiscountTransDao {
     @Delete
     fun delete(discounts: DiscountTransaction)
 
+    @Query("DELETE  FROM discout_transaction_table WHERE discTransId=:id")
+    fun delete(id:Int)
+    @Query("UPDATE discout_transaction_table SET discountAppliedValue = :newValue WHERE discTransId = :id")
+    fun updateById(id: Int, newValue: Double)
     @Query("DELETE  FROM discout_transaction_table")
     fun deleteAll()
 
@@ -36,7 +40,7 @@ interface DiscountTransDao {
 
 
     @Query("SELECT\n" +
-            "    d.discountId as id,\n" +
+            "    d.discTransId as id,\n" +
             "    d.sum_id as sum_id,\n" +
             "    d.discountAppliedValue as payment_ammount,\n" +
             "    d.discountAppliedValue as paid,\n" +
@@ -53,5 +57,8 @@ interface DiscountTransDao {
             "WHERE\n" +
             "    d.sum_id = :sumId")
     fun selectDiscAsPaymentModel(sumId:Int):LiveData<List<PaymentModel>>
+
+    @Query("SELECT SUM(d.discountAppliedValue) FROM discout_transaction_table d WHERE d.sum_id = :sumId")
+    fun getTotalDiscountBySumId(sumId: Int): LiveData<Double>
 
 }

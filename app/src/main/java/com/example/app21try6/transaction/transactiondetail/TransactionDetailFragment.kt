@@ -48,7 +48,10 @@ class TransactionDetailFragment : Fragment() {
     private lateinit var viewModel:TransactionDetailViewModel
     var receiptText=""
 
-
+    private object type {
+        const val Payment = "Payment"
+        const val Discount = "Discount"
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater,
@@ -73,18 +76,18 @@ class TransactionDetailFragment : Fragment() {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         val paymentAdapter = PaymentAdapter(viewModel.transSum.value?.is_paid_off,
             TransPaymentClickListener {
-              showBayarDialog(it)
+              showBayarDialog(it,type.Payment)
             },TransPaymentLongListener {
-                deleteDialog(it.id!!)
+                deleteDialog(it.id!!,type.Payment)
             },
             TransDatePaymentClickListener {
                 showDatePickerDialog(it)
             })
         val discAdapter = PaymentAdapter(viewModel.transSum.value?.is_paid_off,
             TransPaymentClickListener {
-               // showBayarDialog(it)
+                showBayarDialog(it,type.Discount)
             },TransPaymentLongListener {
-                //deleteDialog(it.id!!)
+                deleteDialog(it.id!!,type.Discount)
             },
             TransDatePaymentClickListener {
                 //showDatePickerDialog(it)
@@ -104,15 +107,14 @@ class TransactionDetailFragment : Fragment() {
         } else {
             requestPermission()
         }
-
         binding.recyclerViewDetailTrans.adapter = adapter
         binding.recyclerViewDiscount.adapter=discAdapter
 
         binding.btnPrintNew.setOnClickListener {
-           //fibrateOnClick()
-            //printReceipt()
+           fibrateOnClick()
+            printReceipt()
             //viewModel.calculateDisc()
-            viewModel.deleteAllTrans()
+           // viewModel.deleteAllTrans()
         }
         viewModel.transDetail.observe(viewLifecycleOwner, Observer {
             it?.let {
@@ -126,6 +128,10 @@ class TransactionDetailFragment : Fragment() {
                 adapter.notifyDataSetChanged()
             }
         })
+
+        viewModel.discSum.observe(viewLifecycleOwner,Observer{
+
+        })
         viewModel.transDetailWithProduct.observe(viewLifecycleOwner, Observer {
             it?.let {
 
@@ -134,6 +140,7 @@ class TransactionDetailFragment : Fragment() {
         viewModel.discountTransBySumId.observe(viewLifecycleOwner, Observer {
             it?.let {
                 discAdapter.submitList(it)
+                adapter.notifyDataSetChanged()
                 Log.i("DiscProbs","Observer $it")
             }
         })
@@ -180,7 +187,7 @@ class TransactionDetailFragment : Fragment() {
         viewModel.isTxtNoteClick.observe(viewLifecycleOwner, Observer {})
         viewModel.isBtnBayarCLicked.observe(viewLifecycleOwner, Observer {
             if (it==true){
-                showBayarDialog(PaymentModel(null,null,null,null,null,null,"Bayar:",null))
+                showBayarDialog(PaymentModel(null,null,null,null,null,null,"Bayar:",null),type.Payment)
                 viewModel.onBtnBayarClicked()
             }
         })
@@ -197,7 +204,7 @@ class TransactionDetailFragment : Fragment() {
         return binding.root
     }
 
-    private fun showBayarDialog(paymentModel: PaymentModel){
+    private fun showBayarDialog(paymentModel: PaymentModel,typem:String){
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Bayar")
         val inflater = LayoutInflater.from(context)
@@ -217,7 +224,8 @@ class TransactionDetailFragment : Fragment() {
         builder.setPositiveButton("Ok") { dialog, which ->
             if(textPrice.text.toString().toIntOrNull()!=null){
                 paymentModel.payment_ammount = textPrice.text.toString().toInt()
-                viewModel.bayar(paymentModel)
+                if (typem==type.Payment) viewModel.bayar(paymentModel)
+                else viewModel.updateDiscount(paymentModel)
             }
         }
         builder.setNegativeButton("No") { dialog, which ->
@@ -314,12 +322,18 @@ class TransactionDetailFragment : Fragment() {
 
         dialog.show()
     }
-    private fun deleteDialog(p_id:Int) {
+    private fun deleteDialog(p_id:Int,typem:String) {
         val builder = AlertDialog.Builder(context)
         builder.setMessage("Are you sure you want to Delete?")
             .setCancelable(true)
             .setPositiveButton("Yes") { dialog, id ->
+                if (typem==type.Payment)
                 viewModel.deletePayment(p_id)
+                else
+                {
+                    Log.i("DiscProbs","id: $p_id")
+                    viewModel.deleteDiscount(p_id)
+                }
                 Toast.makeText(context, "Deleted!!", Toast.LENGTH_SHORT).show()
             }
             .setNegativeButton("No") { dialog, id ->
