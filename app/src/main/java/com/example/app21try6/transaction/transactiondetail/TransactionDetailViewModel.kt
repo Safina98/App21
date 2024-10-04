@@ -1,7 +1,6 @@
 package com.example.app21try6.transaction.transactiondetail
 
 import android.app.Application
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -9,13 +8,9 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
-import com.example.app21try6.DISCTYPE
 import com.example.app21try6.database.CustomerDao
-import com.example.app21try6.database.CustomerTable
 import com.example.app21try6.database.DiscountDao
-import com.example.app21try6.database.DiscountTable
 import com.example.app21try6.database.DiscountTransDao
-import com.example.app21try6.database.DiscountTransaction
 import com.example.app21try6.database.Payment
 
 import com.example.app21try6.database.PaymentDao
@@ -29,7 +24,6 @@ import com.example.app21try6.database.TransactionSummary
 import com.example.app21try6.formatRupiah
 import com.example.app21try6.utils.TextGenerator
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.lang.Math.abs
@@ -379,12 +373,12 @@ class TransactionDetailViewModel (application: Application,
         }
     }
 
-    fun generateReceiptText(): String {
-        textGenerator = TextGenerator(transDetail.value,transSum.value,paymentModel.value)
-        return textGenerator.generateReceiptText()
+    fun generateReceiptTextWa(): String {
+        textGenerator = TextGenerator(transDetail.value,transSum.value,paymentModel.value,discountTransBySumId.value)
+        return textGenerator.generateReceiptTextWa()
     }
     fun generateReceiptTextNew(): String {
-        textGenerator = TextGenerator(transDetail.value,transSum.value,paymentModel.value)
+        textGenerator = TextGenerator(transDetail.value,transSum.value,paymentModel.value,discountTransBySumId.value)
         return textGenerator.generateReceiptTextNew()
     }
 

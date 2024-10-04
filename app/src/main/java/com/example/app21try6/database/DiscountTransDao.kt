@@ -47,6 +47,7 @@ interface DiscountTransDao {
             "    d.discTransDate as payment_date,\n" +
             "    d.discTransRef as ref,\n" +
             "    d.discTransName as name,\n" +
+            "    dt.discountType as discountType,\n" +
             "    t.total_trans\n" +
             "FROM\n" +
             "    discout_transaction_table d\n" +
@@ -54,6 +55,8 @@ interface DiscountTransDao {
             "    trans_sum_table t\n" +
             "ON\n" +
             "    d.sum_id = t.sum_id\n" +
+            "LEFT JOIN\n" +
+            "    discount_table dt ON d.discountId = dt.discountId\n" +
             "WHERE\n" +
             "    d.sum_id = :sumId")
     fun selectDiscAsPaymentModel(sumId:Int):LiveData<List<PaymentModel>>

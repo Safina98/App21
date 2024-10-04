@@ -167,7 +167,7 @@ class TransactionDetailFragment : Fragment() {
         }
         viewModel.sendReceipt.observe(viewLifecycleOwner){
             if (it==true){
-                val exportedString=viewModel.generateReceiptText()
+                val exportedString=viewModel.generateReceiptTextWa()
                 exportTextToWhatsApp(exportedString)
                 viewModel.onKirimBtnClicked()
             }

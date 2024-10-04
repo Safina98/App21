@@ -1,6 +1,7 @@
 package com.example.app21try6.utils
 
-import com.example.app21try6.database.Payment
+import android.util.Log
+import com.example.app21try6.DISCTYPE
 import com.example.app21try6.database.TransactionDetail
 import com.example.app21try6.database.TransactionSummary
 import com.example.app21try6.formatRupiah
@@ -14,15 +15,15 @@ import kotlin.math.abs
 class TextGenerator(
                     var transDetail:List<TransactionDetail>?,
                     var transSum:TransactionSummary?,
-                    var paymentModel: List<PaymentModel>?
+                    var paymentModel: List<PaymentModel>?,
+                    var discountTransaction: List<PaymentModel>?
                     ) {
     val decimalFormat = DecimalFormat("#.##")
-    fun getPadding(value:String, position:String,constant:Int):Int
-    {
+    fun getPadding(value:String, position:String,constant:Int):Int {
         val stringLength = value.length
         return if(position=="Middle")  ((constant - stringLength) / 2) else (constant - value.length)
     }
-    fun generateReceiptText(): String {
+    fun generateReceiptTextWa(): String {
         val builder = StringBuilder()
         val items = transDetail
         val transsum = transSum
@@ -34,6 +35,8 @@ class TextGenerator(
         val paddingStoreName = "-".repeat(getPadding(storeName,"Middle",50))
         // Get current date
         val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+
+        var totalTransaction= transsum!!.total_trans
 
         // Receipt header
         //builder.append("------------------ $storeName ------------------\n")
@@ -47,8 +50,9 @@ class TextGenerator(
         builder.append("-".repeat(getPadding("","Left",50))+"\n")
 
         decimalFormat.isDecimalSeparatorAlwaysShown = false
+
         // Receipt items
-        var x ="x"
+        val x ="x"
         if (items != null) {
             for (item in items) {
                 val itemTotalPrice = item.qty * item.trans_price * item.unit_qty
@@ -72,24 +76,38 @@ class TextGenerator(
         }
         // Receipt footer
         builder.append("-".repeat(getPadding("","Left",50))+"\n")
-        builder.append(String.format("%-24s%14s\n", "Total:", formatRupiah(transsum?.total_trans)))
+        builder.append(String.format("%-24s%14s\n", "Total:", formatRupiah(transsum.total_trans)))
+        builder.append("-".repeat(getPadding("","Left",50))+"\n")
+        if (!discountTransaction.isNullOrEmpty()){
+            for (d in discountTransaction!!){
+                if (d.discountType?.replace(" ", "") != DISCTYPE.CashbackNotPrinted.replace(" ", ""))  {
+                   val a = getPadding("${d.name} ${d.payment_ammount}","left",50)-10
+                    Log.i("DiscProbs","get padding $a")
+                    builder.append(String.format("%-${a}s%4s\n", d.name, formatRupiah(d.payment_ammount?.toDouble())))
+                    totalTransaction=totalTransaction-d.payment_ammount!!
+                }
+            }
+            builder.append("-".repeat(getPadding("","Left",50))+"\n")
+            builder.append(String.format("%-24s%14s\n", "Total:", formatRupiah(totalTransaction)))
+        }
+
         if (payments!=null){
             var paymentAmmountSum :Int = 0
             for (p in payments){
                 paymentAmmountSum +=p.payment_ammount?:0
-                var sisa = transsum!!.total_trans - paymentAmmountSum
+                val sisa = totalTransaction - paymentAmmountSum
                 builder.append(String.format("%-22s%14s\n", "Bayar :", formatRupiah(p.payment_ammount?.toDouble())))
                 builder.append("-".repeat(getPadding("","Left",50))+"\n")
-                if (transsum.total_trans!!>paymentAmmountSum)
+                if (totalTransaction>paymentAmmountSum)
                 {
                     builder.append(String.format("%-24s%14s\n", "Sisa:", formatRupiah(sisa)))
                 }
                 else{
                     builder.append(String.format("%-24s%14s\n", "Kembalian:", formatRupiah(abs(sisa))))
                 }
-
             }
         }
+
         builder.append("-".repeat(getPadding("","Left",50))+"\n")
         builder.append("Terimakasih atas pembelian anda\n")
         builder.append("                Have a nice day!\n")
@@ -110,7 +128,7 @@ class TextGenerator(
         val paddingStoreName = "-".repeat(getPadding(storeName,"Middle",c))
         // Get current date
         val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
-
+        var totalTransaction= transsum!!.total_trans
         // Receipt header
         //builder.append("------------------ $storeName ------------------\n")
         builder.append("$paddingStoreName $storeName $paddingStoreName\n")
@@ -148,16 +166,28 @@ class TextGenerator(
         }
         // Receipt footer
         builder.append("-".repeat(getPadding("","Left",c))+"\n")
-        builder.append(String.format("%-10s%19s\n", "Total:", formatRupiah(transsum?.total_trans)))
+        builder.append(String.format("%-10s%19s\n", "Total:", formatRupiah(transsum.total_trans)))
+
+        if (!discountTransaction.isNullOrEmpty()){
+            for (d in discountTransaction!!){
+                if (d.discountType?.replace(" ", "") != DISCTYPE.CashbackNotPrinted.replace(" ", ""))  {
+                    val a = getPadding("${d.name} ${d.payment_ammount}","left",c)-4
+                    Log.i("DiscProbs","get padding $a")
+                    builder.append(String.format("%-${a}s%4s\n", d.name, formatRupiah(d.payment_ammount?.toDouble())))
+                    totalTransaction=totalTransaction-d.payment_ammount!!
+                }
+            }
+            builder.append("-".repeat(getPadding("","Left",50))+"\n")
+            builder.append(String.format("%-24s%14s\n", "Total:", formatRupiah(totalTransaction)))
+        }
         if (payments!=null){
             var paymentAmmountSum :Int = 0
             for (p in payments){
                 paymentAmmountSum +=p.payment_ammount?:0
-                var sisa = transsum!!.total_trans - paymentAmmountSum
+                val sisa = totalTransaction - paymentAmmountSum
                 builder.append(String.format("%-10s%19s\n", "Bayar:", formatRupiah(p.payment_ammount?.toDouble())))
                 builder.append("-".repeat(getPadding("","Left",c))+"\n")
-                if (transsum.total_trans!!>paymentAmmountSum)
-                {
+                if (totalTransaction>paymentAmmountSum) {
                     builder.append(String.format("%-10s%19s\n", "Sisa:", formatRupiah(sisa)))
                 }
                 else{

@@ -63,13 +63,11 @@ class   ProductStockFragment : Fragment() {
         })
         viewModel.allDiscountFromDB.observe(viewLifecycleOwner, Observer {discounts ->
             Log.i("DiscProbs", "Discounts loaded: $discounts")
-
             if (discounts != null && discounts.isNotEmpty()) {
                 discountNames = discounts // Store the discounts list
             } else {
                 discountNames = emptyList()
             }
-
         })
        // Log.i("DiscProbs", "fragment: ${discountNames.toString()}")
         viewModel.addItem.observe(viewLifecycleOwner, Observer {

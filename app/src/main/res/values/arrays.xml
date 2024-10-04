@@ -55,7 +55,7 @@
     <string-array name="disc_Tipe">
         <item>Pilih</item>
         <item>Cashback Printed</item>
-        <item>Cashback NotPrinted</item>
+        <item>Cashback Not Printed</item>
         <item>Others</item>
     </string-array>
 
