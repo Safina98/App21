@@ -10,11 +10,24 @@
         <variable
             name="delListener"
             type="com.example.app21try6.statement.CustomerDelListener" />
+        <variable
+            name="clickListener"
+            type="com.example.app21try6.statement.CustomerListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
+        android:onClick="@{()->clickListener.onClick(item)}"
         android:layout_height="100dp">
+        <ImageView
+            android:id="@+id/img_delete"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/medium_margin"
+            android:onClick="@{() -> delListener.onClick(item)}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/baseline_delete_forever_24" />
 
         <TextView
             android:id="@+id/lbl_business_name"

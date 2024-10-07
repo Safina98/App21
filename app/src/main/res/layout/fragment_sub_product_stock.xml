@@ -20,6 +20,7 @@
             android:layout_height="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:visibility="visible" />
+        
 
         <com.example.app21try6.DraggableFloatingActionButton
             android:id="@+id/btn_add_new_brand_"

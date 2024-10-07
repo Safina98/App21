@@ -20,6 +20,7 @@ class CustomerAdapter(
         fun bind(item: CustomerTable, customerListener: CustomerListener, longListener: CustomerLongListener, delListener: CustomerDelListener){
             binding.item=item
             binding.delListener=delListener
+            binding.clickListener=customerListener
             binding.executePendingBindings()
         }
         companion object{

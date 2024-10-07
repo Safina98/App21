@@ -2,15 +2,22 @@ package com.example.app21try6.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface CustomerDao {
     @Insert
     fun insert(customerTable: CustomerTable)
 
+    @Update
+    fun update(customerTable: CustomerTable)
+
+    @Delete
+    fun delete(customerTable: CustomerTable)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(customers: List<CustomerTable>)
 

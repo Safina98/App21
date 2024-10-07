@@ -82,9 +82,7 @@ class TransactionEditViewModel(
             val discountList = withContext(Dispatchers.IO){discountDao.getAllDiscountList()}
             val customer = customerDeferred.await()
             val transDetailWithProductList = withContext(Dispatchers.IO){ datasource2.getTransactionDetailsWithProductList(transactionSummary!!.sum_id) }
-
             if (transDetailWithProductList==null || transactionSummary == null) {
-               // Log.i("DiscProbs", "${transDetailWithProduct.value}")
                 return@launch
             }
             // Group transactions by discountId once to avoid repeated grouping

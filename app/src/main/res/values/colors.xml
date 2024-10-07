@@ -15,7 +15,7 @@
     <color name="secondaryDarkTextColor">#FFFFFF</color>
     -->
     <color name="primaryColor">#8C3061</color>
-    <color name="primaryLightColor">#F7522258</color>
+    <color name="primaryLightColor">#16325B</color>
     <color name="primaryDarkColor">#F7522258</color>
     <color name="secondaryColor">#C9C63C51</color>
     <color name="secondaryLightColor">#F2613F</color>
@@ -31,7 +31,7 @@
     <color name="nightModeBackgroundColor">#121212</color>
     <color name="lightModeBackgroundColor">#FFFFFF</color>
 
-    <color name="transActiveBgColor">#88BE7B72</color>
+    <color name="transActiveBgColor">#A3EBF4F6</color>
 
 
 
@@ -61,10 +61,13 @@
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#8E92A1</color>
     <color name="grey_green">#88DCE6DD</color>
-    <color name="pastel_green2">#D8C5E1A5</color>
-    <color name="pastel_green_dark">#BF8EB15C</color>
+    <color name="pastel_green2">#BEC4DAD2</color>
+    <color name="pastel_green_dark">#BF229799</color>
     <color name="dark_green">#576F58</color>
     <color name="dark_green2">#586648</color>
     <color name="dark_green3">#393C36</color>
+    <!--
+    <color name="pastel_green2">#D8C5E1A5</color>
+    <color name="pastel_green_dark">#BF8EB15C</color>-->
 
 </resources>

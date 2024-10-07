@@ -103,23 +103,35 @@ class StatementHSViewModel(application: Application,
         withContext(Dispatchers.IO){
             val list = customerDao.selectAll()
             for (i in list){
-                Log.i("CUSTPROBS","$i")
-            }
 
+            }
         }
     }
 
-    fun insertCusomer(name:String,businessName:String,location:String?,address:String,level:String?,tag1:String?){
+    fun insertCustomer(name:String?,businessName:String,location:String?,address:String?,level:String?,tag1:String?){
         viewModelScope.launch {
-            val customerTable = CustomerTable()
-            customerTable.customerName=name
-            customerTable.customerBussinessName=businessName
-            customerTable.customerLocation=location
-            customerTable.customerAddress=address
-            customerTable.customerTag1=tag1
+            val customerTable=populateCustomer(null,name, businessName, location, address, level, tag1)
             insertCustomerToDB(customerTable)
         }
     }
+    fun updateCustomer(id:Int?,name:String?,businessName:String,location:String?,address:String?,level:String?,tag1:String?){
+        viewModelScope.launch {
+            val customerTable=populateCustomer(id, name, businessName, location, address, level, tag1)
+            Log.i("CUSTPROBS","$customerTable")
+            udpateCustomerToDB(customerTable)
+        }
+    }
+    fun populateCustomer(id:Int?,name:String?,businessName:String,location:String?,address:String?,level:String?,tag1:String?):CustomerTable{
+        val customerTable = CustomerTable()
+        if (id!=null) customerTable.custId=id
+        customerTable.customerName=name ?: ""
+        customerTable.customerBussinessName=businessName
+        customerTable.customerLocation=location
+        customerTable.customerAddress=address ?:""
+        customerTable.customerTag1=tag1
+        return customerTable
+    }
+
 
     fun insertDiscount(value:Double,name:String,minQty:Double?,tipe:String,location:String){
         viewModelScope.launch {
@@ -146,6 +158,9 @@ class StatementHSViewModel(application: Application,
         return discountTable
     }
     fun deleteDiscountTable(discountTable: DiscountTable){viewModelScope.launch { deleteDiscountFromDB(discountTable) }}
+    fun deleteCustomerTable(customerTable: CustomerTable){viewModelScope.launch {
+        deleteCustomerToDB(customerTable) }
+    }
     private suspend fun insertDiscountToDB(discountTable: DiscountTable){
         withContext(Dispatchers.IO){
             discountDao.insert(discountTable)
@@ -164,6 +179,16 @@ class StatementHSViewModel(application: Application,
     private suspend fun insertCustomerToDB(customerTable: CustomerTable){
         withContext(Dispatchers.IO){
             customerDao.insert(customerTable)
+        }
+    }
+    private suspend fun udpateCustomerToDB(customerTable: CustomerTable){
+        withContext(Dispatchers.IO){
+            customerDao.update(customerTable)
+        }
+    }
+    private suspend fun deleteCustomerToDB(customerTable: CustomerTable){
+        withContext(Dispatchers.IO){
+            customerDao.delete(customerTable)
         }
     }
 }

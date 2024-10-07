@@ -19,6 +19,7 @@ import com.example.app21try6.database.DiscountTable
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentStatementHsBinding
 import com.example.app21try6.databinding.PopUpDiscBinding
+import com.example.app21try6.databinding.PopUpUpdateProductDialogBinding
 import kotlin.reflect.typeOf
 
 
@@ -40,7 +41,7 @@ class StatementHsFragment : Fragment() {
 
         val adapter = DiscountAdapter(
             DiscountListener {
-                             showDiscountDialog(it)
+                showDiscountDialog(it)
             }, DiscountLongListener {
 
             },
@@ -49,38 +50,22 @@ class StatementHsFragment : Fragment() {
             })
 
         val adapterCustomer = CustomerAdapter(
-            CustomerListener {  },
-            CustomerLongListener {  },
-            CustomerDelListener {  }
+            CustomerListener {
+                showCustomerDialog(it)
+            },
+            CustomerLongListener {
+
+            },
+            CustomerDelListener {
+                viewModel.deleteCustomerTable(it)
+            }
         )
         binding.btnAddDiscount.setOnClickListener {
             showDiscountDialog(null)
         }
         binding.btnAddCustomer.setOnClickListener {
-            viewModel.insertBatch()
+            showCustomerDialog(null)
         }
-        val suggestions = arrayOf(
-            "Asia Jok", "Alyka Jok","Aisya Jok","Auto 354","AMV","Akbar Sengkang","Asep Ramlan","Anugrah Mebel","AT Jok",
-            "Bandung Jok","Bandung Jok Gowa","Bagus Jok","Beo","Berkah Variasi",
-            "Cahaya Variasi",
-            "dr Jok","Dyna Jok","D'fun Kendari","Densus 99",
-            "Eka Jok","Evolution",
-            "Fiesta Jok","Fakhri Jok",
-            "Green Design",
-            "HSR Auto",
-            "Jabal","Jok 88",
-            "King Variasi","Karya Jok","Kubis Mebel",
-            "Makassar Variasi","Mega Buana","Mas Tono",
-            "Laquna",
-            "Pak Maliang", "Pak Ilham", "Pak Ramli Sidrap","Pak Ibet","Pak Agus Saputra","Pattalassang Variasi","Prima leather","Pak Alim",
-            "Rajawali Motor Timika","Rumah Kursi","Rumah Sofa Kolut","RGARAGE","Rezky Jok","Riski Jok",
-            "Sun Variasi","Susan Jok", "Sumber Jok","Surabaya Motor","Selayar","SKAAD Bintuni","Sam & Sons",
-            "Terminal Jok",
-            "Unang",
-            "Variasi 77",
-            "Wendy",
-            "Yusdar Motor")
-
         val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
         binding.rvDisc.adapter = adapter
         binding.rvCust.adapter=adapterCustomer
@@ -91,23 +76,63 @@ class StatementHsFragment : Fragment() {
             adapter.notifyDataSetChanged()
         })
         viewModel.allCustomerFromDb.observe(viewLifecycleOwner, Observer {
-            adapterCustomer.submitList(it)
+            adapterCustomer.submitList(it.sortedBy { it.customerBussinessName })
             adapter.notifyDataSetChanged()
         })
 
         return binding.root
     }
+    private fun showCustomerDialog(customerTable: CustomerTable?) {
+        // Inflate the layout using data binding
+        val spinnerItems = resources.getStringArray(R.array.disc_Tipe)
+        val binding: PopUpUpdateProductDialogBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()),
+            R.layout.pop_up_update_product_dialog, // Replace with your dialog layout file
+            null,
+            false
+        )
+        val tvName= binding.textUpdateKet
+        val tvLocation= binding.textUpdatePrice
+
+        binding.textCapital.visibility=View.GONE
+        binding.textDiscount.visibility=View.GONE
+
+        // Create the dialog using AlertDialog.Builder
+        if (customerTable!=null){
+            tvName.setText( customerTable.customerBussinessName)
+            tvLocation.setText( customerTable.customerLocation)
+        }
+        val dialogBuilder = AlertDialog.Builder(requireContext())
+            .setView(binding.root)
+            .setTitle("Enter Discount Details")
+            .setPositiveButton("OK") { dialog, _ ->
+                // Get values from the input fields
+                val bussinessNmae= tvName.text.toString().uppercase().trim()
+                val location = tvLocation.text.toString().uppercase().trim()
+                Log.i("CUSTPROBS","fragment bussiness name $bussinessNmae")
+                Log.i("CUSTPROBS","fragment location $location")
+                if (customerTable==null){
+                    viewModel.insertCustomer(null,bussinessNmae,location,null,null,null)
+                }else{
+                    viewModel.updateCustomer(customerTable.custId,null,bussinessNmae,location,null,null,null)
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+
+        // Show the dialog
+        val dialog = dialogBuilder.create()
+        dialog.show()
+    }
     private fun showDiscountDialog(discountTable: DiscountTable?) {
         // Inflate the layout using data binding
-
         val spinnerItems = resources.getStringArray(R.array.disc_Tipe)
-        val binding: PopUpDiscBinding = DataBindingUtil.inflate(
-            LayoutInflater.from(requireContext()),
+        val binding: PopUpDiscBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()),
             R.layout.pop_up_disc, // Replace with your dialog layout file
             null,
             false
         )
-
         binding.textDiscValue.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         binding.textDiscQty.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         // Create the dialog using AlertDialog.Builder
@@ -116,10 +141,7 @@ class StatementHsFragment : Fragment() {
             binding.textDiscValue.setText( discountTable.discountValue.toString())
             binding.textDiscQty.setText( discountTable.minimumQty.toString())
             binding.textCustLoc.setText( discountTable.custLocation ?: "")
-            Log.i("DiscProbs","all array: $spinnerItems")
-            Log.i("DiscProbs","discountType: ${discountTable.discountType}")
             val position = spinnerItems.indexOf(discountTable.discountType)
-            Log.i("DiscProbs","position = $position")
             binding.spinnerM.setSelection(position)
         }
         val dialogBuilder = AlertDialog.Builder(requireContext())
@@ -132,16 +154,11 @@ class StatementHsFragment : Fragment() {
                 val discMinQty = binding.textDiscQty.text.toString().trim().toDoubleOrNull()
                 val selectedDiscType = binding.spinnerM.selectedItem.toString().trim()
                 val custLocation = binding.textCustLoc.text.toString().uppercase().trim()
-
                 if (discountTable==null){
                     viewModel.insertDiscount(discValue,discName,discMinQty,selectedDiscType,custLocation)
                 }else{
                     viewModel.updateDiscount(discountTable.discountId,discValue,discName,discMinQty,selectedDiscType,custLocation)
                 }
-
-                // Do something with the input data, e.g., save or pass it
-                // ...
-
                 dialog.dismiss()
             }
             .setNegativeButton("Cancel") { dialog, _ ->
