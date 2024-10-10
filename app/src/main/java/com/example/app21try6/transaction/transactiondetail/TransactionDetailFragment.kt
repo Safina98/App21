@@ -113,6 +113,8 @@ class TransactionDetailFragment : Fragment() {
         binding.btnPrintNew.setOnClickListener {
            fibrateOnClick()
             printReceipt()
+
+
             //viewModel.calculateDisc()
            // viewModel.deleteAllTrans()
         }

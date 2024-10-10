@@ -170,9 +170,9 @@ class TextGenerator(
         if (!discountTransaction.isNullOrEmpty()){
             for (d in discountTransaction!!){
                 if (d.discountType?.replace(" ", "") != DISCTYPE.CashbackNotPrinted.replace(" ", ""))  {
-                    val a = getPadding("${d.name} ${d.payment_ammount}","left",c)
+                    val a = getPadding("${d.name} ${d.payment_ammount}","left",c)+3
                     Log.i("DiscProbs","get padding ${c-a}")
-                    val padding = " ".repeat(((c - d.name!!.length - formatRupiah(d.payment_ammount?.toDouble())!!.length)-6).coerceAtLeast(0))
+                    val padding = " ".repeat(((c - d.name!!.length - formatRupiah(d.payment_ammount?.toDouble())!!.length)-1).coerceAtLeast(0))
                     val paddedString = "${d.name}$padding${formatRupiah(d.payment_ammount?.toDouble())}"
 
                     builder.append("$paddedString\n")

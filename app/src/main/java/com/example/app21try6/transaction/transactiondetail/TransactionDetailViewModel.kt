@@ -1,6 +1,7 @@
 package com.example.app21try6.transaction.transactiondetail
 
 import android.app.Application
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -8,6 +9,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
+import com.example.app21try6.DISCTYPE
 import com.example.app21try6.database.CustomerDao
 import com.example.app21try6.database.DiscountDao
 import com.example.app21try6.database.DiscountTransDao
@@ -393,11 +395,12 @@ class TransactionDetailViewModel (application: Application,
     }
 
     fun generateReceiptTextWa(): String {
-        textGenerator = TextGenerator(transDetail.value,transSum.value,paymentModel.value,discountTransBySumId.value)
+        textGenerator = TextGenerator(transDetail.value,transSum.value,paymentModel.value,discountTransBySumId.value?.filter { it.discountType!=DISCTYPE.CashbackNotPrinted })
         return textGenerator.generateReceiptTextWa()
     }
     fun generateReceiptTextNew(): String {
-        textGenerator = TextGenerator(transDetail.value,transSum.value,paymentModel.value,discountTransBySumId.value)
+
+        textGenerator = TextGenerator(transDetail.value,transSum.value,paymentModel.value,discountTransBySumId.value?.filter { it.discountType!=DISCTYPE.CashbackNotPrinted })
         return textGenerator.generateReceiptTextNew()
     }
 
