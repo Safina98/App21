@@ -179,6 +179,8 @@ class BrandStockFragment : Fragment() {
                             viewModel.clearCheckedItemList() } }) }
         val alert = builder.create()
         alert.show()
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
     }
 
     private fun showDialogBox(viewModel: BrandStockViewModel, vendible: Brand) {
@@ -190,6 +192,8 @@ class BrandStockFragment : Fragment() {
             .setNegativeButton("Delete") { dialog, id -> deleteDialog( viewModel,vendible,1) }
         val alert = builder.create()
         alert.show()
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
     }
 
     private fun deleteDialog(viewModel: BrandStockViewModel, vendible: Brand,code:Int) {
@@ -203,6 +207,8 @@ class BrandStockFragment : Fragment() {
                             viewModel.clearCheckedItemList() } }) }
         val alert = builder.create()
         alert.show()
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
     }
 
     private fun updateDialog(viewModel: BrandStockViewModel, vendible: Brand,category: Category,code: Int) {
@@ -226,6 +232,8 @@ class BrandStockFragment : Fragment() {
         }
         val alert = builder.create()
         alert.show()
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
     }
     fun showAddDialog(viewModel: BrandStockViewModel,i:Int){
         val builder = AlertDialog.Builder(context)
@@ -243,6 +251,8 @@ class BrandStockFragment : Fragment() {
         }
         val alert = builder.create()
         alert.show()
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
     }
     private fun checkPermission(): Boolean {
         // checking of permissions.

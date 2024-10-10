@@ -151,7 +151,7 @@ fun Button.applyGradientBackground(isGradient: Boolean) {
     if (isGradient) {
         // Apply the gradient background
         Log.i("bgprobs","isgradient $isGradient")
-        this.background = ContextCompat.getDrawable(context, R.drawable.tool_bar_bg)
+        this.background = ContextCompat.getDrawable(context, R.drawable.active_btn)
     } else {
         // Apply a black background
         this.background = ColorDrawable(ContextCompat.getColor(context, android.R.color.black))
