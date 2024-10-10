@@ -125,10 +125,10 @@ class TransactionActiveViewModel(
     //Add new transsummary on button click and navigate to trans edit
     fun onAddNewTransactionClick(){
         viewModelScope.launch {
-            var trans =   TransactionSummary()
-            trans.trans_date = todaysdate
+            val trans =   TransactionSummary()
+            trans.trans_date = Date()
             trans.ref =UUID.randomUUID().toString()
-            var id =insertNewSumAndGetId(trans).toInt()
+            val id =insertNewSumAndGetId(trans).toInt()
             trans.sum_id = id
             onNavigatetoTransEdit(id)
         }

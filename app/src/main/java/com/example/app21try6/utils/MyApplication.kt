@@ -2,9 +2,11 @@ package com.example.app21try6.utils
 
 import android.app.Application
 import android.preference.PreferenceManager
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.example.app21try6.MainActivity
 import java.util.concurrent.TimeUnit
 
 class MyApplication: Application()  {
@@ -12,13 +14,17 @@ class MyApplication: Application()  {
         super.onCreate()
         val wmbPreference = PreferenceManager.getDefaultSharedPreferences(this)
         val isFirstRun = wmbPreference.getBoolean("FIRSTRUN", true)
-        removeDuplicatesTransSum()
-        if (isFirstRun) {
+        val mainActivity = MainActivity()  // Replace this with a valid reference to your main activity
+        val observer = AppLifecycleObserver(mainActivity)
+        ProcessLifecycleOwner.get().lifecycle.addObserver(observer)
+
+        // removeDuplicatesTransSum()
+       // if (isFirstRun) {
 
             //scheduleOneTimeMigrateDB()
             //scheduleOneTimeUpdateMerkWarna()
-            markFirstRunCompleted() // Set the flag after scheduling
-        }
+           // markFirstRunCompleted() // Set the flag after scheduling
+        //}
 
     }
     private fun markFirstRunCompleted() {
