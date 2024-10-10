@@ -12,6 +12,7 @@
 
         <!-- Status bar color. -->
 
+        <item name="alertDialogTheme">@style/AlertDialogTheme</item>
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
@@ -44,6 +45,8 @@
         <item name="colorSecondary">@color/secondaryColor</item>
         <item name="colorSecondaryVariant">@color/secondaryLightColor</item>
         <item name="colorOnSecondary">@color/secondaryDarkTextColor</item>
+        <item name="alertDialogTheme">@style/AlertDialogTheme</item>
+
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->

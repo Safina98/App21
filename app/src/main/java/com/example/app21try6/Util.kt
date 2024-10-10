@@ -15,6 +15,7 @@ val DATE_FORMAT = SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault())
 object DISCTYPE {
     const val CashbackPrinted = "Printed"
     const val CashbackNotPrinted = "Not Printed"
+    const val UbahHarga ="Ubah Harga"
 
 }
 

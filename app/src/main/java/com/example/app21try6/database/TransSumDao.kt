@@ -60,6 +60,9 @@ interface TransSumDao {
     @Query("SELECT * FROM trans_sum_table")
     fun getAllTransSum():LiveData<List<TransactionSummary>>
 
+    @Query("SELECT * FROM trans_sum_table")
+    suspend fun getAllTransSumList():List<TransactionSummary>
+
     @Query("SELECT * FROM trans_sum_table WHERE  is_taken = :bool")
     fun getActiveSum(bool:Boolean):LiveData<List<TransactionSummary>>
 
@@ -101,7 +104,9 @@ interface TransSumDao {
 
 
     @Query("""
-    SELECT * FROM trans_sum_table t 
+    SELECT DISTINCT t.sum_id, t.cust_name, t.total_trans, t.trans_date, t.paid, 
+                    t.is_taken, t.is_paid_off, t.is_keeped, t.ref, t.sum_note, t.custId 
+    FROM trans_sum_table t 
     JOIN trans_detail_table AS td ON t.sum_id = td.sum_id 
     WHERE 
         (:name IS NULL OR td.trans_item_name IS NULL OR td.trans_item_name LIKE '%' || :name || '%')
@@ -110,6 +115,9 @@ interface TransSumDao {
     ORDER BY t.trans_date DESC
 """)
     fun getFilteredData3( startDate: String?, endDate: String?,name:String?): List<TransactionSummary>
+
+    @Query("DELETE FROM trans_sum_table WHERE sum_id IN (:sumIds)")
+    suspend fun deleteTransactionSummaries(sumIds: List<Int>)
 
     @Transaction
     suspend fun performTransaction(block: suspend () -> Unit) {

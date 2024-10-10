@@ -15,6 +15,7 @@ import com.example.app21try6.database.Product
 import com.example.app21try6.database.SubProduct
 import com.example.app21try6.database.TransactionDetail
 import com.example.app21try6.databinding.ItemListTransactionSelectBinding
+import java.util.Locale
 
 class TransactionSelectAdapter (
    val plusSelectListener: PlusSelectListener,
@@ -43,7 +44,8 @@ class TransactionSelectAdapter (
             binding.subsLongListener = subSelectLongListener
             binding.longListener = selectLongListener
             binding.txtProductT.text = item.item_name
-            binding.textSellsT.text = item.qty.toString()
+            binding.textSellsT.text = String.format(Locale.US,"%.2f", item.qty)
+
             binding.checkBox3.isChecked = item.is_selected or if (item.qty>0){true}else { false }
             // Set OnClickListener for the checkbox
 

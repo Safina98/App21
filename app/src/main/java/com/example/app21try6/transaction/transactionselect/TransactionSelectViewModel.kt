@@ -110,7 +110,7 @@ class TransactionSelectViewModel(
     //update on btn + or - click
     fun updateTransDetail(s:TransSelectModel){
         viewModelScope.launch {
-            var t = converter(s)
+            val t = converter(s)
             var id =s.trans_detail_id
             if (id==0L) id = insertDetailToDBandGetId(t) else _updateTransDetail(t)
             s.trans_detail_id  = id ?: -1L
@@ -118,7 +118,7 @@ class TransactionSelectViewModel(
         }
     }
     fun converter(s:TransSelectModel): TransactionDetail {
-        var t = TransactionDetail()
+        val t = TransactionDetail()
         t.sum_id = _sumId.value ?: -1
         t.trans_detail_id = s.trans_detail_id
         t.qty = s.qty
@@ -127,6 +127,7 @@ class TransactionSelectViewModel(
         t.trans_price = s.item_price
         t.trans_detail_date = Date()
         t.item_position = pos
+        t.sub_id=s.sub_product_id
         Log.i("drag","insert pos $pos")
         pos+=1
         return t

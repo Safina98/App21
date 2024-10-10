@@ -51,6 +51,7 @@ class AllTransactionsFragment : Fragment() {
         viewModel.allTransactionSummary.observe(viewLifecycleOwner){
             it?.let {
                 adapter.submitList(it)
+                //Log.i("WorkerProbs","$it")
             }
         }
 

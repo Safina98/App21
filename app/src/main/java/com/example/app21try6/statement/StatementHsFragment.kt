@@ -92,8 +92,7 @@ class StatementHsFragment : Fragment() {
         )
         val tvName= binding.textUpdateKet
         val tvLocation= binding.textUpdatePrice
-
-        binding.textCapital.visibility=View.GONE
+        val tvTag1=binding.textCapital
         binding.textDiscount.visibility=View.GONE
 
         // Create the dialog using AlertDialog.Builder

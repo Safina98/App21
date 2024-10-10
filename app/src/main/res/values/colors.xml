@@ -15,8 +15,9 @@
     <color name="secondaryDarkTextColor">#FFFFFF</color>
     -->
     <color name="primaryColor">#8C3061</color>
-    <color name="primaryLightColor">#16325B</color>
-    <color name="primaryDarkColor">#F7522258</color>
+    <color name="dialogbtncolor">#808693A5</color>
+    <color name="primaryLightColor">#082946</color>
+    <color name="primaryDarkColor">#082946</color>
     <color name="secondaryColor">#C9C63C51</color>
     <color name="secondaryLightColor">#F2613F</color>
     <color name="secondaryDarkColor">#9B3922</color>

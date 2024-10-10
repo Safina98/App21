@@ -12,6 +12,7 @@ import com.example.app21try6.database.TransactionDetail
 import com.example.app21try6.databinding.ItemListTransactionEditBinding
 
 import com.example.app21try6.formatRupiah
+import java.util.Locale
 
 class TransactionEditAdapter(
     val clickListener: TransEditClickListener,
@@ -42,7 +43,7 @@ class TransactionEditAdapter(
             ){
             binding.item = item
             binding.txtProductT.text = item.trans_item_name
-            binding.textSellsT.text = item.qty.toString()
+            binding.textSellsT.text = String.format(Locale.US,"%.2f", item.qty)
             binding.txtPriceT.text =  formatRupiah(item.trans_price.toDouble())
             binding.textSumsT.text = formatRupiah(item.total_price).toString()
             binding.txtUnitQty.text = item.unit_qty.toString()

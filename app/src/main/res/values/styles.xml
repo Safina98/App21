@@ -142,6 +142,20 @@
     <style name="CustomButtonStyle" parent="Widget.AppCompat.Button">
         <item name="android:background">@drawable/tool_bar_bg</item>
         <item name="android:textColor">@android:color/white</item>
+        <item name="paddingStart">2dp</item>
+        <item name="paddingEnd">2dp</item>
+        <item name="android:radius">4dp</item>
+    </style>
+    <style name="AlertDialogTheme" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">#f00</item>
+    </style>
+
+    <style name="NegativeButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">#f00</item>
+    </style>
+
+    <style name="PositiveButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+    <item name="android:textColor">#00f</item>
     </style>
     <!-- res/values/styles.xml -->
 

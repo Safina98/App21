@@ -14,7 +14,7 @@ import com.example.app21try6.database.TransactionDetail
 import com.example.app21try6.database.TransactionSummary
 import com.example.app21try6.databinding.ItemListTransactionDetailBinding
 import com.example.app21try6.formatRupiah
-
+import java.util.Locale
 
 
 class TransactionDetailAdapter(
@@ -37,8 +37,8 @@ class TransactionDetailAdapter(
             binding.longClickListener = longListener
             binding.txtItemTDetail.setBackgroundColor(Color.WHITE)
             binding.txtItemTDetail.text = item.trans_item_name
-            binding.txtQtyTDetail.text = item.qty.toString()
-            binding.txtUnitQtyDetail.text = item.unit_qty.toString()
+            binding.txtQtyTDetail.text = String.format(Locale.US,"%.2f", item.qty)
+            binding.txtUnitQtyDetail.text = String.format(Locale.US,"%.2f", item.unit_qty)
             binding.txtUnitDetail.text = item.unit
             binding.txtItemTDate.visibility = when(isPaidOff){
                 true ->View.VISIBLE

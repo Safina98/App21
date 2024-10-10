@@ -229,8 +229,13 @@ class TransactionDetailFragment : Fragment() {
         }
         builder.setNegativeButton("No") { dialog, which ->
         }
+
+
         val alert = builder.create()
         alert.show()
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.primaryColor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.primaryColor))
+
     }
     private fun printReceipt() {
         // Check if Bluetooth is enabled
@@ -320,16 +325,17 @@ class TransactionDetailFragment : Fragment() {
             .create()
 
         dialog.show()
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
     }
     private fun deleteDialog(p_id:Int,typem:String) {
-        val builder = AlertDialog.Builder(context)
+        val builder = AlertDialog.Builder(context, R.style.AlertDialogTheme)
         builder.setMessage("Are you sure you want to Delete?")
             .setCancelable(true)
             .setPositiveButton("Yes") { dialog, id ->
                 if (typem==type.Payment)
                 viewModel.deletePayment(p_id)
-                else
-                {
+                else {
                     Log.i("DiscProbs","id: $p_id")
                     viewModel.deleteDiscount(p_id)
                 }
@@ -341,6 +347,8 @@ class TransactionDetailFragment : Fragment() {
             }
         val alert = builder.create()
         alert.show()
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
     }
     fun fibrateOnClick(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { // API level 31 and above

@@ -12,8 +12,10 @@ class MyApplication: Application()  {
         super.onCreate()
         val wmbPreference = PreferenceManager.getDefaultSharedPreferences(this)
         val isFirstRun = wmbPreference.getBoolean("FIRSTRUN", true)
+        removeDuplicatesTransSum()
         if (isFirstRun) {
-            scheduleOneTimeMigrateDB()
+
+            //scheduleOneTimeMigrateDB()
             //scheduleOneTimeUpdateMerkWarna()
             markFirstRunCompleted() // Set the flag after scheduling
         }
@@ -23,7 +25,8 @@ class MyApplication: Application()  {
         val wmbPreference = PreferenceManager.getDefaultSharedPreferences(this)
         wmbPreference.edit().putBoolean("FIRSTRUN", false).apply()
     }
-    private fun scheduleOneTimeUpdateMerkWarna() {
+
+    private fun scheduleOneTimeMigrateDB() {
         val workManager = WorkManager.getInstance(this)
 
         // Create a OneTimeWorkRequest for the worker
@@ -38,11 +41,11 @@ class MyApplication: Application()  {
             workRequest
         )
     }
-    private fun scheduleOneTimeMigrateDB() {
+    private fun removeDuplicatesTransSum() {
         val workManager = WorkManager.getInstance(this)
 
         // Create a OneTimeWorkRequest for the worker
-        val workRequest = OneTimeWorkRequestBuilder<UpdateCustomerIdWorker>()
+        val workRequest = OneTimeWorkRequestBuilder<DeleteMultipleTransumWorker>()
             .setInitialDelay(1, TimeUnit.SECONDS) // Optional: Adjust delay if needed
             .build()
 

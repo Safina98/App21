@@ -16,6 +16,7 @@ import com.example.app21try6.databinding.ItemListBookkeepingBinding
 
 
 import com.example.app21try6.formatRupiah
+import java.util.Locale
 
 class  BookkeepingAdapter(
         val plusListener: PlusBookListener,
@@ -40,7 +41,7 @@ class  BookkeepingAdapter(
             binding.book = item
             //binding.txtProductB.text = item.product.toString()
             binding.txtProductB.text = item.item_name
-            binding.textSellsB.text = item.item_sold.toString()
+            binding.textSellsB.text = String.format(Locale.US,"%.2f", item.item_sold)
             binding.textSumsB.text = formatRupiah(item.total_income).toString()
             binding.txtPrice.text = formatRupiah(item.price).toString()
             binding.plusListener = plusListener

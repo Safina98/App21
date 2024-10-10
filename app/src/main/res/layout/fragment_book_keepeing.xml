@@ -90,7 +90,10 @@
                     android:layout_marginRight="8dp"
                     android:layout_marginBottom="8dp"
                     android:onClick="@{() -> bookViewModel.onNavigateToVendible()}"
-                    android:src="@drawable/ic_baseline_add_circle_outline_24" />
+                    android:src="@drawable/fab"
+                    app:fabCustomSize="56dp"
+                    app:maxImageSize="56dp"
+                    android:scaleType="center" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>

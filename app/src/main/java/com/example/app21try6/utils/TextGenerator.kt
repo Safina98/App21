@@ -116,6 +116,7 @@ class TextGenerator(
         return builder.toString()
     }
     fun generateReceiptTextNew(): String {
+
         val builder = StringBuilder()
         val items = transDetail
         val payments = paymentModel
@@ -130,6 +131,7 @@ class TextGenerator(
         val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
         var totalTransaction= transsum!!.total_trans
         // Receipt header
+
         //builder.append("------------------ $storeName ------------------\n")
         builder.append("$paddingStoreName $storeName $paddingStoreName\n")
         builder.append("$storeAddress\n")
@@ -145,7 +147,6 @@ class TextGenerator(
         if (items != null) {
             for (item in items) {
                 val itemTotalPrice = item.qty * item.trans_price*item.unit_qty
-
                 builder.append(String.format("%-24s\n", item.trans_item_name))
                 //builder.append(String.format("%3.2f   %-3s %3s\n",  item.qty, x, if(item.qty>=1)formatRupiah(item.trans_price.toDouble()) else "-"))
                 if (item.unit ==null){
@@ -160,25 +161,28 @@ class TextGenerator(
                     }
 
                 }
-
                 builder.append(String.format(" %27s\n", formatRupiah(itemTotalPrice)))
             }
         }
         // Receipt footer
         builder.append("-".repeat(getPadding("","Left",c))+"\n")
         builder.append(String.format("%-10s%19s\n", "Total:", formatRupiah(transsum.total_trans)))
-
         if (!discountTransaction.isNullOrEmpty()){
             for (d in discountTransaction!!){
                 if (d.discountType?.replace(" ", "") != DISCTYPE.CashbackNotPrinted.replace(" ", ""))  {
-                    val a = getPadding("${d.name} ${d.payment_ammount}","left",c)-4
-                    Log.i("DiscProbs","get padding $a")
-                    builder.append(String.format("%-${a}s%4s\n", d.name, formatRupiah(d.payment_ammount?.toDouble())))
+                    val a = getPadding("${d.name} ${d.payment_ammount}","left",c)
+                    Log.i("DiscProbs","get padding ${c-a}")
+                    val padding = " ".repeat(((c - d.name!!.length - formatRupiah(d.payment_ammount?.toDouble())!!.length)-6).coerceAtLeast(0))
+                    val paddedString = "${d.name}$padding${formatRupiah(d.payment_ammount?.toDouble())}"
+
+                    builder.append("$paddedString\n")
+                    //builder.append(String.format("%-${b}s%4s\n", d.name, formatRupiah(d.payment_ammount?.toDouble())))
+                    Log.i("DiscProbs", "Formatted line: '${builder.toString()}'")
                     totalTransaction=totalTransaction-d.payment_ammount!!
                 }
             }
-            builder.append("-".repeat(getPadding("","Left",50))+"\n")
-            builder.append(String.format("%-24s%14s\n", "Total:", formatRupiah(totalTransaction)))
+            builder.append("-".repeat(getPadding("","Left",c))+"\n")
+            builder.append(String.format("%-10s%19s\n", "Total:", formatRupiah(transsum.total_trans)))
         }
         if (payments!=null){
             var paymentAmmountSum :Int = 0
@@ -193,14 +197,11 @@ class TextGenerator(
                 else{
                     builder.append(String.format("%-10s%19s\n", "Kembalian:", formatRupiah(abs(sisa))))
                 }
-
             }
         }
-
         builder.append("-".repeat(getPadding("","Left",c))+"\n")
         builder.append("Terimakasih atas pembelian anda\n")
         builder.append("      Have a nice day!\n\n\n\n")
         return builder.toString()
-
     }
 }

@@ -20,7 +20,8 @@ interface SummaryDbDao {
 
     @Query("SELECT * FROM summary_table WHERE item_name = :itemName AND year =:year AND month=:month_n AND day=:day AND price = :price LIMIT 1")
     fun getSummaryByItemNameAndDayName(itemName: String, year: Int, month_n:String, day: Int,price:Double): Summary?
-
+    @Query("SELECT * FROM summary_table WHERE item_name = :itemName AND year =:year AND month=:month_n AND day=:day LIMIT 1")
+    fun getSummaryByItemNameAndDayName(itemName: String, year: Int, month_n:String, day: Int): Summary?
     // Function to insert or update based on existence of item_name and day_name combination
     @Transaction
     fun insertOrUpdate(summary: Summary) {
@@ -31,6 +32,18 @@ interface SummaryDbDao {
             summary.id_m = existingSummary.id_m
             summary.item_sold = summary.item_sold+existingSummary.item_sold
             summary.total_income = summary.item_sold*summary.price
+            update(summary)
+        }
+    }
+    @Transaction
+    fun insertOrUpdateD(summary: Summary) {
+        val existingSummary = getSummaryByItemNameAndDayName(summary.item_name, summary.year,summary.month,summary.day)
+        if (existingSummary == null) {
+            insert(summary)
+        } else {
+            summary.id_m = existingSummary.id_m
+            summary.price +=existingSummary.price
+            summary.total_income +=existingSummary.total_income
             update(summary)
         }
     }

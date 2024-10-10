@@ -47,10 +47,8 @@ class TransactionEditViewModel(
     val navigateToDetail: LiveData<Int> get() = _navigateToDetail
 
 
-
     val transDetailWithProduct= datasource2.getTransactionDetailsWithProduct(id)
     var discountTransactionList =  mutableListOf <DiscountTransaction>()
-
 
 
     //change item position on drag
@@ -71,6 +69,11 @@ class TransactionEditViewModel(
 
     ////////////////////////////////Transacttion Detail/////////////////////////////
 
+    fun discountCustomer(){
+        viewModelScope.launch {
+
+        }
+    }
 
     fun calculateDisc() {
         viewModelScope.launch {
@@ -81,8 +84,11 @@ class TransactionEditViewModel(
             val customerDeferred = async(Dispatchers.IO) { customerDao.getCustomerByName(custId) }
             val discountList = withContext(Dispatchers.IO){discountDao.getAllDiscountList()}
             val customer = customerDeferred.await()
+
             val transDetailWithProductList = withContext(Dispatchers.IO){ datasource2.getTransactionDetailsWithProductList(transactionSummary!!.sum_id) }
+
             if (transDetailWithProductList==null || transactionSummary == null) {
+               // Log.i("DiscProbs", "${transDetailWithProduct.value}")
                 return@launch
             }
             // Group transactions by discountId once to avoid repeated grouping
@@ -92,12 +98,16 @@ class TransactionEditViewModel(
             // Calculate the discount value for products that match the discount conditions
             val discountTransactions = discountList.mapNotNull { discount ->
                 // Check location first to avoid unnecessary computations
+
                 if (discount.custLocation?.lowercase() == customer?.customerLocation?.lowercase()||discount.custLocation==null) {
                     // Get the transaction details for the discount
                     val productTransactions = groupedByProduct[discount.discountId]
                     // If there are matching transactions for the discount, calculate the total quantity
+                   // Log.i("DiscProbs", "groupby product $productTransactions")
                     if (productTransactions != null) {
-                        val totalQty = productTransactions.sumOf { it.transactionDetail.qty }
+                        val totalQty = productTransactions
+                            .filter { it.transactionDetail.trans_price ==it.productPrice  }
+                            .sumOf { it.transactionDetail.qty }
 
                         // Check if the total quantity meets the minimumQty condition
                         if (totalQty >= (discount.minimumQty ?: 0.0)) {

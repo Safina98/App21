@@ -232,7 +232,7 @@
             android:contentDescription="@string/submit"
             android:text="diambil"
             android:onClick="@{()->viewModel.updateBooleanValue()}"
-            app:buttonBackgroundColor="@{viewModel.transSum.is_taken_}"
+            app:applyGradientBackground="@{viewModel.transSum.is_taken_}"
             app:layout_constraintEnd_toStartOf="@id/btn_insert_to_sum_"
             app:layout_constraintStart_toEndOf="@id/btn_bayar_trans"
             app:layout_constraintBottom_toBottomOf="parent" />
@@ -241,11 +241,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:backgroundTint="@color/black"
             android:contentDescription="@string/submit"
             android:onClick="@{()->viewModel.onBtnPembukuanClick()}"
             android:text="pembukuan"
-            app:buttonBackgroundColor="@{viewModel.transSum.is_keeped}"
+            app:applyGradientBackground="@{viewModel.transSum.is_keeped}"
             app:layout_constraintStart_toEndOf="@id/btn_add_new_brand_"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

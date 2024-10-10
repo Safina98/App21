@@ -80,7 +80,10 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toTopOf="@+id/btn_selesai"
                         android:onClick="@{()->viewModel.onNavigatetoVendible()}"
-                        android:src="@drawable/ic_baseline_add_circle_outline_24" />
+                        android:src="@drawable/fab"
+                        app:fabCustomSize="56dp"
+                        app:maxImageSize="56dp"
+                        android:scaleType="center" />
 
 
                 <Button

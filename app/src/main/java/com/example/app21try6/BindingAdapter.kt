@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 import android.content.res.Configuration
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
@@ -143,6 +144,18 @@ fun setButtontBackgroundColor(view: View, isPrepared: Boolean) {
         ContextCompat.getColor(view.context, R.color.black)
     }
     view.setBackgroundColor(color)
+}
+
+@BindingAdapter("applyGradientBackground")
+fun Button.applyGradientBackground(isGradient: Boolean) {
+    if (isGradient) {
+        // Apply the gradient background
+        Log.i("bgprobs","isgradient $isGradient")
+        this.background = ContextCompat.getDrawable(context, R.drawable.tool_bar_bg)
+    } else {
+        // Apply a black background
+        this.background = ColorDrawable(ContextCompat.getColor(context, android.R.color.black))
+    }
 }
 
 @BindingAdapter("dateFormatted")

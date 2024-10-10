@@ -302,6 +302,20 @@ class TransactionDetailViewModel (application: Application,
                summary.total_income = it.total_price
                insertItemToSummaryDB(summary)
            }
+            discountTransBySumId.value?.forEach {
+                val summary = Summary()
+                summary.year= calendar.get(Calendar.YEAR)
+                summary.month = dateFormat.format(transSum.value!!.trans_date)
+                summary.month_number = calendar.get(Calendar.MONTH)+1
+                summary.day = calendar.get(Calendar.DATE)
+                summary.day_name = transSum.value!!.trans_date.toString()
+                summary.item_name = it.name?: "Diskon"
+                summary.price = it.payment_ammount?.toDouble()?.times((-1)) ?: 0.0
+                summary.item_sold = 1.0
+                summary.total_income = it.payment_ammount?.toDouble()?.times((-1)) ?: 0.0
+                insertDiscountToSummaryDB(summary)
+            }
+
         }
     }
     //update Todays Date onClick
@@ -360,6 +374,11 @@ class TransactionDetailViewModel (application: Application,
     private suspend fun insertItemToSummaryDB(summary: Summary){
         withContext(Dispatchers.IO){
             datasource3.insertOrUpdate(summary)
+        }
+    }
+    private suspend fun insertDiscountToSummaryDB(summary: Summary){
+        withContext(Dispatchers.IO){
+            datasource3.insertOrUpdateD(summary)
         }
     }
     private suspend fun updateTransDetailDB(transdetail: TransactionDetail){

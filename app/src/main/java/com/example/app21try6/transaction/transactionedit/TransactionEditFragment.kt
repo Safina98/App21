@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.RadioButton
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -22,6 +23,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.example.app21try6.R
 import com.example.app21try6.database.TransactionDetail
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionEditBinding
@@ -143,11 +145,13 @@ class TransactionEditFragment : Fragment() {
        viewModel.itemTransDetail.observe(viewLifecycleOwner, Observer {
            it?.let {
                adapter.submitList(it)
-
                adapter.setItemsValue(it)
            }
        })
-
+        viewModel.transDetailWithProduct.observe(viewLifecycleOwner, Observer {
+            it?.let {
+            }
+        })
         viewModel.allCustomerTable.observe(viewLifecycleOwner, Observer { customerList ->
 
             val customerNames = customerList.map { it.customerBussinessName }
@@ -177,10 +181,7 @@ class TransactionEditFragment : Fragment() {
                viewModel.onNavigatedtoDetail()
            }
        })
-        viewModel.transDetailWithProduct.observe(viewLifecycleOwner, Observer {
-            it?.let {
-            }
-        })
+
        viewModel.navigateToVendible.observe(viewLifecycleOwner, Observer {
            if (it != null) {
                this.findNavController().navigate(TransactionEditFragmentDirections.actionTransactionEditFragmentToTransactionProductFragment(it))
@@ -251,6 +252,8 @@ class TransactionEditFragment : Fragment() {
 
         val alert = builder.create()
         alert.show()
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
 
     }
     private fun deleteDialog(transactionDetail: TransactionDetail, viewModel: TransactionEditViewModel) {
@@ -267,6 +270,8 @@ class TransactionEditFragment : Fragment() {
             }
         val alert = builder.create()
         alert.show()
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
     }
     fun showInputCoiceDialog(item:TransactionDetail) {
         val binding :PopUpUnitBinding = PopUpUnitBinding.inflate(LayoutInflater.from(context))
@@ -286,6 +291,8 @@ class TransactionEditFragment : Fragment() {
             .setNegativeButton("Cancel", null)
             .create()
         dialog.show()
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
 
     }
 
