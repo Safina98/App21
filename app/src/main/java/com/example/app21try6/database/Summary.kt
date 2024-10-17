@@ -2,13 +2,26 @@ package com.example.app21try6.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import java.time.Month
 import java.time.Year
 import java.util.*
 
-@Entity(tableName = "summary_table")
+@Entity(tableName = "summary_table",
+        foreignKeys = [
+                ForeignKey(entity = Product::class,
+                parentColumns = ["product_id"],
+                childColumns = ["product_id"],
+                onDelete = ForeignKey.CASCADE,
+                onUpdate = ForeignKey.SET_NULL),
+                ForeignKey(entity = SubProduct::class,
+                        parentColumns = ["sub_id"],
+                        childColumns = ["sub_id"],
+                        onDelete = ForeignKey.CASCADE,
+                        onUpdate = ForeignKey.SET_NULL)]
+        )
 @TypeConverters(DateTypeConverter::class)
 data class Summary(
         @PrimaryKey(autoGenerate = true)
@@ -32,5 +45,9 @@ data class Summary(
         @ColumnInfo(name = "price")
         var price:Double = 0.0,
         @ColumnInfo(name = "total_income")
-        var total_income : Double = 0.0
+        var total_income : Double = 0.0,
+        @ColumnInfo(name = "product_id", index = true)
+        var product_id: Int? = null,
+        @ColumnInfo(name = "sub_id", index = true)
+        var sub_id: Int? = null
 )

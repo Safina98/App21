@@ -10,7 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 
 
-@Database(entities = [Brand::class,Product::class,SubProduct::class,Category::class,TransactionSummary::class,TransactionDetail::class,Payment::class,Expenses::class,ExpenseCategory::class,Summary::class,DiscountTable::class,DiscountTransaction::class,CustomerTable::class],version=33, exportSchema = true)
+@Database(entities = [Brand::class,Product::class,SubProduct::class,Category::class,TransactionSummary::class,TransactionDetail::class,Payment::class,Expenses::class,ExpenseCategory::class,Summary::class,DiscountTable::class,DiscountTransaction::class,CustomerTable::class],version=34, exportSchema = true)
 @TypeConverters(DateTypeConverter::class)
 abstract class VendibleDatabase:RoomDatabase(){
     abstract val brandDao :BrandDao
@@ -221,6 +221,51 @@ abstract class VendibleDatabase:RoomDatabase(){
                         database.execSQL("ALTER TABLE trans_sum_table_new RENAME TO trans_sum_table")
                     }
                 }
+                val MIGRATION_33_34 = object : Migration(33, 34) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        // Step 1: Rename the original table
+                        database.execSQL("ALTER TABLE summary_table RENAME TO summary_table_old")
+
+                        // Step 2: Create the new table with the foreign keys and indices
+                        database.execSQL(
+                            """
+            CREATE TABLE summary_table (
+                id_m INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                year INTEGER NOT NULL DEFAULT 2030,
+                month TEXT NOT NULL DEFAULT 'empty',
+                month_number INTEGER NOT NULL DEFAULT 0,
+                day INTEGER NOT NULL DEFAULT 0,
+                day_name TEXT NOT NULL DEFAULT 'empty',
+                date TEXT NOT NULL DEFAULT '1970-01-01',
+                item_name TEXT NOT NULL DEFAULT 'empty',
+                item_sold REAL NOT NULL DEFAULT 0.0,
+                price REAL NOT NULL DEFAULT 0.0,
+                total_income REAL NOT NULL DEFAULT 0.0,
+                product_id INTEGER DEFAULT NULL,
+                sub_id INTEGER DEFAULT NULL,
+                FOREIGN KEY(product_id) REFERENCES product_table(product_id) ON UPDATE SET NULL ON DELETE CASCADE,
+                FOREIGN KEY(sub_id) REFERENCES sub_table(sub_id) ON UPDATE SET NULL ON DELETE CASCADE
+            )
+            """.trimIndent()
+                        )
+
+                        // Step 3: Copy data from the old table to the new table, setting new columns to NULL
+                        database.execSQL(
+                            """
+            INSERT INTO summary_table (id_m, year, month, month_number, day, day_name, date, item_name, item_sold, price, total_income)
+            SELECT id_m, year, month, month_number, day, day_name, date, item_name, item_sold, price, total_income
+            FROM summary_table_old
+            """.trimIndent()
+                        )
+
+                        // Step 4: Drop the old table
+                        database.execSQL("DROP TABLE summary_table_old")
+
+                        // Step 5: Create indexes for the new columns if needed
+                        database.execSQL("CREATE INDEX IF NOT EXISTS index_summary_table_product_id ON summary_table(product_id)")
+                        database.execSQL("CREATE INDEX IF NOT EXISTS index_summary_table_sub_id ON summary_table(sub_id)")
+                    }
+                }
 
 
                 var instance = INSTANCE
@@ -230,7 +275,7 @@ abstract class VendibleDatabase:RoomDatabase(){
                             VendibleDatabase::class.java,
                             "vendible_table"
                     )
-                        .addMigrations(MIGRATION_32_33)
+                        .addMigrations(MIGRATION_33_34)
 
                         // .fallbackToDestructiveMigration()
                     .build()

@@ -56,6 +56,9 @@ interface SubProductDao {
     @Query("SELECT product_name FROM sub_table INNER JOIN PRODUCT_TABLE ON product_id = sub_table.product_code WHERE sub_name = :subName limit 1")
     fun getProductName(subName:String):String?
 
+    @Query("SELECT *FROM sub_table INNER JOIN PRODUCT_TABLE ON product_id = sub_table.product_code WHERE sub_name = :subName limit 1")
+    fun getProduct(subName:String):Product?
+
     @Query("DELETE FROM sub_table WHERE sub_id= :id_")
     fun delete(id_:Int)
 

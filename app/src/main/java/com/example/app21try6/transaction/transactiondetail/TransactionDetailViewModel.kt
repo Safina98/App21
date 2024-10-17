@@ -16,6 +16,7 @@ import com.example.app21try6.database.DiscountTransDao
 import com.example.app21try6.database.Payment
 
 import com.example.app21try6.database.PaymentDao
+import com.example.app21try6.database.Product
 import com.example.app21try6.database.SubProductDao
 import com.example.app21try6.database.Summary
 import com.example.app21try6.database.SummaryDbDao
@@ -292,16 +293,19 @@ class TransactionDetailViewModel (application: Application,
             calendar.time = transSum.value!!.trans_date
             val dateFormat = SimpleDateFormat("MMMM", Locale.getDefault())
             transDetail.value?.forEach {it->
+                val product=  getProduct(it.trans_item_name)
                val summary = Summary()
                summary.year= calendar.get(Calendar.YEAR)
                summary.month = dateFormat.format(transSum.value!!.trans_date)
                summary.month_number = calendar.get(Calendar.MONTH)+1
                summary.day = calendar.get(Calendar.DATE)
                summary.day_name = transSum.value!!.trans_date.toString()
-               summary.item_name = getProductName(it.trans_item_name)?: it.trans_item_name
+               summary.item_name = product?.product_name?: it.trans_item_name
                summary.price = it.trans_price.toDouble()
                summary.item_sold = it.qty
                summary.total_income = it.total_price
+                summary.sub_id=it.sub_id
+                summary.product_id=product?.product_id
                insertItemToSummaryDB(summary)
            }
             discountTransBySumId.value?.forEach {
@@ -371,6 +375,11 @@ class TransactionDetailViewModel (application: Application,
     private suspend fun getProductName(subName:String):String?{
         return withContext(Dispatchers.IO){
             datasource5.getProductName(subName)
+        }
+    }
+    private suspend fun getProduct(subName:String):Product?{
+        return withContext(Dispatchers.IO){
+            datasource5.getProduct(subName)
         }
     }
     private suspend fun insertItemToSummaryDB(summary: Summary){
