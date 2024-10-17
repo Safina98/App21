@@ -111,11 +111,10 @@ class TransactionDetailFragment : Fragment() {
         binding.recyclerViewDiscount.adapter=discAdapter
 
         binding.btnPrintNew.setOnClickListener {
-           fibrateOnClick()
+            fibrateOnClick()
             printReceipt()
-
-
-            //viewModel.calculateDisc()
+            //viewModel.generateReceiptTextNew()
+            ////viewModel.calculateDisc()
            // viewModel.deleteAllTrans()
         }
         viewModel.transDetail.observe(viewLifecycleOwner, Observer {
@@ -216,7 +215,6 @@ class TransactionDetailFragment : Fragment() {
             textPrice.setText(paymentModel.payment_ammount.toString())
         }
 
-
         textPrice.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         textPrice.requestFocus()
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -230,8 +228,8 @@ class TransactionDetailFragment : Fragment() {
             }
         }
         builder.setNegativeButton("No") { dialog, which ->
-        }
 
+        }
 
         val alert = builder.create()
         alert.show()
@@ -265,7 +263,6 @@ class TransactionDetailFragment : Fragment() {
             // Print the receipt
             val receiptData = generateReceiptData()
             printerService.print(receiptData)
-
             // Disconnect after printing
            //
         }

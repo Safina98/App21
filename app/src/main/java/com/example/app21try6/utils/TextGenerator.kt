@@ -177,12 +177,12 @@ class TextGenerator(
 
                     builder.append("$paddedString\n")
                     //builder.append(String.format("%-${b}s%4s\n", d.name, formatRupiah(d.payment_ammount?.toDouble())))
-                    Log.i("DiscProbs", "Formatted line: '${builder.toString()}'")
+                    //Log.i("DiscProbs", "Formatted line: '${builder.toString()}'")
                     totalTransaction=totalTransaction-d.payment_ammount!!
                 }
             }
             builder.append("-".repeat(getPadding("","Left",c))+"\n")
-            builder.append(String.format("%-10s%19s\n", "Total:", formatRupiah(transsum.total_trans)))
+            builder.append(String.format("%-10s%19s\n", "Total:", formatRupiah(totalTransaction)))
         }
         if (payments!=null){
             var paymentAmmountSum :Int = 0
@@ -202,6 +202,7 @@ class TextGenerator(
         builder.append("-".repeat(getPadding("","Left",c))+"\n")
         builder.append("Terimakasih atas pembelian anda\n")
         builder.append("      Have a nice day!\n\n\n\n")
+        Log.i("DiscProbs", "Formatted line: '${builder.toString()}'")
         return builder.toString()
     }
 }

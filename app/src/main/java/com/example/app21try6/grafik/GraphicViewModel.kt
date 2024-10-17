@@ -1,6 +1,7 @@
 package com.example.app21try6.grafik
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -199,11 +200,12 @@ class GraphicViewModel(application: Application,
             try {
                 val doubleValue = model.itemCount
                 itemCountMap[itemName] = itemCountMap.getOrDefault(itemName, 0.0) + doubleValue
-                //  Log.i("LINE","itemcountmap: "+doubleValue.toString())
+
             } catch (e: NumberFormatException) {
             }
         }
         _mapModel.value = itemCountMap
+        Log.i("LINE","itemcountmap: $itemCountMap")
 
         //mau dihapus
         return _mapModel.value!!
@@ -240,10 +242,11 @@ class GraphicViewModel(application: Application,
             try {
                 val doubleValue = model.total_income!!.toDouble()
                 itemCountMap[itemName] = itemCountMap.getOrDefault(itemName, 0.0) + doubleValue
-                //  Log.i("LINE","itemcountmap: "+doubleValue.toString())
+
             } catch (e: NumberFormatException) {
             }
         }
+
         //mau dihapus
         return itemCountMap
     }
