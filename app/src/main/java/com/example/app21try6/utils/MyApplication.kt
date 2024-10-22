@@ -16,8 +16,9 @@ class MyApplication: Application()  {
         val isFirstRun = wmbPreference.getBoolean("FIRSTRUN", true)
         val mainActivity = MainActivity()  // Replace this with a valid reference to your main activity
         val observer = AppLifecycleObserver(mainActivity)
-        ProcessLifecycleOwner.get().lifecycle.addObserver(observer)
 
+        ProcessLifecycleOwner.get().lifecycle.addObserver(observer)
+        updateSummaryProductId()
         // removeDuplicatesTransSum()
        // if (isFirstRun) {
 
@@ -31,13 +32,12 @@ class MyApplication: Application()  {
         val wmbPreference = PreferenceManager.getDefaultSharedPreferences(this)
         wmbPreference.edit().putBoolean("FIRSTRUN", false).apply()
     }
-
-    private fun scheduleOneTimeMigrateDB() {
+    private fun updateSummaryProductId() {
         val workManager = WorkManager.getInstance(this)
 
         // Create a OneTimeWorkRequest for the worker
-        val workRequest = OneTimeWorkRequestBuilder<UpdateCustomerIdWorker>()
-            .setInitialDelay(1, TimeUnit.SECONDS) // Optional: Adjust delay if needed
+        val workRequest = OneTimeWorkRequestBuilder<UpdateSummaryProductIdWorker>()
+            .setInitialDelay(5, TimeUnit.SECONDS) // Optional: Adjust delay if needed
             .build()
 
         // Enqueue unique work, ensuring it runs only once
@@ -47,19 +47,6 @@ class MyApplication: Application()  {
             workRequest
         )
     }
-    private fun removeDuplicatesTransSum() {
-        val workManager = WorkManager.getInstance(this)
 
-        // Create a OneTimeWorkRequest for the worker
-        val workRequest = OneTimeWorkRequestBuilder<DeleteMultipleTransumWorker>()
-            .setInitialDelay(1, TimeUnit.SECONDS) // Optional: Adjust delay if needed
-            .build()
 
-        // Enqueue unique work, ensuring it runs only once
-        workManager.enqueueUniqueWork(
-            "UpdateCustomerIdWorker",
-            ExistingWorkPolicy.KEEP, // This ensures the worker runs only once
-            workRequest
-        )
-    }
 }

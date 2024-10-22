@@ -30,7 +30,7 @@ import java.time.format.TextStyle
 import java.util.*
 
 class BookkeepingViewModel(val database: SummaryDbDao,
-                           database2:ProductDao,
+                           val database2:ProductDao,
                            application: Application,
                            ): AndroidViewModel(application) {
 
@@ -200,7 +200,28 @@ class BookkeepingViewModel(val database: SummaryDbDao,
             setSelectedMonth(listModel.month_n)
             setSelectedYear(listModel.year_n.toString())
         }
+
     }
+    fun getSummaryWithNullProductId(){
+        viewModelScope.launch {
+            //val list = withContext(Dispatchers.IO){database.getAllSummaryProductId()}
+            val list = withContext(Dispatchers.IO){database.getMonthlyProfitN()}
+           /*
+            val uniqueItemNames = list.map { it.item_name }.toSet()
+            uniqueItemNames.forEach { itemName ->
+                Log.d("idprobs", itemName)
+            }
+
+            */
+            Log.d("idprobs", "${list.size} }")
+            list.forEach { itemName ->
+                Log.d("idprobs", "${itemName.year} ${itemName.month}  ${formatRupiah(itemName.monthly_profit) }")
+                //Log.d("idprobs", "${itemName.product_name} ${itemName.product_id}  ${formatRupiah(itemName.profit_by_product) }")
+            }
+
+        }
+    }
+
     fun setSelectedYear(year:String){
         _selectedYear.value = year.toInt()
     }
@@ -238,10 +259,11 @@ class BookkeepingViewModel(val database: SummaryDbDao,
         return date.dayOfWeek.getDisplayName(TextStyle.FULL, localeIndonesia)
     }
     fun initialRv(){
+
         val initialList = mutableListOf<ListModel>()
         for(i in months_list){
             if(i!="All"){
-                initialList.add(ListModel(0,i,0,0,i,"",0.0))
+                initialList.add(ListModel(0,i,0,0,i,"",0.0,0.0))
             }
         }
         _recyclerViewData.value = initialList
@@ -287,6 +309,7 @@ class BookkeepingViewModel(val database: SummaryDbDao,
                 currentItem.year_n = filteredItem.year_n
                 currentItem.month_n = filteredItem.month_n
                 currentItem.nama = filteredItem.nama
+                currentItem.monthly_profit=filteredItem.monthly_profit
             }
         }
     }
@@ -297,13 +320,14 @@ class BookkeepingViewModel(val database: SummaryDbDao,
         val numberOfDays = getNumberOfDaysInMonth(selectedYear.value ?: year, monthNumber)
         for (day in 1..numberOfDays) {
             val dayName = getDayName(selectedYear.value!!, monthNumber, day)
-            currentList.add(ListModel(selectedYear.value!!, selectedMonth.value ?: "", monthNumber, day, day.toString(), dayName, 0.0))
+            currentList.add(ListModel(selectedYear.value!!, selectedMonth.value ?: "", monthNumber, day, day.toString(), dayName, 0.0,0.0))
         }
         filteredData.forEach { filteredItem ->
             currentList.find { it.day_n == filteredItem.day_n }?.apply {
                 total = filteredItem.total
                 year_n = filteredItem.year_n
                 month_n = filteredItem.month_n
+                monthly_profit=filteredItem.monthly_profit
             }
         }
     }

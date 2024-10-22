@@ -7,6 +7,8 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.example.app21try6.bookkeeping.summary.ListModel
+import com.example.app21try6.bookkeeping.summary.MonthlyProfit
+import com.example.app21try6.bookkeeping.summary.ProductProfit
 import com.example.app21try6.grafik.StockModel
 import com.example.app21try6.grafik.SummaryModel
 
@@ -95,22 +97,79 @@ interface SummaryDbDao {
     @Query("SELECT SUM(total_income) FROM SUMMARY_TABLE  WHERE year = :year_ AND month = :month_")
     fun getTotalThisMonth(year_: Int,month_: String):LiveData<Double>
 
-    @Query("SELECT year as year_n,month as month_n, month_number as month_nbr,day as day_n,day as nama,day_name as day_name,SUM(total_income) as total FROM SUMMARY_TABLE  WHERE year = :year_ AND month = :month_ AND day !=0 GROUP BY day ")
+    @Query("SELECT year as year_n,month as month_n, month_number as month_nbr,day as day_n,day as nama,day_name as day_name,SUM(total_income) as total,SUM((price - product_capital) * item_sold) AS monthly_profit FROM SUMMARY_TABLE  WHERE year = :year_ AND month = :month_ AND day !=0 GROUP BY day ")
     fun getAllDayNew(year_: Int,month_: String):LiveData<List<ListModel>>
 
-    @Query("SELECT year as year_n,month as month_n,month_number as month_nbr, month as nama,day as day_n,day_name as day_name,SUM(total_income) as total FROM SUMMARY_TABLE  WHERE year = :year_  GROUP BY month ORDER BY month_nbr ASC")
+    @Query("SELECT year as year_n,month as month_n,month_number as month_nbr, month as nama,day as day_n,day_name as day_name,SUM(total_income) as total,SUM((price - product_capital) * item_sold) AS monthly_profit FROM SUMMARY_TABLE  WHERE year = :year_  GROUP BY month ORDER BY month_nbr ASC")
     fun getAllMonthNew(year_: Int):LiveData<List<ListModel>>
 
-    @Query("SELECT year as year_n,month as month_n,month_number as month_nbr, month as nama,day as day_n,day_name as day_name,SUM(total_income) as total FROM SUMMARY_TABLE  WHERE year = :year_  GROUP BY month ORDER BY month_nbr ASC")
+    @Query("SELECT year as year_n,month as month_n,month_number as month_nbr, month as nama,day as day_n,day_name as day_name,SUM(total_income) as total,SUM((price - product_capital) * item_sold) AS monthly_profit FROM SUMMARY_TABLE  WHERE year = :year_  GROUP BY month ORDER BY month_nbr ASC")
     fun getMonthlyData(year_: Int):List<ListModel>
 
+    @Query("""
+    UPDATE summary_table
+    SET product_id = (
+        SELECT p.product_id FROM product_table p
+        WHERE p.product_name = summary_table.item_name
+    )
+    WHERE EXISTS (
+        SELECT 1 FROM product_table p
+        WHERE p.product_name = summary_table.item_name
+    )
+""")
+    suspend fun updateSummaryProductId()
 
+    @Query("""
+    UPDATE summary_table
+    SET product_capital = (
+        SELECT p.product_capital FROM product_table p
+        WHERE p.product_id = summary_table.product_id
+    )
+    WHERE EXISTS (
+        SELECT 1 FROM product_table p
+        WHERE p.product_id = summary_table.product_id
+    )
+""")
+    suspend fun updateSummaryProductCapital()
 
-    @Query("SELECT year as year_n,month as month_n, month_number as month_nbr,day as day_n,day as nama,day_name as day_name,SUM(total_income) as total FROM SUMMARY_TABLE  WHERE year = :year_ AND month = :month_ AND day !=0 GROUP BY day ")
+    @Query("UPDATE summary_table SET item_name = :newName WHERE item_name = :oldName")
+    suspend fun updateSummaryItemName(oldName: String, newName: String)
+
+    @Query("""
+        SELECT s.year, s.month, SUM((s.price - p.product_capital) * s.item_sold) AS monthly_profit
+        FROM summary_table AS s
+        INNER JOIN product_table AS p ON s.product_id = p.product_id
+        GROUP BY s.year, s.month
+        ORDER BY s.year, s.month
+    """)
+    fun getMonthlyProfit(): List<MonthlyProfit>
+
+    @Query("""
+        SELECT year, month, SUM((price - product_capital) * item_sold) AS monthly_profit
+        FROM summary_table 
+        GROUP BY year, month
+        ORDER BY year, month
+    """)
+    fun getMonthlyProfitN(): List<MonthlyProfit>
+
+    @Query("""
+        SELECT s.product_id, p.product_name, SUM((s.price - p.product_capital) * s.item_sold) AS profit_by_product
+        FROM summary_table AS s
+        INNER JOIN product_table AS p ON s.product_id = p.product_id
+        WHERE s.product_id IS NOT NULL AND year=2024 AND month_number =9
+        GROUP BY s.product_id, p.product_name
+         ORDER BY profit_by_product DESC
+    """)
+    fun getProfitByProduct(): List<ProductProfit>
+
+    @Query("SELECT year as year_n,month as month_n, month_number as month_nbr,day as day_n,day as nama,day_name as day_name,SUM(total_income) as total, SUM((price - product_capital) * item_sold) AS monthly_profit FROM SUMMARY_TABLE  WHERE year = :year_ AND month = :month_ AND day !=0 GROUP BY day ")
     fun getDailyData(year_: Int,month_: String):List<ListModel>
 
     @Query("SELECT * FROM summary_table ORDER BY month_number")
     fun getAllSummary():LiveData<List<Summary>>
+
+    @Query("SELECT * FROM summary_table WHERE product_capital = 0")
+    fun getAllSummaryProductId(): List<Summary>
 
     @Query("SELECT DISTINCT year year FROM summary_table")
     fun getAllYear():LiveData<List<Int>>

@@ -73,6 +73,7 @@ class TransactionDetailFragment : Fragment() {
         val img =  requireActivity().findViewById<ImageView>(R.id.delete_image)
         img.visibility = View.GONE
         binding.viewModel = viewModel
+        viewModel.getSummaryWithNullProductId()
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         val paymentAdapter = PaymentAdapter(viewModel.transSum.value?.is_paid_off,
             TransPaymentClickListener {

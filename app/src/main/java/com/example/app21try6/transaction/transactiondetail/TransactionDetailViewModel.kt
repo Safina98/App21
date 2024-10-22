@@ -146,7 +146,17 @@ class TransactionDetailViewModel (application: Application,
         _uiMode.value = mode
     }
     /******************************************** CRUD **************************************/
+    fun getSummaryWithNullProductId(){
+        viewModelScope.launch {
+            //val list = withContext(Dispatchers.IO){database.getAllSummaryProductId()}
+            val list = withContext(Dispatchers.IO){datasource2.getProfit()}
+            list.forEach { itemName ->
+                Log.d("idprobs", "${itemName.year} ${itemName.month}  ${formatRupiah(itemName.monthly_profit) }")
+               // Log.d("idprobs", "Invalid date found: $itemName")
+            }
 
+        }
+    }
    fun deleteDiscount(id:Int){
        viewModelScope.launch {
            deleteDiscTransToDB(id)

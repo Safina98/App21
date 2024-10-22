@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.example.app21try6.bookkeeping.summary.ListModel
+import com.example.app21try6.bookkeeping.summary.ProductProfit
 import com.example.app21try6.transaction.transactionselect.TransSelectModel
 
 @Dao
@@ -34,6 +35,11 @@ interface ProductDao {
     fun getProductNameByCategoryName(name:String):List<String>
     @Query("SELECT * FROM product_table")
     fun getAllProducts(): List<Product>
+    @Query("SELECT * FROM product_table WHERE product_capital=0")
+    fun getProductsCapital(): List<Product>
+
+
+
     @Query("SELECT * FROM product_table")
     fun getAllProduct(): LiveData<List<Product>>
     @Query("DELETE FROM product_table WHERE product_id= :id_")

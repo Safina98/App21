@@ -45,5 +45,7 @@ data class TransactionDetail(
         var item_position:Int=0,
         @ColumnInfo(name = "sub_id")
         var sub_id:Int? = null,
+        @ColumnInfo(name = "product_capital")
+        var product_capital:Int=0,
         )
 

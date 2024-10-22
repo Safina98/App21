@@ -49,5 +49,8 @@ data class Summary(
         @ColumnInfo(name = "product_id", index = true)
         var product_id: Int? = null,
         @ColumnInfo(name = "sub_id", index = true)
-        var sub_id: Int? = null
+        var sub_id: Int? = null,
+        //new added column
+        @ColumnInfo(name = "product_capital")
+        var product_capital:Int=0,
 )

@@ -35,6 +35,7 @@ class SummaryAdapter(
            //}
             //binding.txtYear.text = item.year.toString()
             binding.txtIncome.text = formatRupiah(item.total).toString()
+            binding.txtProfit.text = formatRupiah(item.monthly_profit).toString()
             binding.summary = item
             binding.clickListener = clickListener
             binding.executePendingBindings()

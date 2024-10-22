@@ -131,6 +131,7 @@ class BookSummaryFragment : Fragment(){
             override fun onNothingSelected(parent: AdapterView<*>) {
             }
         }
+        summaryViewModel.getSummaryWithNullProductId()
         summaryViewModel.selectedYear.observe(viewLifecycleOwner) {
             summaryViewModel.updateRvNew()
         }

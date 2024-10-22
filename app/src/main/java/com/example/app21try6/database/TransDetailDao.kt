@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.example.app21try6.bookkeeping.summary.MonthlyProfit
 import com.example.app21try6.grafik.StockModel
 import com.example.app21try6.transaction.transactionactive.TransExportModel
 import com.example.app21try6.transaction.transactiondetail.TransactionDetailWithProduct
@@ -37,6 +38,40 @@ interface TransDetailDao {
         WHERE trans_item_name IN (SELECT sub_name FROM sub_table)
     """)
     suspend fun updateSubIdBasedOnItemName()
+
+    @Query("""
+    UPDATE trans_detail_table
+    SET product_capital = (
+        SELECT p.product_capital FROM product_table p
+        JOIN sub_table s ON s.product_code = p.product_id
+        WHERE s.sub_id = trans_detail_table.sub_id
+    )
+    WHERE EXISTS (
+        SELECT 1 FROM sub_table s
+        JOIN product_table p ON s.product_code = p.product_id
+        WHERE s.sub_id = trans_detail_table.sub_id
+    )
+""")
+    suspend fun updateTransDetailProductCapital()
+
+    @Query("""
+    SELECT CAST(strftime('%Y', substr(trans_detail_date, 1, 10)) AS INTEGER) AS year,
+           strftime('%m', substr(trans_detail_date, 1, 10)) AS month,
+           SUM((trans_price - product_capital) * qty) AS monthly_profit
+    FROM trans_detail_table
+    WHERE trans_detail_date IS NOT NULL
+    GROUP BY year, month
+    ORDER BY year, month
+""")
+    fun getProfit():List<MonthlyProfit>
+
+    @Query("""
+    SELECT trans_detail_date
+    FROM trans_detail_table
+    WHERE trans_detail_date NOT LIKE '____-__-__'
+       OR trans_detail_date IS NULL
+""")
+    fun findInvalidDates(): List<String?>
 
     @Query("""
         UPDATE trans_detail_table
@@ -98,7 +133,7 @@ interface TransDetailDao {
     @Query("SELECT trans_detail_id from trans_detail_table order by sum_id DESC limit 1")
     suspend fun getLastInsertedId():Int?
 
-    @Query("SELECT * FROM trans_detail_table WHERE sub_id IS null")
+    @Query("SELECT * FROM trans_detail_table")
     fun selectAllNullId():List<TransactionDetail>
 
     //@Query("SELECT year as year_n,month as month_n,month_number as month_nbr, month as nama,day as day_n,day_name as day_name,SUM(total_income) as total FROM SUMMARY_TABLE  WHERE year = :year_  GROUP BY month ORDER BY month_nbr ASC")
