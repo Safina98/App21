@@ -36,6 +36,10 @@ data class Product(
         var checkBoxBoolean: Boolean = false,
         @ColumnInfo(name="best_selling")
         var bestSelling: Boolean = false,
+        @ColumnInfo(name = "default_net")
+        var default_net:Double = 0.0,//newly added
+        @ColumnInfo(name = "alternate_price")
+        var alternate_price:Double = 0.0,//newly added
         @ColumnInfo(name="brand_code")
         var brand_code:Int=0,
         @ColumnInfo(name = "cath_code")

@@ -134,6 +134,8 @@ class   ProductStockFragment : Fragment() {
         val textPrice = dialogBinding.textUpdatePrice
         val textCapital = dialogBinding.textCapital
         val textDisc = dialogBinding.textDiscount
+        val textCapital2=dialogBinding.textCapital2
+        val textModusNoet=dialogBinding.defaultNet
 
         // Set up the AutoCompleteTextView with a mutable adapter
         val merkAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, mutableListOf())
@@ -153,6 +155,8 @@ class   ProductStockFragment : Fragment() {
         textKet.setText(vendible.product_name.toString())
         textPrice.setText(vendible.product_price.toString())
         textCapital.setText(vendible.product_capital.toString())
+        textCapital2.setText(vendible.alternate_price.toString())
+        textModusNoet.setText(vendible.default_net.toString())
         val discName=viewModel.discountName.value
         if (discName!=null) textDisc.setText(discName)
         textKet.requestFocus()
@@ -169,6 +173,8 @@ class   ProductStockFragment : Fragment() {
 
             val price = priceString.toIntOrNull()
             val capital = capitalString.toIntOrNull()
+            val alternateCapital =textCapital2.text.toString().toDoubleOrNull()
+            val modusNet =textModusNoet.text.toString().toDoubleOrNull()
             Log.i("capitalErr", "Price :$capital")
 
             if (price != null) {
@@ -183,6 +189,8 @@ class   ProductStockFragment : Fragment() {
                 Log.i("capitalErr", "else Price :$capital")
             }
             vendible.product_name = textKet.text.toString().uppercase().trim()
+            vendible.alternate_price=alternateCapital?:0.0
+            vendible.default_net=modusNet ?: 0.0
             val discName = textDisc.text.toString().uppercase().trim()
             if (vendible.product_name.isNotEmpty()) {
                 viewModel.updateProduct(vendible, discName)

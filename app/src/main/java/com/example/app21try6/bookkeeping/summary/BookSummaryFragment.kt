@@ -101,6 +101,7 @@ class BookSummaryFragment : Fragment(){
         binding.recyclerViewSumary.adapter = adapter
 
         summaryViewModel.allItemFromSummary.observe(viewLifecycleOwner, Observer {
+            Log.i("ProfitProbs","alltemsummary: $it")
         })
         val adapterYear = ArrayAdapter(requireContext(), R.layout.simple_dropdown_item_1line, summaryViewModel.year_list)
         binding.spinner.adapter = adapterYear

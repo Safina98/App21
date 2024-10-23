@@ -162,7 +162,9 @@ interface SummaryDbDao {
     """)
     fun getProfitByProduct(): List<ProductProfit>
 
-    @Query("SELECT year as year_n,month as month_n, month_number as month_nbr,day as day_n,day as nama,day_name as day_name,SUM(total_income) as total, SUM((price - product_capital) * item_sold) AS monthly_profit FROM SUMMARY_TABLE  WHERE year = :year_ AND month = :month_ AND day !=0 GROUP BY day ")
+    @Query("SELECT " +
+            "year as year_n,month as month_n, month_number as month_nbr,day as day_n,day as nama,day_name as day_name," +
+            "SUM(total_income) as total, SUM((price - product_capital) * item_sold) AS monthly_profit FROM SUMMARY_TABLE  WHERE year = :year_ AND month = :month_ AND day !=0 GROUP BY day ")
     fun getDailyData(year_: Int,month_: String):List<ListModel>
 
     @Query("SELECT * FROM summary_table ORDER BY month_number")

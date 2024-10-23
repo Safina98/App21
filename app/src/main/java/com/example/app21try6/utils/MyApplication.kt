@@ -18,15 +18,13 @@ class MyApplication: Application()  {
         val observer = AppLifecycleObserver(mainActivity)
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(observer)
-        updateSummaryProductId()
+        //updateSummaryProductId()
         // removeDuplicatesTransSum()
        // if (isFirstRun) {
-
             //scheduleOneTimeMigrateDB()
             //scheduleOneTimeUpdateMerkWarna()
            // markFirstRunCompleted() // Set the flag after scheduling
         //}
-
     }
     private fun markFirstRunCompleted() {
         val wmbPreference = PreferenceManager.getDefaultSharedPreferences(this)
@@ -37,7 +35,7 @@ class MyApplication: Application()  {
 
         // Create a OneTimeWorkRequest for the worker
         val workRequest = OneTimeWorkRequestBuilder<UpdateSummaryProductIdWorker>()
-            .setInitialDelay(5, TimeUnit.SECONDS) // Optional: Adjust delay if needed
+            .setInitialDelay(1, TimeUnit.SECONDS) // Optional: Adjust delay if needed
             .build()
 
         // Enqueue unique work, ensuring it runs only once

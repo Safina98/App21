@@ -309,7 +309,7 @@ class BookkeepingViewModel(val database: SummaryDbDao,
                 currentItem.year_n = filteredItem.year_n
                 currentItem.month_n = filteredItem.month_n
                 currentItem.nama = filteredItem.nama
-                currentItem.monthly_profit=filteredItem.monthly_profit
+                currentItem.monthly_profit=filteredItem.monthly_profit -11700000.0
             }
         }
     }
@@ -327,7 +327,7 @@ class BookkeepingViewModel(val database: SummaryDbDao,
                 total = filteredItem.total
                 year_n = filteredItem.year_n
                 month_n = filteredItem.month_n
-                monthly_profit=filteredItem.monthly_profit
+                monthly_profit=filteredItem.monthly_profit-450000
             }
         }
     }
@@ -337,14 +337,14 @@ class BookkeepingViewModel(val database: SummaryDbDao,
 
     fun writeCSV(file: File) {
         try {
-            val content = "Tahun,Bulan,Bulan, Tanggal, Hari,Nama Produk,Harga,Jumlah,Total"
+            val content = "Tahun,Bulan,Bulan, Tanggal, Hari,Nama Produk,Harga,Jumlah,Total,capital,profit"
             val fw = FileWriter(file.absoluteFile)
             val bw = BufferedWriter(fw)
             bw.write(content)
             for (j in allItemFromSummary.value!!){
                 if (j.item_name!="empty") {
                     bw.newLine()
-                    val sumLine = "${j.year},${j.month},${j.month_number},${j.day},${j.day_name},${j.item_name},${j.price},${j.item_sold},${j.total_income}"
+                    val sumLine = "${j.year},${j.month},${j.month_number},${j.day},${j.day_name},${j.item_name},${j.price},${j.item_sold},${j.total_income},${j.product_capital},${(j.price-j.product_capital)*j.item_sold}"
                     Log.i("new_", j.toString())
                     bw.write(sumLine)
                 }

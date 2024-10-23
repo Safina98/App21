@@ -302,22 +302,37 @@ class TransactionDetailViewModel (application: Application,
             val calendar = Calendar.getInstance()
             calendar.time = transSum.value!!.trans_date
             val dateFormat = SimpleDateFormat("MMMM", Locale.getDefault())
-            transDetail.value?.forEach {it->
-                val product=  getProduct(it.trans_item_name)
-               val summary = Summary()
-               summary.year= calendar.get(Calendar.YEAR)
-               summary.month = dateFormat.format(transSum.value!!.trans_date)
-               summary.month_number = calendar.get(Calendar.MONTH)+1
-               summary.day = calendar.get(Calendar.DATE)
-               summary.day_name = transSum.value!!.trans_date.toString()
-               summary.item_name = product?.product_name?: it.trans_item_name
-               summary.price = it.trans_price.toDouble()
-               summary.item_sold = it.qty
-               summary.total_income = it.total_price
-                summary.sub_id=it.sub_id
-                summary.product_id=product?.product_id
-               insertItemToSummaryDB(summary)
-           }
+            transDetail.value?.forEach { it ->
+                val product = getProduct(it.sub_id?:-1)
+                if(product?.product_name?.contains("biaya", ignoreCase = true) != true){
+                    val summary = Summary().apply {
+                        year = calendar.get(Calendar.YEAR)
+                        month = dateFormat.format(transSum.value!!.trans_date)
+                        month_number = calendar.get(Calendar.MONTH) + 1
+                        day = calendar.get(Calendar.DATE)
+                        day_name = transSum.value!!.trans_date.toString()
+                        item_name = product?.product_name ?: it.trans_item_name
+                        sub_id = it.sub_id
+                        product_id = product?.product_id
+                        price = it.trans_price.toDouble()
+                        total_income = it.total_price
+                        product_capital = (product?.product_capital ?: 0.0).toInt()
+                    }
+                    val unitQty = it.unit_qty ?: 1.0
+                    summary.item_sold = it.qty * unitQty
+                    if (it.unit == "Lusin" && unitQty == 1.0) {
+                        summary.item_sold = it.qty * 12
+                        summary.product_capital = (product?.product_capital ?: 0.0).toInt()
+                    } else if (it.unit!=null && unitQty == 1.0) {
+                        summary.product_capital = (product?.alternate_price ?: it.total_price).toInt()
+                    }
+                    // Log.i("profitbrobs","${summary.item_name} ${summary?.product_capital}")
+                    //Log.i("profitbrobs","${product}")
+                    insertItemToSummaryDB(summary)
+                }
+
+            }
+
             discountTransBySumId.value?.forEach {
                 val summary = Summary()
                 summary.year= calendar.get(Calendar.YEAR)
@@ -387,9 +402,9 @@ class TransactionDetailViewModel (application: Application,
             datasource5.getProductName(subName)
         }
     }
-    private suspend fun getProduct(subName:String):Product?{
+    private suspend fun getProduct(subId:Int):Product?{
         return withContext(Dispatchers.IO){
-            datasource5.getProduct(subName)
+            datasource5.getProduct(subId)
         }
     }
     private suspend fun insertItemToSummaryDB(summary: Summary){

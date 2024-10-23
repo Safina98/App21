@@ -10,7 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 
 
-@Database(entities = [Brand::class,Product::class,SubProduct::class,Category::class,TransactionSummary::class,TransactionDetail::class,Payment::class,Expenses::class,ExpenseCategory::class,Summary::class,DiscountTable::class,DiscountTransaction::class,CustomerTable::class],version=35, exportSchema = true)
+@Database(entities = [Brand::class,Product::class,SubProduct::class,Category::class,TransactionSummary::class,TransactionDetail::class,Payment::class,Expenses::class,ExpenseCategory::class,Summary::class,DiscountTable::class,DiscountTransaction::class,CustomerTable::class],version=36, exportSchema = true)
 @TypeConverters(DateTypeConverter::class)
 abstract class VendibleDatabase:RoomDatabase(){
     abstract val brandDao :BrandDao
@@ -33,12 +33,11 @@ abstract class VendibleDatabase:RoomDatabase(){
         fun getInstance(context: Context):VendibleDatabase{
             synchronized(this) {
 
-                val MIGRATION_34_35 = object : Migration(34, 35) {
+                val MIGRATION_35_36 = object : Migration(35, 36) {
                     override fun migrate(database: SupportSQLiteDatabase) {
                         // Create the new table with the added 'date' column
-                        database.execSQL("ALTER TABLE summary_table ADD COLUMN product_capital INTEGER NOT NULL DEFAULT 0")
-                        database.execSQL("ALTER TABLE trans_detail_table ADD COLUMN product_capital INTEGER NOT NULL DEFAULT 0")
-
+                        database.execSQL("ALTER TABLE product_table ADD COLUMN default_net REAL NOT NULL DEFAULT 0.0")
+                        database.execSQL("ALTER TABLE product_table ADD COLUMN alternate_price REAL NOT NULL DEFAULT 0.0")
                     }
                 }
 
@@ -49,7 +48,7 @@ abstract class VendibleDatabase:RoomDatabase(){
                             VendibleDatabase::class.java,
                             "vendible_table"
                     )
-                        .addMigrations(MIGRATION_34_35)
+                        .addMigrations(MIGRATION_35_36)
 
                         // .fallbackToDestructiveMigration()
                     .build()

@@ -28,7 +28,7 @@ class UpdateSummaryProductIdWorker(
         val summaryDao = database.summaryDbDao
         val transDetailDao = database.transDetailDao
 
-
+/*
         summaryDao.updateSummaryItemName("BENANG C","BENANG COATS")
         summaryDao.updateSummaryItemName("BUSA 1CM PARIS","BUSA 1CM PRS")
         summaryDao.updateSummaryItemName("BUSA 4 MM PRS","BUSA 4MM PRS")
@@ -73,7 +73,9 @@ class UpdateSummaryProductIdWorker(
         summaryDao.updateSummaryItemName("PEREKAT KECIL","PEREKAT K")
         summaryDao.updateSummaryItemName("MINYAK  MESIN","MINYAK MESIN")
         summaryDao.updateSummaryItemName("EURROLEDER","EUROLEDER")
-        summaryDao.updateSummaryProductId()
+
+ */
+       // summaryDao.updateSummaryProductId()
         summaryDao.updateSummaryProductCapital()
         transDetailDao.updateTransDetailProductCapital()
         
