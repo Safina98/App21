@@ -206,13 +206,7 @@ class BookkeepingViewModel(val database: SummaryDbDao,
         viewModelScope.launch {
             //val list = withContext(Dispatchers.IO){database.getAllSummaryProductId()}
             val list = withContext(Dispatchers.IO){database.getMonthlyProfitN()}
-           /*
-            val uniqueItemNames = list.map { it.item_name }.toSet()
-            uniqueItemNames.forEach { itemName ->
-                Log.d("idprobs", itemName)
-            }
 
-            */
             Log.d("idprobs", "${list.size} }")
             list.forEach { itemName ->
                 Log.d("idprobs", "${itemName.year} ${itemName.month}  ${formatRupiah(itemName.monthly_profit) }")
@@ -364,20 +358,7 @@ class BookkeepingViewModel(val database: SummaryDbDao,
             _navigateBookKeeping.value = id
             _date.value = id
         }}
-/*
-    fun insertCSVData(data: List<List<String>>) {
-            viewModelScope.launch {
-                try {
-                    repository.batchInsertCSV(data)
-                    _insertionStatus.value = true
-                } catch (e: Exception) {
-                    Log.e("Insert CSV", "Error inserting CSV data: $e")
-                    _insertionStatus.value = false
-                }
-            }
-        }
 
- */
 fun insertCSVBatch(tokensList: List<List<String>>) {
     viewModelScope.launch {
         try {

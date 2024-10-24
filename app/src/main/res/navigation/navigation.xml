@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/transactionActiveFragment">
+    app:startDestination="@id/expensesFragment">
 
     <fragment
         android:id="@+id/bookKeepeingFragment"
@@ -174,4 +174,8 @@
         android:id="@+id/statementHsFragment"
         android:name="com.example.app21try6.statement.StatementHsFragment"
         android:label="StatementHsFragment" />
+    <fragment
+        android:id="@+id/expensesFragment"
+        android:name="com.example.app21try6.statement.expenses.ExpensesFragment"
+        android:label="ExpensesFragment" />
 </navigation>

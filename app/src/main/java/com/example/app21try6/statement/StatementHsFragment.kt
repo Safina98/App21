@@ -36,7 +36,9 @@ class StatementHsFragment : Fragment() {
         val application= requireNotNull(this.activity).application
         val dataSource1 = VendibleDatabase.getInstance(application).discountDao
         val dataSource2 = VendibleDatabase.getInstance(application).customerDao
-        val viewModelFactory = StatementHSViewModelFactory(application,dataSource1,dataSource2)
+        val dataSource3 = VendibleDatabase.getInstance(application).expenseDao
+        val dataSource4 = VendibleDatabase.getInstance(application).expenseCategoryDao
+        val viewModelFactory = StatementHSViewModelFactory(application,dataSource1,dataSource2,dataSource3,dataSource4)
         viewModel = ViewModelProvider(this,viewModelFactory).get(StatementHSViewModel::class.java)
         binding.viewModel=viewModel
 
@@ -44,7 +46,6 @@ class StatementHsFragment : Fragment() {
             DiscountListener {
                 showDiscountDialog(it)
             }, DiscountLongListener {
-
             },
             DiscountDelListener {
                 viewModel.deleteDiscountTable(it)
