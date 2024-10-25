@@ -20,6 +20,10 @@ import com.example.app21try6.database.Expenses
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentExpensesBinding
 import com.example.app21try6.databinding.PopUpUpdateProductDialogBinding
+import com.example.app21try6.statement.DiscountAdapter
+import com.example.app21try6.statement.DiscountDelListener
+import com.example.app21try6.statement.DiscountListener
+import com.example.app21try6.statement.DiscountLongListener
 import com.example.app21try6.statement.StatementHSViewModel
 import com.example.app21try6.statement.StatementHSViewModelFactory
 import com.google.android.material.textfield.TextInputEditText
@@ -29,7 +33,6 @@ import java.util.Date
 val tagg = "expenseprobs"
 
 class ExpensesFragment : Fragment() {
-
 
     private lateinit var binding: FragmentExpensesBinding
     private lateinit var viewModel: StatementHSViewModel
@@ -47,6 +50,15 @@ class ExpensesFragment : Fragment() {
         val viewModelFactory = StatementHSViewModelFactory(application,dataSource1,dataSource2,dataSource3,dataSource4)
         viewModel = ViewModelProvider(this,viewModelFactory).get(StatementHSViewModel::class.java)
         binding.viewModel=viewModel
+        val adapter = DiscountAdapter(
+            DiscountListener {
+                ///showDiscountDialog(it)
+            }, DiscountLongListener {
+            },
+            DiscountDelListener {
+               /// viewModel.deleteDiscountTable(it.id!!)
+            })
+        binding.rvDisc.adapter=adapter
 
         binding.btnAddNewExpense.setOnClickListener {
             //showsAddExpenseCategoryDialog(null)
@@ -57,6 +69,8 @@ class ExpensesFragment : Fragment() {
         })
         viewModel.allExpensesFromDB.observe(viewLifecycleOwner, Observer {
             Log.i(tagg,"expense $it")
+            adapter.submitList(it)
+            adapter.notifyDataSetChanged()
         })
 
 
@@ -84,7 +98,6 @@ class ExpensesFragment : Fragment() {
         textExpenseAmmount.hint="Jumlah"
         textExpensesDate.hint="Tanggal"
         textExpensesCategory.hint="Kategori"
-
 
         // Set up the AutoCompleteTextView with a mutable adapter
         val merkAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, mutableListOf())

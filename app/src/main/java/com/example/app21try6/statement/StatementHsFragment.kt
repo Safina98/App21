@@ -48,7 +48,7 @@ class StatementHsFragment : Fragment() {
             }, DiscountLongListener {
             },
             DiscountDelListener {
-                viewModel.deleteDiscountTable(it)
+                viewModel.deleteDiscountTable(it.id!!)
             })
 
         val adapterCustomer = CustomerAdapter(
@@ -128,7 +128,7 @@ class StatementHsFragment : Fragment() {
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
     }
-    private fun showDiscountDialog(discountTable: DiscountTable?) {
+    private fun showDiscountDialog(discountTable: DiscountAdapterModel?) {
         // Inflate the layout using data binding
         val spinnerItems = resources.getStringArray(R.array.disc_Tipe)
         val binding: PopUpDiscBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()),
@@ -160,7 +160,7 @@ class StatementHsFragment : Fragment() {
                 if (discountTable==null){
                     viewModel.insertDiscount(discValue,discName,discMinQty,selectedDiscType,custLocation)
                 }else{
-                    viewModel.updateDiscount(discountTable.discountId,discValue,discName,discMinQty,selectedDiscType,custLocation)
+                    viewModel.updateDiscount(discountTable.id!!,discValue,discName,discMinQty,selectedDiscType,custLocation)
                 }
                 dialog.dismiss()
             }

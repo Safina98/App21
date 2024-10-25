@@ -10,17 +10,25 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.database.DiscountTable
 
 import com.example.app21try6.databinding.ItemListSDiscountBinding
+import com.example.app21try6.formatRupiah
 
 class DiscountAdapter(
     val discountListener:DiscountListener,
     val longListener: DiscountLongListener,
     val delListener: DiscountDelListener
-): ListAdapter<DiscountTable, DiscountAdapter.MyViewHolder>(DiscountDiffCallback()){
+): ListAdapter<DiscountAdapterModel, DiscountAdapter.MyViewHolder>(DiscountDiffCallback()){
     class MyViewHolder private constructor(val binding: ItemListSDiscountBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(item: DiscountTable, discountListener: DiscountListener, longListener: DiscountLongListener,delListener: DiscountDelListener){
+        fun bind(item: DiscountAdapterModel, discountListener: DiscountListener, longListener: DiscountLongListener,delListener: DiscountDelListener){
             binding.item=item
             binding.delListener=delListener
-            binding.clickListener=discountListener
+            binding.clickListener= discountListener
+            binding.txtDiscountName.text = item.discountName ?: item.expense_category_name
+            binding.txtMinQty.text = item.minimumQty?.toString() ?: item.expense_name
+            binding.txtCustLocation.text = item.custLocation?.toString() ?: item.date.toString() ?: ""
+            binding.txtDiscType.text = item.discountType ?: ""  // If no discountType, set empty string
+
+            val value = item.discountValue ?: item.expense_ammount?.toDouble() ?: 0.0
+            binding.txtDiscValue.text = formatRupiah(value)
             binding.executePendingBindings()
         }
         companion object{
@@ -44,25 +52,25 @@ class DiscountAdapter(
     }
 
 }
-class DiscountDiffCallback: DiffUtil.ItemCallback<DiscountTable>(){
-    override fun areItemsTheSame(oldItem: DiscountTable, newItem: DiscountTable): Boolean {
-        return oldItem.discountId == newItem.discountId
+class DiscountDiffCallback: DiffUtil.ItemCallback<DiscountAdapterModel>(){
+    override fun areItemsTheSame(oldItem: DiscountAdapterModel, newItem: DiscountAdapterModel): Boolean {
+        return oldItem.id == newItem.id
     }
 
-    override fun areContentsTheSame(oldItem: DiscountTable, newItem: DiscountTable): Boolean {
+    override fun areContentsTheSame(oldItem: DiscountAdapterModel, newItem: DiscountAdapterModel): Boolean {
         return oldItem == newItem
     }
 
 }
-class DiscountListener(val clickListener: (discountTable: DiscountTable) -> Unit) {
-    fun onClick(discount: DiscountTable) = clickListener(discount)
+class DiscountListener(val clickListener: (discountTable: DiscountAdapterModel) -> Unit) {
+    fun onClick(discount: DiscountAdapterModel) = clickListener(discount)
 
 }
-class DiscountDelListener(val clickListener: (discountTable: DiscountTable) -> Unit) {
-    fun onClick(discount: DiscountTable) = clickListener(discount)
+class DiscountDelListener(val clickListener: (discountTable: DiscountAdapterModel) -> Unit) {
+    fun onClick(discount: DiscountAdapterModel) = clickListener(discount)
 }
-class  DiscountLongListener(val longListener: (discount: DiscountTable) -> Unit){
-    fun onLongClick(v: View, discount: DiscountTable): Boolean {
+class  DiscountLongListener(val longListener: (discount: DiscountAdapterModel) -> Unit){
+    fun onLongClick(v: View, discount: DiscountAdapterModel): Boolean {
 
         longListener(discount)
         return true}

@@ -5,7 +5,7 @@
     <data>
         <variable
             name="item"
-            type="com.example.app21try6.database.DiscountTable" />
+            type="com.example.app21try6.statement.DiscountAdapterModel" />
         <variable
             name="delListener"
             type="com.example.app21try6.statement.DiscountDelListener" />
@@ -35,7 +35,6 @@
             android:id="@+id/txt_discount_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{item.discountName}"
             android:layout_margin="@dimen/medium_margin"
             style="@style/texr_detail_style"
             android:textSize="@dimen/_15sp"
@@ -57,7 +56,6 @@
             android:id="@+id/txt_min_qty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text='@{String.valueOf(item.minimumQty)}'
             android:layout_margin="@dimen/medium_margin"
             style="@style/texr_detail_style"
             android:textSize="@dimen/_15sp"
@@ -77,7 +75,6 @@
             android:id="@+id/txt_cust_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{item.custLocation}"
             android:layout_margin="@dimen/medium_margin"
             style="@style/texr_detail_style"
             android:textSize="@dimen/_15sp"
@@ -99,7 +96,6 @@
             android:id="@+id/txt_disc_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{item.discountType}"
             android:layout_margin="@dimen/medium_margin"
             style="@style/texr_detail_style"
             android:textSize="@dimen/_15sp"
@@ -121,7 +117,6 @@
             android:id="@+id/txt_disc_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{String.valueOf(item.discountValue)}"
             android:layout_margin="@dimen/medium_margin"
             style="@style/texr_detail_style"
             android:textSize="@dimen/_15sp"

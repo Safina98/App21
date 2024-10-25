@@ -79,11 +79,9 @@ class StatementHSViewModel(application: Application,
             updateExpenseToDao(expenses)
         }
     }
-    fun deleteExpense(){}
+    fun deleteExpense(){
+    }
     fun getAllExpense(){}
-
-
-
 
 
  ////////////////////////////////////////////Customer////////////////////////////////////////////
@@ -136,7 +134,9 @@ class StatementHSViewModel(application: Application,
         discountTable.custLocation= if(location.isNotEmpty()) location else null
         return discountTable
     }
-    fun deleteDiscountTable(discountTable: DiscountTable){viewModelScope.launch { deleteDiscountFromDB(discountTable) }}
+    fun deleteDiscountTable(id:Int){viewModelScope.launch {
+        deleteDiscountFromDB(id) }
+    }
     fun deleteCustomerTable(customerTable: CustomerTable){viewModelScope.launch {
         deleteCustomerToDB(customerTable) }
     }
@@ -145,9 +145,9 @@ class StatementHSViewModel(application: Application,
             discountDao.insert(discountTable)
         }
     }
-    private suspend fun deleteDiscountFromDB(discountTable: DiscountTable){
+    private suspend fun deleteDiscountFromDB(id:Int){
         withContext(Dispatchers.IO){
-            discountDao.delete(discountTable)
+            discountDao.delete(id)
         }
     }
     private suspend fun updateDiscountFromDB(discountTable: DiscountTable){
