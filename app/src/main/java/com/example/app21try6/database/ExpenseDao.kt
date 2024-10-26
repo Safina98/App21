@@ -23,4 +23,7 @@ interface ExpenseDao {
             "LEFT JOIN expense_category_table ON expenses_table.expense_category_id = expense_category_table.id"  // Correct join condition
     )
     fun getAllExpense():LiveData<List<DiscountAdapterModel>>
+
+    @Query("DELETE FROM expenses_table WHERE id=:id")
+    fun delete(id:Int)
 }

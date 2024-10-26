@@ -27,8 +27,30 @@ class UpdateSummaryProductIdWorker(
 
         val summaryDao = database.summaryDbDao
         val transDetailDao = database.transDetailDao
+        val productDao=database.productDao
+        val list =summaryDao.getAllSummaryProductId()
 
-/*
+        summaryDao.updateSummaryItemName("BUSA LEMBARAN HIJAU 5CM","BUSA LEMBARAN HIJAU 5 CM")
+        /*
+
+        productDao.updateProductCapital(5500,54)
+        productDao.updateProductCapital(2500,55)
+        productDao.updateProductCapital(2500,56)
+        productDao.updateProductCapital(14000,58)
+        productDao.updateProductCapital(13000,59)
+        productDao.updateProductCapital(125000,60)
+        productDao.updateProductCapital(33000,68)
+        productDao.updateProductCapital(43000,69)
+        productDao.updateProductCapital(63000,70)
+        productDao.updateProductCapital(90000,71)
+        productDao.updateProductCapital(109000,72)
+        productDao.updateProductCapital(26000,90)
+        productDao.updateProductCapital(85000,98)
+        productDao.updateProductCapital(170000,100)
+        productDao.updateProductCapital(135000,101)
+        productDao.updateProductCapital(21000,102)
+
+
         summaryDao.updateSummaryItemName("BENANG C","BENANG COATS")
         summaryDao.updateSummaryItemName("BUSA 1CM PARIS","BUSA 1CM PRS")
         summaryDao.updateSummaryItemName("BUSA 4 MM PRS","BUSA 4MM PRS")
@@ -75,9 +97,12 @@ class UpdateSummaryProductIdWorker(
         summaryDao.updateSummaryItemName("EURROLEDER","EUROLEDER")
 
  */
-       // summaryDao.updateSummaryProductId()
+        summaryDao.updateSummaryProductId()
         summaryDao.updateSummaryProductCapital()
-        transDetailDao.updateTransDetailProductCapital()
+        list.forEach {
+            Log.i("WorkerProbs","${it.item_name},date ${it.year} {${it.month}}")
+        }
+        //transDetailDao.updateTransDetailProductCapital()
         
 // Log the size of duplicates
 

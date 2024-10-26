@@ -18,7 +18,8 @@ interface ProductDao {
     @Query("SELECT * FROM product_table WHERE brand_code = :brand_id_")
     fun getAll(brand_id_:Int): LiveData<List<Product>>
 
-
+    @Query("UPDATE product_table SET product_capital = :capital WHERE product_id = :id")
+    fun updateProductCapital(capital:Int,id:Int)
     //@Query("SELECT year as year_n,month as month_n,month_number as month_nbr, month as nama,day as day_n,day_name as day_name,SUM(total_income) as total FROM SUMMARY_TABLE  WHERE year = :year_  GROUP BY month ORDER BY month_nbr ASC")
 
     @Query("SELECT * FROM product_table WHERE cath_code = :c_id_")
@@ -27,8 +28,7 @@ interface ProductDao {
     @Query("SELECT * FROM product_table WHERE :c_id_ IS NULL OR cath_code = :c_id_")
     fun getProductByCategory(c_id_:Int?): List<Product>
     @Query("""
-        SELECT product_table.product_name
-        FROM product_table
+        SELECT product_table.product_name FROM product_table
         JOIN category_table ON product_table.cath_code = category_table.category_id
         WHERE category_table.category_name = :name
     """)
@@ -40,6 +40,8 @@ interface ProductDao {
 
 
 
+    @Query("SELECT * FROM product_table WHERE product_capital=0")
+    fun getAllProduct0Cap(): List<Product>
     @Query("SELECT * FROM product_table")
     fun getAllProduct(): LiveData<List<Product>>
     @Query("DELETE FROM product_table WHERE product_id= :id_")

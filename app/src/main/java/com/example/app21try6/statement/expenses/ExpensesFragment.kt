@@ -21,6 +21,7 @@ import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentExpensesBinding
 import com.example.app21try6.databinding.PopUpUpdateProductDialogBinding
 import com.example.app21try6.statement.DiscountAdapter
+import com.example.app21try6.statement.DiscountAdapterModel
 import com.example.app21try6.statement.DiscountDelListener
 import com.example.app21try6.statement.DiscountListener
 import com.example.app21try6.statement.DiscountLongListener
@@ -52,11 +53,12 @@ class ExpensesFragment : Fragment() {
         binding.viewModel=viewModel
         val adapter = DiscountAdapter(
             DiscountListener {
-                ///showDiscountDialog(it)
+                showExpensesDialog(it)
             }, DiscountLongListener {
+
             },
             DiscountDelListener {
-               /// viewModel.deleteDiscountTable(it.id!!)
+                viewModel.deleteExpense(it.id!!)
             })
         binding.rvDisc.adapter=adapter
 
@@ -76,7 +78,7 @@ class ExpensesFragment : Fragment() {
 
         return binding.root
     }
-    fun showExpensesDialog(expenses:Expenses?){
+    fun showExpensesDialog(expenses:DiscountAdapterModel?){
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Update")
         Log.i("DiscProbs", "updateDialogShows")
@@ -86,7 +88,6 @@ class ExpensesFragment : Fragment() {
         val dialogBinding = DataBindingUtil.inflate<PopUpUpdateProductDialogBinding>(
             LayoutInflater.from(context), R.layout.pop_up_update_product_dialog, null, false
         )
-
         // Initialize views from the binding
         val textExpenseName = dialogBinding.textUpdateKet
         val textExpenseAmmount = dialogBinding.textUpdatePrice
@@ -106,17 +107,15 @@ class ExpensesFragment : Fragment() {
         // Observe the ViewModel LiveData and update the adapter
         viewModel.allExpenseCategory.observe(viewLifecycleOwner) { allMerk ->
             allMerk?.let {
-
                 merkAdapter.clear() // Clear the adapter's data
                 merkAdapter.addAll(allMerk.sortedBy { it }) // Add the sorted data to the adapter
                 merkAdapter.notifyDataSetChanged() // Notify the adapter about the data change
             }
         }
-
         if (expenses!=null){
             textExpenseName.setText(expenses.expense_name.toString())
             textExpenseAmmount.setText(expenses.expense_ammount.toString())
-            textExpensesDate.setText(expenses.expense_date.toString())
+            textExpensesDate.setText(expenses.date.toString())
             val expenseCategoryName=viewModel.expenseCategoryName.value
             if (expenseCategoryName!=null) textExpensesCategory.setText(expenseCategoryName)
             textExpenseName.requestFocus()
@@ -135,9 +134,8 @@ class ExpensesFragment : Fragment() {
             val expenseName =textExpenseName.text.toString().uppercase().trim()
             expenses?.expense_name = expenseName
             expenses?.expense_ammount=expenseAmmount
-            expenses?.expense_date =Date()
+            expenses?.date =Date()
             val expenseCatName = textExpensesCategory.text.toString().uppercase().trim()
-
             if (expenses==null) {
                 viewModel.insertExpense(expenseName,expenseAmmount,expensesDate,expenseCatName)
             }

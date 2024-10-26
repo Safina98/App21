@@ -22,13 +22,26 @@ class DiscountAdapter(
             binding.item=item
             binding.delListener=delListener
             binding.clickListener= discountListener
-            binding.txtDiscountName.text = item.discountName ?: item.expense_category_name
-            binding.txtMinQty.text = item.minimumQty?.toString() ?: item.expense_name
-            binding.txtCustLocation.text = item.custLocation?.toString() ?: item.date.toString() ?: ""
-            binding.txtDiscType.text = item.discountType ?: ""  // If no discountType, set empty string
-
-            val value = item.discountValue ?: item.expense_ammount?.toDouble() ?: 0.0
-            binding.txtDiscValue.text = formatRupiah(value)
+            if (item.discountName==null){
+                binding.txtDiscountName.text=item.expense_category_name
+                binding.txtMinQty.text=item.expense_name
+                binding.txtCustLocation.text=item.date.toString()
+                binding.txtDiscValue.text = formatRupiah(item.expense_ammount!!.toDouble())
+                binding.lblCustLocation.text="Tanggal:"
+                binding.lblMinQty.text="Pengeluaran: "
+                binding.lblDiscType.visibility=View.GONE
+                binding.lblDiscValue.text="Jumlah: "
+            }else{
+                binding.txtDiscountName.text=item.discountName
+                binding.txtMinQty.text=item.minimumQty.toString()
+                binding.txtCustLocation.text=item.custLocation.toString()
+                binding.txtDiscType.text=item.discountType
+                binding.txtDiscValue.text = formatRupiah(item.discountValue!!.toDouble())
+                binding.lblCustLocation.text="Lokasi Pembeli: "
+                binding.lblMinQty.text="Minimum Pembelian: "
+                binding.lblDiscType.text="Tipe: "
+                binding.lblDiscValue.text="Diskon: "
+            }
             binding.executePendingBindings()
         }
         companion object{

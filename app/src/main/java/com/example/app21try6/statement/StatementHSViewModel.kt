@@ -54,7 +54,9 @@ class StatementHSViewModel(application: Application,
         }
     }
     fun deleteExpenseCategory(){
-        viewModelScope.launch{}
+        viewModelScope.launch{
+
+        }
     }
     fun getAllexpenseCategory(){
         viewModelScope.launch {
@@ -74,12 +76,23 @@ class StatementHSViewModel(application: Application,
             insertExpense(expenses)
         }
     }
-    fun updateExpenses(expenses: Expenses){
+    fun updateExpenses(expensesM: DiscountAdapterModel){
         viewModelScope.launch {
+            val expenses=Expenses()
+            val catId =getECIdByName(expensesM.expense_category_name!!)
+            expenses.id=expensesM.id!!
+            expenses.expense_name=expensesM.expense_name!!
+            expenses.expense_category_id= catId?:0
+            expenses.expense_ammount=expensesM.expense_ammount
+            expenses.expense_ref=expensesM.expense_ref!!
+            expenses.expense_date=expensesM.date
             updateExpenseToDao(expenses)
         }
     }
-    fun deleteExpense(){
+    fun deleteExpense(id: Int){
+        viewModelScope.launch {
+            deleteExpensesToDao(id)
+        }
     }
     fun getAllExpense(){}
 
@@ -180,6 +193,11 @@ class StatementHSViewModel(application: Application,
             expenseDao.update(expenses)
         }
     }
+    private suspend fun deleteExpensesToDao(id:Int){
+        withContext(Dispatchers.IO){
+           expenseDao.delete(id)
+        }
+    }
     private suspend fun insertExpensesCategory(expenseCategory: ExpenseCategory){
         withContext(Dispatchers.IO){
             expenseCategoryDao.insert(expenseCategory)
@@ -190,6 +208,7 @@ class StatementHSViewModel(application: Application,
             expenseCategoryDao.update(expenseCategory)
         }
     }
+
     private suspend fun getECIdByName(name:String):Int?{
         return withContext(Dispatchers.IO){
             expenseCategoryDao.getECIdByName(name)
