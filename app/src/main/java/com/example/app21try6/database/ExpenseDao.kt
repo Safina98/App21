@@ -18,6 +18,7 @@ interface ExpenseDao {
             "expenses_table.expense_name as expense_name, " +
             "expenses_table.expense_ammount as expense_ammount, " +
             "expenses_table.expense_date as date, " +
+            "expenses_table.expense_ref as expense_ref, " +
             "expense_category_table.expense_category_name as expense_category_name " +  // Assuming you want to select category_name
             "FROM expenses_table " +
             "LEFT JOIN expense_category_table ON expenses_table.expense_category_id = expense_category_table.id"  // Correct join condition

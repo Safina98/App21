@@ -6,6 +6,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.app21try6.database.TransactionSummary
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.formatRupiah
 
 class UpdateSummaryProductIdWorker(
     context: Context,
@@ -28,11 +29,18 @@ class UpdateSummaryProductIdWorker(
         val summaryDao = database.summaryDbDao
         val transDetailDao = database.transDetailDao
         val productDao=database.productDao
-        val list =summaryDao.getAllSummaryProductId()
+        val list =transDetailDao.getMonthlyProfit()
+        Log.i("WorkerProbs","${list.size}")
 
-        summaryDao.updateSummaryItemName("BUSA LEMBARAN HIJAU 5CM","BUSA LEMBARAN HIJAU 5 CM")
+        list.forEach {
+           Log.i("WorkerProbs","${it.trans_detail_date}\n,price ${formatRupiah(it.trans_price.toDouble())} " +
+                   "qty: ${it.qty}; unit:${it.unit}; unitqty ${it.unit_qty} total_price ${it.total_price}")
+           // Log.i("WorkerProbs","${it.month} ${formatRupiah(it.monthly_profit)}")
+        }
+
+
+
         /*
-
         productDao.updateProductCapital(5500,54)
         productDao.updateProductCapital(2500,55)
         productDao.updateProductCapital(2500,56)
@@ -97,11 +105,9 @@ class UpdateSummaryProductIdWorker(
         summaryDao.updateSummaryItemName("EURROLEDER","EUROLEDER")
 
  */
-        summaryDao.updateSummaryProductId()
-        summaryDao.updateSummaryProductCapital()
-        list.forEach {
-            Log.i("WorkerProbs","${it.item_name},date ${it.year} {${it.month}}")
-        }
+       // summaryDao.updateSummaryProductId()
+        //summaryDao.updateSummaryProductCapital()
+
         //transDetailDao.updateTransDetailProductCapital()
         
 // Log the size of duplicates

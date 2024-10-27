@@ -13,6 +13,7 @@ import com.example.app21try6.database.ExpenseCategory
 import com.example.app21try6.database.ExpenseCategoryDao
 import com.example.app21try6.database.ExpenseDao
 import com.example.app21try6.database.Expenses
+import com.example.app21try6.statement.expenses.tagg
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -79,6 +80,7 @@ class StatementHSViewModel(application: Application,
     fun updateExpenses(expensesM: DiscountAdapterModel){
         viewModelScope.launch {
             val expenses=Expenses()
+
             val catId =getECIdByName(expensesM.expense_category_name!!)
             expenses.id=expensesM.id!!
             expenses.expense_name=expensesM.expense_name!!
@@ -86,6 +88,7 @@ class StatementHSViewModel(application: Application,
             expenses.expense_ammount=expensesM.expense_ammount
             expenses.expense_ref=expensesM.expense_ref!!
             expenses.expense_date=expensesM.date
+
             updateExpenseToDao(expenses)
         }
     }
