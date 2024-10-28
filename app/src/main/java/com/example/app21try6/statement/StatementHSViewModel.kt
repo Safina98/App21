@@ -3,6 +3,7 @@ package com.example.app21try6.statement
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.app21try6.database.CustomerDao
@@ -13,7 +14,6 @@ import com.example.app21try6.database.ExpenseCategory
 import com.example.app21try6.database.ExpenseCategoryDao
 import com.example.app21try6.database.ExpenseDao
 import com.example.app21try6.database.Expenses
-import com.example.app21try6.statement.expenses.tagg
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -30,11 +30,13 @@ class StatementHSViewModel(application: Application,
     val allDiscountFromDB= discountDao.getAllDiscount()
     val allCustomerFromDb=customerDao.allCustomer()
     val allExpenseCategory=expenseCategoryDao.getAllExpenseCategory()
-    val allExpensesFromDB=expenseDao.getAllExpense()
+    val _allExpenseFromDb = MutableLiveData<List<DiscountAdapterModel>>()
+    val allExpensesFromDB :LiveData<List<DiscountAdapterModel>> get() = _allExpenseFromDb
     var id = 0
     val expenseCategoryName= MutableLiveData<String?>("")
-
-
+    private val _selectedECSpinner = MutableLiveData<String>()
+    val selectedECSpinner: LiveData<String> get() = _selectedECSpinner
+    var ecId = MutableLiveData<Int?>(null)
    ////////////////////////////////////Expenses/////////////////////////////////////////////////
    fun getExpenseCategoryNameById(id:Int?){
        viewModelScope.launch {
@@ -64,7 +66,13 @@ class StatementHSViewModel(application: Application,
 
         }
     }
-
+    fun updateRv(){
+        viewModelScope.launch {
+            val expenseList = getExpensesByCategory(ecId.value ?: 0)
+            Log.i("BrandProb","updateRV "+expenseList)
+            _allExpenseFromDb.value = expenseList
+        }
+    }
     fun insertExpense(expenseNamed:String, expenseAmmount:Int?, expenseDate: Date, expenseCatName:String){
         viewModelScope.launch{
             val expenses=Expenses()
@@ -80,7 +88,6 @@ class StatementHSViewModel(application: Application,
     fun updateExpenses(expensesM: DiscountAdapterModel){
         viewModelScope.launch {
             val expenses=Expenses()
-
             val catId =getECIdByName(expensesM.expense_category_name!!)
             expenses.id=expensesM.id!!
             expenses.expense_name=expensesM.expense_name!!
@@ -88,7 +95,6 @@ class StatementHSViewModel(application: Application,
             expenses.expense_ammount=expensesM.expense_ammount
             expenses.expense_ref=expensesM.expense_ref!!
             expenses.expense_date=expensesM.date
-
             updateExpenseToDao(expenses)
         }
     }
@@ -98,7 +104,24 @@ class StatementHSViewModel(application: Application,
         }
     }
     fun getAllExpense(){}
+    fun setSelectedECValue(value: String) {
+        viewModelScope.launch {
+            val id = getCEIdByName(value)
+            ecId.value = id
+            _selectedECSpinner.value = value
+        }
+    }
+    private suspend fun getCEIdByName(name: String):Int?{
+        return withContext(Dispatchers.IO){
+           expenseCategoryDao.getECIdByName(name)
+        }
 
+    }
+    private suspend fun getExpensesByCategory(cEid:Int?):List<DiscountAdapterModel>{
+        return withContext(Dispatchers.IO){
+            expenseDao.getAllExpense(cEid)
+        }
+    }
 
  ////////////////////////////////////////////Customer////////////////////////////////////////////
     fun insertCustomer(name:String?,businessName:String,location:String?,address:String?,level:String?,tag1:String?){

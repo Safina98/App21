@@ -14,10 +14,15 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:context=".statement.expenses.ExpensesFragment">
-        <TextView
+        <Spinner
+            android:id="@+id/spinner_c"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/hello_blank_fragment" />
+            android:layout_gravity="center_horizontal"
+            android:foregroundGravity="center_horizontal"
+            android:gravity="center_horizontal"
+            />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_disc"
             android:layout_width="match_parent"

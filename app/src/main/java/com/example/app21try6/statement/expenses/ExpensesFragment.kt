@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -16,7 +17,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.app21try6.R
 import com.example.app21try6.database.ExpenseCategory
-import com.example.app21try6.database.Expenses
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentExpensesBinding
 import com.example.app21try6.databinding.PopUpUpdateProductDialogBinding
@@ -62,9 +62,24 @@ class ExpensesFragment : Fragment() {
             })
         binding.rvDisc.adapter=adapter
 
+        binding.spinnerC.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedItem = parent.getItemAtPosition(position).toString()
+                viewModel.setSelectedECValue(selectedItem)
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {
+            }
+        }
+        viewModel.allExpenseCategory.observe(viewLifecycleOwner){entries->
+            val adapter1 = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, entries)
+            binding.spinnerC.adapter = adapter1
+        }
         binding.btnAddNewExpense.setOnClickListener {
             //showsAddExpenseCategoryDialog(null)
             showExpensesDialog(null)
+        }
+        viewModel.selectedECSpinner.observe(viewLifecycleOwner) {
+            viewModel.updateRv()
         }
         viewModel.allExpenseCategory.observe(viewLifecycleOwner, Observer {
            Log.i(tagg,"category $it")
