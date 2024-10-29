@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.absoluteValue
 
-val SIMPLE_DATE_FORMAT ="dd/MM/yyyy"
+val SIMPLE_DATE_FORMAT ="yyyy-MM-dd HH:mm"
 val DATE_FORMAT = SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault())
 object DISCTYPE {
     const val CashbackPrinted = "Printed"

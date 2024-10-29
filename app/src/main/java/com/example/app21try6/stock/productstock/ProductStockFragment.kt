@@ -137,6 +137,15 @@ class   ProductStockFragment : Fragment() {
         val textCapital2=dialogBinding.textCapital2
         val textModusNoet=dialogBinding.defaultNet
 
+        dialogBinding.ilCapital2.hint="Modal 2"
+        dialogBinding.ilDefaultNet.hint="net modus"
+        dialogBinding.ilKet.hint="Product"
+        dialogBinding.ilPrice.hint="Harga"
+        dialogBinding.ilCapital.hint="Modal"
+        dialogBinding.ilDisc.hint="Diskon"
+
+
+
         // Set up the AutoCompleteTextView with a mutable adapter
         val merkAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, mutableListOf())
         textDisc.setAdapter(merkAdapter)
@@ -161,9 +170,6 @@ class   ProductStockFragment : Fragment() {
         if (discName!=null) textDisc.setText(discName)
         textKet.requestFocus()
 
-        // Show the soft keyboard
-        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
 
         // Use dialogBinding.root instead of view
         builder.setView(dialogBinding.root)
@@ -176,6 +182,7 @@ class   ProductStockFragment : Fragment() {
             val alternateCapital =textCapital2.text.toString().toDoubleOrNull()
             val modusNet =textModusNoet.text.toString().toDoubleOrNull()
             Log.i("capitalErr", "Price :$capital")
+
 
             if (price != null) {
                 vendible.product_price = price
@@ -208,36 +215,54 @@ class   ProductStockFragment : Fragment() {
 
 
 
-    fun showAddDialog(viewModel: ProductViewModel){
+    fun showAddDialog(viewModel: ProductViewModel) {
+        val context = requireContext() // Ensure you have a valid context
         val builder = AlertDialog.Builder(context)
-        builder.setTitle("Tambah Item")
-        val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.pop_up_update_product_dialog, null)
-        val textBrand = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
-        val textPrice = view.findViewById<TextInputEditText>(R.id.textUpdatePrice)
-        val txtDiscount =view.findViewById<AutoCompleteTextView>(R.id.text_discount)
-        val adapter: ArrayAdapter<String> = ArrayAdapter(
-            requireContext(),
+        builder.setTitle("Update")
+        val dialogBinding = DataBindingUtil.inflate<PopUpUpdateProductDialogBinding>(
+            LayoutInflater.from(context), R.layout.pop_up_update_product_dialog, null, false
+        )
+
+        // Initialize views from the binding
+        val textKet = dialogBinding.textUpdateKet
+        val textPrice = dialogBinding.textUpdatePrice
+        val textCapital = dialogBinding.textCapital
+        val textDisc = dialogBinding.textDiscount
+        val textCapital2 = dialogBinding.textCapital2
+        val textModusNoet = dialogBinding.defaultNet
+        val adapter = ArrayAdapter(
+            context,
             android.R.layout.simple_dropdown_item_1line,
             discountNames
         )
+        dialogBinding.ilCapital2.hint="Modal 2"
+        dialogBinding.ilDefaultNet.hint="net modus"
+        dialogBinding.ilKet.hint="Product"
+        dialogBinding.ilPrice.hint="Harga"
+        dialogBinding.ilCapital.hint="Modal"
+        dialogBinding.ilDisc.hint="Diskon"
 
-        txtDiscount.setAdapter(adapter)
+        textDisc.setAdapter(adapter)
         Log.i("DiscProbs", "Adapter set with discounts: $discountNames")
-        builder.setView(view)
+
+        // Set the dialog view
+        builder.setView(dialogBinding.root) // Use dialogBinding.root
+
         builder.setPositiveButton("OK") { dialog, which ->
-            val product_name = textBrand.text.toString().toUpperCase().trim()
-            var product_price :Int=0
-            if(textPrice.text.toString().toIntOrNull()!=null){
-                product_price = textPrice.text.toString().toInt()}
-            viewModel.insertAnItemProductStock(product_name,product_price)
+            val product_name = textKet.text.toString().uppercase().trim() // Use uppercase() instead of toUpperCase()
+            var product_price: Int = 0
+            textPrice.text.toString().toIntOrNull()?.let { price ->
+                product_price = price
+            }
+            viewModel.insertAnItemProductStock(product_name, product_price)
         }
-        builder.setNegativeButton("No") { dialog, which ->
-        }
+
+        builder.setNegativeButton("No") { dialog, which -> }
+
         val alert = builder.create()
         alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-
+        alert.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(ContextCompat.getColor(context, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(ContextCompat.getColor(context, R.color.dialogbtncolor))
     }
+
 }

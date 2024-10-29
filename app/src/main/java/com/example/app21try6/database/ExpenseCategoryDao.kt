@@ -13,7 +13,7 @@ interface ExpenseCategoryDao {
     @Update
     fun update(expenseCategory: ExpenseCategory)
     @Query("SELECT expense_category_name FROM expense_category_table")
-    fun getAllExpenseCategory():LiveData<List<String>>
+    fun getAllExpenseCategory():List<String>
     @Query("SELECT expense_category_name FROM expense_category_table WHERE id =:id")
     fun getExpenseCategoryNameById(id:Int?):String?
     @Query("SELECT id FROM expense_category_table WHERE expense_category_name=:name")

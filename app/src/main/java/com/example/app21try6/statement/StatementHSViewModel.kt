@@ -14,6 +14,7 @@ import com.example.app21try6.database.ExpenseCategory
 import com.example.app21try6.database.ExpenseCategoryDao
 import com.example.app21try6.database.ExpenseDao
 import com.example.app21try6.database.Expenses
+import com.example.app21try6.statement.expenses.tagg
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -29,7 +30,8 @@ class StatementHSViewModel(application: Application,
 
     val allDiscountFromDB= discountDao.getAllDiscount()
     val allCustomerFromDb=customerDao.allCustomer()
-    val allExpenseCategory=expenseCategoryDao.getAllExpenseCategory()
+    val _allExpenseCategorName = MutableLiveData<List<String>>()
+    val allExpenseCategory:LiveData<List<String>> get() =_allExpenseCategorName
     val _allExpenseFromDb = MutableLiveData<List<DiscountAdapterModel>>()
     val allExpensesFromDB :LiveData<List<DiscountAdapterModel>> get() = _allExpenseFromDb
     var id = 0
@@ -58,17 +60,22 @@ class StatementHSViewModel(application: Application,
     }
     fun deleteExpenseCategory(){
         viewModelScope.launch{
-
         }
     }
     fun getAllexpenseCategory(){
         viewModelScope.launch {
+            val list = withContext(Dispatchers.IO){
+                expenseCategoryDao.getAllExpenseCategory()
+            }
+            var l =list.toMutableList()
+            l.add(0,"ALL")
+            _allExpenseCategorName.value=l
 
         }
     }
     fun updateRv(){
         viewModelScope.launch {
-            val expenseList = getExpensesByCategory(ecId.value ?: 0)
+            val expenseList = getExpensesByCategory(ecId.value)
             Log.i("BrandProb","updateRV "+expenseList)
             _allExpenseFromDb.value = expenseList
         }
@@ -82,7 +89,10 @@ class StatementHSViewModel(application: Application,
             expenses.expense_date=expenseDate
             expenses.expense_ref=UUID.randomUUID().toString()
             expenses.expense_category_id=catId?:0
+            Log.i(tagg,"date $expenseDate")
             insertExpense(expenses)
+
+            updateRv()
         }
     }
     fun updateExpenses(expensesM: DiscountAdapterModel){
@@ -96,11 +106,13 @@ class StatementHSViewModel(application: Application,
             expenses.expense_ref=expensesM.expense_ref!!
             expenses.expense_date=expensesM.date
             updateExpenseToDao(expenses)
+            updateRv()
         }
     }
     fun deleteExpense(id: Int){
         viewModelScope.launch {
             deleteExpensesToDao(id)
+            updateRv()
         }
     }
     fun getAllExpense(){}
@@ -115,7 +127,6 @@ class StatementHSViewModel(application: Application,
         return withContext(Dispatchers.IO){
            expenseCategoryDao.getECIdByName(name)
         }
-
     }
     private suspend fun getExpensesByCategory(cEid:Int?):List<DiscountAdapterModel>{
         return withContext(Dispatchers.IO){

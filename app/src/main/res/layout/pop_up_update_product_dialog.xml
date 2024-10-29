@@ -12,11 +12,11 @@
         android:gravity="center">
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="300dp"
+            android:id="@+id/il_ket"
             android:layout_height="wrap_content">
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Produk"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:id="@+id/textUpdateKet"
@@ -24,48 +24,48 @@
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="300dp"
+            android:id="@+id/il_price"
             android:layout_height="wrap_content">
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Harga"
                 android:id="@+id/textUpdatePrice"
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="300dp"
+            android:id="@+id/il_capital"
             android:layout_height="wrap_content">
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Modal"
                 android:id="@+id/textCapital"
                 />
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="300dp"
+            android:id="@+id/il_capital2"
             android:layout_height="wrap_content">
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Modal2"
                 android:id="@+id/textCapital2"
                 />
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="300dp"
+            android:id="@+id/il_default_net"
             android:layout_height="wrap_content">
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="net modus"
                 android:id="@+id/default_net"
                 />
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="300dp"
-            android:hint="Diskon"
+            android:id="@+id/il_disc"
             android:layout_height="60dp">
             <AutoCompleteTextView
                 android:id="@+id/text_discount"

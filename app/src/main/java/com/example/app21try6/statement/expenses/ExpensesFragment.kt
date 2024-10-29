@@ -1,6 +1,7 @@
 package com.example.app21try6.statement.expenses
 
 import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -15,7 +16,9 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.app21try6.DATE_FORMAT
 import com.example.app21try6.R
+import com.example.app21try6.SIMPLE_DATE_FORMAT
 import com.example.app21try6.database.ExpenseCategory
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentExpensesBinding
@@ -28,7 +31,10 @@ import com.example.app21try6.statement.DiscountLongListener
 import com.example.app21try6.statement.StatementHSViewModel
 import com.example.app21try6.statement.StatementHSViewModelFactory
 import com.google.android.material.textfield.TextInputEditText
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 
 val tagg = "expenseprobs"
@@ -37,6 +43,7 @@ class ExpensesFragment : Fragment() {
 
     private lateinit var binding: FragmentExpensesBinding
     private lateinit var viewModel: StatementHSViewModel
+    private lateinit var adapter:DiscountAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,7 +58,7 @@ class ExpensesFragment : Fragment() {
         val viewModelFactory = StatementHSViewModelFactory(application,dataSource1,dataSource2,dataSource3,dataSource4)
         viewModel = ViewModelProvider(this,viewModelFactory).get(StatementHSViewModel::class.java)
         binding.viewModel=viewModel
-        val adapter = DiscountAdapter(
+        adapter = DiscountAdapter(
             DiscountListener {
                 showExpensesDialog(it)
             }, DiscountLongListener {
@@ -80,6 +87,10 @@ class ExpensesFragment : Fragment() {
         }
         viewModel.selectedECSpinner.observe(viewLifecycleOwner) {
             viewModel.updateRv()
+
+        }
+        binding.btnAddEc.setOnClickListener {
+            showsAddExpenseCategoryDialog(null)
         }
         viewModel.allExpenseCategory.observe(viewLifecycleOwner, Observer {
            Log.i(tagg,"category $it")
@@ -93,27 +104,29 @@ class ExpensesFragment : Fragment() {
 
         return binding.root
     }
-    fun showExpensesDialog(expenses:DiscountAdapterModel?){
+    fun showExpensesDialog(expenses: DiscountAdapterModel?) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Update")
         Log.i("DiscProbs", "updateDialogShows")
-
 
         // Inflate the custom view for the dialog
         val dialogBinding = DataBindingUtil.inflate<PopUpUpdateProductDialogBinding>(
             LayoutInflater.from(context), R.layout.pop_up_update_product_dialog, null, false
         )
-        // Initialize views from the binding
+        val parent = dialogBinding.root.parent as? ViewGroup
+        parent?.removeView(dialogBinding.root)
         val textExpenseName = dialogBinding.textUpdateKet
         val textExpenseAmmount = dialogBinding.textUpdatePrice
         val textExpensesDate = dialogBinding.textCapital
         val textExpensesCategory = dialogBinding.textDiscount
-        dialogBinding.textCapital2.visibility =View.GONE
-        dialogBinding.defaultNet.visibility =View.GONE
-        textExpenseName.hint= "Nama Pengeluaran"
-        textExpenseAmmount.hint="Jumlah"
-        textExpensesDate.hint="Tanggal"
-        textExpensesCategory.hint="Kategori"
+        dialogBinding.textCapital2.visibility = View.GONE
+        dialogBinding.defaultNet.visibility = View.GONE
+        dialogBinding.ilCapital2.visibility = View.GONE
+        dialogBinding.ilDefaultNet.visibility = View.GONE
+        dialogBinding.ilKet.hint = "Nama Pengeluaran"
+        dialogBinding.ilPrice.hint = "Jumlah"
+        dialogBinding.ilCapital.hint = "Tanggal"
+        dialogBinding.ilDisc.hint = "Kategori"
 
         // Set up the AutoCompleteTextView with a mutable adapter
         val merkAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, mutableListOf())
@@ -122,39 +135,58 @@ class ExpensesFragment : Fragment() {
         // Observe the ViewModel LiveData and update the adapter
         viewModel.allExpenseCategory.observe(viewLifecycleOwner) { allMerk ->
             allMerk?.let {
-                merkAdapter.clear() // Clear the adapter's data
-                merkAdapter.addAll(allMerk.sortedBy { it }) // Add the sorted data to the adapter
-                merkAdapter.notifyDataSetChanged() // Notify the adapter about the data change
+                merkAdapter.clear()
+                merkAdapter.addAll(allMerk.sortedBy { it })
+                merkAdapter.notifyDataSetChanged()
             }
         }
-        if (expenses!=null){
+
+        // Load data if available
+        if (expenses != null) {
             textExpenseName.setText(expenses.expense_name.toString())
             textExpenseAmmount.setText(expenses.expense_ammount.toString())
-            textExpensesDate.setText(expenses.date.toString())
-            val expenseCategoryName=viewModel.expenseCategoryName.value
-            if (expenseCategoryName!=null) textExpensesCategory.setText(expenseCategoryName)
+            textExpensesDate.setText(DATE_FORMAT.format(expenses.date))
+            val expenseCategoryName = viewModel.expenseCategoryName.value
+            if (expenseCategoryName != null) textExpensesCategory.setText(expenseCategoryName)
             textExpenseName.requestFocus()
+        }else textExpensesDate.setText(DATE_FORMAT.format(Date()))
+
+        // Set OnClickListener for the date field to open DatePickerDialog
+        textExpensesDate.setOnClickListener {
+            val calendar = Calendar.getInstance()
+            DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
+                // Set the selected date
+                calendar.set(year, month, dayOfMonth)
+
+                // Get current hour and minute
+                val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+                val currentMinute = Calendar.getInstance().get(Calendar.MINUTE)
+
+                // Set current hour and minute to the selected date
+                calendar.set(Calendar.HOUR_OF_DAY, currentHour)
+                calendar.set(Calendar.MINUTE, currentMinute)
+
+                // Format the date and time and set it in textExpensesDate
+                textExpensesDate.setText(DATE_FORMAT.format(calendar.time))
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
         }
-        // Set the data for the dialog fields
 
-        // Show the soft keyboard
-        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
-
-        // Use dialogBinding.root instead of view
+        // Set up the dialog's buttons and handling
         builder.setView(dialogBinding.root)
         builder.setPositiveButton("Update") { dialog, which ->
             val expenseAmmount = textExpenseAmmount.text.toString().toIntOrNull()
-            val expensesDate = Date()//textExpensesDate.text.toString()
-            val expenseName =textExpenseName.text.toString().uppercase().trim()
+            val expensesDate = textExpensesDate.text.toString()
+            val expenseName = textExpenseName.text.toString().uppercase().trim()
             expenses?.expense_name = expenseName
-            expenses?.expense_ammount=expenseAmmount
-            expenses?.date =Date()
+            expenses?.expense_ammount = expenseAmmount
+            expenses?.date = SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault()).parse(expensesDate) ?: Date()
             val expenseCatName = textExpensesCategory.text.toString().uppercase().trim()
-            if (expenses==null) {
-                viewModel.insertExpense(expenseName,expenseAmmount,expensesDate,expenseCatName)
+            if (expenses == null) {
+                viewModel.insertExpense(expenseName, expenseAmmount, SimpleDateFormat(
+                    SIMPLE_DATE_FORMAT, Locale.getDefault()).parse(expensesDate)?: Date(), expenseCatName)
+            } else {
+                viewModel.updateExpenses(expenses)
             }
-            else{viewModel.updateExpenses(expenses)}
         }
 
         builder.setNegativeButton("Cancel") { dialog, which ->
@@ -165,6 +197,7 @@ class ExpensesFragment : Fragment() {
         alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
         alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
     }
+
 
     fun showsAddExpenseCategoryDialog(expenseCategory: ExpenseCategory?){
         val builder = AlertDialog.Builder(context)
@@ -178,8 +211,6 @@ class ExpensesFragment : Fragment() {
         }
 
         textCatName.requestFocus()
-        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
         builder.setView(view)
         builder.setPositiveButton("Ok") { dialog, which ->
             val catName=textCatName.text.toString().uppercase().trim()
@@ -196,5 +227,10 @@ class ExpensesFragment : Fragment() {
         alert.show()
         alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.primaryColor))
         alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.primaryColor))
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.getAllexpenseCategory()
     }
 }
