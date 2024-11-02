@@ -9,6 +9,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
+import com.example.app21try6.DATE_FORMAT
 import com.example.app21try6.DISCTYPE
 import com.example.app21try6.database.CustomerDao
 import com.example.app21try6.database.DiscountDao
@@ -146,15 +147,18 @@ class TransactionDetailViewModel (application: Application,
         _uiMode.value = mode
     }
     /******************************************** CRUD **************************************/
+
     fun getSummaryWithNullProductId(){
         viewModelScope.launch {
             //val list = withContext(Dispatchers.IO){database.getAllSummaryProductId()}
-            val list = withContext(Dispatchers.IO){datasource2.getProfit()}
+            val simpleFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val date = simpleFormatter.parse("2024-10-24")
+            val list = withContext(Dispatchers.IO){ datasource2.getTransactionDetailsWithSubIdAndTransDate(23,date!!)}
+            val sum = withContext(Dispatchers.IO){ datasource2.getSumTransactionDetailsWithSubIdAndDate(23,date!!)}
             list.forEach { itemName ->
-                Log.d("idprobs", "${itemName.year} ${itemName.month}  ${formatRupiah(itemName.monthly_profit) }")
-               // Log.d("idprobs", "Invalid date found: $itemName")
+                Log.d("idprobs", "${itemName.trans_detail_date?.let { DATE_FORMAT.format(it) }} ${itemName.trans_item_name}: ${itemName.qty} ${itemName.unit_qty}")
             }
-
+            Log.d("idprobs", "total:  ${sum}:")
         }
     }
    fun deleteDiscount(id:Int){
@@ -167,7 +171,6 @@ class TransactionDetailViewModel (application: Application,
            discountTransDao.delete(id)
        }
    }
-
     //Toggle and update Transaction Summary is_taken value when btn_is_taken clicked
     fun updateBooleanValue() {
        viewModelScope.launch {
@@ -271,6 +274,7 @@ class TransactionDetailViewModel (application: Application,
         bayar.payment_ref = paymentModel.ref?:""
         return bayar
     }
+
 
     // update Transum value
     private fun updateTransSum(){

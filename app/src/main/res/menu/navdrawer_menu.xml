@@ -15,5 +15,7 @@
     <item
         android:id="@+id/statementHsFragment"
         android:title="Manage"/>
-
+    <item
+        android:id="@+id/expensesFragment"
+        android:title="Pengeluaran"/>
 </menu>

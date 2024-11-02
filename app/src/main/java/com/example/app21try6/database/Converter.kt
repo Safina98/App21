@@ -13,7 +13,6 @@ class DateTypeConverter {
         private const val simpleDateFormat = "yyyy-MM-dd"
         private val fullFormatter = SimpleDateFormat(fullDateFormat, Locale.getDefault())
         private val simpleFormatter = SimpleDateFormat(simpleDateFormat, Locale.getDefault())
-
         @JvmStatic
         @TypeConverter
         fun toDate(dateString: String?): Date? {
@@ -21,12 +20,11 @@ class DateTypeConverter {
                 try {
                     fullFormatter.parse(it)
                 } catch (e: ParseException) {
-                    // Try parsing with the simpler format if the full format fails
                     try {
                         simpleFormatter.parse(it)
                     } catch (e2: ParseException) {
                         e2.printStackTrace()
-                        null
+                        null  // Return null if parsing fails
                     }
                 }
             }

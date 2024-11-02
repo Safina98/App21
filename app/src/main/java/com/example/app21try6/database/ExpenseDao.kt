@@ -25,6 +25,10 @@ interface ExpenseDao {
     )
     fun getAllExpense():LiveData<List<DiscountAdapterModel>>
 
+
+    @Query("SELECT SUM(expense_ammount) as total FROM expenses_table")
+    fun getExpenseSum():Int
+
     @Query("SELECT " +
             "expenses_table.id as id, " +
             "expenses_table.expense_name as expense_name, " +

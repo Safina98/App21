@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -158,8 +160,13 @@ class SubProductStockFragment : Fragment() {
         val view = inflater.inflate(R.layout.pop_up_update, null)
 
         val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
+        val lv= view.findViewById<LinearLayout>(R.id.lbl_id)
+        val tVId=view.findViewById<TextView>(R.id.txt_id)
         var text=""
-        if (i==1){ text = subProduct.sub_name.toString()
+        if (i==1){
+            text = subProduct.sub_name.toString()
+            lv.visibility=View.VISIBLE
+            tVId.setText(subProduct.sub_id.toString())
         }else if(i==2){text = subProduct.warna.toString()
         }else{text = subProduct.ket.toString()}
         if (text!="click to add"){ textKet.setText(text) }
@@ -174,7 +181,6 @@ class SubProductStockFragment : Fragment() {
         alert.show()
         alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
         alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-
     }
 
 

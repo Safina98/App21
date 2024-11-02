@@ -2,20 +2,20 @@ package com.example.app21try6.statement.expenses
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.app21try6.DATE_FORMAT
 import com.example.app21try6.R
 import com.example.app21try6.SIMPLE_DATE_FORMAT
@@ -30,6 +30,12 @@ import com.example.app21try6.statement.DiscountListener
 import com.example.app21try6.statement.DiscountLongListener
 import com.example.app21try6.statement.StatementHSViewModel
 import com.example.app21try6.statement.StatementHSViewModelFactory
+import com.example.app21try6.stock.brandstock.CategoryAdapter
+import com.example.app21try6.stock.brandstock.CategoryModel
+
+import com.example.app21try6.stock.brandstock.DeleteListener
+import com.example.app21try6.stock.brandstock.UpdateListener
+import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -51,11 +57,23 @@ class ExpensesFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_expenses,container,false)
         val application= requireNotNull(this.activity).application
+        binding.lifecycleOwner = viewLifecycleOwner
+
+        val layoutOneViews = listOf(
+            binding.spinnerC,
+            binding.btnAddEc,
+            binding.rvDisc,
+            binding.lblTotal,
+            binding.txtTotal
+        )
         val dataSource1 = VendibleDatabase.getInstance(application).discountDao
         val dataSource2 = VendibleDatabase.getInstance(application).customerDao
         val dataSource3 = VendibleDatabase.getInstance(application).expenseDao
         val dataSource4 = VendibleDatabase.getInstance(application).expenseCategoryDao
-        val viewModelFactory = StatementHSViewModelFactory(application,dataSource1,dataSource2,dataSource3,dataSource4)
+        val dataSource5 = VendibleDatabase.getInstance(application).transDetailDao
+        val dataSource6 = VendibleDatabase.getInstance(application).transSumDao
+
+        val viewModelFactory = StatementHSViewModelFactory(application,dataSource1,dataSource2,dataSource3,dataSource4,dataSource5,dataSource6)
         viewModel = ViewModelProvider(this,viewModelFactory).get(StatementHSViewModel::class.java)
         binding.viewModel=viewModel
         adapter = DiscountAdapter(
@@ -67,8 +85,18 @@ class ExpensesFragment : Fragment() {
             DiscountDelListener {
                 viewModel.deleteExpense(it.id!!)
             })
+        val categoryAdapter = CategoryAdapter(
+        UpdateListener {
+                       showsAddExpenseCategoryDialog(it)
+        },
+            DeleteListener {
+                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as StatementHSViewModel).deleteExpenseCategory(item as CategoryModel) })
+            }
+        )
+        val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
+        binding.rvCat.addItemDecoration(dividerItemDecoration)
         binding.rvDisc.adapter=adapter
-
+        binding.rvCat.adapter=categoryAdapter
         binding.spinnerC.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedItem = parent.getItemAtPosition(position).toString()
@@ -77,31 +105,54 @@ class ExpensesFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>) {
             }
         }
-        viewModel.allExpenseCategory.observe(viewLifecycleOwner){entries->
-            val adapter1 = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, entries)
-            binding.spinnerC.adapter = adapter1
-        }
-        binding.btnAddNewExpense.setOnClickListener {
-            //showsAddExpenseCategoryDialog(null)
-            showExpensesDialog(null)
-        }
-        viewModel.selectedECSpinner.observe(viewLifecycleOwner) {
-            viewModel.updateRv()
-
-        }
         binding.btnAddEc.setOnClickListener {
             showsAddExpenseCategoryDialog(null)
         }
+        binding.btnEditEcNew.setOnClickListener {
+            if (layoutOneViews[0].visibility == View.VISIBLE) {
+                layoutOneViews.forEach { it.visibility = View.GONE }
+                binding.cardView.visibility = View.VISIBLE
+                Log.i(tagg,"view visible")
+            } else {
+                layoutOneViews.forEach { it.visibility = View.VISIBLE }
+               binding.cardView.visibility = View.GONE
+                Log.i(tagg,"view gone")
+            }
+        }
+        binding.btnAddNewExpense.setOnClickListener {
+            if (layoutOneViews[0].visibility == View.VISIBLE) {
+                showExpensesDialog(null)
+                Log.i(tagg,"view visible")
+            } else {
+                Log.i(tagg,"view gone")
+                showsAddExpenseCategoryDialog(null)
+            }
+        }
         viewModel.allExpenseCategory.observe(viewLifecycleOwner, Observer {
-           Log.i(tagg,"category $it")
+            categoryAdapter.submitList(it)
+
+        })
+        viewModel.allExpenseCategoryName.observe(viewLifecycleOwner){ entries->
+            val adapter1 = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, entries)
+            binding.spinnerC.adapter = adapter1
+        }
+
+        viewModel.selectedECSpinner.observe(viewLifecycleOwner) {
+            viewModel.updateRv()
+        }
+
+        viewModel.allExpenseCategoryName.observe(viewLifecycleOwner, Observer {
+           //Log.i(tagg,"category $it")
         })
         viewModel.allExpensesFromDB.observe(viewLifecycleOwner, Observer {
-            Log.i(tagg,"expense $it")
+          //  Log.i(tagg,"expense $it")
             adapter.submitList(it)
             adapter.notifyDataSetChanged()
         })
 
-
+        viewModel.expenseSum.observe(viewLifecycleOwner, Observer {
+           // Log.i(tagg, "expensedum:$it")
+        })
         return binding.root
     }
     fun showExpensesDialog(expenses: DiscountAdapterModel?) {
@@ -119,6 +170,7 @@ class ExpensesFragment : Fragment() {
         val textExpenseAmmount = dialogBinding.textUpdatePrice
         val textExpensesDate = dialogBinding.textCapital
         val textExpensesCategory = dialogBinding.textDiscount
+        dialogBinding.lblId.visibility = View.GONE
         dialogBinding.textCapital2.visibility = View.GONE
         dialogBinding.defaultNet.visibility = View.GONE
         dialogBinding.ilCapital2.visibility = View.GONE
@@ -133,13 +185,14 @@ class ExpensesFragment : Fragment() {
         textExpensesCategory.setAdapter(merkAdapter)
 
         // Observe the ViewModel LiveData and update the adapter
-        viewModel.allExpenseCategory.observe(viewLifecycleOwner) { allMerk ->
+        viewModel.allExpenseCategoryName.observe(viewLifecycleOwner) { allMerk ->
             allMerk?.let {
                 merkAdapter.clear()
                 merkAdapter.addAll(allMerk.sortedBy { it })
                 merkAdapter.notifyDataSetChanged()
             }
         }
+
 
         // Load data if available
         if (expenses != null) {
@@ -199,7 +252,7 @@ class ExpensesFragment : Fragment() {
     }
 
 
-    fun showsAddExpenseCategoryDialog(expenseCategory: ExpenseCategory?){
+    fun showsAddExpenseCategoryDialog(expenseCategory: CategoryModel?){
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Kategori")
         val inflater = LayoutInflater.from(context)
@@ -207,14 +260,14 @@ class ExpensesFragment : Fragment() {
         val textCatName = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
         textCatName.hint = "Nama Kategori"
         if (expenseCategory!=null){
-            textCatName.setText(expenseCategory.expense_category_name.toString())
+            textCatName.setText(expenseCategory.categoryName.toString())
         }
 
         textCatName.requestFocus()
         builder.setView(view)
         builder.setPositiveButton("Ok") { dialog, which ->
             val catName=textCatName.text.toString().uppercase().trim()
-            expenseCategory?.expense_category_name =catName
+            expenseCategory?.categoryName =catName
             if (expenseCategory==null) viewModel.insertExpenseCategory(catName)
             else viewModel.updateExpenseCategory(expenseCategory)
             }
@@ -225,8 +278,8 @@ class ExpensesFragment : Fragment() {
 
         val alert = builder.create()
         alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.primaryColor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.primaryColor))
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
     }
 
     override fun onStart() {

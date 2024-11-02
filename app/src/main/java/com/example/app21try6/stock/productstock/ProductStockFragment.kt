@@ -128,7 +128,6 @@ class   ProductStockFragment : Fragment() {
         val dialogBinding = DataBindingUtil.inflate<PopUpUpdateProductDialogBinding>(
             LayoutInflater.from(context), R.layout.pop_up_update_product_dialog, null, false
         )
-
         // Initialize views from the binding
         val textKet = dialogBinding.textUpdateKet
         val textPrice = dialogBinding.textUpdatePrice
@@ -136,6 +135,7 @@ class   ProductStockFragment : Fragment() {
         val textDisc = dialogBinding.textDiscount
         val textCapital2=dialogBinding.textCapital2
         val textModusNoet=dialogBinding.defaultNet
+        val tVId=dialogBinding.txtId
 
         dialogBinding.ilCapital2.hint="Modal 2"
         dialogBinding.ilDefaultNet.hint="net modus"
@@ -166,6 +166,7 @@ class   ProductStockFragment : Fragment() {
         textCapital.setText(vendible.product_capital.toString())
         textCapital2.setText(vendible.alternate_price.toString())
         textModusNoet.setText(vendible.default_net.toString())
+        tVId.setText(vendible.product_id.toString())
         val discName=viewModel.discountName.value
         if (discName!=null) textDisc.setText(discName)
         textKet.requestFocus()
@@ -176,13 +177,11 @@ class   ProductStockFragment : Fragment() {
         builder.setPositiveButton("Update") { dialog, which ->
             val priceString = textPrice.text.toString()
             val capitalString = textCapital.text.toString()
-
             val price = priceString.toIntOrNull()
             val capital = capitalString.toIntOrNull()
             val alternateCapital =textCapital2.text.toString().toDoubleOrNull()
             val modusNet =textModusNoet.text.toString().toDoubleOrNull()
             Log.i("capitalErr", "Price :$capital")
-
 
             if (price != null) {
                 vendible.product_price = price

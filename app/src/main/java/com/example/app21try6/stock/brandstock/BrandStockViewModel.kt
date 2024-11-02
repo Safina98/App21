@@ -40,7 +40,7 @@ class BrandStockViewModel(
     private val _addCath = MutableLiveData<Boolean>()
     val addCath: LiveData<Boolean> get() = _addCath
     //Display Data
-    val cathList = database1.getAll()
+    val cathList = database1.getCategoryModelList()
     val cathList_ = database1.getName()
     var _itemCathPosition = MutableLiveData<Int>(0)
     val itemCathPosition :LiveData<Int> get() = _itemCathPosition

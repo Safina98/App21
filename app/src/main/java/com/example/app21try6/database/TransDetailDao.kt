@@ -64,6 +64,28 @@ interface TransDetailDao {
     suspend fun updateSubIdBasedOnItemName()
 
     @Query("""
+    SELECT td.* FROM trans_detail_table AS td
+    JOIN trans_sum_table AS ts ON td.sum_id = ts.sum_id
+    WHERE td.sub_id = :subId 
+      AND ts.trans_date > :date
+""")
+    fun getTransactionDetailsWithSubIdAndTransDate(subId: Int, date: Date): List<TransactionDetail>
+    @Query("""
+    SELECT SUM(td.qty*td.unit_qty) AS totalQty FROM trans_detail_table AS td
+    JOIN trans_sum_table AS ts ON td.sum_id = ts.sum_id
+    WHERE td.sub_id = :subId 
+      AND ts.trans_date > :date
+""")
+    fun getSumTransactionDetailsWithSubIdAndDate(subId: Int,date: Date): Double
+
+    @Query("SELECT  SUM((trans_price - product_capital) * qty) as total  FROM trans_detail_table AS td " +
+            " JOIN trans_sum_table AS ts ON td.sum_id = ts.sum_id " +
+            "WHERE td.unit is null and td.trans_price<225000 AND ts.trans_date >= :date AND ts.trans_date<:date2 " +
+            "AND ts.is_keeped = 1")
+    fun getTransactionSummariesAfterDate(date: Date,date2:Date): Double
+
+
+    @Query("""
     UPDATE trans_detail_table
     SET product_capital = (
         SELECT p.product_capital FROM product_table p

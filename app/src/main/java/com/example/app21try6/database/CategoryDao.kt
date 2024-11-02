@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.example.app21try6.stock.brandstock.CategoryModel
 
 @Dao
 interface CategoryDao {
@@ -15,6 +16,8 @@ interface CategoryDao {
     fun update(category: Category)
     @Query("SELECT * FROM category_table")
     fun getAll():LiveData<List<Category>>
+    @Query("SELECT category_id AS id, category_name AS categoryName FROM category_table")
+    fun getCategoryModelList():LiveData<List<CategoryModel>>
     @Query("SELECT category_name FROM category_table")
     fun getName():LiveData<List<String>>
     @Query("SELECT category_name FROM category_table")

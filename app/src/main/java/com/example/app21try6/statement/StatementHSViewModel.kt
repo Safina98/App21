@@ -14,31 +14,46 @@ import com.example.app21try6.database.ExpenseCategory
 import com.example.app21try6.database.ExpenseCategoryDao
 import com.example.app21try6.database.ExpenseDao
 import com.example.app21try6.database.Expenses
+import com.example.app21try6.database.TransDetailDao
+import com.example.app21try6.database.TransSumDao
+import com.example.app21try6.formatRupiah
 import com.example.app21try6.statement.expenses.tagg
+import com.example.app21try6.stock.brandstock.CategoryModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Date
 import java.util.UUID
+import kotlin.math.exp
 
 class StatementHSViewModel(application: Application,
     val discountDao: DiscountDao,
     val customerDao: CustomerDao,
     val expenseDao: ExpenseDao,
-    val expenseCategoryDao: ExpenseCategoryDao
+    val expenseCategoryDao: ExpenseCategoryDao,
+    val transDetailDao:TransDetailDao,
+    val transSumDao:TransSumDao
+
     ):AndroidViewModel(application) {
 
     val allDiscountFromDB= discountDao.getAllDiscount()
     val allCustomerFromDb=customerDao.allCustomer()
     val _allExpenseCategorName = MutableLiveData<List<String>>()
-    val allExpenseCategory:LiveData<List<String>> get() =_allExpenseCategorName
+    val allExpenseCategoryName:LiveData<List<String>> get() =_allExpenseCategorName
     val _allExpenseFromDb = MutableLiveData<List<DiscountAdapterModel>>()
     val allExpensesFromDB :LiveData<List<DiscountAdapterModel>> get() = _allExpenseFromDb
     var id = 0
     val expenseCategoryName= MutableLiveData<String?>("")
+    val allExpenseCategory=expenseCategoryDao.getAllExpenseCategoryModel()
     private val _selectedECSpinner = MutableLiveData<String>()
     val selectedECSpinner: LiveData<String> get() = _selectedECSpinner
     var ecId = MutableLiveData<Int?>(null)
+
+    val _expenseSum=MutableLiveData<String>("Rp.")
+    val expenseSum: LiveData<String> get() = _expenseSum
+
+    val isAddExpense=MutableLiveData<Boolean>(true)
+
    ////////////////////////////////////Expenses/////////////////////////////////////////////////
    fun getExpenseCategoryNameById(id:Int?){
        viewModelScope.launch {
@@ -51,32 +66,68 @@ class StatementHSViewModel(application: Application,
             val expenseCategory=ExpenseCategory()
             expenseCategory.expense_category_name=categoryName
             insertExpensesCategory(expenseCategory)
+            getAllexpenseCategory()
         }
     }
-    fun updateExpenseCategory(expenseCategory: ExpenseCategory){
+    fun updateExpenseCategory(category: CategoryModel){
         viewModelScope.launch {
+            val expenseCategory=ExpenseCategory()
+            expenseCategory.id =category.id
+            expenseCategory.expense_category_name=category.categoryName
             updateExpensesCategory(expenseCategory)
         }
     }
-    fun deleteExpenseCategory(){
+    fun deleteExpenseCategory(categoryModel: CategoryModel){
         viewModelScope.launch{
+            deleteExpensesCategoryToDao(categoryModel.id)
+            getAllexpenseCategory()
         }
     }
     fun getAllexpenseCategory(){
         viewModelScope.launch {
             val list = withContext(Dispatchers.IO){
-                expenseCategoryDao.getAllExpenseCategory()
+                expenseCategoryDao.getAllExpenseCategoryName()
             }
-            var l =list.toMutableList()
+
+            val l =list.toMutableList()
             l.add(0,"ALL")
             _allExpenseCategorName.value=l
 
         }
     }
+
+
     fun updateRv(){
         viewModelScope.launch {
             val expenseList = getExpensesByCategory(ecId.value)
-            Log.i("BrandProb","updateRV "+expenseList)
+            val sum = withContext(Dispatchers.IO){ expenseDao.getExpenseSum()}
+/*
+            val simpleFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val date1 = simpleFormatter.parse("2024-10-01")
+            val date2 = simpleFormatter.parse("2024-11-1")
+
+            val transSummarySum= withContext(Dispatchers.IO){transSumDao.getTransactionSummariesAfterDate(date1!!,date2!!)}
+            val transSummarySumNK= withContext(Dispatchers.IO){transSumDao.getTransactionSummariesAfterDateNotBooked(date1!!,date2!!)}
+            val transSummarySumK= withContext(Dispatchers.IO){transSumDao.getTransactionSummariesAfterDateBooked(date1!!,date2!!)}
+            val transList= withContext(Dispatchers.IO){transSumDao.getTransactionSummariesAfterDateList(date1!!,date2) }
+            val transDetailSum= withContext(Dispatchers.IO){transDetailDao.getTransactionSummariesAfterDate(date1!!,date2!!)}
+
+            Log.i(tagg,"income summary all ${formatRupiah(transSummarySum)}")
+            Log.i(tagg,"income summary not booked ${formatRupiah(transSummarySumNK)}")
+            Log.i(tagg,"income summary booked ${formatRupiah(transSummarySumK)}")
+            Log.i(tagg,"income summary booked + not booked ${formatRupiah(transSummarySumNK+transSummarySumK)}")
+            Log.i(tagg,"income detail ${formatRupiah(transDetailSum)}")
+            Log.i(tagg,"profit ${formatRupiah(transSummarySum-sum.toDouble())}")
+            Log.i(tagg,"profit ${formatRupiah(transSummarySumNK -sum.toDouble())}")
+
+            val manualSum = transList.sumOf { it.total_trans }
+            Log.i(tagg,"manual sum ${formatRupiah(manualSum)}")
+            transList.forEach {
+               // Log.i(tagg,"${DATE_FORMAT.format(it.trans_date)},\n ${it.cust_name}: ${formatRupiah(it.total_trans)}\n")
+            }
+
+ */
+            _expenseSum.value= formatRupiah(sum.toDouble())?:"Rp. 0"
             _allExpenseFromDb.value = expenseList
         }
     }
@@ -89,7 +140,7 @@ class StatementHSViewModel(application: Application,
             expenses.expense_date=expenseDate
             expenses.expense_ref=UUID.randomUUID().toString()
             expenses.expense_category_id=catId?:0
-            Log.i(tagg,"date $expenseDate")
+            //Log.i(tagg,"date $expenseDate")
             insertExpense(expenses)
 
             updateRv()
@@ -251,6 +302,10 @@ class StatementHSViewModel(application: Application,
             expenseCategoryDao.getECIdByName(name)
         }
     }
-
+    private suspend fun deleteExpensesCategoryToDao(id:Int){
+        withContext(Dispatchers.IO){
+            expenseCategoryDao.delete(id)
+        }
+    }
 
 }

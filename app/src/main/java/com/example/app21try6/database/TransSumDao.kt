@@ -6,7 +6,14 @@ import java.util.Date
 
 @Dao
 interface TransSumDao {
-
+    @Query("SELECT SUM(total_trans) as total FROM trans_sum_table WHERE trans_date >= :date AND trans_date<:date2")
+    fun getTransactionSummariesAfterDate(date: Date,date2:Date): Double
+    @Query("SELECT SUM(total_trans) as total FROM trans_sum_table WHERE trans_date >= :date AND trans_date<:date2 AND is_keeped = 0")
+    fun getTransactionSummariesAfterDateNotBooked(date: Date,date2:Date): Double
+    @Query("SELECT SUM(total_trans) as total FROM trans_sum_table WHERE trans_date >= :date AND trans_date<:date2 AND is_keeped = 1")
+    fun getTransactionSummariesAfterDateBooked(date: Date,date2:Date): Double
+    @Query("SELECT *  FROM trans_sum_table WHERE  trans_date >= :date AND trans_date<:date2 AND is_keeped = 0")
+    fun getTransactionSummariesAfterDateList(date: Date,date2: Date): List<TransactionSummary>
     @Insert
     fun insert(transactionSummary: TransactionSummary)
     @Insert

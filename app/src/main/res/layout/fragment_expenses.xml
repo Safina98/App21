@@ -9,54 +9,56 @@
             type="com.example.app21try6.statement.StatementHSViewModel" />
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:context=".statement.expenses.ExpensesFragment">
-        <LinearLayout
-            android:layout_width="match_parent"
+
+        <Spinner
+            android:id="@+id/spinner_c"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            >
-            <Spinner
-                android:id="@+id/spinner_c"
-                android:layout_width="wrap_content"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:foregroundGravity="center_horizontal"
-                android:gravity="center_horizontal"
-                />
-            <Button
-                android:id="@+id/btn_add_ec"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:text="+"
-                android:backgroundTint="@color/white"
-                android:textColor="@color/black"
-                />
-            <ImageView
-                android:id="@+id/btn_edit_ec_new"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_margin="@dimen/medium_margin"
-                android:elevation="@dimen/medium_margin"
-                app:layout_constraintEnd_toEndOf="parent"
-                />
-        </LinearLayout>
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:foregroundGravity="center_horizontal"
+            android:visibility="visible"
+            android:gravity="center_horizontal"
+            app:layout_constraintEnd_toStartOf="@+id/btn_add_ec"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/btn_add_ec"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/medium_margin"
+            android:visibility="visible"
+            android:src="@drawable/ic_baseline_add_circle_24"
+            app:layout_constraintEnd_toStartOf="@+id/btn_edit_ec_new"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/btn_edit_ec_new"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="@dimen/medium_margin"
+            android:visibility="visible"
+            android:elevation="@dimen/medium_margin"
+            android:src="@drawable/baseline_edit_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_disc"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:visibility="visible"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@+id/btn_add_discount"
-            app:layout_constraintBottom_toTopOf="@+id/btn_add_customer"
+            app:layout_constraintBottom_toTopOf="@+id/txt_total"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/spinner_c" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_add_new_expense"
@@ -64,14 +66,51 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
             android:layout_weight="1"
-            android:layout_marginLeft="0dp"
-            android:layout_marginTop="0dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
+            android:scaleType="center"
             android:src="@drawable/fab"
             app:fabCustomSize="56dp"
-            app:maxImageSize="56dp"
-            android:scaleType="center" />
-    </LinearLayout>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:maxImageSize="56dp" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_edit_ec_new" >
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_cat"
+                    android:layout_margin="@dimen/small_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/lbl_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Total: "
+            android:visibility="visible"
+            style="@style/texr_detail_style"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/txt_total"
+            style="@style/texr_detail_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.expenseSum}"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_add_new_expense"
+            app:layout_constraintStart_toEndOf="@+id/lbl_total" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

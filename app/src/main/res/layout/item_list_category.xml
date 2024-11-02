@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable
-            name="category"
-            type="com.example.app21try6.database.Category" />
+            name="categoryModel"
+            type="com.example.app21try6.stock.brandstock.CategoryModel" />
         <variable
-            name="checkBoxListener"
-            type="com.example.app21try6.stock.brandstock.CheckBoxListenerDoalog" />
+            name="updateListener"
+            type="com.example.app21try6.stock.brandstock.UpdateListener" />
+        <variable
+            name="deleteListener"
+            type="com.example.app21try6.stock.brandstock.DeleteListener" />
     </data>
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,11 +24,25 @@
             android:layout_weight="1"
             android:layout_height="match_parent"
             />
-        <CheckBox
-            android:id="@+id/cath_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:onClick="@{(view) -> checkBoxListener.onCheckBoxClick(view,category)}"/>
+        <ImageView
+            android:id="@+id/img_update"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/medium_margin"
+            android:onClick="@{()->updateListener.onClick(categoryModel)}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/baseline_edit_24" />
+
+        <ImageView
+            android:id="@+id/img_delete"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/medium_margin"
+            android:onClick="@{()->deleteListener.onClick(categoryModel)}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/baseline_delete_forever_24" />
 
     </LinearLayout>
 </layout>

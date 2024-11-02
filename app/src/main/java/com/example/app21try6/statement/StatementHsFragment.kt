@@ -38,7 +38,9 @@ class StatementHsFragment : Fragment() {
         val dataSource2 = VendibleDatabase.getInstance(application).customerDao
         val dataSource3 = VendibleDatabase.getInstance(application).expenseDao
         val dataSource4 = VendibleDatabase.getInstance(application).expenseCategoryDao
-        val viewModelFactory = StatementHSViewModelFactory(application,dataSource1,dataSource2,dataSource3,dataSource4)
+        val dataSource5 = VendibleDatabase.getInstance(application).transDetailDao
+        val dataSource6 = VendibleDatabase.getInstance(application).transSumDao
+        val viewModelFactory = StatementHSViewModelFactory(application,dataSource1,dataSource2,dataSource3,dataSource4,dataSource5,dataSource6)
         viewModel = ViewModelProvider(this,viewModelFactory).get(StatementHSViewModel::class.java)
         binding.viewModel=viewModel
 

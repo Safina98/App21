@@ -7,19 +7,22 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.database.Category
+import com.example.app21try6.database.Brand
+
 import com.example.app21try6.databinding.ItemListCategoryBinding
 
 
-class CategoryAdapter (val checkBoxListener: CheckBoxListenerDoalog):ListAdapter<Category,CategoryAdapter.MyViewHolder>(BookDiffCallback()) {
+class CategoryAdapter (val updateListener: UpdateListener,
+    val deleteListener: DeleteListener):ListAdapter<CategoryModel,CategoryAdapter.MyViewHolder>(BookDiffCallback()) {
     class MyViewHolder private constructor(val binding: ItemListCategoryBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(item:Category,
-                 checkBoxListener: CheckBoxListenerDoalog
+        fun bind(item:CategoryModel,
+                 updateListener: UpdateListener,
+                 deleteListener: DeleteListener
         ){
-            binding.category = item
-            binding.textSubproductV.text =item.category_name
-            binding.cathCheckbox.isChecked = item.checkBoxBoolean
-            binding.checkBoxListener = checkBoxListener
+            binding.categoryModel = item
+            binding.textSubproductV.text =item.categoryName
+            binding.updateListener =updateListener
+            binding.deleteListener =deleteListener
             binding.executePendingBindings()
         }
         companion object{
@@ -30,27 +33,30 @@ class CategoryAdapter (val checkBoxListener: CheckBoxListenerDoalog):ListAdapter
             }
         }
     }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         return MyViewHolder.from(parent)
     }
-
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bind(getItem(position),
-                checkBoxListener)
+                updateListener,deleteListener)
     }
 
 }
-class BookDiffCallback : DiffUtil.ItemCallback<Category>() {
-    override fun areItemsTheSame(oldItem: Category, newItem: Category): Boolean {
-        return oldItem.category_name== newItem.category_name
+class BookDiffCallback : DiffUtil.ItemCallback<CategoryModel>() {
+    override fun areItemsTheSame(oldItem: CategoryModel, newItem: CategoryModel): Boolean {
+        return oldItem.categoryName== newItem.categoryName
     }
 
     @SuppressLint("DiffUtilEquals")
-    override fun areContentsTheSame(oldItem: Category, newItem: Category): Boolean {
+    override fun areContentsTheSame(oldItem: CategoryModel, newItem: CategoryModel): Boolean {
         return oldItem == newItem
     }
 }
-class CheckBoxListenerDoalog(val checkBoxListener:(view: View,category:Category)->Unit){
-    fun onCheckBoxClick(view:View, category:Category)= checkBoxListener(view,category)
+class UpdateListener(val clickListener: (categoryModel:CategoryModel) -> Unit) {
+    fun onClick(categoryModel:CategoryModel) = clickListener(categoryModel)
+
+}
+class DeleteListener(val clickListener: (categoryModel:CategoryModel) -> Unit) {
+    fun onClick(categoryModel:CategoryModel) = clickListener(categoryModel)
+
 }

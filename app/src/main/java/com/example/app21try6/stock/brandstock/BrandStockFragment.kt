@@ -14,7 +14,6 @@ import android.util.Log
 import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.CheckBox
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -159,10 +158,7 @@ class BrandStockFragment : Fragment() {
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.pop_up_list_dialog, null)
         val rv = view.findViewById<RecyclerView>(R.id.recyclerView_vendibleDialog)
-        val adapter = CategoryAdapter(CheckBoxListenerDoalog{ view: View, category: Category ->
-            val cb = view as CheckBox
-            category.checkBoxBoolean = cb.isChecked
-            viewModel.onCheckBoxClicked(category,cb.isChecked) })
+        val adapter = CategoryAdapter(UpdateListener {  },DeleteListener {  })
         rv.adapter = adapter
         viewModel.cathList.observe(viewLifecycleOwner, Observer { it.let { adapter.submitList(it) } })
         val vendible=Brand()
@@ -175,7 +171,9 @@ class BrandStockFragment : Fragment() {
                 .setOnCancelListener {
                     viewModel.cathList.observe(viewLifecycleOwner, Observer {
                         it.let {
-                            for (i in it){ i.checkBoxBoolean = false }
+                            for (i in it){
+                            //    i.checkBoxBoolean = false
+                            }
                             viewModel.clearCheckedItemList() } }) }
         val alert = builder.create()
         alert.show()
@@ -203,7 +201,9 @@ class BrandStockFragment : Fragment() {
             .setPositiveButton("Yes") { dialog, id -> if (code==1){ viewModel.deleteBrand(vendible)}else{viewModel.deleteDialog()} }
             .setNegativeButton("No") { dialog, id -> dialog.dismiss() }
                 .setOnCancelListener { viewModel.cathList.observe(viewLifecycleOwner, Observer {
-                        it.let { for (i in it){ i.checkBoxBoolean = false }
+                        it.let { for (i in it){
+                        //    i.checkBoxBoolean = false
+                        }
                             viewModel.clearCheckedItemList() } }) }
         val alert = builder.create()
         alert.show()
@@ -227,7 +227,9 @@ class BrandStockFragment : Fragment() {
         builder.setNegativeButton("No") { dialog, which -> }
         builder.setOnCancelListener {
             viewModel.cathList.observe(viewLifecycleOwner, Observer {
-                it.let { for (i in it){ i.checkBoxBoolean = false }
+                it.let { for (i in it){
+                //    i.checkBoxBoolean = false
+                }
                     viewModel.clearCheckedItemList() } })
         }
         val alert = builder.create()
