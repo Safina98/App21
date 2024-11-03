@@ -33,6 +33,9 @@ import com.example.app21try6.database.Brand
 import com.example.app21try6.database.Category
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentBrandStockBinding
+import com.example.app21try6.statement.StatementHSViewModel
+import com.example.app21try6.statement.expenses.tagg
+import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -75,187 +78,164 @@ class BrandStockFragment : Fragment() {
         }
     }
 
-
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-                binding = DataBindingUtil.inflate(inflater,R.layout.fragment_brand_stock,container,false)
-                val application = requireNotNull(this.activity).application
-                val dataSource1 = VendibleDatabase.getInstance(application).categoryDao
-                val dataSource2 = VendibleDatabase.getInstance(application).brandDao
-                val dataSource3 = VendibleDatabase.getInstance(application).productDao
-                val dataSource4 = VendibleDatabase.getInstance(application).subProductDao
-                val viewModelFactory = BrandStockViewModelFactory(dataSource1,dataSource2,dataSource3,dataSource4,application)
-                binding.lifecycleOwner =this
-                val viewModel = ViewModelProvider(this,viewModelFactory)
-                    .get(BrandStockViewModel::class.java)
-                binding.brandStockViewModel = viewModel
+        binding = DataBindingUtil.inflate(inflater,R.layout.fragment_brand_stock,container,false)
+        val application = requireNotNull(this.activity).application
+        val dataSource1 = VendibleDatabase.getInstance(application).categoryDao
+        val dataSource2 = VendibleDatabase.getInstance(application).brandDao
+        val dataSource3 = VendibleDatabase.getInstance(application).productDao
+        val dataSource4 = VendibleDatabase.getInstance(application).subProductDao
+        val viewModelFactory = BrandStockViewModelFactory(dataSource1,dataSource2,dataSource3,dataSource4,application)
+        binding.lifecycleOwner =this
+        val layoutOneViews = listOf(
+            binding.spinnerM,
+            binding.rvBrandStock,
+        )
+        val viewModel = ViewModelProvider(this,viewModelFactory).get(BrandStockViewModel::class.java)
+        binding.brandStockViewModel = viewModel
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////
                 //////////////////////////Exporting CSV////////////////////////////////////////////////////////////////////////////
-                if (checkPermission()) {
-                    //Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show();
+        if (checkPermission()) {
+        //Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show();
+        } else {
+            requestPermission()
+                }
+        val adapter = BrandStockAdapter(
+            BrandStockListener {
+                viewModel.onBrandCLick(arrayOf(it.brand_id.toString(),it.cath_code.toString(),it.brand_name))
+            },BrandStockLongListener {
+                showDialogBox(viewModel,it)
+            })
+        binding.rvBrandStock.adapter = adapter
+        val adapterCat = CategoryAdapter(
+            UpdateListener {
+                DialogUtils.updateDialog(
+                    context = requireContext(),
+                    viewModel = viewModel, // Replace with your ViewModel instance
+                    model = it,         // Replace with your model instance
+                    title = "Update Kategori",
+                    getBrandName = { (it as CategoryModel).categoryName },
+                    setBrandName = { it, name -> (it as CategoryModel).categoryName = name },
+                    updateFunction = { vm, item -> (vm as BrandStockViewModel).updateCath(item as CategoryModel) },
+                    insertFunction = { vm, name -> (vm as BrandStockViewModel).insertItemCath(name) }
+                )
+
+            },DeleteListener {
+                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as BrandStockViewModel).deleteCategory(item as CategoryModel) })
+
+            })
+        binding.rvCat.adapter = adapterCat
+        binding.btnEditEcNew.setOnClickListener {
+            if (layoutOneViews[0].visibility == View.VISIBLE) {
+                layoutOneViews.forEach { it.visibility = View.GONE }
+                binding.cardView.visibility = View.VISIBLE
+            } else {
+                layoutOneViews.forEach { it.visibility = View.VISIBLE }
+                binding.cardView.visibility = View.GONE
+            }
+        }
+        viewModel.all_brand.observe(viewLifecycleOwner, Observer {})
+        viewModel.all_item.observe(viewLifecycleOwner, Observer {})
+        viewModel.all_product.observe(viewLifecycleOwner, Observer {})
+        viewModel.all_sub.observe(viewLifecycleOwner, Observer {})
+
+        binding.spinnerM.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedItem = parent.getItemAtPosition(position).toString()
+                viewModel.setSelectedKategoriValue(selectedItem)
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                    }
+        }
+
+        viewModel.cathList_.observe(viewLifecycleOwner){entries->
+            val adapter1 = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, entries)
+            binding.spinnerM.adapter = adapter1
+        }
+        viewModel.selectedKategoriSpinner.observe(viewLifecycleOwner) {
+            viewModel.updateRv()
+        }
+        viewModel.cathList.observe(viewLifecycleOwner, Observer {
+            it.let {
+                adapterCat.submitList(it)
+                adapter.notifyDataSetChanged()
+            }
+        })
+        viewModel.all_brand_from_db.observe(viewLifecycleOwner){
+            adapter.submitList(it.sortedBy { it.brand_name})
+            adapter.notifyDataSetChanged()
+        }
+
+        viewModel.addItem.observe(viewLifecycleOwner, Observer {
+            if (it==true){
+                if (layoutOneViews[0].visibility == View.VISIBLE) {
+                    DialogUtils.updateDialog(
+                        context = requireContext(),
+                        viewModel = viewModel, // Replace with your ViewModel instance
+                        model = null,         // Replace with your model instance
+                        title = "Brand Baru",
+                        getBrandName = { (it as Brand).brand_name },
+                        setBrandName = { it, name -> (it as Brand).brand_name = name },
+                        updateFunction = { vm, item -> (vm as BrandStockViewModel).updateBrand(item as Brand) },
+                        insertFunction = { vm, name -> (vm as BrandStockViewModel).insertAnItemBrandStock(name) }
+                    )
                 } else {
-                    requestPermission()
+                    DialogUtils.updateDialog(
+                        context = requireContext(),
+                        viewModel = viewModel, // Replace with your ViewModel instance
+                        model = null,         // Replace with your model instance
+                        title = "Kategori Baru",
+                        getBrandName = { (it as CategoryModel).categoryName },
+                        setBrandName = { it, name -> (it as CategoryModel).categoryName = name },
+                        updateFunction = { vm, item -> (vm as BrandStockViewModel).updateCath(item as CategoryModel) },
+                        insertFunction = { vm, name -> (vm as BrandStockViewModel).insertItemCath(name) }
+                    )
                 }
 
-                val adapter = BrandStockAdapter(BrandStockListener {  
-                    viewModel.onBrandCLick(arrayOf(it.brand_id.toString(),it.cath_code.toString(),it.brand_name))
-                }, BrandStockLongListener { 
-                    showDialogBox(viewModel,it)
-                })
-                binding.rvBrandStock.adapter = adapter
-                viewModel.all_brand.observe(viewLifecycleOwner, Observer {})
-                viewModel.all_item.observe(viewLifecycleOwner, Observer {})
-                viewModel.all_product.observe(viewLifecycleOwner, Observer {})
-                viewModel.all_sub.observe(viewLifecycleOwner, Observer {})
+                viewModel.onItemAdded()
+            }
+        })
 
-                binding.spinnerM.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                        val selectedItem = parent.getItemAtPosition(position).toString()
-                        viewModel.setSelectedKategoriValue(selectedItem)
-                    }
-                    override fun onNothingSelected(parent: AdapterView<*>) {
-                    }
-                }
 
-                viewModel.cathList_.observe(viewLifecycleOwner){entries->
-                    val adapter1 = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, entries)
-                    binding.spinnerM.adapter = adapter1
-                }
-                viewModel.selectedKategoriSpinner.observe(viewLifecycleOwner) {
-                    viewModel.updateRv()
-                }
-                viewModel.all_brand_from_db.observe(viewLifecycleOwner){
-                    adapter.submitList(it.sortedBy { it.brand_name})
-                    adapter.notifyDataSetChanged()
-                }
-
-                viewModel.addItem.observe(viewLifecycleOwner, Observer {
-                    if (it==true){
-                        showAddDialog(viewModel,1)
-                        viewModel.onItemAdded() } })
-                viewModel.addCath.observe(viewLifecycleOwner, Observer {
-                    if (it==true){
-                        showAddDialog(viewModel,2)
-                        viewModel.onCathAdded() } })
-                viewModel.delCath.observe(viewLifecycleOwner, Observer {
-                    if (it==true){
-                        showListDialog(viewModel)
-                        viewModel.onDeleteCathCliked() } })
-                viewModel.navigateProduct.observe(viewLifecycleOwner, Observer {id ->
-                    id?.let {
-                        //ToolbarUtil.hideToolbarButtons(requireActivity())
-                       this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToProductStockFragment(id))
-                        viewModel.onBrandNavigated() } })
-                setHasOptionsMenu(true)
-                return binding.root
+        viewModel.navigateProduct.observe(viewLifecycleOwner, Observer {id ->
+            id?.let {
+                //ToolbarUtil.hideToolbarButtons(requireActivity())
+                this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToProductStockFragment(id))
+                viewModel.onBrandNavigated()
+            } })
+        setHasOptionsMenu(true)
+        return binding.root
     }
 
-    private fun showListDialog(viewModel: BrandStockViewModel) {
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle("Choose to delete")
-        val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.pop_up_list_dialog, null)
-        val rv = view.findViewById<RecyclerView>(R.id.recyclerView_vendibleDialog)
-        val adapter = CategoryAdapter(UpdateListener {  },DeleteListener {  })
-        rv.adapter = adapter
-        viewModel.cathList.observe(viewLifecycleOwner, Observer { it.let { adapter.submitList(it) } })
-        val vendible=Brand()
-        builder.setView(view)
-                .setCancelable(true)
-                .setPositiveButton("Update") { dialog, id ->
-                   val category = viewModel.getSelectedCategory()
-                    updateDialog(viewModel,vendible,category,2) }
-                .setNegativeButton("Delete") { dialog, id -> deleteDialog(viewModel,vendible,2) }
-                .setOnCancelListener {
-                    viewModel.cathList.observe(viewLifecycleOwner, Observer {
-                        it.let {
-                            for (i in it){
-                            //    i.checkBoxBoolean = false
-                            }
-                            viewModel.clearCheckedItemList() } }) }
-        val alert = builder.create()
-        alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-    }
+
 
     private fun showDialogBox(viewModel: BrandStockViewModel, vendible: Brand) {
         val builder = AlertDialog.Builder(context)
-        val category = Category()
         builder.setMessage("Chosoe Action")
             .setCancelable(true)
-            .setPositiveButton("Update") { dialog, id -> updateDialog(viewModel,vendible,category,1) }
-            .setNegativeButton("Delete") { dialog, id -> deleteDialog( viewModel,vendible,1) }
+            .setPositiveButton("Update") { dialog, id ->
+               DialogUtils.updateDialog(
+                    context = requireContext(),
+                    viewModel = viewModel, // Replace with your ViewModel instance
+                    model = vendible,         // Replace with your model instance
+                    title = "Update Brand",
+                    getBrandName = { (it as Brand).brand_name },
+                    setBrandName = { it, name -> (it as Brand).brand_name = name },
+                    updateFunction = { vm, item -> (vm as BrandStockViewModel).updateBrand(item as Brand) },
+                    insertFunction = { vm, name -> (vm as BrandStockViewModel).insertAnItemBrandStock(name) }
+                )
+            }
+            .setNegativeButton("Delete") {
+                    dialog, id -> DialogUtils.showDeleteDialog(requireContext(),this, viewModel, vendible, { vm, item -> (vm as BrandStockViewModel).deleteBrand(item as Brand) })
+            }
         val alert = builder.create()
         alert.show()
         alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
         alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
     }
 
-    private fun deleteDialog(viewModel: BrandStockViewModel, vendible: Brand,code:Int) {
-        val builder = AlertDialog.Builder(context)
-        builder.setMessage("Are you sure you want to Delete?")
-            .setCancelable(true)
-            .setPositiveButton("Yes") { dialog, id -> if (code==1){ viewModel.deleteBrand(vendible)}else{viewModel.deleteDialog()} }
-            .setNegativeButton("No") { dialog, id -> dialog.dismiss() }
-                .setOnCancelListener { viewModel.cathList.observe(viewLifecycleOwner, Observer {
-                        it.let { for (i in it){
-                        //    i.checkBoxBoolean = false
-                        }
-                            viewModel.clearCheckedItemList() } }) }
-        val alert = builder.create()
-        alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-    }
-
-    private fun updateDialog(viewModel: BrandStockViewModel, vendible: Brand,category: Category,code: Int) {
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle("Update")
-        val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.pop_up_update, null)
-        val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
-        if (code==1){textKet.setText(vendible.brand_name.toString())}else{textKet.setText(category.category_name.toString())}
-        builder.setView(view)
-        builder.setPositiveButton("Update") { dialog, which ->
-            if (code==1){ vendible.brand_name = textKet.text.toString().toUpperCase().trim()
-                if (vendible.brand_name!="") { viewModel.updateBrand(vendible) }}
-            else{ category.category_name = textKet.text.toString().toUpperCase().trim()
-                if (category.category_name!="") { viewModel.updateCath(category) } } }
-        builder.setNegativeButton("No") { dialog, which -> }
-        builder.setOnCancelListener {
-            viewModel.cathList.observe(viewLifecycleOwner, Observer {
-                it.let { for (i in it){
-                //    i.checkBoxBoolean = false
-                }
-                    viewModel.clearCheckedItemList() } })
-        }
-        val alert = builder.create()
-        alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-    }
-    fun showAddDialog(viewModel: BrandStockViewModel,i:Int){
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle("Tambah Item")
-        val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.pop_up_update, null)
-        val textBrand = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
-        builder.setView(view)
-        builder.setPositiveButton("OK") { dialog, which ->
-            val brand = textBrand.text.toString().toUpperCase()
-            if (i==1){viewModel.insertAnItemBrandStock(brand)}
-            else {viewModel.insertItemCath(brand)}
-        }
-        builder.setNegativeButton("No") { dialog, which ->
-        }
-        val alert = builder.create()
-        alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-    }
     private fun checkPermission(): Boolean {
         // checking of permissions.
         val permission1 = ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -497,18 +477,16 @@ class BrandStockFragment : Fragment() {
 
     fun loading(){
         binding.rvBrandStock.visibility = View.GONE
-        binding.spinnerM.visibility = View.GONE
+        binding.linear1.visibility=View.GONE
         binding.btnAddNewBrand.visibility = View.GONE
-        binding.btnAddCat.visibility = View.GONE
-        binding.btnImport.visibility = View.GONE
+
         binding.progressBar.visibility=View.VISIBLE
     }
     fun loaded(){
         binding.rvBrandStock.visibility = View.VISIBLE
-        binding.spinnerM.visibility = View.VISIBLE
+        binding.linear1.visibility=View.VISIBLE
         binding.btnAddNewBrand.visibility = View.VISIBLE
-        binding.btnAddCat.visibility = View.VISIBLE
-        binding.btnImport.visibility = View.VISIBLE
+
         binding.progressBar.visibility=View.GONE
     }
     override fun onPause() {

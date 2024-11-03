@@ -25,9 +25,12 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.R
 import com.example.app21try6.database.TransactionDetail
+import com.example.app21try6.database.TransactionSummary
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionEditBinding
 import com.example.app21try6.databinding.PopUpUnitBinding
+import com.example.app21try6.transaction.transactionactive.TransactionActiveViewModel
+import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 
 
@@ -71,7 +74,7 @@ class TransactionEditFragment : Fragment() {
            code = Code.LONGPLUS
            viewModel.onShowDialog(it)
        }, TransEditDeleteListener {
-           deleteDialog(it, viewModel)
+           DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as TransactionEditViewModel).delete(it.trans_detail_id) })
        }, TransEditPriceClickListener {
            showDialog(it,viewModel,Code.TEXTPRICE)
        }, UnitTransTextCliked{ edit_trans ->
@@ -80,7 +83,7 @@ class TransactionEditFragment : Fragment() {
                showDialog(it,viewModel,Code.UNITQTY)
        }, viewModel.updatePositionCallback
           )
-       //TODO create custom adapter that shows or hide checkbox for delete purpose
+
 
        // drag recyclerview item
        val itemTouchHelperCallback = object : ItemTouchHelper.Callback() {
@@ -256,23 +259,7 @@ class TransactionEditFragment : Fragment() {
         alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
 
     }
-    private fun deleteDialog(transactionDetail: TransactionDetail, viewModel: TransactionEditViewModel) {
-        val builder = AlertDialog.Builder(context)
-        builder.setMessage("Are you sure you want to Delete?")
-            .setCancelable(true)
-            .setPositiveButton("Yes") { dialog, id ->
-                viewModel.delete(transactionDetail.trans_detail_id)
-                Toast.makeText(context, "Deleted!!", Toast.LENGTH_SHORT).show()
-            }
-            .setNegativeButton("No") { dialog, id ->
-                // Dismiss the dialog
-                dialog.dismiss()
-            }
-        val alert = builder.create()
-        alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-    }
+
     fun showInputCoiceDialog(item:TransactionDetail) {
         val binding :PopUpUnitBinding = PopUpUnitBinding.inflate(LayoutInflater.from(context))
 

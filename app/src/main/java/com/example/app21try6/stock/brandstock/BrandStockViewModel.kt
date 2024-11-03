@@ -94,8 +94,18 @@ class BrandStockViewModel(
     fun updateRv(){
         viewModelScope.launch {
             var brandlist = getBrandByKatId(kategori_id.value ?: 0)
-            Log.i("BrandProb","updateRV "+brandlist)
             _all_brand_from_db.value = brandlist
+        }
+    }
+
+    fun deleteCategory(category:CategoryModel){
+        viewModelScope.launch {
+            deleteCategoryToDao(category.id)
+        }
+    }
+    private suspend fun deleteCategoryToDao(id:Int){
+        withContext(Dispatchers.IO){
+            database1.delete(id)
         }
     }
     private suspend fun getBrandByKatId(id:Int):List<Brand>{
@@ -122,6 +132,7 @@ class BrandStockViewModel(
                 brand.cath_code = getKategoriIdByName(selectedKategoriSpinner.value ?: "")
                 Log.i("BrandProb","insertItemBrand "+brand_name)
                 insert(brand)
+                updateRv()
             }
         }
     }
@@ -229,20 +240,31 @@ class BrandStockViewModel(
         withContext(Dispatchers.IO){
             database4.insertIfNotExist(subProduct.sub_name,subProduct.warna,subProduct.ket,subProduct.roll_u,subProduct.roll_bt,subProduct.roll_st,subProduct.roll_kt,subProduct.roll_bg,subProduct.roll_sg,subProduct.roll_kg,product_name,brand_name,categoryName)
         } }
-    fun updateCath(category: Category){ uiScope.launch { updateCath_(category) } }
+    fun updateCath(categoryModel: CategoryModel){
+        uiScope.launch {
+        val category=Category()
+        category.category_id=categoryModel.id
+        category.category_name=categoryModel.categoryName
+        updateCath_(category)
+        }
+    }
     private suspend fun updateCath_(category: Category){withContext(Dispatchers.IO){ database1.update(category) } }
     fun getSelectedCategory():Category{ return checkedItemList.get(0) }
     private suspend fun insert(brand: Brand){ withContext(Dispatchers.IO){ database2.insert(brand) } }
-    fun updateBrand(brand: Brand){ uiScope.launch { update(brand) } }
+    fun updateBrand(brand: Brand){ uiScope.launch {
+        update(brand)
+        updateRv()
+    } }
     private suspend fun update(brand:Brand){ withContext(Dispatchers.IO){ database2.update(brand) } }
-    fun deleteBrand(brand: Brand){ uiScope.launch { delete(brand) } }
+    fun deleteBrand(brand: Brand){ uiScope.launch {
+        delete(brand)
+        updateRv()
+    } }
     private suspend fun delete(brand: Brand){ withContext(Dispatchers.IO){ database2.deleteBrand(brand.brand_id) } }
     fun clearCheckedItemList(){checkedItemList.clear()}
-    fun onDeleteCathClick(){ _delCath.value = true }
-    fun onDeleteCathCliked(){_delCath.value = false}
+
     fun onAddItem(){ _addItem.value = true }
     fun onItemAdded(){ _addItem.value = false }
-    fun onAddCath(){ _addCath.value = true }
     fun onCathAdded(){ _addCath.value = false }
     fun onLongClick(v: View): Boolean { return true }
     fun onBrandCLick(id:Array<String>){ _navigateProduct.value = id }

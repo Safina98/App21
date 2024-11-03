@@ -39,6 +39,11 @@
     <color name="normal_button_color">#FF0000</color> <!-- Change to your desired normal button color -->
     <color name="disabled_button_color">#808080</color>
 
+    <!-- res/values-night/colors.xml -->
+    <color name="dialogbtncolour">#FFFFFF</color> <!-- White text for night mode -->
+    <color name="colorBackground">#333333</color> <!-- Dark background color for night mode -->
+
+
     <!--
     <color name="primaryColor">#586648</color>
     <color name="primaryLightColor">#576F58</color>

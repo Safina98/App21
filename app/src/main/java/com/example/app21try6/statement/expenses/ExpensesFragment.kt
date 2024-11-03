@@ -61,7 +61,7 @@ class ExpensesFragment : Fragment() {
 
         val layoutOneViews = listOf(
             binding.spinnerC,
-            binding.btnAddEc,
+
             binding.rvDisc,
             binding.lblTotal,
             binding.txtTotal
@@ -105,32 +105,25 @@ class ExpensesFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>) {
             }
         }
-        binding.btnAddEc.setOnClickListener {
-            showsAddExpenseCategoryDialog(null)
-        }
+
         binding.btnEditEcNew.setOnClickListener {
             if (layoutOneViews[0].visibility == View.VISIBLE) {
                 layoutOneViews.forEach { it.visibility = View.GONE }
                 binding.cardView.visibility = View.VISIBLE
-                Log.i(tagg,"view visible")
             } else {
                 layoutOneViews.forEach { it.visibility = View.VISIBLE }
                binding.cardView.visibility = View.GONE
-                Log.i(tagg,"view gone")
             }
         }
         binding.btnAddNewExpense.setOnClickListener {
             if (layoutOneViews[0].visibility == View.VISIBLE) {
                 showExpensesDialog(null)
-                Log.i(tagg,"view visible")
             } else {
-                Log.i(tagg,"view gone")
                 showsAddExpenseCategoryDialog(null)
             }
         }
         viewModel.allExpenseCategory.observe(viewLifecycleOwner, Observer {
             categoryAdapter.submitList(it)
-
         })
         viewModel.allExpenseCategoryName.observe(viewLifecycleOwner){ entries->
             val adapter1 = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, entries)

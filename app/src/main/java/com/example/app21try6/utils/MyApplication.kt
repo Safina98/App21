@@ -2,6 +2,7 @@ package com.example.app21try6.utils
 
 import android.app.Application
 import android.preference.PreferenceManager
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
@@ -12,6 +13,8 @@ import java.util.concurrent.TimeUnit
 class MyApplication: Application()  {
     override fun onCreate() {
         super.onCreate()
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+
         val wmbPreference = PreferenceManager.getDefaultSharedPreferences(this)
         val isFirstRun = wmbPreference.getBoolean("FIRSTRUN", true)
         val mainActivity = MainActivity()  // Replace this with a valid reference to your main activity

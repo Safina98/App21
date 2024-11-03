@@ -17,10 +17,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.app21try6.R
 import com.example.app21try6.database.CustomerTable
 import com.example.app21try6.database.DiscountTable
+import com.example.app21try6.database.SubProduct
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentStatementHsBinding
 import com.example.app21try6.databinding.PopUpDiscBinding
 import com.example.app21try6.databinding.PopUpUpdateProductDialogBinding
+import com.example.app21try6.stock.subproductstock.SubViewModel
+import com.example.app21try6.utils.DialogUtils
 import kotlin.reflect.typeOf
 
 
@@ -50,7 +53,7 @@ class StatementHsFragment : Fragment() {
             }, DiscountLongListener {
             },
             DiscountDelListener {
-                viewModel.deleteDiscountTable(it.id!!)
+                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as StatementHSViewModel).deleteDiscountTable(it.id!!) })
             })
 
         val adapterCustomer = CustomerAdapter(
@@ -61,7 +64,7 @@ class StatementHsFragment : Fragment() {
 
             },
             CustomerDelListener {
-                viewModel.deleteCustomerTable(it)
+                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as StatementHSViewModel).deleteCustomerTable(item as CustomerTable) })
             }
         )
         binding.btnAddDiscount.setOnClickListener {

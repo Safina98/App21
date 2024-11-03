@@ -18,9 +18,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
+import com.example.app21try6.database.Brand
 import com.example.app21try6.database.SubProduct
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentSubProductStockBinding
+import com.example.app21try6.stock.brandstock.BrandStockViewModel
+import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 
 class SubProductStockFragment : Fragment() {
@@ -43,6 +46,9 @@ class SubProductStockFragment : Fragment() {
         binding.lifecycleOwner =this
         val viewModel = ViewModelProvider(this,viewModelFactory).get(SubViewModel::class.java)
         binding.subViewModel = viewModel
+        binding.reset.setOnClickListener {
+            DialogUtils.showDeleteDialog(requireContext(),this, viewModel, SubProduct(), { vm, item -> (vm as SubViewModel).resetAllSubProductStock() })
+        }
         var adapter = SubAdapter(id_[3],
                 CheckBoxListenerSub({view:View,subProduct:SubProduct->
                     val cb = view as CheckBox
@@ -82,7 +88,16 @@ class SubProductStockFragment : Fragment() {
         })
         viewModel.addItem.observe(viewLifecycleOwner, Observer {
             if (it==true){
-                showAddDialog(viewModel)
+                DialogUtils.updateDialog(
+                    context = requireContext(),
+                    viewModel = viewModel, // Replace with your ViewModel instance
+                    model = null,         // Replace with your model instance
+                    title = "Update Brand",
+                    getBrandName = { (it as SubProduct).sub_name },
+                    setBrandName = { it, name -> (it as SubProduct).sub_name = name },
+                    updateFunction = { vm, item -> (vm as SubViewModel).updateSubProduct(item as SubProduct,"",1) },
+                    insertFunction = { vm, name -> (vm as SubViewModel).insertAnItemSubProductStock(name) }
+                )
                 viewModel.onItemAdded()
             }
         })
@@ -99,24 +114,7 @@ class SubProductStockFragment : Fragment() {
         return binding.root
     }
 
-    private fun showAddDialog(viewModel: SubViewModel) {
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle("Tambah Item")
-        val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.pop_up_update, null)
-        val textBrand = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
-        builder.setView(view)
-        builder.setPositiveButton("OK") { dialog, which ->
-            val product_name = textBrand.text.toString().toUpperCase().trim()
-            viewModel.insertAnItemSubProductStock(product_name)
-        }
-        builder.setNegativeButton("No") { dialog, which ->
-        }
-        val alert = builder.create()
-        alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-    }
+
 
     private fun showDialog(subProduct: SubProduct, i: Int, viewModel: SubViewModel) {
         val builder = AlertDialog.Builder(context)
@@ -126,7 +124,7 @@ class SubProductStockFragment : Fragment() {
                 updateDialog(subProduct,i,viewModel)
             }
             .setNegativeButton("Delete") { dialog, id ->
-                deleteDialog(builder, viewModel,subProduct)
+                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, subProduct, { vm, item -> (vm as SubViewModel).deleteSubProduct(item as SubProduct) })
             }
         val alert = builder.create()
         alert.show()
@@ -135,23 +133,6 @@ class SubProductStockFragment : Fragment() {
 
     }
 
-    private fun deleteDialog(builder: AlertDialog.Builder, viewModel: SubViewModel, subProduct: SubProduct) {
-        builder.setMessage("Are you sure you want to Delete?")
-            .setCancelable(true)
-            .setPositiveButton("Yes") { dialog, id ->
-                viewModel.deleteSubProduct(subProduct)
-                Toast.makeText(context, "Deleted!!", Toast.LENGTH_SHORT).show()
-            }
-            .setNegativeButton("No") { dialog, id ->
-                // Dismiss the dialog
-                dialog.dismiss()
-            }
-        val alert = builder.create()
-        alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-
-    }
 
     private fun updateDialog(subProduct: SubProduct, i: Int, viewModel: SubViewModel) {
         val builder = AlertDialog.Builder(context)

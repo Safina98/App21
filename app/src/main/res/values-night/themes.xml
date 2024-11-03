@@ -3,6 +3,8 @@
     <style name="Theme.App21Try6" parent="Theme.AppCompat.DayNight.NoActionBar">
         <!-- Primary brand color. -->
 
+
+
         <item name="buttonStyle">@style/CustomButtonStyle</item>
         <item name="colorPrimary">@color/secondaryColor</item>
         <item name="colorPrimaryVariant">@color/black</item>
@@ -10,7 +12,7 @@
 
         <item name="colorSecondary">@color/secondaryColor</item>
         <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorOnSecondary">@color/black</item>
 
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
 

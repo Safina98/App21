@@ -37,8 +37,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.R
 import com.example.app21try6.ToolbarUtil
+import com.example.app21try6.database.SubProduct
+import com.example.app21try6.database.TransactionSummary
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionActiveBinding
+import com.example.app21try6.stock.subproductstock.SubViewModel
+import com.example.app21try6.utils.DialogUtils
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -108,7 +112,7 @@ class TransactionActiveFragment : Fragment() {
             }
             btn_del.setOnClickListener {
                 toolbar.visibility = View.VISIBLE
-                deleteDialog()
+                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, TransactionSummary(), { vm, item -> (vm as TransactionActiveViewModel).delete() })
                 btn_linear.visibility = View.GONE
             }
             btn_cancel.setOnClickListener {
@@ -215,22 +219,6 @@ class TransactionActiveFragment : Fragment() {
     }
 
 
-    fun deleteDialog(){
-        val builder = AlertDialog.Builder(context)
-        builder.setMessage("Are you sure you want to Delete all the Selected Item?")
-            .setCancelable(true)
-            .setPositiveButton("Yes") { dialog, id ->  viewModel.delete() }
-            .setNegativeButton("No") { dialog, id ->
-                viewModel.onButtonClicked()
-                dialog.dismiss() }
-            .setOnCancelListener {
-                viewModel.onButtonClicked()
-            }
-        val alert = builder.create()
-        alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-    }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.option_menu,menu)

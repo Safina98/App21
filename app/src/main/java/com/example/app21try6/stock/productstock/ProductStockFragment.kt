@@ -19,10 +19,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
+import com.example.app21try6.database.Brand
 import com.example.app21try6.database.Product
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentProductStockBinding
 import com.example.app21try6.databinding.PopUpUpdateProductDialogBinding
+import com.example.app21try6.stock.brandstock.BrandStockViewModel
+import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 
 class   ProductStockFragment : Fragment() {
@@ -95,23 +98,8 @@ class   ProductStockFragment : Fragment() {
                     updateDialog(viewModel,vendible)
                 }
                 .setNegativeButton("Delete") { dialog, id ->
-                    deleteDialog(builder, viewModel,vendible)
+                    DialogUtils.showDeleteDialog(requireContext(),this, viewModel, vendible, { vm, item -> (vm as ProductViewModel).deleteProduct(item as Product) })
                 }
-        val alert = builder.create()
-        alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-    }
-
-    private fun deleteDialog(builder: AlertDialog.Builder, viewModel: ProductViewModel, vendible: Product) {
-        builder.setMessage("Are you sure you want to Delete?")
-                .setCancelable(true)
-                .setPositiveButton("Yes") { dialog, id ->
-                    viewModel.deleteProduct(vendible)
-                    Toast.makeText(context, "Deleted!!", Toast.LENGTH_SHORT).show() }
-                .setNegativeButton("No") { dialog, id ->
-                    // Dismiss the dialog
-                    dialog.dismiss() }
         val alert = builder.create()
         alert.show()
         alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))

@@ -29,11 +29,12 @@ import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.*
 
+
 class BookkeepingViewModel(val database: SummaryDbDao,
                            val database2:ProductDao,
                            application: Application,
                            ): AndroidViewModel(application) {
-
+private val tagg="ProfitProbs"
     //private var viewModelJob = Job()
     //private val _insertionStatus = MutableLiveData<Boolean>()
     //val insertionStatus: LiveData<Boolean> = _insertionStatus
@@ -303,9 +304,10 @@ class BookkeepingViewModel(val database: SummaryDbDao,
                 currentItem.year_n = filteredItem.year_n
                 currentItem.month_n = filteredItem.month_n
                 currentItem.nama = filteredItem.nama
-                currentItem.monthly_profit=filteredItem.monthly_profit -11700000.0
+                currentItem.monthly_profit=filteredItem.monthly_profit-11700000.0
             }
         }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -321,7 +323,7 @@ class BookkeepingViewModel(val database: SummaryDbDao,
                 total = filteredItem.total
                 year_n = filteredItem.year_n
                 month_n = filteredItem.month_n
-                monthly_profit=filteredItem.monthly_profit-450000
+                monthly_profit=filteredItem.monthly_profit-450000.0
             }
         }
     }

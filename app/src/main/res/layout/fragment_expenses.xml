@@ -24,18 +24,10 @@
             android:foregroundGravity="center_horizontal"
             android:visibility="visible"
             android:gravity="center_horizontal"
-            app:layout_constraintEnd_toStartOf="@+id/btn_add_ec"
+            app:layout_constraintEnd_toStartOf="@+id/btn_edit_ec_new"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-        <ImageView
-            android:id="@+id/btn_add_ec"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/medium_margin"
-            android:visibility="visible"
-            android:src="@drawable/ic_baseline_add_circle_24"
-            app:layout_constraintEnd_toStartOf="@+id/btn_edit_ec_new"
-            app:layout_constraintTop_toTopOf="parent" />
+
 
         <ImageView
             android:id="@+id/btn_edit_ec_new"

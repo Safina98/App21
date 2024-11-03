@@ -20,6 +20,7 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/linear1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -34,17 +35,17 @@
                     android:gravity="center_horizontal"
                     />
 
-                <Button
-                    style="@style/add_btn_style"
-                    android:id="@+id/btn_add_cat"
-                    android:text="-"
-                    android:onClick="@{()-> brandStockViewModel.onDeleteCathClick()}"/>
-                <Button
-                    style="@style/add_btn_style"
-                    android:id="@+id/btn_import"
-                    android:text="+"
-                    android:onClick="@{()-> brandStockViewModel.onAddCath()}"
-                    />
+                <ImageView
+                    android:id="@+id/btn_edit_ec_new"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_margin="@dimen/medium_margin"
+                    android:visibility="visible"
+                    android:elevation="@dimen/medium_margin"
+                    android:src="@drawable/baseline_edit_24"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -55,6 +56,23 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:visibility="visible"
                 />
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btn_edit_ec_new" >
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_cat"
+                    android:layout_margin="@dimen/small_margin"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+            </androidx.cardview.widget.CardView>
         </LinearLayout>
 
         <!-- Centered ProgressBar -->
