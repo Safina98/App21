@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.DATE_FORMAT
-import com.example.app21try6.database.TransactionSummary
+import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.databinding.ItemListTransactionAllBinding
 import com.example.app21try6.formatRupiah
 
@@ -23,7 +23,7 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
 
     class MyViewHolder private constructor(val binding: ItemListTransactionAllBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(
-            item:TransactionSummary,
+            item: TransactionSummary,
             clickListener: AllTransClickListener,
             checkBoxListener: CheckBoxListenerTransAll,
             bool:Boolean
@@ -88,11 +88,11 @@ class AllTransDiffCallBack: DiffUtil.ItemCallback<TransactionSummary>(){
         return oldItem ==newItem
     }
 }
-class AllTransClickListener(val clickListener:(active_trans:TransactionSummary)->Unit){
+class AllTransClickListener(val clickListener:(active_trans: TransactionSummary)->Unit){
     fun onClick(active_trans: TransactionSummary) = clickListener(active_trans)
 }
 
 
-class CheckBoxListenerTransAll(val checkBoxListener:(view: View, stok:TransactionSummary)->Unit){
+class CheckBoxListenerTransAll(val checkBoxListener:(view: View, stok: TransactionSummary)->Unit){
     fun onCheckBoxClick(view: View, stok: TransactionSummary)= checkBoxListener(view,stok)
 }

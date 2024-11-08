@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.database.TransactionSummary
+import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.databinding.ItemListTransactionActiveBinding
 import com.example.app21try6.formatRupiah
 
@@ -23,9 +23,9 @@ class TransactionActiveAdapter(
 
     class MyViewHolder private constructor(val binding: ItemListTransactionActiveBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(
-            item:TransactionSummary,
-        clickListener: ActiveClickListener,
-        checkBoxListener: CheckBoxListenerTransActive,
+            item: TransactionSummary,
+            clickListener: ActiveClickListener,
+            checkBoxListener: CheckBoxListenerTransActive,
             bool:Boolean
         ){
                 binding.checkboxTransActive.visibility = when(bool){
@@ -93,7 +93,7 @@ class ActiveClickListener(val clickListener: (view: View, activeTrans: Transacti
 
 
 
-class CheckBoxListenerTransActive(val checkBoxListener:(view: View, stok:TransactionSummary)->Unit){
+class CheckBoxListenerTransActive(val checkBoxListener:(view: View, stok: TransactionSummary)->Unit){
     fun onCheckBoxClick(view: View, stok: TransactionSummary)= checkBoxListener(view,stok)
 }
 

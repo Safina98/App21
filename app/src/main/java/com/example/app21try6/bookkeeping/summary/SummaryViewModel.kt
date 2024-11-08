@@ -1,33 +1,5 @@
 package com.example.app21try6.bookkeeping.summary
 
-import android.R
-import android.annotation.SuppressLint
-import android.app.Application
-import android.database.sqlite.SQLiteException
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Typeface
-import android.graphics.pdf.PdfDocument
-import android.os.Build
-import android.util.Log
-import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.example.app21try6.PDFGenerator
-import com.example.app21try6.database.Summary
-import com.example.app21try6.database.SummaryDbDao
-import kotlinx.coroutines.*
-import java.io.*
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.YearMonth
-import java.time.format.TextStyle
-import java.util.*
-
 /*
 class SummaryViewModel (val database: SummaryDbDao, application: Application):AndroidViewModel(application){
 

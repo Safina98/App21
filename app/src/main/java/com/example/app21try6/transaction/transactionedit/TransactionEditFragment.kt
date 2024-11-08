@@ -5,7 +5,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,12 +23,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.R
-import com.example.app21try6.database.TransactionDetail
-import com.example.app21try6.database.TransactionSummary
+import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionEditBinding
 import com.example.app21try6.databinding.PopUpUnitBinding
-import com.example.app21try6.transaction.transactionactive.TransactionActiveViewModel
 import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 
@@ -205,7 +202,6 @@ class TransactionEditFragment : Fragment() {
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(com.example.app21try6.R.layout.pop_up_update, null)
         val textKet = view.findViewById<TextInputEditText>(com.example.app21try6.R.id.textUpdateKet)
-
         when (code) {
             Code.TEXTITEM -> {
                 textKet.setText(transactionDetail.trans_item_name)
@@ -215,8 +211,11 @@ class TransactionEditFragment : Fragment() {
                 textKet.inputType = InputType.TYPE_CLASS_NUMBER
             }
            else->{
-               textKet.setText(transactionDetail.unit_qty.toString())
-               textKet.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+               if (transactionDetail.unit_qty!=1.0){
+                   textKet.setText(transactionDetail.unit_qty.toString())
+                   textKet.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+               }
+
            }
         }
         textKet.requestFocus()
@@ -224,7 +223,7 @@ class TransactionEditFragment : Fragment() {
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
         builder.setView(view)
         builder.setPositiveButton("OK") { dialog, which ->
-            var v = textKet.text.toString().toUpperCase().trim()
+            val v = textKet.text.toString().uppercase().trim()
             when (code) {
                 Code.LONGSUBS -> {
                     viewModel.updateTransDetail(transactionDetail, (v.toDouble() * -1))
@@ -260,7 +259,7 @@ class TransactionEditFragment : Fragment() {
 
     }
 
-    fun showInputCoiceDialog(item:TransactionDetail) {
+    fun showInputCoiceDialog(item: TransactionDetail) {
         val binding :PopUpUnitBinding = PopUpUnitBinding.inflate(LayoutInflater.from(context))
 
         val dialog = AlertDialog.Builder(context).setTitle("PILIH").setView(binding.root)

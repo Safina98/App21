@@ -6,33 +6,31 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.app21try6.database.CustomerDao
-import com.example.app21try6.database.CustomerTable
-import com.example.app21try6.database.DiscountDao
-import com.example.app21try6.database.DiscountTable
-import com.example.app21try6.database.ExpenseCategory
-import com.example.app21try6.database.ExpenseCategoryDao
-import com.example.app21try6.database.ExpenseDao
-import com.example.app21try6.database.Expenses
-import com.example.app21try6.database.TransDetailDao
-import com.example.app21try6.database.TransSumDao
+import com.example.app21try6.database.daos.CustomerDao
+import com.example.app21try6.database.tables.CustomerTable
+import com.example.app21try6.database.daos.DiscountDao
+import com.example.app21try6.database.tables.DiscountTable
+import com.example.app21try6.database.tables.ExpenseCategory
+import com.example.app21try6.database.daos.ExpenseCategoryDao
+import com.example.app21try6.database.daos.ExpenseDao
+import com.example.app21try6.database.tables.Expenses
+import com.example.app21try6.database.daos.TransDetailDao
+import com.example.app21try6.database.daos.TransSumDao
 import com.example.app21try6.formatRupiah
-import com.example.app21try6.statement.expenses.tagg
 import com.example.app21try6.stock.brandstock.CategoryModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Date
 import java.util.UUID
-import kotlin.math.exp
 
 class StatementHSViewModel(application: Application,
-    val discountDao: DiscountDao,
-    val customerDao: CustomerDao,
-    val expenseDao: ExpenseDao,
-    val expenseCategoryDao: ExpenseCategoryDao,
-    val transDetailDao:TransDetailDao,
-    val transSumDao:TransSumDao
+                           val discountDao: DiscountDao,
+                           val customerDao: CustomerDao,
+                           val expenseDao: ExpenseDao,
+                           val expenseCategoryDao: ExpenseCategoryDao,
+                           val transDetailDao: TransDetailDao,
+                           val transSumDao: TransSumDao
 
     ):AndroidViewModel(application) {
 
@@ -63,7 +61,7 @@ class StatementHSViewModel(application: Application,
    }
     fun insertExpenseCategory(categoryName:String){
         viewModelScope.launch {
-            val expenseCategory=ExpenseCategory()
+            val expenseCategory= ExpenseCategory()
             expenseCategory.expense_category_name=categoryName
             insertExpensesCategory(expenseCategory)
             getAllexpenseCategory()
@@ -71,7 +69,7 @@ class StatementHSViewModel(application: Application,
     }
     fun updateExpenseCategory(category: CategoryModel){
         viewModelScope.launch {
-            val expenseCategory=ExpenseCategory()
+            val expenseCategory= ExpenseCategory()
             expenseCategory.id =category.id
             expenseCategory.expense_category_name=category.categoryName
             updateExpensesCategory(expenseCategory)
@@ -133,7 +131,7 @@ class StatementHSViewModel(application: Application,
     }
     fun insertExpense(expenseNamed:String, expenseAmmount:Int?, expenseDate: Date, expenseCatName:String){
         viewModelScope.launch{
-            val expenses=Expenses()
+            val expenses= Expenses()
             val catId =getECIdByName(expenseCatName)
             expenses.expense_name=expenseNamed
             expenses.expense_ammount=expenseAmmount
@@ -148,7 +146,7 @@ class StatementHSViewModel(application: Application,
     }
     fun updateExpenses(expensesM: DiscountAdapterModel){
         viewModelScope.launch {
-            val expenses=Expenses()
+            val expenses= Expenses()
             val catId =getECIdByName(expensesM.expense_category_name!!)
             expenses.id=expensesM.id!!
             expenses.expense_name=expensesM.expense_name!!
@@ -199,7 +197,7 @@ class StatementHSViewModel(application: Application,
             udpateCustomerToDB(customerTable)
         }
     }
-    fun populateCustomer(id:Int?,name:String?,businessName:String,location:String?,address:String?,level:String?,tag1:String?):CustomerTable{
+    fun populateCustomer(id:Int?,name:String?,businessName:String,location:String?,address:String?,level:String?,tag1:String?): CustomerTable {
         val customerTable = CustomerTable()
         if (id!=null) customerTable.custId=id
         customerTable.customerName=name ?: ""
@@ -224,8 +222,8 @@ class StatementHSViewModel(application: Application,
             updateDiscountFromDB(discountTable)
         }
     }
-    fun populateDiscount(id:Int?,value:Double,name:String,minQty:Double?,tipe:String,location:String):DiscountTable{
-        val discountTable=DiscountTable()
+    fun populateDiscount(id:Int?,value:Double,name:String,minQty:Double?,tipe:String,location:String): DiscountTable {
+        val discountTable= DiscountTable()
         //discountTable.discountId=getautoIncrementId()
         if (id!=null) discountTable.discountId=id
         discountTable.discountValue = value

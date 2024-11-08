@@ -6,7 +6,7 @@
     <data>
         <variable
             name="item"
-            type="com.example.app21try6.database.CustomerTable" />
+            type="com.example.app21try6.database.tables.CustomerTable" />
         <variable
             name="delListener"
             type="com.example.app21try6.statement.CustomerDelListener" />

@@ -4,10 +4,10 @@
     <data>
         <variable
             name="category"
-            type="com.example.app21try6.database.Category" />
+            type="com.example.app21try6.database.tables.Category" />
         <variable
             name="vendible"
-            type="com.example.app21try6.database.Product" />
+            type="com.example.app21try6.database.tables.Product" />
         <variable
             name="checkBoxListener"
             type="com.example.app21try6.bookkeeping.vendiblelist.CheckBoxListener" />
@@ -16,7 +16,7 @@
             type="com.example.app21try6.bookkeeping.vendiblelist.TextListener" />
         <variable
             name="subProduct"
-            type="com.example.app21try6.database.SubProduct" />
+            type="com.example.app21try6.database.tables.SubProduct" />
         <variable
             name="delLongListenerV"
             type="com.example.app21try6.bookkeeping.vendiblelist.DelLongListenerV" />

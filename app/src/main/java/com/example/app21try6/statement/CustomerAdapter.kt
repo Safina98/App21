@@ -6,10 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.database.CustomerTable
-import com.example.app21try6.database.DiscountTable
+import com.example.app21try6.database.tables.CustomerTable
 import com.example.app21try6.databinding.ItemListCustomerBinding
-import com.example.app21try6.databinding.ItemListSDiscountBinding
 
 class CustomerAdapter(
     val customerListener:CustomerListener,

@@ -5,7 +5,7 @@
     <data>
         <variable
             name="product"
-            type="com.example.app21try6.database.Product" />
+            type="com.example.app21try6.database.tables.Product" />
         <variable
             name="clickListener"
             type="com.example.app21try6.transaction.transactionproduct.ProductTransListener" />

@@ -3,23 +3,22 @@ package com.example.app21try6.transaction.transactiondetail
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.app21try6.database.CustomerDao
-import com.example.app21try6.database.DiscountDao
-import com.example.app21try6.database.DiscountTransDao
-import com.example.app21try6.database.PaymentDao
-import com.example.app21try6.database.ProductDao
-import com.example.app21try6.database.SubProductDao
-import com.example.app21try6.database.SummaryDbDao
-import com.example.app21try6.database.TransDetailDao
-import com.example.app21try6.database.TransSumDao
+import com.example.app21try6.database.daos.CustomerDao
+import com.example.app21try6.database.daos.DiscountDao
+import com.example.app21try6.database.daos.DiscountTransDao
+import com.example.app21try6.database.daos.PaymentDao
+import com.example.app21try6.database.daos.SubProductDao
+import com.example.app21try6.database.daos.SummaryDbDao
+import com.example.app21try6.database.daos.TransDetailDao
+import com.example.app21try6.database.daos.TransSumDao
 
 
 class TransactionDetailViewModelFactory  (private val application: Application,
-                                          private val datasource1:TransSumDao,
-                                          private val datasource2:TransDetailDao,
-                                          private val datasource3:SummaryDbDao,
-                                          private val datasource4:PaymentDao,
-                                          private val datasource5:SubProductDao,
+                                          private val datasource1: TransSumDao,
+                                          private val datasource2: TransDetailDao,
+                                          private val datasource3: SummaryDbDao,
+                                          private val datasource4: PaymentDao,
+                                          private val datasource5: SubProductDao,
                                           private val discountDao: DiscountDao,
                                           private val discountTransDao: DiscountTransDao,
                                           private val customerDao: CustomerDao,

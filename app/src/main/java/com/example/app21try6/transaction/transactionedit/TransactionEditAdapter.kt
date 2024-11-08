@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.database.TransactionDetail
+import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.databinding.ItemListTransactionEditBinding
 
 import com.example.app21try6.formatRupiah
@@ -30,7 +30,7 @@ class TransactionEditAdapter(
     var items= mutableListOf<TransactionDetail>()
     class MyViewHolder private constructor(val binding: ItemListTransactionEditBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(
-            item:TransactionDetail,
+            item: TransactionDetail,
             clickListener: TransEditClickListener,
             subsTransClickListener: SubsTransClickListener,
             plusTransClickListener: PlusTransClickListener,
@@ -132,7 +132,7 @@ class SubsTransClickListener(val clickListener:(edit_trans: TransactionDetail)->
     fun onClick(edit_trans: TransactionDetail) = clickListener(edit_trans)
 }
 
-class PlusTransClickListener(val plusListener:(edit_trans:TransactionDetail)->Unit){
+class PlusTransClickListener(val plusListener:(edit_trans: TransactionDetail)->Unit){
     fun onPlusButtonClick(edit_trans: TransactionDetail)= plusListener(edit_trans)
 }
 class PlusTransLongListener(val longListener:(edit_trans: TransactionDetail)->Unit){

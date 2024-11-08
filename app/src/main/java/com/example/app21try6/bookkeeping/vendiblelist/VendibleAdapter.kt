@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.database.Product
+import com.example.app21try6.database.tables.Product
 
 import com.example.app21try6.databinding.ItemListVendibleBinding
 
@@ -20,7 +20,7 @@ class VendibleAdapter (
         VendibleAdapter.MyViewHolder>(BookDiffCallback()){
     class MyViewHolder private constructor(val binding: ItemListVendibleBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(code: Int,
-                item:Product,
+                 item: Product,
                  checkBoxListener: CheckBoxListener,
                  textListener:TextListener,
                  delLongListenerV:DelLongListenerV
@@ -64,14 +64,14 @@ class BookDiffCallback : DiffUtil.ItemCallback<Product>() {
         return oldItem == newItem
     }
 }
-class CheckBoxListener(val checkBoxListener:(view:View, product:Product)->Unit){
-    fun onCheckBoxClick(view:View, product:Product)= checkBoxListener(view,product)
+class CheckBoxListener(val checkBoxListener:(view:View, product: Product)->Unit){
+    fun onCheckBoxClick(view:View, product: Product)= checkBoxListener(view,product)
 }
-class TextListener(val textListener:(view:View, product:Product)->Unit){
-    fun onTextClick(view:View, product:Product)= textListener(view,product)
+class TextListener(val textListener:(view:View, product: Product)->Unit){
+    fun onTextClick(view:View, product: Product)= textListener(view,product)
 }
-class DelLongListenerV(val delLongListenerV:(product:Product)->Unit){
-    fun onLongClick(v: View, product:Product):Boolean{
+class DelLongListenerV(val delLongListenerV:(product: Product)->Unit){
+    fun onLongClick(v: View, product: Product):Boolean{
         delLongListenerV(product)
         return true
     }

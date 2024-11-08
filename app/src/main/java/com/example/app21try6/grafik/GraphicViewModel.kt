@@ -12,25 +12,24 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.example.app21try6.database.Category
-import com.example.app21try6.database.CategoryDao
-import com.example.app21try6.database.Product
-import com.example.app21try6.database.ProductDao
-import com.example.app21try6.database.Summary
-import com.example.app21try6.database.SummaryDbDao
-import com.example.app21try6.database.TransDetailDao
-import com.example.app21try6.database.TransSumDao
+import com.example.app21try6.database.tables.Category
+import com.example.app21try6.database.daos.CategoryDao
+import com.example.app21try6.database.tables.Product
+import com.example.app21try6.database.daos.ProductDao
+import com.example.app21try6.database.daos.SummaryDbDao
+import com.example.app21try6.database.daos.TransDetailDao
+import com.example.app21try6.database.daos.TransSumDao
 import com.example.app21try6.database.VendibleDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class GraphicViewModel(application: Application,
-                       private val productSource1:ProductDao,
+                       private val productSource1: ProductDao,
                        private val summarySource: SummaryDbDao,
-                       private val categorySource3:CategoryDao,
-                       private val TransDetailSource4:TransDetailDao,
-                       private val transSumSource5:TransSumDao,): AndroidViewModel(application) {
+                       private val categorySource3: CategoryDao,
+                       private val TransDetailSource4: TransDetailDao,
+                       private val transSumSource5: TransSumDao,): AndroidViewModel(application) {
 
     val summariesLiveData = summarySource.getAllSummary()
     val productsLiveData: LiveData<List<Product>> = productSource1.getAllProduct()

@@ -12,6 +12,12 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.app21try6.database.*
+import com.example.app21try6.database.daos.CategoryDao
+import com.example.app21try6.database.daos.ProductDao
+import com.example.app21try6.database.daos.SubProductDao
+import com.example.app21try6.database.daos.TransDetailDao
+import com.example.app21try6.database.tables.Product
+import com.example.app21try6.database.tables.TransactionDetail
 import kotlinx.coroutines.*
 import java.util.Date
 import java.util.Locale
@@ -22,7 +28,7 @@ class TransactionSelectViewModel(
     val database2: ProductDao,
     val database4: SubProductDao,
     val sumAndProductId:Array<String>,
-    val database6:TransDetailDao,
+    val database6: TransDetailDao,
     application: Application): AndroidViewModel(application){
    // val trans_select_model =database6.getSubProduct(date[1].toInt(),sum_id)
     var transSelectModel = MutableLiveData<List<TransSelectModel>>()
@@ -161,7 +167,7 @@ class TransactionSelectViewModel(
             updateTransDetaill(s)
         }
     }
-    private suspend fun insertDetailToDBandGetId(t:TransactionDetail):Long{
+    private suspend fun insertDetailToDBandGetId(t: TransactionDetail):Long{
        return withContext(Dispatchers.IO){
             database6.insertN(t)
         }

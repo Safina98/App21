@@ -2,8 +2,8 @@ package com.example.app21try6.utils
 
 import android.util.Log
 import com.example.app21try6.DISCTYPE
-import com.example.app21try6.database.TransactionDetail
-import com.example.app21try6.database.TransactionSummary
+import com.example.app21try6.database.tables.TransactionDetail
+import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.formatRupiah
 import com.example.app21try6.transaction.transactiondetail.PaymentModel
 import java.text.DecimalFormat
@@ -13,10 +13,10 @@ import java.util.Locale
 import kotlin.math.abs
 
 class TextGenerator(
-                    var transDetail:List<TransactionDetail>?,
-                    var transSum:TransactionSummary?,
-                    var paymentModel: List<PaymentModel>?,
-                    var discountTransaction: List<PaymentModel>?
+    var transDetail:List<TransactionDetail>?,
+    var transSum: TransactionSummary?,
+    var paymentModel: List<PaymentModel>?,
+    var discountTransaction: List<PaymentModel>?
                     ) {
     val decimalFormat = DecimalFormat("#.##")
     fun getPadding(value:String, position:String,constant:Int):Int {

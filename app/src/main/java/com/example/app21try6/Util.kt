@@ -18,7 +18,12 @@ object DISCTYPE {
     const val UbahHarga ="Ubah Harga"
 
 }
+object MODELTYPE {
+    const val brand = "Brand"
+    const val Product = "Product"
+    const val subProduct ="Sub Product"
 
+}
 fun formatRupiah(number: Double?): String? {
     val localeID = Locale("in", "ID")
     val formatRupiah: NumberFormat = NumberFormat.getCurrencyInstance(localeID)

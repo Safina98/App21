@@ -16,6 +16,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.app21try6.bookkeeping.summary.ListModel
 import com.example.app21try6.database.*
+import com.example.app21try6.database.daos.ProductDao
+import com.example.app21try6.database.daos.SummaryDbDao
+import com.example.app21try6.database.tables.Summary
 import com.example.app21try6.formatRupiah
 import com.example.app21try6.getDateFromComponents
 import kotlinx.coroutines.*
@@ -31,7 +34,7 @@ import java.util.*
 
 
 class BookkeepingViewModel(val database: SummaryDbDao,
-                           val database2:ProductDao,
+                           val database2: ProductDao,
                            application: Application,
                            ): AndroidViewModel(application) {
 private val tagg="ProfitProbs"
@@ -131,7 +134,7 @@ private val tagg="ProfitProbs"
             update(summary)
         }
     }
-    fun btnLongClick(summary: Summary,number:Double,code:Int){
+    fun btnLongClick(summary: Summary, number:Double, code:Int){
         viewModelScope.launch {
             if (code == 1){
                 summary.item_sold =summary.item_sold+number

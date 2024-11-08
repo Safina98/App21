@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zeus Black 9001"
+        style="@style/active_transaction_text_style"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="27dp" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="3 Roll"
+        style="@style/active_transaction_small_txt"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="79dp" />
+
+    <TextView
+        android:id="@+id/textView7"
+        style="@style/active_transaction_small_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="40M"
+        tools:layout_editor_absoluteX="104dp"
+        tools:layout_editor_absoluteY="79dp" />
+
+    <TextView
+        android:id="@+id/textView10"
+        style="@style/active_transaction_small_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rp.61.500"
+        tools:layout_editor_absoluteX="216dp"
+        tools:layout_editor_absoluteY="87dp" />
+
+    <TextView
+        android:id="@+id/textView11"
+        style="@style/active_transaction_small_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rp.2000.000"
+        tools:layout_editor_absoluteX="229dp"
+        tools:layout_editor_absoluteY="137dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

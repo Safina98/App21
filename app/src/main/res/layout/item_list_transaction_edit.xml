@@ -7,7 +7,7 @@
         <import type="android.widget.Spinner" />
         <variable
             name="item"
-            type="com.example.app21try6.database.TransactionDetail" />
+            type="com.example.app21try6.database.tables.TransactionDetail" />
         <variable
             name="clickListener"
             type="com.example.app21try6.transaction.transactionedit.TransEditClickListener" />

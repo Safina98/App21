@@ -1,17 +1,14 @@
 package com.example.app21try6.transaction.transactiondetail
 
-import android.R
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.database.TransactionDetail
-import com.example.app21try6.database.TransactionSummary
+import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.databinding.ItemListTransactionDetailBinding
 import com.example.app21try6.formatRupiah
 import java.util.Locale
@@ -91,7 +88,7 @@ class TransDetailDiffCallBack:DiffUtil.ItemCallback<TransactionDetail>(){
     }
 }
 
-class TransDetailClickListener(val clickListener:(detail_trans:TransactionDetail)->Unit){
+class TransDetailClickListener(val clickListener:(detail_trans: TransactionDetail)->Unit){
     fun onClick(detail_trans: TransactionDetail)=clickListener(detail_trans)
 }
 
@@ -99,7 +96,7 @@ class TransDetailClickListener(val clickListener:(detail_trans:TransactionDetail
 
 
 class TransDetailLongListener(val longListener:(trans_detail: TransactionDetail)->Unit){
-    fun onLongClick(v: View, trans_detail:  TransactionDetail):Boolean{
+    fun onLongClick(v: View, trans_detail: TransactionDetail):Boolean{
         longListener(trans_detail)
         return true
     }

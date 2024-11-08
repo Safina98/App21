@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
-import com.example.app21try6.database.Summary
+import com.example.app21try6.database.tables.Summary
 import com.example.app21try6.databinding.ItemListBookkeepingBinding
 //import com.example.app21try6.database.Vendible
 
@@ -88,26 +88,26 @@ class PlusBookListener(val plusListener:(summary: Summary)->Unit){
 class SubsBookListener(val subsListener:(summary: Summary)->Unit){
     fun onSubsButtonClick(summary: Summary)= subsListener(summary)
 }
-class PlusBookLongListener(val longListener:(summary:Summary)->Unit){
-    fun onLongClick(v: View, summary:Summary):Boolean{
+class PlusBookLongListener(val longListener:(summary: Summary)->Unit){
+    fun onLongClick(v: View, summary: Summary):Boolean{
         longListener(summary)
         return true
     }
 }
-class SubsBookLongListener(val longListener:(summary:Summary)->Unit){
-    fun onLongClick(v: View, summary:Summary):Boolean{
+class SubsBookLongListener(val longListener:(summary: Summary)->Unit){
+    fun onLongClick(v: View, summary: Summary):Boolean{
         longListener(summary)
         return true
     }
 }
-class LongListener(val longListener:(summary:Summary)->Unit){
-    fun onLongClick(v: View, summary:Summary):Boolean{
+class LongListener(val longListener:(summary: Summary)->Unit){
+    fun onLongClick(v: View, summary: Summary):Boolean{
         longListener(summary)
         return true
     }
 }
-class DelLongListener(val delLongListener:(summary:Summary)->Unit){
-    fun onLongClick(v: View, summary:Summary):Boolean{
+class DelLongListener(val delLongListener:(summary: Summary)->Unit){
+    fun onLongClick(v: View, summary: Summary):Boolean{
         delLongListener(summary)
         return true
     }

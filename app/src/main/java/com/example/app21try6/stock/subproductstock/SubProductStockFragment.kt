@@ -18,11 +18,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
-import com.example.app21try6.database.Brand
-import com.example.app21try6.database.SubProduct
+import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentSubProductStockBinding
-import com.example.app21try6.stock.brandstock.BrandStockViewModel
 import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 
@@ -50,7 +48,7 @@ class SubProductStockFragment : Fragment() {
             DialogUtils.showDeleteDialog(requireContext(),this, viewModel, SubProduct(), { vm, item -> (vm as SubViewModel).resetAllSubProductStock() })
         }
         var adapter = SubAdapter(id_[3],
-                CheckBoxListenerSub({view:View,subProduct:SubProduct->
+                CheckBoxListenerSub({view:View,subProduct: SubProduct ->
                     val cb = view as CheckBox
                     subProduct.is_checked = cb.isChecked
                     viewModel.onCheckBoxClicked(subProduct,cb.isChecked)

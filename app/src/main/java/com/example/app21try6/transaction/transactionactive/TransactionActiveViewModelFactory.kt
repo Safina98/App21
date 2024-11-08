@@ -3,8 +3,8 @@ package com.example.app21try6.transaction.transactionactive
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.app21try6.database.TransDetailDao
-import com.example.app21try6.database.TransSumDao
+import com.example.app21try6.database.daos.TransDetailDao
+import com.example.app21try6.database.daos.TransSumDao
 
 class TransactionActiveViewModelFactory(
     private val application: Application,

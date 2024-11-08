@@ -12,13 +12,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.example.app21try6.database.TransSumDao
-import com.example.app21try6.database.TransactionSummary
+import com.example.app21try6.database.daos.TransSumDao
+import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.database.VendibleDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.ParseException
@@ -27,7 +26,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-class AllTransactionViewModel(application: Application,var dataSource1:TransSumDao):AndroidViewModel(application) {
+class AllTransactionViewModel(application: Application,var dataSource1: TransSumDao):AndroidViewModel(application) {
 
 
     private var viewModelJob = Job()

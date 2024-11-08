@@ -1,11 +1,5 @@
 package com.example.app21try6.bookkeeping.editdetail
 
-import android.app.Application
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.example.app21try6.database.ProductDao
-import com.example.app21try6.database.SummaryDbDao
-
 /*
 class BookkeepingViewModelFactory(
         private val dataSource: SummaryDbDao,

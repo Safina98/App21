@@ -5,11 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.database.Product
+import com.example.app21try6.database.tables.Product
 
 import com.example.app21try6.databinding.ItemListTransactionProductBinding
-import com.example.app21try6.stock.productstock.ProductStockListener
-import com.example.app21try6.stock.productstock.ProductStockLongListener
 
 class TransactionProductAdapter (
     val clickListener:ProductTransListener

@@ -2,12 +2,10 @@ package com.example.app21try6.stock.brandstock
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.database.Brand
 
 import com.example.app21try6.databinding.ItemListCategoryBinding
 

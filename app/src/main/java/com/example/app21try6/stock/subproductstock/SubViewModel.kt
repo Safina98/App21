@@ -3,18 +3,21 @@ package com.example.app21try6.stock.subproductstock
 import android.annotation.SuppressLint
 import android.app.Application
 import android.view.View
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.app21try6.database.*
+import com.example.app21try6.database.daos.SubProductDao
+import com.example.app21try6.database.daos.TransDetailDao
+import com.example.app21try6.database.tables.SubProduct
+import com.example.app21try6.database.tables.TransactionDetail
 import kotlinx.coroutines.*
 
 class SubViewModel (
     val database2: SubProductDao,
     application: Application,
     val product_id:Array<Int>,
-    val database3 :TransDetailDao,
+    val database3 : TransDetailDao,
     val sum_id:Int
 ): AndroidViewModel(application){
 
@@ -45,7 +48,7 @@ class SubViewModel (
             }
         }
     }
-    suspend fun insertToTrans(transDetail:TransactionDetail){
+    suspend fun insertToTrans(transDetail: TransactionDetail){
         withContext(Dispatchers.IO){
            database3.insert(transDetail)
         }

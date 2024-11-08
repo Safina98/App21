@@ -9,7 +9,7 @@
 
         <variable
             name="brandStock"
-            type="com.example.app21try6.database.Brand" />
+            type="com.example.app21try6.database.models.BrandProductModel" />
     </data>
 
     <androidx.cardview.widget.CardView

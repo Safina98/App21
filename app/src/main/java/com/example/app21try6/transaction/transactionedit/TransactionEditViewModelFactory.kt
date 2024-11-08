@@ -3,12 +3,11 @@ package com.example.app21try6.transaction.transactionedit
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.app21try6.database.CustomerDao
-import com.example.app21try6.database.DiscountDao
-import com.example.app21try6.database.DiscountTransDao
-import com.example.app21try6.database.SummaryDbDao
-import com.example.app21try6.database.TransDetailDao
-import com.example.app21try6.database.TransSumDao
+import com.example.app21try6.database.daos.CustomerDao
+import com.example.app21try6.database.daos.DiscountDao
+import com.example.app21try6.database.daos.DiscountTransDao
+import com.example.app21try6.database.daos.TransDetailDao
+import com.example.app21try6.database.daos.TransSumDao
 
 class TransactionEditViewModelFactory(
     private val application: Application,

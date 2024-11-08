@@ -4,7 +4,10 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.app21try6.database.*
-import com.example.app21try6.transaction.transactionedit.TransactionEditViewModel
+import com.example.app21try6.database.daos.CategoryDao
+import com.example.app21try6.database.daos.ProductDao
+import com.example.app21try6.database.daos.SubProductDao
+import com.example.app21try6.database.daos.TransDetailDao
 
 class TransactionSelectViewModelFactory(
     val sum_id:Int,
@@ -12,7 +15,7 @@ class TransactionSelectViewModelFactory(
     val database2: ProductDao,
     val database4: SubProductDao,
     val date:Array<String>,
-    val database6:TransDetailDao,
+    val database6: TransDetailDao,
     val application: Application
 ): ViewModelProvider.Factory{
     @Suppress("unchecked_cast")

@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.app21try6.DATE_FORMAT
 import com.example.app21try6.R
 import com.example.app21try6.SIMPLE_DATE_FORMAT
-import com.example.app21try6.database.ExpenseCategory
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentExpensesBinding
 import com.example.app21try6.databinding.PopUpUpdateProductDialogBinding

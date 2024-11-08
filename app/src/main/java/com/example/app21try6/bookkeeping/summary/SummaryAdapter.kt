@@ -8,8 +8,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
-import com.example.app21try6.database.Summary
-import com.example.app21try6.databinding.ItemListBookkeepingBinding
 import com.example.app21try6.databinding.ItemListSumaryBinding
 
 import com.example.app21try6.formatRupiah

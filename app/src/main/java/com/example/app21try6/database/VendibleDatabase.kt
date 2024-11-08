@@ -7,25 +7,50 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.app21try6.database.daos.BrandDao
+import com.example.app21try6.database.tables.Category
+import com.example.app21try6.database.daos.CategoryDao
+import com.example.app21try6.database.daos.CustomerDao
+import com.example.app21try6.database.daos.DiscountDao
+import com.example.app21try6.database.daos.DiscountTransDao
+import com.example.app21try6.database.daos.ExpenseCategoryDao
+import com.example.app21try6.database.daos.ExpenseDao
+import com.example.app21try6.database.daos.PaymentDao
+import com.example.app21try6.database.daos.ProductDao
+import com.example.app21try6.database.daos.SubProductDao
+import com.example.app21try6.database.daos.SummaryDbDao
+import com.example.app21try6.database.daos.TransDetailDao
+import com.example.app21try6.database.daos.TransSumDao
+import com.example.app21try6.database.tables.Brand
+import com.example.app21try6.database.tables.CustomerTable
+import com.example.app21try6.database.tables.DiscountTable
+import com.example.app21try6.database.tables.DiscountTransaction
+import com.example.app21try6.database.tables.ExpenseCategory
+import com.example.app21try6.database.tables.Expenses
+import com.example.app21try6.database.tables.Payment
+import com.example.app21try6.database.tables.Product
+import com.example.app21try6.database.tables.SubProduct
+import com.example.app21try6.database.tables.Summary
+import com.example.app21try6.database.tables.TransactionDetail
+import com.example.app21try6.database.tables.TransactionSummary
 
 
-
-@Database(entities = [Brand::class,Product::class,SubProduct::class,Category::class,TransactionSummary::class,TransactionDetail::class,Payment::class,Expenses::class,ExpenseCategory::class,Summary::class,DiscountTable::class,DiscountTransaction::class,CustomerTable::class],version=37, exportSchema = true)
+@Database(entities = [Brand::class, Product::class, SubProduct::class, Category::class, TransactionSummary::class, TransactionDetail::class, Payment::class, Expenses::class, ExpenseCategory::class, Summary::class, DiscountTable::class, DiscountTransaction::class, CustomerTable::class],version=37, exportSchema = true)
 @TypeConverters(DateTypeConverter::class)
 abstract class VendibleDatabase:RoomDatabase(){
-    abstract val brandDao :BrandDao
-    abstract val productDao:ProductDao
-    abstract val subProductDao:SubProductDao
-    abstract val categoryDao:CategoryDao
-    abstract val transDetailDao:TransDetailDao
-    abstract val transSumDao:TransSumDao
-    abstract val paymentDao:PaymentDao
-    abstract val expenseDao:ExpenseDao
-    abstract val expenseCategoryDao:ExpenseCategoryDao
-    abstract val summaryDbDao:SummaryDbDao
-    abstract val customerDao:CustomerDao
-    abstract val discountDao:DiscountDao
-    abstract val discountTransDao:DiscountTransDao
+    abstract val brandDao : BrandDao
+    abstract val productDao: ProductDao
+    abstract val subProductDao: SubProductDao
+    abstract val categoryDao: CategoryDao
+    abstract val transDetailDao: TransDetailDao
+    abstract val transSumDao: TransSumDao
+    abstract val paymentDao: PaymentDao
+    abstract val expenseDao: ExpenseDao
+    abstract val expenseCategoryDao: ExpenseCategoryDao
+    abstract val summaryDbDao: SummaryDbDao
+    abstract val customerDao: CustomerDao
+    abstract val discountDao: DiscountDao
+    abstract val discountTransDao: DiscountTransDao
 
     companion object{
         @Volatile

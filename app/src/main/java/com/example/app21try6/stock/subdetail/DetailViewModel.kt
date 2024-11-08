@@ -1,14 +1,10 @@
 package com.example.app21try6.stock.subdetail
 
-import android.annotation.SuppressLint
 import android.app.Application
-import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.example.app21try6.database.SubProduct
-import com.example.app21try6.database.SubProductDao
+import com.example.app21try6.database.tables.SubProduct
+import com.example.app21try6.database.daos.SubProductDao
 import kotlinx.coroutines.*
 
 class DetailViewModel (

@@ -8,7 +8,7 @@ import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import com.example.app21try6.database.Summary
+import com.example.app21try6.database.tables.Summary
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -16,7 +16,7 @@ import java.io.IOException
 class PDFGenerator(private val context: Context) {
     var pageHeight = 842
     var pagewidth = 595
-    fun generatePDF(file: File,allItemFromSummary: List<Summary>?, itemPosition: Int,year_list:Array<String>){
+    fun generatePDF(file: File, allItemFromSummary: List<Summary>?, itemPosition: Int, year_list:Array<String>){
         val listBulanan = allItemFromSummary
         var pdfDocument = PdfDocument()
         val title = Paint()

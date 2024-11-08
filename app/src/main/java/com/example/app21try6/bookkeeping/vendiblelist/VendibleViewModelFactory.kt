@@ -4,12 +4,17 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.app21try6.database.*
+import com.example.app21try6.database.daos.BrandDao
+import com.example.app21try6.database.daos.CategoryDao
+import com.example.app21try6.database.daos.ProductDao
+import com.example.app21try6.database.daos.SubProductDao
+import com.example.app21try6.database.daos.SummaryDbDao
 
 
-class VendibleViewModelFactory (private val dataSource:SummaryDbDao,
-                                private val dataSource1:CategoryDao,
+class VendibleViewModelFactory (private val dataSource: SummaryDbDao,
+                                private val dataSource1: CategoryDao,
                                 private val dataSource2: ProductDao,
-                                private val datasource3:BrandDao,
+                                private val datasource3: BrandDao,
                                 private val dataSource4: SubProductDao,
                                 private val date:Array<String>,
                                 private val application: Application):ViewModelProvider.Factory{

@@ -6,7 +6,7 @@
 
         <variable
             name="item"
-            type="com.example.app21try6.database.TransactionSummary"/>
+            type="com.example.app21try6.database.tables.TransactionSummary"/>
         <variable
             name="clickListener"
             type="com.example.app21try6.transaction.transactionall.AllTransClickListener" />

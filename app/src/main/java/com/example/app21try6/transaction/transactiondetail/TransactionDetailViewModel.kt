@@ -11,20 +11,20 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
 import com.example.app21try6.DATE_FORMAT
 import com.example.app21try6.DISCTYPE
-import com.example.app21try6.database.CustomerDao
-import com.example.app21try6.database.DiscountDao
-import com.example.app21try6.database.DiscountTransDao
-import com.example.app21try6.database.Payment
+import com.example.app21try6.database.daos.CustomerDao
+import com.example.app21try6.database.daos.DiscountDao
+import com.example.app21try6.database.daos.DiscountTransDao
+import com.example.app21try6.database.tables.Payment
 
-import com.example.app21try6.database.PaymentDao
-import com.example.app21try6.database.Product
-import com.example.app21try6.database.SubProductDao
-import com.example.app21try6.database.Summary
-import com.example.app21try6.database.SummaryDbDao
-import com.example.app21try6.database.TransDetailDao
-import com.example.app21try6.database.TransSumDao
-import com.example.app21try6.database.TransactionDetail
-import com.example.app21try6.database.TransactionSummary
+import com.example.app21try6.database.daos.PaymentDao
+import com.example.app21try6.database.tables.Product
+import com.example.app21try6.database.daos.SubProductDao
+import com.example.app21try6.database.tables.Summary
+import com.example.app21try6.database.daos.SummaryDbDao
+import com.example.app21try6.database.daos.TransDetailDao
+import com.example.app21try6.database.daos.TransSumDao
+import com.example.app21try6.database.tables.TransactionDetail
+import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.formatRupiah
 import com.example.app21try6.utils.TextGenerator
 import kotlinx.coroutines.Dispatchers
@@ -44,9 +44,9 @@ class TransactionDetailViewModel (application: Application,
                                   private val datasource3: SummaryDbDao,
                                   private val datasource4: PaymentDao,
                                   private val datasource5: SubProductDao,
-                                  private val discountDao:DiscountDao,
+                                  private val discountDao: DiscountDao,
                                   private val discountTransDao: DiscountTransDao,
-                                  private val customerDao:CustomerDao,
+                                  private val customerDao: CustomerDao,
                                   var id:Int):AndroidViewModel(application){
 
     //transaction detail for recyclerview
@@ -250,7 +250,7 @@ class TransactionDetailViewModel (application: Application,
         }
     }
 
-    private fun insertPayment(bayar:Payment){
+    private fun insertPayment(bayar: Payment){
         viewModelScope.launch {
             bayar.payment_date =Date()
             bayar.sum_id = transSum.value?.sum_id ?:-1
@@ -266,7 +266,7 @@ class TransactionDetailViewModel (application: Application,
         }
     }
     //Convert PaymentModel to PaymentTable for insert or update purpose
-    private fun modelToPaymentConverter(paymentModel: PaymentModel):Payment{
+    private fun modelToPaymentConverter(paymentModel: PaymentModel): Payment {
         val bayar = Payment()
         bayar.payment_ammount= paymentModel.payment_ammount!!
         bayar.payment_date =paymentModel.payment_date
@@ -374,7 +374,7 @@ class TransactionDetailViewModel (application: Application,
     }
 
     //Update Trans Detail value
-    fun updateTransDetail(transdetail:TransactionDetail){
+    fun updateTransDetail(transdetail: TransactionDetail){
         viewModelScope.launch {
             updateTransDetailDB(transdetail)
         }
@@ -396,7 +396,7 @@ class TransactionDetailViewModel (application: Application,
             datasource1.update(transSum)
         }
     }
-    private suspend fun updataTransSumDB(transSum:TransactionSummary){
+    private suspend fun updataTransSumDB(transSum: TransactionSummary){
         withContext(Dispatchers.IO){
             datasource1.update(transSum)
         }
@@ -406,7 +406,7 @@ class TransactionDetailViewModel (application: Application,
             datasource5.getProductName(subName)
         }
     }
-    private suspend fun getProduct(subId:Int):Product?{
+    private suspend fun getProduct(subId:Int): Product?{
         return withContext(Dispatchers.IO){
             datasource5.getProduct(subId)
         }

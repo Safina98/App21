@@ -14,7 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
-import com.example.app21try6.database.Product
+import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentVendibleBinding
 import com.google.android.material.textfield.TextInputEditText
@@ -156,7 +156,7 @@ class VendibleFragment : Fragment() {
         alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
         alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
     }
-    private fun deleteDialog(product: Product,vendibleViewModel: VendibleViewModel) {
+    private fun deleteDialog(product: Product, vendibleViewModel: VendibleViewModel) {
         val builder = AlertDialog.Builder(context)
         builder.setMessage("Are you sure you want to Delete?")
                 .setCancelable(true)

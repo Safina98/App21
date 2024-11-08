@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/transactionActiveFragment">
+    app:startDestination="@id/transactionPurchase">
 
     <fragment
         android:id="@+id/bookKeepeingFragment"
@@ -52,12 +52,8 @@
         android:name="com.example.app21try6.stock.brandstock.BrandStockFragment"
         android:label="Stok ">
         <action
-            android:id="@+id/action_brandStockFragment_to_productStockFragment"
-            app:destination="@id/productStockFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@android:anim/slide_in_left"
-            app:popExitAnim="@android:anim/slide_out_right" />
+            android:id="@+id/action_brandStockFragment_to_subProductStockFragment"
+            app:destination="@id/subProductStockFragment" />
     </fragment>
     <fragment
         android:id="@+id/productStockFragment"
@@ -178,4 +174,8 @@
         android:id="@+id/expensesFragment"
         android:name="com.example.app21try6.statement.expenses.ExpensesFragment"
         android:label="ExpensesFragment" />
+    <fragment
+        android:id="@+id/transactionPurchase"
+        android:name="com.example.app21try6.transaction.TransactionPurchase"
+        android:label="TransactionPurchase" />
 </navigation>

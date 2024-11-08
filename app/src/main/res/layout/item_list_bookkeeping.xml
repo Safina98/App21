@@ -6,10 +6,10 @@
     <data>
         <variable
             name="book"
-            type="com.example.app21try6.database.Summary" />
+            type="com.example.app21try6.database.tables.Summary" />
         <variable
             name="item"
-            type="com.example.app21try6.database.Product"/>
+            type="com.example.app21try6.database.tables.Product"/>
         <variable
             name="plusListener"
             type="com.example.app21try6.bookkeeping.editdetail.PlusBookListener" />

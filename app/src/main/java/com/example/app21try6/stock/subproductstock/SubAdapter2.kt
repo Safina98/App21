@@ -5,14 +5,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.database.SubProduct
+import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.databinding.ItemListVendibleBinding
 
 class SubAdapter2 (val code:Int,val checkBoxListener2: CheckBoxListener2):  ListAdapter<SubProduct,
         SubAdapter2.MyViewHolder>(SubDiffCallback()){
     class MyViewHolder private constructor( val binding: ItemListVendibleBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(code:Int,checkBoxListener2: CheckBoxListener2,
-                 item: SubProduct){
+                 item: SubProduct
+        ){
             binding.subProduct = item
             //binding.s.visibility=View.GONE
             binding.textSubproductV.text = item.sub_name

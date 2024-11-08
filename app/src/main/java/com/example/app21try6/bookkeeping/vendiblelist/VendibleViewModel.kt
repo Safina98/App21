@@ -2,7 +2,6 @@ package com.example.app21try6.bookkeeping.vendiblelist
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.app.PendingIntent.getActivity
 import android.database.sqlite.SQLiteException
 import android.util.Log
 import android.widget.Toast
@@ -11,11 +10,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.example.app21try6.database.*
+import com.example.app21try6.database.daos.BrandDao
+import com.example.app21try6.database.daos.CategoryDao
+import com.example.app21try6.database.daos.ProductDao
+import com.example.app21try6.database.daos.SubProductDao
+import com.example.app21try6.database.daos.SummaryDbDao
+import com.example.app21try6.database.tables.Product
+import com.example.app21try6.database.tables.Summary
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 
 class VendibleViewModel(val database: SummaryDbDao,
-                        val database1:CategoryDao,
+                        val database1: CategoryDao,
                         val database2: ProductDao,
                         val database3: BrandDao,
                         val database4: SubProductDao,
@@ -60,7 +66,7 @@ class VendibleViewModel(val database: SummaryDbDao,
         }
          */
     }
-    fun onCheckBoxClicked(product: Product,bool:Boolean){
+    fun onCheckBoxClicked(product: Product, bool:Boolean){
         if(bool){
         checkedItemList.add(product)}
     else{
@@ -85,7 +91,7 @@ class VendibleViewModel(val database: SummaryDbDao,
             _navigateToEditDetail.value = true
         }
     }
-    fun insertVendible(cath:String,brand:String,product:Product){
+    fun insertVendible(cath:String,brand:String,product: Product){
         uiScope.launch {
             try {
                 insertCath(cath)
@@ -105,7 +111,7 @@ class VendibleViewModel(val database: SummaryDbDao,
     private suspend fun insertCath(category: String){ withContext(Dispatchers.IO){  database1.insertIfNotExist(category) } }
     private suspend fun update(product: Product) { withContext(Dispatchers.IO){ database2.update(product) } }
     private suspend fun deleteItemVendible_(item_id:Int){ withContext(Dispatchers.IO){ database2.delete(item_id) } }
-    private suspend fun insertTry(product: Product,brand: String,cath: String){ withContext(Dispatchers.IO){ database2.inserProduct(product.product_name,product.product_price,product.bestSelling,brand,cath) } }
+    private suspend fun insertTry(product: Product, brand: String, cath: String){ withContext(Dispatchers.IO){ database2.inserProduct(product.product_name,product.product_price,product.bestSelling,brand,cath) } }
     private suspend fun insert(brand: String,cath: String){ withContext(Dispatchers.IO){
         database3.insertIfNotExist(brand,cath) } }
     ///////////////////////////////////NAVIGATION/////////////////////////////////////////////////////////

@@ -8,8 +8,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.DATE_FORMAT
 
-import com.example.app21try6.database.DiscountTable
-
 import com.example.app21try6.databinding.ItemListSDiscountBinding
 import com.example.app21try6.formatRupiah
 

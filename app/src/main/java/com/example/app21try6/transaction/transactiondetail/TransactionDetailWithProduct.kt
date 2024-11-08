@@ -2,7 +2,7 @@ package com.example.app21try6.transaction.transactiondetail
 
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
-import com.example.app21try6.database.TransactionDetail
+import com.example.app21try6.database.tables.TransactionDetail
 
 data class TransactionDetailWithProduct(
     @Embedded val transactionDetail: TransactionDetail,

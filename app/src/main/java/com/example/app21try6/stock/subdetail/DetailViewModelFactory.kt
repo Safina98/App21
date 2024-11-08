@@ -3,7 +3,7 @@ package com.example.app21try6.stock.subdetail
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.app21try6.database.SubProductDao
+import com.example.app21try6.database.daos.SubProductDao
 
 class DetailViewModelFactory (private val dataSource2: SubProductDao,
                               private val application: Application,

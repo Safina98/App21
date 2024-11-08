@@ -8,12 +8,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.bookkeeping.vendiblelist.*
-import com.example.app21try6.bookkeeping.vendiblelist.CheckBoxListener
-import com.example.app21try6.bookkeeping.vendiblelist.DelLongListenerV
-import com.example.app21try6.bookkeeping.vendiblelist.TextListener
-import com.example.app21try6.database.Product
-import com.example.app21try6.database.SubProduct
-import com.example.app21try6.database.TransactionDetail
+import com.example.app21try6.database.tables.Product
+import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.databinding.ItemListTransactionSelectBinding
 import java.util.Locale
 

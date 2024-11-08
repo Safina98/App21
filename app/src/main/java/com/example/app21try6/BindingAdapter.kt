@@ -1,6 +1,5 @@
 package com.example.app21try6
 
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -9,7 +8,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
-import com.example.app21try6.database.TransactionDetail
+import com.example.app21try6.database.tables.TransactionDetail
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -17,7 +16,6 @@ import java.util.Date
 import android.content.res.Configuration
 import android.util.Log
 import android.view.View
-import android.widget.EditText
 import android.widget.ImageView
 import androidx.cardview.widget.CardView
 
@@ -62,7 +60,7 @@ fun setNoteColor(imageView: ImageView, isActive: Boolean) {
 }
 
 @BindingAdapter("textVisibilityDetail")
-fun setTextVisibilityDetail(textView: TextView,item:TransactionDetail) {
+fun setTextVisibilityDetail(textView: TextView,item: TransactionDetail) {
     val decimalFormat = DecimalFormat("#.##")
     textView.text = "(${decimalFormat.format(item.unit_qty)})"
     textView.visibility= if (item.unit.isNullOrEmpty() || item.unit_qty ==1.0) {

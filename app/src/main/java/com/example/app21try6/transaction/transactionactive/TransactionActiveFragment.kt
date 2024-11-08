@@ -2,8 +2,6 @@ package com.example.app21try6.transaction.transactionactive
 
 import android.Manifest
 import android.app.Activity
-import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -37,11 +35,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.R
 import com.example.app21try6.ToolbarUtil
-import com.example.app21try6.database.SubProduct
-import com.example.app21try6.database.TransactionSummary
+import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentTransactionActiveBinding
-import com.example.app21try6.stock.subproductstock.SubViewModel
 import com.example.app21try6.utils.DialogUtils
 import java.io.File
 import java.io.FileNotFoundException

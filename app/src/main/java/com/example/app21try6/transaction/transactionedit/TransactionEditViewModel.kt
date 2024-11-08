@@ -5,6 +5,14 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.app21try6.database.*
+import com.example.app21try6.database.daos.CustomerDao
+import com.example.app21try6.database.daos.DiscountDao
+import com.example.app21try6.database.daos.DiscountTransDao
+import com.example.app21try6.database.daos.TransDetailDao
+import com.example.app21try6.database.daos.TransSumDao
+import com.example.app21try6.database.tables.DiscountTransaction
+import com.example.app21try6.database.tables.TransactionDetail
+import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.formatRupiah
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -16,9 +24,9 @@ class TransactionEditViewModel(
     application: Application,
     val datasource1: TransSumDao,
     val datasource2: TransDetailDao,
-    private val discountDao:DiscountDao,
-    private val discountTransDao:DiscountTransDao,
-    private val customerDao:CustomerDao,
+    private val discountDao: DiscountDao,
+    private val discountTransDao: DiscountTransDao,
+    private val customerDao: CustomerDao,
     var id:Int
 ):AndroidViewModel(application){
 
@@ -176,17 +184,17 @@ class TransactionEditViewModel(
             discountTransDao.insertAll(discList)
         }
     }
-    private suspend fun insertDiscountTransToDB(disc:DiscountTransaction){
+    private suspend fun insertDiscountTransToDB(disc: DiscountTransaction){
         withContext(Dispatchers.IO){
             discountTransDao.insert(disc)
         }
     }
-    private suspend fun updateDiscountTransToDB(disc:DiscountTransaction){
+    private suspend fun updateDiscountTransToDB(disc: DiscountTransaction){
         withContext(Dispatchers.IO){
             discountTransDao.update(disc)
         }
     }
-    private suspend fun deleteDiscountTransToDB(disc:DiscountTransaction){
+    private suspend fun deleteDiscountTransToDB(disc: DiscountTransaction){
         withContext(Dispatchers.IO){
             discountTransDao.delete(disc)
         }
@@ -194,7 +202,7 @@ class TransactionEditViewModel(
 
 
     //update transactionDetail qty and total price
-    fun updateTransDetail(transactionDetail: TransactionDetail,i: Double){
+    fun updateTransDetail(transactionDetail: TransactionDetail, i: Double){
         viewModelScope.launch {
             transactionDetail.qty = transactionDetail.qty + i
             transactionDetail.total_price = transactionDetail.trans_price*transactionDetail.qty*transactionDetail.unit_qty
@@ -242,14 +250,14 @@ class TransactionEditViewModel(
     }
 
     //update Transaction Detail recyclerview item name
-    fun updateTransDetailItemName(transactionDetail: TransactionDetail,itemName: String){
+    fun updateTransDetailItemName(transactionDetail: TransactionDetail, itemName: String){
         viewModelScope.launch {
             transactionDetail.trans_item_name = itemName
             _updateTransDetail(transactionDetail)
         }
     }
     // update Transaction Detail recyclerview price
-    fun updateTransDetailItemPrice(transactionDetail: TransactionDetail,itemPrice: Int){
+    fun updateTransDetailItemPrice(transactionDetail: TransactionDetail, itemPrice: Int){
         viewModelScope.launch {
             transactionDetail.trans_price = itemPrice
             transactionDetail.total_price = transactionDetail.trans_price * transactionDetail.qty *transactionDetail.unit_qty
@@ -257,7 +265,7 @@ class TransactionEditViewModel(
         }
     }
     //update Transaction Detail unitQty
-    fun updateUitQty(transactionDetail: TransactionDetail,unit_qyt: Double){
+    fun updateUitQty(transactionDetail: TransactionDetail, unit_qyt: Double){
         viewModelScope.launch {
             transactionDetail.unit_qty = unit_qyt
             transactionDetail.total_price = transactionDetail.trans_price * transactionDetail.qty *transactionDetail.unit_qty

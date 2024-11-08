@@ -7,17 +7,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
-import com.example.app21try6.database.SubProduct
-import com.example.app21try6.database.Summary
+import com.example.app21try6.database.tables.Summary
 import com.example.app21try6.databinding.FragmentBookKeepeingBinding
-import com.example.app21try6.stock.subproductstock.SubViewModel
 import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 

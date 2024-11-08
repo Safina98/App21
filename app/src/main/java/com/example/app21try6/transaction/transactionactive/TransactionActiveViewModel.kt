@@ -7,10 +7,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.app21try6.database.TransDetailDao
-import com.example.app21try6.database.TransSumDao
-import com.example.app21try6.database.TransactionDetail
-import com.example.app21try6.database.TransactionSummary
+import com.example.app21try6.database.daos.TransDetailDao
+import com.example.app21try6.database.daos.TransSumDao
+import com.example.app21try6.database.tables.TransactionDetail
+import com.example.app21try6.database.tables.TransactionSummary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -64,7 +64,7 @@ class TransactionActiveViewModel(
         }
     }
     //Add or remove checked item from checkedItemList
-    fun onCheckBoxClicked(stok: TransactionSummary,bool:Boolean){
+    fun onCheckBoxClicked(stok: TransactionSummary, bool:Boolean){
         viewModelScope.launch {
             if(bool == true){ checkedItemList.add(stok) } else{ checkedItemList.remove(stok) }
         }
@@ -170,7 +170,7 @@ class TransactionActiveViewModel(
     private suspend fun insertCSVN(token: List<String>) {
        // Log.i("INSERTCSVPROB","token: $token")
         Log.i("INSERTCSVPROB","trans_detail: $token")
-        val transactionSummary=TransactionSummary()
+        val transactionSummary= TransactionSummary()
         transactionSummary.trans_date =getDate(token[0])!!
         transactionSummary.cust_name = token[1]
         transactionSummary.total_trans = token[2].toDouble()

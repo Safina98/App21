@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.database.SubProduct
+import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.databinding.ItemListSubproductBinding
 
 class SubAdapter (val code:Int,
@@ -30,7 +30,8 @@ class SubAdapter (val code:Int,
                  subProductListener:SubListener,
                  checkBoxListenerSub: CheckBoxListenerSub,
 
-                 item: SubProduct){
+                 item: SubProduct
+        ){
             binding.subProduct = item
             binding.subProductTxt.text = item.sub_name
             if (code==0){
@@ -88,7 +89,7 @@ class SubAdapter (val code:Int,
 }
 
 class SubDiffCallback : DiffUtil.ItemCallback<SubProduct>() {
-    override fun areItemsTheSame(oldItem: SubProduct, newItem:SubProduct): Boolean {
+    override fun areItemsTheSame(oldItem: SubProduct, newItem: SubProduct): Boolean {
         return oldItem.sub_name == newItem.sub_name
     }
 
@@ -119,6 +120,6 @@ class WarnaStokListener(val warnaListener:(subProduct: SubProduct)->Unit){
 class SubListener(val subproductListener:(subProduct: SubProduct)->Unit){
     fun onSubProductClick(subProduct: SubProduct)= subproductListener(subProduct)
 }
-class CheckBoxListenerSub(val checkBoxListenerSub:(view:View, subProduct:SubProduct)->Unit){
-    fun onCheckBoxSubClick(view:View, subProduct:SubProduct)= checkBoxListenerSub(view,subProduct)
+class CheckBoxListenerSub(val checkBoxListenerSub:(view:View, subProduct: SubProduct)->Unit){
+    fun onCheckBoxSubClick(view:View, subProduct: SubProduct)= checkBoxListenerSub(view,subProduct)
 }
