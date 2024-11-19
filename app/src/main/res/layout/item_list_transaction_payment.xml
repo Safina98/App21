@@ -6,7 +6,7 @@
     <data>
         <variable
             name="item"
-            type="com.example.app21try6.transaction.transactiondetail.PaymentModel" />
+            type="com.example.app21try6.database.models.PaymentModel" />
         <variable
             name="longClickListener"
             type="com.example.app21try6.transaction.transactiondetail.TransPaymentLongListener" />

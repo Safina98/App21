@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.app21try6.database.models.PaymentModel
 import com.example.app21try6.databinding.ItemListTransactionPaymentBinding
 import com.example.app21try6.formatRupiah
 
@@ -75,15 +76,15 @@ class TransPaymentDiffCallBack: DiffUtil.ItemCallback<PaymentModel>(){
         return oldItem == newItem
     }
 }
-class TransPaymentClickListener(val clickListener:(paymentModel:PaymentModel)->Unit){
-    fun onClick(paymentModel:PaymentModel)=clickListener(paymentModel)
+class TransPaymentClickListener(val clickListener:(paymentModel: PaymentModel)->Unit){
+    fun onClick(paymentModel: PaymentModel)=clickListener(paymentModel)
 }
 
-class TransDatePaymentClickListener(val clickListener:(paymentModel:PaymentModel)->Unit){
-    fun onClick(paymentModel:PaymentModel)=clickListener(paymentModel)
+class TransDatePaymentClickListener(val clickListener:(paymentModel: PaymentModel)->Unit){
+    fun onClick(paymentModel: PaymentModel)=clickListener(paymentModel)
 }
-class TransPaymentLongListener(val longListener:(paymentModel:PaymentModel)->Unit){
-    fun onLongClick(v: View, paymentModel:PaymentModel):Boolean{
+class TransPaymentLongListener(val longListener:(paymentModel: PaymentModel)->Unit){
+    fun onLongClick(v: View, paymentModel: PaymentModel):Boolean{
         longListener(paymentModel)
         return true
     }

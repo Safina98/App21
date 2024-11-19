@@ -8,7 +8,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.app21try6.database.tables.DiscountTransaction
-import com.example.app21try6.transaction.transactiondetail.PaymentModel
+import com.example.app21try6.database.models.PaymentModel
 
 @Dao
 interface DiscountTransDao {

@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.DATE_FORMAT
+import com.example.app21try6.DETAILED_DATE_FORMATTER
 
 import com.example.app21try6.databinding.ItemListSDiscountBinding
 import com.example.app21try6.formatRupiah
@@ -24,7 +24,7 @@ class DiscountAdapter(
             if (item.discountName==null){
                 binding.txtDiscountName.text=item.expense_category_name
                 binding.txtMinQty.text=item.expense_name
-                binding.txtCustLocation.text= item.date?.let { DATE_FORMAT.format(it) }
+                binding.txtCustLocation.text= item.date?.let { DETAILED_DATE_FORMATTER.format(it) }
                 binding.txtDiscValue.text = formatRupiah(item.expense_ammount!!.toDouble())
                 binding.lblCustLocation.text="Tanggal:"
                 binding.lblMinQty.text="Pengeluaran: "

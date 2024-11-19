@@ -6,8 +6,10 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.example.app21try6.database.models.SubWithPriceModel
 import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.tables.SubProduct
+import com.example.app21try6.transaction.transactiondetail.TransactionDetailWithProduct
 
 @Dao
 interface SubProductDao {
@@ -26,6 +28,8 @@ interface SubProductDao {
     fun getAllSub():LiveData<List<SubProduct>>
     @Query("SELECT * FROM sub_table WHERE sub_id = :sub_id_")
     fun getAnItem(sub_id_:Int):LiveData<SubProduct>
+    @Query("SELECT product_code FROM sub_table WHERE sub_id = :sub_id_")
+    fun getProductIdBySubId(sub_id_:Int):Int
     @Query("SELECT sub_name FROM sub_table WHERE sub_id = :sub_id_")
     fun getNama(sub_id_: Int):LiveData<String>
     @Query("SELECT warna FROM sub_table WHERE sub_id = :sub_id_")
@@ -64,6 +68,15 @@ interface SubProductDao {
     fun delete(id_:Int)
 
     @Query("""
+    SELECT sp.*, p.product_capital, p.default_net
+    FROM sub_table sp
+    INNER JOIN product_table p ON sp.product_code = p.product_id
+""")
+    fun getSubProductWithPrice():LiveData<List<SubWithPriceModel>?>
+
+
+
+    @Query("""
         UPDATE trans_detail_table
         SET trans_item_name =:updatedName
         WHERE sub_id =:sub_id
@@ -76,7 +89,6 @@ interface SubProductDao {
         subProduct: SubProduct
 
     ) {
-
         update(subProduct)
         updateTransItemName(subProduct.sub_id, subProduct.sub_name)
 

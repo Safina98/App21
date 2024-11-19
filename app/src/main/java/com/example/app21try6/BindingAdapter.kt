@@ -13,11 +13,17 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 
-import android.content.res.Configuration
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.widget.EditText
 import android.widget.ImageView
 import androidx.cardview.widget.CardView
+import androidx.databinding.InverseBindingAdapter
+import androidx.databinding.InverseBindingListener
+import java.text.NumberFormat
+import java.util.Locale
 
 
 @BindingAdapter("textVisibility")
@@ -69,43 +75,6 @@ fun setTextVisibilityDetail(textView: TextView,item: TransactionDetail) {
         View.VISIBLE
     }
 }
-@BindingAdapter("dayModeResource", "nightModeResource", requireAll = true)
-fun setNightModeResource(imageView: ImageView, dayModeResource: Int, nightModeResource: Int) {
-    val nightModeFlags = imageView.context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-    when (nightModeFlags) {
-        Configuration.UI_MODE_NIGHT_YES -> {
-            imageView.setImageResource(nightModeResource)
-        }
-        Configuration.UI_MODE_NIGHT_NO -> {
-            imageView.setImageResource(dayModeResource)
-        }
-        Configuration.UI_MODE_NIGHT_UNDEFINED -> {
-            imageView.setImageResource(dayModeResource)
-        }
-    }
-}
-@BindingAdapter("app:imageBasedOnNightMode")
-fun setImageBasedOnNightMode(imageView: ImageView, uiMode: Int) {
-    when (uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-        Configuration.UI_MODE_NIGHT_YES -> {
-            when (imageView.id) {
-                R.id.btn_print_new -> imageView.setImageResource(R.drawable.baseline_print_light)
-                R.id.btn_edit_trans_new -> imageView.setImageResource(R.drawable.baseline_edit_light)
-                R.id.btn_send_new -> imageView.setImageResource(R.drawable.wa_vector_light)
-                R.id.btn_is_paid_off->imageView.setImageResource(R.drawable.baseline_calendar_month_light)
-            }
-        }
-        Configuration.UI_MODE_NIGHT_NO, Configuration.UI_MODE_NIGHT_UNDEFINED -> {
-            when (imageView.id) {
-                R.id.btn_print_new -> imageView.setImageResource(R.drawable.baseline_print_24)
-                R.id.btn_edit_trans_new -> imageView.setImageResource(R.drawable.baseline_edit_24)
-                R.id.btn_send_new -> imageView.setImageResource(R.drawable.wa_vector)
-                R.id.btn_is_paid_off->imageView.setImageResource(R.drawable.baseline_calendar_month_24)
-            }
-        }
-    }
-}
-
 
 @BindingAdapter("selectedItemValue")
 fun Spinner.setSelectedItemValue(selectedItemValue: String?) {
@@ -159,8 +128,16 @@ fun Button.applyGradientBackground(isGradient: Boolean) {
 @BindingAdapter("dateFormatted")
 fun bindDateFormatted(textView: TextView, date: Date?) {
     if (date != null) {
-        val dateFormatter = SimpleDateFormat("dd/MM/yyyy") // Change the date format according to your requirements
-        val dateString = dateFormatter.format(date)
+        val dateString = SIMPLE_DATE_FORMATTER.format(date)
+        textView.text = dateString
+    } else {
+        textView.text = "Pick a Date"
+    }
+}
+@BindingAdapter("detailedDateFormatted")
+fun bindDetailedDateFormatted(textView: TextView, date: Date?) {
+    if (date != null) {
+        val dateString = DETAILED_DATE_FORMATTER.format(date)
         textView.text = dateString
     } else {
         textView.text = "Pick a Date"
@@ -169,8 +146,7 @@ fun bindDateFormatted(textView: TextView, date: Date?) {
 @BindingAdapter("startDatePickerFormat")
 fun bindStartDatePickerFormatted(textView: TextView, date: Date?) {
     if (date != null) {
-        val dateFormatter = SimpleDateFormat("dd/MM/yyyy") // Change the date format according to your requirements
-        val dateString = dateFormatter.format(date)
+        val dateString = SIMPLE_DATE_FORMATTER.format(date)
         textView.text = "from $dateString"
     } else {
         textView.text = "Pick Start Date"
@@ -179,10 +155,99 @@ fun bindStartDatePickerFormatted(textView: TextView, date: Date?) {
 @BindingAdapter("endDatePickerFormat")
 fun bindEndDatePickerFormatted(textView: TextView, date: Date?) {
     if (date != null) {
-        val dateFormatter = SimpleDateFormat("dd/MM/yyyy") // Change the date format according to your requirements
-        val dateString = dateFormatter.format(date)
+        val dateString = SIMPLE_DATE_FORMAT.format(date)
         textView.text = "to  $dateString"
     } else {
         textView.text = "Pick End Date"
     }
 }
+// Formatter for Rupiah
+private val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+
+// Format and display an Int value as Rupiah
+@BindingAdapter("rupiahValue")
+fun setRupiahValue(editText: EditText, value: Int?) {
+    val formattedValue = value?.let { rupiahFormat.format(it.toDouble()) } ?: "Rp 0"
+    if (editText.text.toString() != formattedValue) {
+        editText.setText(formattedValue)
+    }
+}
+
+// Format and display a Double value as Rupiah
+@BindingAdapter("rupiahValue")
+fun setRupiahValue(editText: EditText, value: Double?) {
+    val formattedValue = value?.let { rupiahFormat.format(it) } ?: "Rp 0"
+    if (editText.text.toString() != formattedValue) {
+        editText.setText(formattedValue)
+    }
+}
+
+// Retrieve the raw double value from formatted text
+@InverseBindingAdapter(attribute = "rupiahValue", event = "rupiahValueAttrChanged")
+fun getRupiahValue(editText: EditText): Double {
+    val text = editText.text.toString()
+    return try {
+        val cleanedText = text.replace("[Rp,.\\s]".toRegex(), "")
+        cleanedText.toDouble()
+    } catch (e: NumberFormatException) {
+        0.0
+    }
+}
+
+// Listener for data binding to notify view model on text change
+@BindingAdapter("rupiahValueAttrChanged")
+fun setRupiahValueListener(editText: EditText, listener: InverseBindingListener?) {
+    editText.setOnFocusChangeListener { _, hasFocus ->
+        if (!hasFocus) {  // Update value only when focus leaves the EditText
+            listener?.onChange()
+        }
+    }
+}
+
+@BindingAdapter("doubleText")
+fun setDoubleText(editText: EditText, value: Double?) {
+    val displayText = if (value == 0.0 || value == null) "" else value.toString()
+
+    if (editText.text.toString() != displayText) {
+        editText.setText(displayText)
+    }
+}
+
+@InverseBindingAdapter(attribute = "doubleText")
+fun getDoubleText(editText: EditText): Double {
+    return editText.text.toString().toDoubleOrNull() ?: 0.0
+}
+
+@BindingAdapter("doubleTextAttrChanged")
+fun setDoubleTextListener(editText: EditText, listener: InverseBindingListener?) {
+    editText.setOnFocusChangeListener { _, hasFocus ->
+        if (!hasFocus) {  // Update value only when focus leaves the EditText
+            listener?.onChange()
+        }
+    }
+}
+
+@BindingAdapter("intText")
+fun setIntText(editText: EditText, value: Int?) {
+    val displayText = if (value == 0 || value == null) "" else value.toString()
+    if (editText.text.toString() != displayText) {
+        editText.setText(displayText)
+    }
+}
+
+@InverseBindingAdapter(attribute = "intText")
+fun getIntText(editText: EditText): Int {
+    return editText.text.toString().toIntOrNull() ?: 0
+}
+
+@BindingAdapter("intTextAttrChanged")
+fun setIntTextListener(editText: EditText, listener: InverseBindingListener?) {
+    editText.addTextChangedListener(object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        override fun afterTextChanged(s: Editable?) {
+            listener?.onChange()
+        }
+    })
+}
+

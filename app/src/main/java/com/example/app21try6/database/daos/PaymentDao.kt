@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.example.app21try6.database.tables.Payment
-import com.example.app21try6.transaction.transactiondetail.PaymentModel
+import com.example.app21try6.database.models.PaymentModel
 
 
 @Dao

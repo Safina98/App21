@@ -9,6 +9,7 @@
         <item name="colorSecondaryVariant">@color/secondaryLightColor</item>
         <item name="colorOnSecondary">@color/secondaryLightTextColor</item>
         <item name="buttonStyle">@style/CustomButtonStyle</item>
+        <item name="android:fontFamily">@font/metrophobic</item>
 
         <!-- Status bar color. -->
 
@@ -34,25 +35,7 @@
     </style>
 -->
 
-    <style name="Theme.App21Try6.alternate" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-        <item name="buttonStyle">@style/CustomButtonStyle</item>
-
-        <item name="colorPrimary">@color/primaryColor</item>
-        <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
-        <item name="colorOnPrimary">@color/primaryDarkTextColor</item>
-
-        <item name="colorSecondary">@color/secondaryColor</item>
-        <item name="colorSecondaryVariant">@color/secondaryLightColor</item>
-        <item name="colorOnSecondary">@color/secondaryDarkTextColor</item>
-        <item name="alertDialogTheme">@style/AlertDialogTheme</item>
-
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
-
-    </style>
-</resources>
+   </resources>
     <!-- Primary brand color. -->
     <!--
     <item name="colorPrimary">@color/purple_500</item>

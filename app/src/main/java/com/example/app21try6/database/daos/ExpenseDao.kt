@@ -11,7 +11,10 @@ import com.example.app21try6.statement.DiscountAdapterModel
 @Dao
 interface ExpenseDao {
     @Insert
-    fun insert(expenses: Expenses)
+    fun insert(expenses: Expenses):Long
+
+    @Query("SELECT * FROM expenses_table WHERE id=:id")
+    fun getExpenseById(id:Int):Expenses
     @Update
     fun update(expenses: Expenses)
     @Query("SELECT " +

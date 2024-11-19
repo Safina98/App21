@@ -124,7 +124,8 @@ class TransactionActiveFragment : Fragment() {
                     checkBox.isChecked = !checkBox.isChecked
                     viewModel.onCheckBoxClicked(trans, checkBox.isChecked)
                 } else {
-                    viewModel.onNavigatetoTransDetail(trans.sum_id)
+                    viewModel.
+                    onNavigatetoTransDetail(trans.sum_id)
                 }
             },
             CheckBoxListenerTransActive{view, stok ->

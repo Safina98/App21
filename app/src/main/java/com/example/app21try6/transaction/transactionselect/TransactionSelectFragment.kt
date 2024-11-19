@@ -59,11 +59,9 @@ class TransactionSelectFragment : Fragment() {
                 it.qty = it.qty+1
                 viewModel.updateTransDetail(it)
 
-
         }, SubsSelectListener {
                 it.qty = it.qty-1
                 viewModel.updateTransDetail(it)
-
         },
             CheckBoxSelectListener{view:View, trans:TransSelectModel ->
                 val cb = view as CheckBox

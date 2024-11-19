@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/transactionPurchase">
+    app:startDestination="@id/transactionActiveFragment">
 
     <fragment
         android:id="@+id/bookKeepeingFragment"
@@ -173,9 +173,21 @@
     <fragment
         android:id="@+id/expensesFragment"
         android:name="com.example.app21try6.statement.expenses.ExpensesFragment"
-        android:label="ExpensesFragment" />
+        android:label="ExpensesFragment" >
+        <action
+            android:id="@+id/action_expensesFragment_to_transactionPurchase"
+            app:destination="@id/transactionPurchase" />
+    </fragment>
     <fragment
         android:id="@+id/transactionPurchase"
-        android:name="com.example.app21try6.transaction.TransactionPurchase"
-        android:label="TransactionPurchase" />
+        android:name="com.example.app21try6.statement.purchase.TransactionPurchase"
+        android:label="TransactionPurchase" >
+        <argument
+            android:name="id"
+            app:argType="integer"
+            android:defaultValue="-1" />
+        <action
+            android:id="@+id/action_transactionPurchase_to_expensesFragment"
+            app:destination="@id/expensesFragment" />
+    </fragment>
 </navigation>

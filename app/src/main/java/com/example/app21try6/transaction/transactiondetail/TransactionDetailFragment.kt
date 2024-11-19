@@ -34,6 +34,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.database.models.PaymentModel
 import com.example.app21try6.databinding.FragmentTransactionDetailBinding
 import com.google.android.material.textfield.TextInputEditText
 import java.util.*
@@ -205,7 +206,7 @@ class TransactionDetailFragment : Fragment() {
         return binding.root
     }
 
-    private fun showBayarDialog(paymentModel: PaymentModel,typem:String){
+    private fun showBayarDialog(paymentModel: PaymentModel, typem:String){
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Bayar")
         val inflater = LayoutInflater.from(context)

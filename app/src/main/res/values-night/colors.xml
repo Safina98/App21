@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="mainTextColor">#FFFFFF</color>
+    <color name="startToolbar">#32061623</color>
+    <color name="centerToolbar">#32105575</color>
+    <color name="endToolbar">#3206545C</color>
+    <color name="transActiveBgColor">#4FEBF4F6</color>
+    <color name="iconcolor">#FFFFFF</color>
+</resources>

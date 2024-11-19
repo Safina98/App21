@@ -50,6 +50,10 @@ class StatementHSViewModel(application: Application,
     val _expenseSum=MutableLiveData<String>("Rp.")
     val expenseSum: LiveData<String> get() = _expenseSum
 
+    private val _isNavigateToPurchase=MutableLiveData<Int?>(null)
+    val isNavigateToPurchase:LiveData<Int?> get()=_isNavigateToPurchase
+
+
     val isAddExpense=MutableLiveData<Boolean>(true)
 
    ////////////////////////////////////Expenses/////////////////////////////////////////////////
@@ -304,6 +308,13 @@ class StatementHSViewModel(application: Application,
         withContext(Dispatchers.IO){
             expenseCategoryDao.delete(id)
         }
+    }
+
+    fun onNavigateToPurcase(id:Int){
+        _isNavigateToPurchase.value=id
+    }
+    fun onNavigatedToPurchase(){
+        _isNavigateToPurchase.value=null
     }
 
 }

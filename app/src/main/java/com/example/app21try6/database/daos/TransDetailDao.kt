@@ -195,8 +195,9 @@ interface TransDetailDao {
     fun getNumberOfData(sumId:Int):LiveData<Int>
 
    // @Query("SELECT trans_item_name as trans_item_name, qty as qty, trans_price as  trans_price, total_price as total_price, is_prepared as is_prepared, c as cust_name, product_price as price,best_selling as bestSelling,brand_name as brand, category_name as category FROM trans_detail_table INNER JOIN summary_table ON sum_id = trans_detail_table.sum_id")
-   @Query("SELECT * FROM trans_sum_table LEFT JOIN trans_detail_table ON trans_sum_table.sum_id = trans_detail_table.sum_id")
+    @Query("SELECT * FROM trans_sum_table LEFT JOIN trans_detail_table ON trans_sum_table.sum_id = trans_detail_table.sum_id")
     fun getExportedData():List<TransExportModel>
+
     @Query("SELECT * FROM trans_sum_table LEFT JOIN trans_detail_table ON trans_sum_table.sum_id = trans_detail_table.sum_id")
     fun getExportedDataNew():LiveData<List<TransExportModel>>
 
@@ -215,6 +216,11 @@ interface TransDetailDao {
         JOIN product_table ON sub_table.product_code = product_table.product_id
     """)
     fun getTransactionDetails(): LiveData<List<StockModel>>
+
+    @Query("SELECT * FROM trans_detail_table")
+    fun getAllTransDetail():List<TransactionDetail>
+    @Update
+    suspend fun updateTransactions(transactions: List<TransactionDetail>)
 
 
 /*

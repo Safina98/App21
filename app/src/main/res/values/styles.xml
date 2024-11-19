@@ -65,14 +65,16 @@
     <style name="texr_detail_style">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:fontFamily">@font/alegreya_sc</item>
+        <item name="android:fontFamily">@font/metrophobic</item>
+        <item name="android:textColor">@color/mainTextColor</item>
         <item name="android:textSize">24sp</item>
     </style>
 
     <style name="text_subproduct_small_style">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:fontFamily">@font/alegreya_sc</item>
+        <item name="android:fontFamily">@font/metrophobic</item>
+        <item name="android:textColor">@color/mainTextColor</item>
         <!--<item name="android:textColor">@color/dark_green3</item>-->
         <item name="android:textSize">18sp</item>
     </style>
@@ -80,6 +82,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:fontFamily">@font/architects_daughter</item>
+        <item name="android:textColor">@color/mainTextColor</item>
         <item name="android:textStyle">bold</item>
         <!--<item name="android:textColor">@color/dark_green3</item>-->
         <item name="android:textSize">20sp</item>
@@ -95,7 +98,8 @@
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginTop">8dp</item>
         <item name="android:layout_marginEnd">8dp</item>
-        <item name="android:fontFamily">@font/alegreya_sc</item>
+        <item name="android:fontFamily">@font/metrophobic</item>
+        <item name="android:textColor">@color/mainTextColor</item>
         <!--<item name="android:textColor">@color/dark_green3</item>-->
         <item name="android:textSize">24dp</item>
     </style>
@@ -105,24 +109,32 @@
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginTop">4dp</item>
         <item name="android:layout_marginEnd">8dp</item>
-        <item name="android:fontFamily">@font/alegreya_sc</item>
+        <item name="android:fontFamily">@font/metrophobic</item>
+        <item name="android:textColor">@color/mainTextColor</item>
         <item name="android:textSize">20dp</item>
     </style>
     <style name="active_transaction_text_style">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:fontFamily">@font/metrophobic</item>
+        <item name="android:textColor">@color/mainTextColor</item>
         <item name="android:textSize">22sp</item>
     </style>
     <style name="active_transaction_small_txt">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:fontFamily">@font/metrophobic</item>
+        <item name="android:textColor">@color/mainTextColor</item>
         <item name="android:textSize">18sp</item>
     </style>
 
     <style name="text_trans_detail_style">
         <item name="android:textSize">24sp</item>
+    </style>
+    <style name="CustomHintTextStyle" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/metrophobic</item>
+        <item name="android:textColor">@color/mainTextColor</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="plus_minum_btn_trans">
@@ -137,11 +149,17 @@
     <style name="EditText.NoBackground" parent="Widget.AppCompat.EditText">
         <item name="android:background">@null</item>
         <item name="android:padding">0dp</item>
+        <item name="android:fontFamily">@font/metrophobic</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+    <style name="EditText.Font" parent="Widget.AppCompat.EditText">
+        <item name="android:fontFamily">@font/metrophobic</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
     <style name="CustomButtonStyle" parent="Widget.AppCompat.Button">
         <item name="android:background">@drawable/tool_bar_bg</item>
         <item name="android:textColor">@android:color/white</item>
+
         <item name="paddingStart">2dp</item>
         <item name="paddingEnd">2dp</item>
         <item name="android:radius">4dp</item>

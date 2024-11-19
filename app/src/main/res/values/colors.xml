@@ -28,6 +28,12 @@
     <color name="primaryDarkTextColor">#FFFFFF</color>
     <color name="secondaryDarkTextColor">#FFFFFF</color>
 
+    <color name="startToolbar">#082946</color>
+    <color name="centerToolbar">#105575</color>
+    <color name="endToolbar">#06545C</color>
+
+    <color name="mainTextColor">#333030</color>
+    <color name="iconcolor">#000000</color>
 
     <color name="nightModeBackgroundColor">#121212</color>
     <color name="lightModeBackgroundColor">#FFFFFF</color>

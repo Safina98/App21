@@ -90,7 +90,7 @@
             android:text="Total: "
             android:visibility="visible"
             style="@style/texr_detail_style"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/btn_purchase"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
@@ -100,9 +100,21 @@
             android:layout_height="wrap_content"
             android:text="@{viewModel.expenseSum}"
             android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/btn_purchase"
             app:layout_constraintEnd_toStartOf="@+id/btn_add_new_expense"
             app:layout_constraintStart_toEndOf="@+id/lbl_total" />
+        <Button
+            android:id="@+id/btn_purchase"
+            android:layout_margin="@dimen/small_margin"
+            android:padding="@dimen/small_margin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="PURCHASE"
+            android:onClick="@{()->viewModel.onNavigateToPurcase(-1)}"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_add_new_expense"
+            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

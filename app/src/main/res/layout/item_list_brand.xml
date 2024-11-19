@@ -22,14 +22,12 @@
 
         <TextView
             android:id="@+id/brand_text"
+            style="@style/text_product_title"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="2dp"
-            android:fontFamily="@font/alegreya_sc"
             android:gravity="center_vertical"
             android:text="Brand"
-
-            android:textSize="30dp" />
+            />
         <!--android:textColor="@color/black"-->
     </androidx.cardview.widget.CardView>
 </layout>

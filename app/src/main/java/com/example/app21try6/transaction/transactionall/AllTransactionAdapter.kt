@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.DATE_FORMAT
+import com.example.app21try6.DETAILED_DATE_FORMATTER
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.databinding.ItemListTransactionAllBinding
 import com.example.app21try6.formatRupiah
@@ -38,7 +38,7 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
             binding.txtTotalTrans.text = formatRupiah(item.total_trans.toDouble()).toString()
             binding.clickListener = clickListener
             binding.checkboxListener = checkBoxListener
-            val formattedDate = DATE_FORMAT.format(item.trans_date)
+            val formattedDate = DETAILED_DATE_FORMATTER.format(item.trans_date)
             binding.txtTglTrans.text = formattedDate
             binding.executePendingBindings()
         }

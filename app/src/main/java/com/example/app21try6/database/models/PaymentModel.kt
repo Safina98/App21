@@ -1,4 +1,4 @@
-package com.example.app21try6.transaction.transactiondetail
+package com.example.app21try6.database.models
 
 import androidx.room.ColumnInfo
 import java.util.Date

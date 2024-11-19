@@ -9,7 +9,6 @@
         <variable
             name="clickListener"
             type="com.example.app21try6.transaction.transactionproduct.ProductTransListener" />
-
     </data>
 
     <androidx.cardview.widget.CardView
@@ -26,11 +25,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:fontFamily="@font/alegreya_sc"
                 android:text="@{product.product_name}"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textSize="30sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

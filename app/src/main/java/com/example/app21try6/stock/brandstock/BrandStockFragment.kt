@@ -136,7 +136,7 @@ class BrandStockFragment : Fragment() {
         //Product adapter
         val adapterProduct = BrandStockAdapter(
             BrandStockListener {
-                viewModel.onProductCLick(arrayOf(it.id.toString(),it.parentId.toString(),"0","0",it.name))
+                viewModel.onProductCLick(arrayOf(it.id.toString(),it.parentId.toString(),viewModel.selectedBrand.value?.cath_code.toString(),"0",it.name))
             }, BrandStockLongListener {
                 viewModel.getLongClickedProduct(it.id)
                 showDialogBox(viewModel,it,MODELTYPE.Product)

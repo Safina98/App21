@@ -21,7 +21,7 @@ class MyApplication: Application()  {
         val observer = AppLifecycleObserver(mainActivity)
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(observer)
-        updateSummaryProductId()
+        //updateSummaryProductId()
         // removeDuplicatesTransSum()
        // if (isFirstRun) {
             //scheduleOneTimeMigrateDB()

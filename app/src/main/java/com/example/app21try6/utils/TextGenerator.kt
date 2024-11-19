@@ -5,7 +5,7 @@ import com.example.app21try6.DISCTYPE
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.formatRupiah
-import com.example.app21try6.transaction.transactiondetail.PaymentModel
+import com.example.app21try6.database.models.PaymentModel
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Date

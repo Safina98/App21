@@ -2,6 +2,7 @@ package com.example.app21try6.stock.subproductstock
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -83,7 +84,9 @@ class SubViewModel (
             subProduct.sub_name = subProduct_name
             subProduct.brand_code = product_id[1]
             subProduct.cath_code = product_id[2]
-            insert(subProduct)}
+           //Log.i("SubProbs","${product_id[0]},${product_id[1]},${product_id[2]}}")
+            insert(subProduct)
+            }
         }
     }
     private suspend fun insert(subProduct: SubProduct){

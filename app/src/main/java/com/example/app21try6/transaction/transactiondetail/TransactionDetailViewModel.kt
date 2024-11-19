@@ -9,7 +9,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
-import com.example.app21try6.DATE_FORMAT
+import com.example.app21try6.DETAILED_DATE_FORMATTER
 import com.example.app21try6.DISCTYPE
 import com.example.app21try6.database.daos.CustomerDao
 import com.example.app21try6.database.daos.DiscountDao
@@ -23,6 +23,7 @@ import com.example.app21try6.database.tables.Summary
 import com.example.app21try6.database.daos.SummaryDbDao
 import com.example.app21try6.database.daos.TransDetailDao
 import com.example.app21try6.database.daos.TransSumDao
+import com.example.app21try6.database.models.PaymentModel
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.formatRupiah
@@ -156,7 +157,7 @@ class TransactionDetailViewModel (application: Application,
             val list = withContext(Dispatchers.IO){ datasource2.getTransactionDetailsWithSubIdAndTransDate(23,date!!)}
             val sum = withContext(Dispatchers.IO){ datasource2.getSumTransactionDetailsWithSubIdAndDate(23,date!!)}
             list.forEach { itemName ->
-                Log.d("idprobs", "${itemName.trans_detail_date?.let { DATE_FORMAT.format(it) }} ${itemName.trans_item_name}: ${itemName.qty} ${itemName.unit_qty}")
+                Log.d("idprobs", "${itemName.trans_detail_date?.let { DETAILED_DATE_FORMATTER.format(it) }} ${itemName.trans_item_name}: ${itemName.qty} ${itemName.unit_qty}")
             }
             Log.d("idprobs", "total:  ${sum}:")
         }
@@ -227,7 +228,7 @@ class TransactionDetailViewModel (application: Application,
     }
 
     // update Payment table
-    fun bayar(paymentModel:PaymentModel){
+    fun bayar(paymentModel: PaymentModel){
         viewModelScope.launch {
             val bayar = modelToPaymentConverter(paymentModel)
             if (paymentModel.id!=null){
@@ -239,7 +240,7 @@ class TransactionDetailViewModel (application: Application,
             updateTransSum()
         }
     }
-    fun updateDiscount(paymentModel:PaymentModel){
+    fun updateDiscount(paymentModel: PaymentModel){
         viewModelScope.launch {
             updateDiscountToDb(paymentModel.id!!,paymentModel.payment_ammount!!.toDouble())
         }

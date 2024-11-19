@@ -34,7 +34,7 @@ class SubProductStockFragment : Fragment() {
         val application = requireNotNull(this.activity).application
         val dataSource2 = VendibleDatabase.getInstance(application).subProductDao
         val dataSource3 = VendibleDatabase.getInstance(application).transDetailDao
-        var id = arguments?.let { SubProductStockFragmentArgs.fromBundle(it).productId }
+        val id = arguments?.let { SubProductStockFragmentArgs.fromBundle(it).productId }
         (activity as AppCompatActivity).supportActionBar?.title = id?.last()
         id?.set(4,"0")
         val id_ = id?.map { it.toInt() }?.toTypedArray()
@@ -47,7 +47,7 @@ class SubProductStockFragment : Fragment() {
         binding.reset.setOnClickListener {
             DialogUtils.showDeleteDialog(requireContext(),this, viewModel, SubProduct(), { vm, item -> (vm as SubViewModel).resetAllSubProductStock() })
         }
-        var adapter = SubAdapter(id_[3],
+        val adapter = SubAdapter(id_[3],
                 CheckBoxListenerSub({view:View,subProduct: SubProduct ->
                     val cb = view as CheckBox
                     subProduct.is_checked = cb.isChecked

@@ -41,6 +41,8 @@ class TransactionSelectViewModel(
     val allProduct :LiveData<List<Product>> get() = _allProduct
     private var _sumId = MutableLiveData<Int>(-1)
 
+    private var expenseId=MutableLiveData (-1)
+
     private var _productId = MutableLiveData<Int>(-1)
     val productId:LiveData<Int> get()=_productId
 
@@ -86,7 +88,7 @@ class TransactionSelectViewModel(
 
     fun getTransModel(productId:Int){
         viewModelScope.launch {
-           var list = withContext(Dispatchers.IO){
+           val list = withContext(Dispatchers.IO){
                database6.getSubProductM(productId,_sumId.value ?: 0)
            }
             transSelectModel.value = list
@@ -100,8 +102,15 @@ class TransactionSelectViewModel(
         _productId.value = id
     }
     fun setProductSumId(id:Int?){
-        if (id!=null)
-        { _sumId.value = id!!
+        if (id != null) {
+            if (id >= 0)
+            {
+                _sumId.value = id
+            }else
+            {
+                expenseId.value=id*-1
+
+            }
         }
     }
     fun saveSelectedItemId(itemId: Int) {

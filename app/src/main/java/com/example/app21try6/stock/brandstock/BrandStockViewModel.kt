@@ -63,6 +63,8 @@ class BrandStockViewModel(
     private val _selectedKategoriSpinner = MutableLiveData<String>()
     val selectedKategoriSpinner: LiveData<String> get() = _selectedKategoriSpinner
 
+    var catId=0
+
     //Insert batch
     private val _insertionCompleted = MutableLiveData<Boolean>()
     val insertionCompleted: LiveData<Boolean>
