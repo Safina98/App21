@@ -8,7 +8,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
-import com.example.app21try6.database.InventoryLog
+
 import com.example.app21try6.database.InventoryPurchase
 import com.example.app21try6.database.SuplierTable
 import com.example.app21try6.database.daos.ExpenseCategoryDao
@@ -19,6 +19,7 @@ import com.example.app21try6.database.DetailWarnaTable
 import com.example.app21try6.database.daos.BrandDao
 import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.tables.Expenses
+import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.formatRupiah
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -187,7 +188,7 @@ class PurchaseViewModel(application: Application,
                 inventoryLog.barangLogDate=i.purchaseDate
                 inventoryLog.subProductId=i.subProductId?:0
                 inventoryLog.productId=getProductId(i.subProductId)
-                inventoryLog.merkId=getBrandId(inventoryLog.productId)
+                inventoryLog.brandId=getBrandId(inventoryLog.productId?:0)
                 inventoryLog.barangLogDate=i.purchaseDate
                 inventoryLog.barangLogRef=UUID.randomUUID().toString()
                 inventoryLog.isi=i.netQty

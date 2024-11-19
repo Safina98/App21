@@ -40,33 +40,6 @@ data class DetailWarnaTable(
     var ket:String="",
     var ref: String=""
 )
-data class InventoryLog(
-    @PrimaryKey(autoGenerate = true)
-    var id: Int = 0,
-    // merk_table refMerk
-    @ColumnInfo(name="merkId")
-    var merkId: Int =0,
-    // warna_table warnaRef
-    @ColumnInfo(name="productId")
-    var productId: Int = 0,
-    @ColumnInfo(name="subProductId")
-    var subProductId: Int = 0,
-    // detail_warna_table,
-    @ColumnInfo(name="detailWarnaRef")
-    var detailWarnaRef: String? = "",
-    @ColumnInfo(name="isi")
-    var isi: Double = 0.0,
-    // detail_warna_table
-    @ColumnInfo(name="pcs")
-    var pcs: Int = 0,
-    @ColumnInfo(name="barangLogDate")
-    var barangLogDate: Date = Date(),
-    // log_table
-    @ColumnInfo(name="barangLogRef")
-    var barangLogRef: String = "",
-    //added column
-    var barangLogKet: String = ""
-)
 
 
 val purchaseDummy= mutableListOf<InventoryPurchase>(

@@ -43,7 +43,10 @@ data class  Expenses (
     @ColumnInfo(name="expense_date")
     var expense_date:Date? = null,
     @ColumnInfo(name = "expense_ref")
-    var expense_ref:String=""
+    var expense_ref:String="",
+    //new column
+    @ColumnInfo(name = "is_keeped")
+    var is_keeped:Boolean=false
 )
 
 
