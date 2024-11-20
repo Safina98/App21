@@ -91,7 +91,5 @@ interface SubProductDao {
     ) {
         update(subProduct)
         updateTransItemName(subProduct.sub_id, subProduct.sub_name)
-
-
     }
 }

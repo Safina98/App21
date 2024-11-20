@@ -17,6 +17,7 @@ import com.example.app21try6.database.daos.DiscountTransDao
 import com.example.app21try6.database.daos.ExpenseCategoryDao
 import com.example.app21try6.database.daos.ExpenseDao
 import com.example.app21try6.database.daos.InventoryLogDao
+import com.example.app21try6.database.daos.InventoryPurchaseDao
 import com.example.app21try6.database.daos.PaymentDao
 import com.example.app21try6.database.daos.ProductDao
 import com.example.app21try6.database.daos.SubProductDao
@@ -65,7 +66,7 @@ abstract class VendibleDatabase:RoomDatabase(){
     abstract val detailWarnaDao:DetailWarnaDao
     abstract val inventoryLogDao:InventoryLogDao
     abstract val suplierDao:SuplierDao
-
+    abstract val inventoryPurchaseDao: InventoryPurchaseDao
 
     companion object{
         @Volatile

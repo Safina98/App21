@@ -7,6 +7,7 @@ import androidx.work.WorkerParameters
 import com.example.app21try6.DETAILED_DATE_FORMATTER
 import com.example.app21try6.SIMPLE_DATE_FORMATTER
 import com.example.app21try6.database.DateTypeConverter
+import com.example.app21try6.database.tables.SuplierTable
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.formatRupiah
 
@@ -29,30 +30,28 @@ class UpdateSummaryProductIdWorker(
 
     private suspend fun performUpdate() {
         val database = VendibleDatabase.getInstance(applicationContext) // Get Room database instance
-        val transactionDetailDao = database.transDetailDao
+        val suplierDao=database.suplierDao
 
         try {
             // Get all entries from trans_detail_table
-            val transactionDetails = transactionDetailDao.getAllTransDetail()
 
             // For each entry, update trans_detail_date to the new format
-            val updatedDetails = transactionDetails.map { transaction ->
-                transaction.trans_detail_date?.let { oldDate ->
-                    // Convert old date to string in the new format
-                    val formattedDateString = DateTypeConverter.fromDate(oldDate)
-
-                    // Parse the formatted string back to a Date object
-                    val newFormattedDate = DateTypeConverter.toDate(formattedDateString)
-
-                    // Update transaction with new formatted Date
-                    transaction.copy(trans_detail_date = newFormattedDate)
-                } ?: transaction
-            }
+            val suplierDummy= listOf<SuplierTable>(
+                SuplierTable(1,"Mitra Jaya","Jakarta"),
+                SuplierTable(2,"Polystar","Jakarta"),
+                SuplierTable(3,"Busa Yerry","Surabaya"),
+                SuplierTable(4,"Vision","Jakarta"),
+                SuplierTable(5,"PT. SIMNU","Surabaya"),
+                SuplierTable(6,"Aneka Lancar","Makassar"),
+                SuplierTable(7,"Sentral Logam","Makassar"),
+                SuplierTable(8,"Toko Utama","Makassar"),
+                SuplierTable(9,"Bali Jaya","Makassar"),
+            )
 
             // Update all entries with the new date format
-            transactionDetailDao.updateTransactions(updatedDetails)
+            suplierDao.insert(suplierDummy)
         }catch (e:Exception){
-
+            Log.i("WorkerProbs","worker Failed $e")
         }
 
     }

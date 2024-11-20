@@ -8,18 +8,19 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
-
-import com.example.app21try6.database.InventoryPurchase
-import com.example.app21try6.database.SuplierTable
 import com.example.app21try6.database.daos.ExpenseCategoryDao
 import com.example.app21try6.database.daos.ExpenseDao
 import com.example.app21try6.database.daos.ProductDao
 import com.example.app21try6.database.daos.SubProductDao
-import com.example.app21try6.database.DetailWarnaTable
-import com.example.app21try6.database.daos.BrandDao
+import com.example.app21try6.database.daos.DetailWarnaDao
+import com.example.app21try6.database.daos.InventoryLogDao
+import com.example.app21try6.database.daos.InventoryPurchaseDao
+import com.example.app21try6.database.daos.SuplierDao
 import com.example.app21try6.database.tables.Brand
+import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.Expenses
 import com.example.app21try6.database.tables.InventoryLog
+import com.example.app21try6.database.tables.InventoryPurchase
 import com.example.app21try6.formatRupiah
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,18 +34,15 @@ class PurchaseViewModel(application: Application,
                         val expenseDao: ExpenseDao,
                         val expenseCategoryDao: ExpenseCategoryDao,
                         val subProductDao:SubProductDao,
-                        val productDao:ProductDao
+                        val productDao:ProductDao,
+                        val invetoryPurchaseDao: InventoryPurchaseDao,
+                        val inventoryLogDao: InventoryLogDao,
+                        val detailWarnaDao: DetailWarnaDao,
+                        val suplierDao:SuplierDao
 
 ): AndroidViewModel(application) {
 
-    val suplierDummy= listOf<SuplierTable>(
-        SuplierTable(1,"Mitra Jaya","Jakarta"),
-        SuplierTable(2,"Polystar","Jakarta"),
-        SuplierTable(3,"Busa Yerry","Surabaya"),
-        SuplierTable(4,"Vision","Jakarta"),
-        SuplierTable(5,"PT. SIMNU","Surabaya"),
-        SuplierTable(6,"Aneka Lancar","Makassar")
-    )
+    val suplierDummy= suplierDao.getAllSuplier()
     var inventoryList= mutableListOf<InventoryPurchase>()
     val allSubProductFromDb=subProductDao.getSubProductWithPrice()
     private val _inventoryPurchaseList=MutableLiveData<List<InventoryPurchase>>()
@@ -85,6 +83,19 @@ class PurchaseViewModel(application: Application,
         val qty = productQty.value ?: 0
         totalPrice.value = price * net * qty
     }
+
+    fun getInventoryList(id:Int){
+        viewModelScope.launch {
+
+            if (id!=-1){
+                val list= withContext(Dispatchers.IO){invetoryPurchaseDao.selectPurchaseList(id)}
+                _inventoryPurchaseList.value=list
+
+        }
+
+        }
+    }
+
     fun setProductPriceAndNet(name:String){
         viewModelScope.launch {
             val selectedSubProduct = allSubProductFromDb.value?.find { it.subProduct.sub_name == name }
@@ -103,16 +114,16 @@ class PurchaseViewModel(application: Application,
         if (inventoryPurchase.value!=null){
             val index = inventoryList.indexOfFirst { it.id == inventoryPurchase.value?.id}
             val item = inventoryPurchase.value!!
-            item.name=productName.value?:""
-            item.supName=suplierName.value?:""
-            item.netQty=productNet.value?.toDouble() ?: 0.0
-            item.batchCount=productQty.value?.toInt() ?: 0
+            item.subProductName=productName.value?:""
+            item.suplierName=suplierName.value?:""
+            item.net=productNet.value?.toDouble() ?: 0.0
+            item.batchCount=productQty.value?.toDouble() ?: 0.0
             item.price=productPrice.value?.toInt() ?: 0
             item.totalPrice=totalPrice.value?.toDouble() ?: 0.0
             item.ref=inventoryPurchase.value!!.ref
             item.status="PENDING"
             item.subProductId=allSubProductFromDb.value?.find { it.subProduct.sub_name ==productName.value }?.subProduct?.sub_id ?: inventoryPurchase.value!!.subProductId
-            item.suplierId=suplierDummy.find { it.suplierName==suplierName.value }?.id ?: inventoryPurchase.value!!.suplierId
+            item.suplierId=suplierDummy.value?.find { it.suplierName==suplierName.value }?.id ?: inventoryPurchase.value!!.suplierId
             item.purchaseDate= Date()
             if (index != -1) {
                 inventoryList[index] = item
@@ -131,7 +142,8 @@ class PurchaseViewModel(application: Application,
                 expenses.expense_category_id=getCategoryIdByName("BELI BARANG")?:0
                 expenses.expense_name="Bayar ${suplierName.value}"
                 expenses.expense_date=Date()
-                val id=insertExpense(expenses)
+                insertPurchase(expenses,inventoryPurchaseList.value!!)
+
             }
             else{
                 val expenses=getExpensesById(id)
@@ -146,29 +158,28 @@ class PurchaseViewModel(application: Application,
     fun addItemToList(){
         val item=InventoryPurchase()
         item.id=0
-        item.name=productName.value?:""
-        item.supName=suplierName.value?:""
-        item.netQty=productNet.value?.toDouble() ?: 0.0
-        item.batchCount=productQty.value?.toInt() ?: 0
+        item.subProductName=productName.value?:""
+        item.suplierName=suplierName.value?:""
+        item.net=productNet.value?.toDouble() ?: 0.0
+        item.batchCount=productQty.value?.toDouble() ?: 0.0
         item.price=productPrice.value?.toInt() ?: 0
         item.totalPrice=totalPrice.value?.toDouble() ?: 0.0
         item.ref=UUID.randomUUID().toString()
         item.status="PENDING"
         item.subProductId=allSubProductFromDb.value?.find { it.subProduct.sub_name ==productName.value }?.subProduct?.sub_id ?: 0
-        item.suplierId=suplierDummy.find { it.suplierName==suplierName.value }?.id ?: 0
+        item.suplierId=suplierDummy.value?.find { it.suplierName==suplierName.value }?.id ?: 0
         item.purchaseDate= Date()
         inventoryList.add(item)
         _inventoryPurchaseList.value=inventoryList
         _isAddItemClick.value=true
     }
     fun rvClick(item: InventoryPurchase){
-        productName.value=item.name
+        productName.value=item.subProductName
         productPrice.value=item.price.toDouble()
-        productQty.value=item.batchCount
-        productNet.value=item.netQty
+        productQty.value=item.batchCount.toInt()
+        productNet.value=item.net
         totalPrice.value=item.totalPrice
         inventoryPurchase.value=item
-        Log.i(tagp,"${productNet.value}")
         _isRvClick.value=true
     }
     fun addInventoryLog(){
@@ -176,9 +187,9 @@ class PurchaseViewModel(application: Application,
 
             for (i in inventoryList){
                 val subDetail= DetailWarnaTable()
-                subDetail.subId=i.subProductId
+                subDetail.subId=i.subProductId!!
                 subDetail.batchCount=i.batchCount
-                subDetail.netCount=i.netQty
+                subDetail.net=i.net
                 subDetail.ket
                 subDetail.ref=UUID.randomUUID().toString()
                 subDetailList.add(subDetail)
@@ -187,23 +198,16 @@ class PurchaseViewModel(application: Application,
                 inventoryLog.detailWarnaRef=subDetail.ref
                 inventoryLog.barangLogDate=i.purchaseDate
                 inventoryLog.subProductId=i.subProductId?:0
-                inventoryLog.productId=getProductId(i.subProductId)
+                inventoryLog.productId=getProductId(i.subProductId!!)
                 inventoryLog.brandId=getBrandId(inventoryLog.productId?:0)
                 inventoryLog.barangLogDate=i.purchaseDate
                 inventoryLog.barangLogRef=UUID.randomUUID().toString()
-                inventoryLog.isi=i.netQty
-                inventoryLog.pcs=i.batchCount
+                inventoryLog.isi=i.net
+                inventoryLog.pcs=i.batchCount.toInt()
                 inventoryLog.barangLogKet="PENDING"
                 logList.add(inventoryLog)
             }
 
-            subDetailList.forEach {
-                Log.i(tagp,it.toString())
-            }
-            Log.i(tagp,"InventoryLog")
-            logList.forEach {
-                Log.i(tagp,it.toString())
-            }
         }
     }
     fun updateInventoryStock(){
@@ -223,6 +227,12 @@ class PurchaseViewModel(application: Application,
         productQty.value=0
         productNet.value=0.0
         productPrice.value=0.0
+    }
+
+    private suspend fun insertPurchase(expenses: Expenses,list:List<InventoryPurchase>){
+        withContext(Dispatchers.IO){
+            invetoryPurchaseDao.insertPurchaseAndExpense(expenses,list)
+        }
     }
 
     private suspend fun insertExpense(expenses: Expenses):Int{

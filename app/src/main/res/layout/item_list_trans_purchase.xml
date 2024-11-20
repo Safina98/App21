@@ -6,7 +6,7 @@
     <data>
         <variable
             name="model"
-            type="com.example.app21try6.database.InventoryPurchase" />
+            type="com.example.app21try6.database.tables.InventoryPurchase" />
 
         <variable
             name="updateListener"
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
-            android:text="@{model.name}"
+            android:text="@{model.subProductName}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

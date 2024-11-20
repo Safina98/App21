@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.app21try6.R
 import com.example.app21try6.bookkeeping.vendiblelist.VendibleFragmentArgs
 import com.example.app21try6.database.VendibleDatabase
-import com.example.app21try6.database.purchaseDummy
 import com.example.app21try6.databinding.FragmentStatementHsBinding
 import com.example.app21try6.databinding.FragmentTransactionPurchaseBinding
 import com.example.app21try6.statement.StatementHSViewModel
@@ -37,14 +36,19 @@ class TransactionPurchase : Fragment() {
         binding=DataBindingUtil.inflate(inflater,R.layout.fragment_transaction_purchase,container,false)
         val application= requireNotNull(this.activity).application
         binding.lifecycleOwner=this
-        val id= arguments?.let { TransactionPurchaseArgs.fromBundle(it).id }?:-1
+        val id= arguments?.let { TransactionPurchaseArgs.fromBundle(it).exId }?:-1
         val dataSource3 = VendibleDatabase.getInstance(application).expenseDao
         val dataSource4 = VendibleDatabase.getInstance(application).expenseCategoryDao
         val dataSource5 = VendibleDatabase.getInstance(application).subProductDao
         val dataSource6 = VendibleDatabase.getInstance(application).productDao
-        val viewModelFactory = PurchaseViewModelFactory(application,id,dataSource3,dataSource4,dataSource5,dataSource6)
+        val dataSource7 = VendibleDatabase.getInstance(application).inventoryPurchaseDao
+        val dataSource8 = VendibleDatabase.getInstance(application).inventoryLogDao
+        val dataSource9 = VendibleDatabase.getInstance(application).detailWarnaDao
+        val dataSource10 = VendibleDatabase.getInstance(application).suplierDao
+        val viewModelFactory = PurchaseViewModelFactory(application,id,dataSource3,dataSource4,dataSource5,dataSource6,dataSource7,dataSource8,dataSource9,dataSource10)
         viewModel = ViewModelProvider(this,viewModelFactory).get(PurchaseViewModel::class.java)
         binding.viewModel=viewModel
+        viewModel.getInventoryList(id)
         val adapter =PurchaseAdapter(
             UpdateListener {
                 viewModel.rvClick(it)
@@ -79,9 +83,13 @@ class TransactionPurchase : Fragment() {
                 viewModel.setProductPriceAndNet(subName)
             }
         })
-        val supNames=viewModel.suplierDummy.map { it.suplierName }
-        val adapterSuplier = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, supNames)
-        autoCompleteSuplier.setAdapter(adapterSuplier)
+        viewModel.suplierDummy.observe(viewLifecycleOwner, Observer {list->list?.let {
+            val supNames=list.map { it.suplierName }
+            val adapterSuplier = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, supNames)
+            autoCompleteSuplier.setAdapter(adapterSuplier)
+        }
+        })
+
 
         viewModel.inventoryPurchaseList.observe(viewLifecycleOwner){
             adapter.submitList(it)
@@ -91,13 +99,11 @@ class TransactionPurchase : Fragment() {
         }
         viewModel.isNavigateToExpense.observe(viewLifecycleOwner){
             if (it==true){
-                this.findNavController().navigate(TransactionPurchaseDirections.actionTransactionPurchaseToExpensesFragment())
+              //  this.findNavController().navigate(TransactionPurchaseDirections.actionTransactionPurchaseToExpensesFragment())
                 viewModel.onNavigatedToExpense()
             }
         }
-
         return binding.root
     }
-
 
 }

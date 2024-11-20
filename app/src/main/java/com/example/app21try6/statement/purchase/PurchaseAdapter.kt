@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.database.InventoryPurchase
+import com.example.app21try6.database.tables.InventoryPurchase
 import com.example.app21try6.databinding.ItemListTransPurchaseBinding
 import com.example.app21try6.formatRupiah
 
@@ -23,7 +23,7 @@ class PurchaseAdapter (val updateListener: UpdateListener,
             binding.model= item
             //binding.textSubproductV.text =item.categoryName
             binding.textQty.text="${item.batchCount} Roll"
-            binding.textNet.text="${item.netQty} M"
+            binding.textNet.text="${item.net} M"
             binding.textPrice.text="${formatRupiah(item.price.toDouble())}"
             binding.textTotalPrice.text="${formatRupiah(item.totalPrice)}"
             binding.updateListener =updateListener

@@ -30,6 +30,7 @@ import com.example.app21try6.statement.DiscountListener
 import com.example.app21try6.statement.DiscountLongListener
 import com.example.app21try6.statement.StatementHSViewModel
 import com.example.app21try6.statement.StatementHSViewModelFactory
+import com.example.app21try6.statement.purchase.tagp
 import com.example.app21try6.stock.brandstock.CategoryAdapter
 import com.example.app21try6.stock.brandstock.CategoryModel
 
@@ -78,9 +79,11 @@ class ExpensesFragment : Fragment() {
         binding.viewModel=viewModel
         adapter = DiscountAdapter(
             DiscountListener {
-                showExpensesDialog(it)
-            }, DiscountLongListener {
 
+                             viewModel.onNavigateToPurcase(it.id!!)
+
+            }, DiscountLongListener {
+                showExpensesDialog(it)
             },
             DiscountDelListener {
                 viewModel.deleteExpense(it.id!!)
@@ -146,20 +149,21 @@ class ExpensesFragment : Fragment() {
         viewModel.expenseSum.observe(viewLifecycleOwner, Observer {
            // Log.i(tagg, "expensedum:$it")
         })
-
-        viewModel.isNavigateToPurchase.observe(viewLifecycleOwner, Observer {
-            if(it!=null){
-                this.findNavController().navigate(ExpensesFragmentDirections.actionExpensesFragmentToTransactionPurchase())
-                viewModel.onNavigatedToPurchase()
+        viewModel.isNavigateToPurchase.observe(viewLifecycleOwner,Observer{
+            it?.let {
+                this.findNavController().navigate(ExpensesFragmentDirections.actionExpensesFragmentToTransactionPurchase(it))
             }
         })
+
+
+
 
         return binding.root
     }
     fun showExpensesDialog(expenses: DiscountAdapterModel?) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Update")
-        Log.i("DiscProbs", "updateDialogShows")
+
 
         // Inflate the custom view for the dialog
         val dialogBinding = DataBindingUtil.inflate<PopUpUpdateProductDialogBinding>(
