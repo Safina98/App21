@@ -54,7 +54,10 @@ class TransactionPurchase : Fragment() {
                 viewModel.rvClick(it)
                 //Log.i(tagp,"${productName.value}")
             },
-            DeleteListener {  })
+            DeleteListener {
+                viewModel.deletePurchase(it)
+
+            })
         binding.purchaseRv.adapter=adapter
         val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
         binding.purchaseRv.addItemDecoration(dividerItemDecoration)
@@ -99,7 +102,7 @@ class TransactionPurchase : Fragment() {
         }
         viewModel.isNavigateToExpense.observe(viewLifecycleOwner){
             if (it==true){
-              //  this.findNavController().navigate(TransactionPurchaseDirections.actionTransactionPurchaseToExpensesFragment())
+               this.findNavController().navigate(TransactionPurchaseDirections.actionTransactionPurchaseToExpensesFragment())
                 viewModel.onNavigatedToExpense()
             }
         }

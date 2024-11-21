@@ -1,7 +1,6 @@
 package com.example.app21try6.statement.purchase
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -16,7 +15,6 @@ import com.example.app21try6.database.daos.DetailWarnaDao
 import com.example.app21try6.database.daos.InventoryLogDao
 import com.example.app21try6.database.daos.InventoryPurchaseDao
 import com.example.app21try6.database.daos.SuplierDao
-import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.Expenses
 import com.example.app21try6.database.tables.InventoryLog
@@ -49,7 +47,7 @@ class PurchaseViewModel(application: Application,
     val inventoryPurchaseList:LiveData<List<InventoryPurchase>> get() = _inventoryPurchaseList
 
     val totalTransSum: LiveData<String> = Transformations.map(inventoryPurchaseList) { list ->
-        var sum = list.sumOf { it.totalPrice } ?:0.0
+        val sum = list.sumOf { it.totalPrice } ?:0.0
         formatRupiah(sum)
     }
 
@@ -86,13 +84,11 @@ class PurchaseViewModel(application: Application,
 
     fun getInventoryList(id:Int){
         viewModelScope.launch {
-
             if (id!=-1){
                 val list= withContext(Dispatchers.IO){invetoryPurchaseDao.selectPurchaseList(id)}
+                inventoryList=list.toMutableList()
                 _inventoryPurchaseList.value=list
-
-        }
-
+            }
         }
     }
 
@@ -143,13 +139,14 @@ class PurchaseViewModel(application: Application,
                 expenses.expense_name="Bayar ${suplierName.value}"
                 expenses.expense_date=Date()
                 insertPurchase(expenses,inventoryPurchaseList.value!!)
-
             }
             else{
                 val expenses=getExpensesById(id)
-                expenses.expense_ammount=totalTransSum.value?.toInt()?: 0
+                val cleanedText = totalTransSum.value?.replace("[Rp,.\\s]".toRegex(), "")
+                expenses.expense_ammount=cleanedText?.toInt()?: 0
                 expenses.expense_name="Bayar ${suplierName.value}"
-                update(expenses)
+                //update(expenses)
+                updatePurchasesAndExpense(expenses,inventoryPurchaseList.value!!)
             }
             _isNavigateToExpense.value=true
         }
@@ -184,7 +181,6 @@ class PurchaseViewModel(application: Application,
     }
     fun addInventoryLog(){
         viewModelScope.launch {
-
             for (i in inventoryList){
                 val subDetail= DetailWarnaTable()
                 subDetail.subId=i.subProductId!!
@@ -210,8 +206,9 @@ class PurchaseViewModel(application: Application,
 
         }
     }
-    fun updateInventoryStock(){
-
+    fun deletePurchase(purchase: InventoryPurchase){
+        inventoryList.remove(purchase)
+        _inventoryPurchaseList.value=inventoryList
     }
 
     fun onItemAdded(){
@@ -232,6 +229,11 @@ class PurchaseViewModel(application: Application,
     private suspend fun insertPurchase(expenses: Expenses,list:List<InventoryPurchase>){
         withContext(Dispatchers.IO){
             invetoryPurchaseDao.insertPurchaseAndExpense(expenses,list)
+        }
+    }
+    private suspend fun updatePurchasesAndExpense(expenses: Expenses, list:List<InventoryPurchase>){
+        withContext(Dispatchers.IO){
+            invetoryPurchaseDao.updatePurchasesAndExpense(expenses,list)
         }
     }
 

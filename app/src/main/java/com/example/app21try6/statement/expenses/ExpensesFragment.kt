@@ -152,6 +152,7 @@ class ExpensesFragment : Fragment() {
         viewModel.isNavigateToPurchase.observe(viewLifecycleOwner,Observer{
             it?.let {
                 this.findNavController().navigate(ExpensesFragmentDirections.actionExpensesFragmentToTransactionPurchase(it))
+                viewModel.onNavigatedToPurchase()
             }
         })
 

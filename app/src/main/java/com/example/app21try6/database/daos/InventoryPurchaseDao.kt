@@ -1,15 +1,16 @@
 package com.example.app21try6.database.daos
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.Expenses
 import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.database.tables.InventoryPurchase
-import com.example.app21try6.database.tables.SubProduct
 
 @Dao
 interface InventoryPurchaseDao {
@@ -18,7 +19,15 @@ interface InventoryPurchaseDao {
     @Query("SELECT *FROM inventory_purchase_table WHERE expensesId=:exId")
     fun selectPurchaseList(exId:Int):List<InventoryPurchase>
     @Insert
-    fun insertPurchase(list: List<InventoryPurchase>)
+    fun insertPurchases(list: List<InventoryPurchase>)
+    @Insert
+    fun insertPurchase(inventoryPurchase: InventoryPurchase)
+    @Update
+    fun updatePurchase(inventoryPurchase: InventoryPurchase)
+    @Delete
+    fun deletePurchases(purchaseList: List<InventoryPurchase>)
+
+
 
     @Insert
     fun insertLog(list: List<InventoryLog>)
@@ -33,6 +42,8 @@ interface InventoryPurchaseDao {
 
     @Insert
     fun insertExpense(expenses: Expenses):Long
+    @Update
+    fun updateExpense(expenses: Expenses)
     @Transaction
     suspend fun updateSubProductAndTransDetail(
         detailWarnaList:List<DetailWarnaTable>,
@@ -63,7 +74,31 @@ interface InventoryPurchaseDao {
 
     ) {
         val id = insertExpense(expenses).toInt()
-        insertPurchase(purchaseList.map { it.apply { expensesId = id } })
+        insertPurchases(purchaseList.map { it.apply { expensesId = id } })
+
+    }
+    @Transaction
+    suspend fun updatePurchasesAndExpense(
+        expenses: Expenses,
+        purchaseList: List<InventoryPurchase>
+
+    ) {
+        updateExpense(expenses)
+        val allPurchaseByExpense = selectPurchaseList(expenses.id)
+        val purchasesToDelete = allPurchaseByExpense.filter { dbPurchase ->
+            purchaseList.none { newPurchase -> newPurchase.id == dbPurchase.id }
+        }
+        // Delete the purchases
+        deletePurchases(purchasesToDelete)
+
+        purchaseList.forEach {
+            if (it.id==0){
+                it.expensesId=expenses.id
+                insertPurchase(it)
+            }else{
+                updatePurchase(it)
+            }
+        }
 
     }
 }
