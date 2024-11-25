@@ -2,6 +2,7 @@ package com.example.app21try6.database.daos
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.example.app21try6.database.models.TransSumModel
 import com.example.app21try6.database.tables.TransactionSummary
 import java.util.Date
 
@@ -137,21 +138,6 @@ interface TransSumDao {
             throw e
         }
     }
-
-
-
-    /*
-    fun getByYear(year:Int)
-    fun getByMonth(year:Int,month:Int)
-    fun getByDay(year:Int,month:Int,day:Int)
-
-     */
-
-
-
-
-
-
-
-
+    @Query("SELECT * FROM trans_sum_table ORDER BY trans_date")
+    fun getAllTransactionSumList():List<TransSumModel>
 }

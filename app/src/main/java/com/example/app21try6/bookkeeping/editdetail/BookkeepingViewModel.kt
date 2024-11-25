@@ -196,7 +196,8 @@ private val tagg="ProfitProbs"
 
  */
     ////////////////////////////////////Summary Functions////////////////////////////////////
-    fun onRvClick(listModel: ListModel){
+@RequiresApi(Build.VERSION_CODES.O)
+fun onRvClick(listModel: ListModel){
         if (selectedMonth.value!="All"){
             val clickedDate = arrayOf(listModel.year_n.toString(),listModel.month_n,listModel.day_n.toString())
             onDayClick(clickedDate)
@@ -220,11 +221,15 @@ private val tagg="ProfitProbs"
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun setSelectedYear(year:String){
         _selectedYear.value = year.toInt()
+        updateRvNew()
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     fun setSelectedMonth(month:String){
         _selectedMonth.value = month
+        updateRvNew()
     }
     fun monthToNumber(monthString: String?):Int{
         val monthNumbers = mapOf(
@@ -298,37 +303,43 @@ private val tagg="ProfitProbs"
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun updateListWithFilteredData(currentList: MutableList<ListModel>, filteredData: List<ListModel>) {
-        currentList.addAll(_recyclerViewData.value.orEmpty())
-        val filteredMap = filteredData.associateBy { it.month_n }
-        currentList.forEach { currentItem ->
-            filteredMap[currentItem.month_n]?.let { filteredItem ->
-                currentItem.total = filteredItem.total
-                currentItem.year_n = filteredItem.year_n
-                currentItem.month_n = filteredItem.month_n
-                currentItem.nama = filteredItem.nama
-                currentItem.monthly_profit=filteredItem.monthly_profit-11700000.0
+    private suspend fun updateListWithFilteredData(currentList: MutableList<ListModel>, filteredData: List<ListModel>) {
+        withContext(Dispatchers.IO){
+            currentList.addAll(_recyclerViewData.value.orEmpty())
+            val filteredMap = filteredData.associateBy { it.month_n }
+            currentList.forEach { currentItem ->
+                filteredMap[currentItem.month_n]?.let { filteredItem ->
+                    currentItem.total = filteredItem.total
+                    currentItem.year_n = filteredItem.year_n
+                    currentItem.month_n = filteredItem.month_n
+                    currentItem.nama = filteredItem.nama
+                    currentItem.monthly_profit=filteredItem.monthly_profit-11700000.0
+                }
             }
+
         }
 
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun updateListForSelectedMonth(currentList: MutableList<ListModel>, filteredData: List<ListModel>) {
-        val monthNumber = monthToNumber(selectedMonth.value)
-        val numberOfDays = getNumberOfDaysInMonth(selectedYear.value ?: year, monthNumber)
-        for (day in 1..numberOfDays) {
-            val dayName = getDayName(selectedYear.value!!, monthNumber, day)
-            currentList.add(ListModel(selectedYear.value!!, selectedMonth.value ?: "", monthNumber, day, day.toString(), dayName, 0.0,0.0))
-        }
-        filteredData.forEach { filteredItem ->
-            currentList.find { it.day_n == filteredItem.day_n }?.apply {
-                total = filteredItem.total
-                year_n = filteredItem.year_n
-                month_n = filteredItem.month_n
-                monthly_profit=filteredItem.monthly_profit-450000.0
+    private suspend fun updateListForSelectedMonth(currentList: MutableList<ListModel>, filteredData: List<ListModel>) {
+        withContext(Dispatchers.IO){
+            val monthNumber = monthToNumber(selectedMonth.value)
+            val numberOfDays = getNumberOfDaysInMonth(selectedYear.value ?: year, monthNumber)
+            for (day in 1..numberOfDays) {
+                val dayName = getDayName(selectedYear.value!!, monthNumber, day)
+                currentList.add(ListModel(selectedYear.value!!, selectedMonth.value ?: "", monthNumber, day, day.toString(), dayName, 0.0,0.0))
+            }
+            filteredData.forEach { filteredItem ->
+                currentList.find { it.day_n == filteredItem.day_n }?.apply {
+                    total = filteredItem.total
+                    year_n = filteredItem.year_n
+                    month_n = filteredItem.month_n
+                    monthly_profit=filteredItem.monthly_profit-450000.0
+                }
             }
         }
+
     }
 
    // fun onClear() { viewModelScope.launch {clear() } }

@@ -134,10 +134,10 @@ class BookSummaryFragment : Fragment(){
         }
         summaryViewModel.getSummaryWithNullProductId()
         summaryViewModel.selectedYear.observe(viewLifecycleOwner) {
-            summaryViewModel.updateRvNew()
+           // summaryViewModel.updateRvNew()
         }
         summaryViewModel.selectedMonth.observe(viewLifecycleOwner){
-            summaryViewModel.updateRvNew()
+           // summaryViewModel.updateRvNew()
         }
         summaryViewModel.recyclerViewData.observe(viewLifecycleOwner){
             it?.let {

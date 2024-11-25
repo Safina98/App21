@@ -68,7 +68,7 @@ class PurchaseViewModel(application: Application,
     val suplierName=MutableLiveData<String>("")
     val productPrice=MutableLiveData<Double>(0.0)
     val productNet=MutableLiveData<Double>(0.0)
-    val productQty=MutableLiveData<Int>(0)
+    val productQty=MutableLiveData<Int>(1)
     val totalPrice = MediatorLiveData<Double>().apply {
         addSource(productPrice) { calculateTotalPrice() }
         addSource(productNet) { calculateTotalPrice() }
@@ -95,7 +95,7 @@ class PurchaseViewModel(application: Application,
     fun setProductPriceAndNet(name:String){
         viewModelScope.launch {
             val selectedSubProduct = allSubProductFromDb.value?.find { it.subProduct.sub_name == name }
-            productPrice.value = selectedSubProduct?.productPrice?.toDouble() ?: 0.0
+            productPrice.value = selectedSubProduct?.purchasePrice?.toDouble() ?: 0.0
             productNet.value = selectedSubProduct?.default_net?:0.0
         }
     }
@@ -164,7 +164,7 @@ class PurchaseViewModel(application: Application,
         item.ref=UUID.randomUUID().toString()
         item.status="PENDING"
         item.subProductId=allSubProductFromDb.value?.find { it.subProduct.sub_name ==productName.value }?.subProduct?.sub_id ?: 0
-        item.suplierId=suplierDummy.value?.find { it.suplierName==suplierName.value }?.id ?: 0
+        item.suplierId=suplierDummy.value?.find { it.suplierName==suplierName.value }?.id ?: null
         item.purchaseDate= Date()
         inventoryList.add(item)
         _inventoryPurchaseList.value=inventoryList

@@ -29,7 +29,7 @@ data class TransactionSummary (
         @ColumnInfo(name = "paid")
         var paid:Int=0,
         @ColumnInfo(name = "trans_date")
-        var trans_date:Date=Date(),
+        var trans_date:Date?=Date(),
         @ColumnInfo(name = "is_taken")
         var is_taken_:Boolean=false,
         @ColumnInfo(name = "is_paid_off")

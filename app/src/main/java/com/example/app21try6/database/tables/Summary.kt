@@ -36,7 +36,7 @@ data class Summary(
         @ColumnInfo(name = "day_name")
         var day_name: String = "empty",
         @ColumnInfo(name = "date")
-        var date:Date=Date(),
+        var date:Date?=Date(),
         @ColumnInfo(name = "item_name")
         var item_name:String = "empty",
         @ColumnInfo(name = "item_sold")

@@ -301,7 +301,7 @@ class BrandStockViewModel(
             updateProductRv(product.brand_code)
         }
     }
-    fun insertAnItemProductStock(product_name:String,price:Int,capital:Int,capital2:Double,modusNet:Double,discName: String){
+    fun insertAnItemProductStock(product_name:String,price:Int,capital:Int,capital2:Double,modusNet:Double,discName: String,purchasePrice:Int?,purcaseUnit:String?){
         uiScope.launch {
             if (product_name!="") {
                 val product = Product()
@@ -314,6 +314,8 @@ class BrandStockViewModel(
                 product.product_capital=capital
                 product.alternate_price=capital2
                 product.default_net=modusNet
+                product.purchasePrice=purchasePrice
+                product.puchaseUnit=purcaseUnit
                 insert(product)
                 updateProductRv(selectedBrand.value?.brand_id)
             }

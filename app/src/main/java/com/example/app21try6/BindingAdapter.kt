@@ -167,7 +167,9 @@ private val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
 // Format and display an Int value as Rupiah
 @BindingAdapter("rupiahValue")
 fun setRupiahValue(editText: EditText, value: Int?) {
-    val formattedValue = value?.let { rupiahFormat.format(it.toDouble()) } ?: "Rp 0"
+    val formattedValue = value?.let {
+        "${rupiahFormat.format(it.toDouble()).split(",")[0]}" // Remove decimals by splitting at comma
+    } ?: "Rp 0"
     if (editText.text.toString() != formattedValue) {
         editText.setText(formattedValue)
     }
@@ -176,7 +178,9 @@ fun setRupiahValue(editText: EditText, value: Int?) {
 // Format and display a Double value as Rupiah
 @BindingAdapter("rupiahValue")
 fun setRupiahValue(editText: EditText, value: Double?) {
-    val formattedValue = value?.let { rupiahFormat.format(it) } ?: "Rp 0"
+    val formattedValue = value?.let {
+        "${rupiahFormat.format(it.toDouble()).split(",")[0]}" // Remove decimals by splitting at comma
+    } ?: "Rp 0"
     if (editText.text.toString() != formattedValue) {
         editText.setText(formattedValue)
     }

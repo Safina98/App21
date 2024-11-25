@@ -47,8 +47,12 @@ data class Product(
         var brand_code:Int=0,
         @ColumnInfo(name = "cath_code")
         var cath_code:Int = 0,
-        //recently added
         @ColumnInfo(name = "discountId")
         var discountId:Int?=null,
+        //new columns
+        @ColumnInfo(name="purchasePrice")
+        var purchasePrice:Int?=null,
+        @ColumnInfo(name="purchaseUnit")
+        var puchaseUnit:String?=null
 
 )

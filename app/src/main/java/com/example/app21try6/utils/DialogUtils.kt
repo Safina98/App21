@@ -93,6 +93,8 @@ object DialogUtils{
         val textDisc = dialogBinding.textDiscount
         val textCapital2=dialogBinding.textCapital2
         val textModusNoet=dialogBinding.defaultNet
+        val textPurchasePrice=dialogBinding.purchasePrice
+        val textPurchaseUnit=dialogBinding.purchaseUnit
         val tVId=dialogBinding.txtId
 
         dialogBinding.ilCapital2.hint="Modal 2"
@@ -101,6 +103,8 @@ object DialogUtils{
         dialogBinding.ilPrice.hint="Harga"
         dialogBinding.ilCapital.hint="Modal"
         dialogBinding.ilDisc.hint="Diskon"
+        dialogBinding.ilPurchasePrice.hint="Harga Beli"
+        dialogBinding.ilPurchaseUnit.hint="Unit"
 
         val discName=viewModel.discountName.value
         // Set up the AutoCompleteTextView with a mutable adapter
@@ -119,6 +123,8 @@ object DialogUtils{
             textCapital2.setText(vendible.alternate_price.toString())
             textModusNoet.setText(vendible.default_net.toString())
             tVId.setText(vendible.product_id.toString())
+            textPurchasePrice.setText(vendible.purchasePrice?.let { it.toString() }?:"")
+            textPurchaseUnit.setText(vendible.puchaseUnit?.let { it }?:"")
 
             if (discName!=null) textDisc.setText(discName)
             textKet.requestFocus()
@@ -134,6 +140,8 @@ object DialogUtils{
             val alternateCapital =textCapital2.text.toString().toDoubleOrNull()
             val modusNet =textModusNoet.text.toString().toDoubleOrNull()
             val product_name=textKet.text.toString().uppercase().trim()
+            val purchasePrice=textPurchasePrice.text.toString().trim().toIntOrNull()
+            val purchaseUnit=textPurchasePrice.text.toString().trim().uppercase()
             if (price != null) {
                 vendible?.product_price = price
             }
@@ -143,11 +151,13 @@ object DialogUtils{
             vendible?.product_name = product_name
             vendible?.alternate_price=alternateCapital?:0.0
             vendible?.default_net=modusNet ?: 0.0
+            vendible?.purchasePrice=purchasePrice
+            vendible?.puchaseUnit=purchaseUnit
             val discName = textDisc.text.toString().uppercase().trim()
             if (vendible?.product_name?.isNotEmpty() == true) {
                 viewModel.updateProduct(vendible, discName)
             }else{
-                viewModel.insertAnItemProductStock(product_name, price?:0,capital?:0,alternateCapital?:0.0,modusNet?:0.0,discName)
+                viewModel.insertAnItemProductStock(product_name, price?:0,capital?:0,alternateCapital?:0.0,modusNet?:0.0,discName,purchasePrice,purchaseUnit)
             }
         }
         builder.setNegativeButton("Cancel") { dialog, which ->

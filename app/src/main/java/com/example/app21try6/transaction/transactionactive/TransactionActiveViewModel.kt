@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.app21try6.DETAILED_DATE_FORMATTER
 import com.example.app21try6.database.daos.TransDetailDao
 import com.example.app21try6.database.daos.TransSumDao
 import com.example.app21try6.database.tables.TransactionDetail
@@ -59,7 +60,9 @@ class TransactionActiveViewModel(
         viewModelScope.launch {
             val list = withContext(Dispatchers.IO){
                datasource1.getActiveSumList(false)
+                //datasource1.getAllTransactionSumList()
             }
+
             _active_trans.value = list
         }
     }
@@ -192,7 +195,7 @@ class TransactionActiveViewModel(
         transactionDetail.unit_qty ==if (token[15]!="null") token[15].toDouble() else null
         transactionDetail.item_position = 0
        Log.i("INSERTCSVPROB","trans_detail: $transactionDetail")
-        datasource1.insertIfNotExist(transactionSummary.cust_name,transactionSummary.total_trans,transactionSummary.paid,transactionSummary.trans_date,transactionSummary.is_taken_,transactionSummary.is_paid_off,transactionSummary.is_keeped,transactionSummary.ref,transactionSummary.sum_note)
+        datasource1.insertIfNotExist(transactionSummary.cust_name,transactionSummary.total_trans,transactionSummary.paid,transactionSummary.trans_date?:Date(),transactionSummary.is_taken_,transactionSummary.is_paid_off,transactionSummary.is_keeped,transactionSummary.ref,transactionSummary.sum_note)
         //datasource2.insert(transactionDetail)
         datasource2.insertTransactionDetailWithRef(transactionSummary.ref, transactionDetail.trans_item_name, transactionDetail.qty, transactionDetail.trans_price, transactionDetail.total_price, transactionDetail.is_prepared,transactionDetail.trans_detail_date,transactionDetail.unit,transactionDetail.unit_qty,transactionDetail.item_position)
     }

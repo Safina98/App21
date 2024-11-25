@@ -68,7 +68,7 @@ interface SubProductDao {
     fun delete(id_:Int)
 
     @Query("""
-    SELECT sp.*, p.product_capital, p.default_net
+    SELECT sp.*, p.purchasePrice, p.default_net
     FROM sub_table sp
     INNER JOIN product_table p ON sp.product_code = p.product_id
 """)

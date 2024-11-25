@@ -206,7 +206,7 @@ class TransactionActiveFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.getActiveTrans()
+        //viewModel.getActiveTrans()
     }
 
     override fun onPause() {

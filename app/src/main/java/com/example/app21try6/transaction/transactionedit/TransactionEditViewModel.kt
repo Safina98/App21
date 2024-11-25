@@ -125,7 +125,7 @@ class TransactionEditViewModel(
                                 discTransRef = UUID.randomUUID().toString(),
                                 discTransName = discount.discountName,
                                 sum_id = transactionSummary.sum_id,
-                                discTransDate = transactionSummary.trans_date,
+                                discTransDate = transactionSummary.trans_date?:Date(),
                                 discountAppliedValue = discountAppliedValue
                             )
                         } else {

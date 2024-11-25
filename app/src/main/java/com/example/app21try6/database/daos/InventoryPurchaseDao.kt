@@ -1,5 +1,6 @@
 package com.example.app21try6.database.daos
 
+import android.util.Log
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -71,12 +72,31 @@ interface InventoryPurchaseDao {
     suspend fun insertPurchaseAndExpense(
         expenses: Expenses,
         purchaseList: List<InventoryPurchase>
-
     ) {
-        val id = insertExpense(expenses).toInt()
-        insertPurchases(purchaseList.map { it.apply { expensesId = id } })
+        // Insert expense and get the ID
+
+        try {
+            Log.i("insertPurchaseAndExpense","$expenses")
+            val id = insertExpense(expenses).toInt()
+
+            // Ensure the ID is valid before proceeding
+            if (id > 0) {
+                purchaseList.map { it.apply { expensesId = id } }
+                purchaseList.forEach{
+                    Log.i("insertPurchaseAndExpense","$it")
+                }
+                // Map the purchases to associate the expensesId, then insert them
+                insertPurchases(purchaseList)
+            } else {
+
+                // Handle failure, maybe throw an exception or return
+            }
+        }catch (e:Exception){
+            Log.e("insertPurchaseAndExpense", "$e")
+        }
 
     }
+
     @Transaction
     suspend fun updatePurchasesAndExpense(
         expenses: Expenses,
