@@ -72,7 +72,7 @@ class TransactionPurchase : Fragment() {
         }
         viewModel.isAddItemClick.observe(viewLifecycleOwner){
             if (it==true){
-                adapter.notifyDataSetChanged()
+               // adapter.notifyDataSetChanged()
                 viewModel.onItemAdded()
             }
         }
@@ -96,6 +96,7 @@ class TransactionPurchase : Fragment() {
 
         viewModel.inventoryPurchaseList.observe(viewLifecycleOwner){
             adapter.submitList(it)
+            adapter.notifyDataSetChanged()
         }
         //adapter.submitList(purchaseDummy)
         binding.btnAdd.setOnClickListener {

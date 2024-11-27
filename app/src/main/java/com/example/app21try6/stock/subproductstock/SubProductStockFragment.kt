@@ -38,9 +38,7 @@ class SubProductStockFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.title = id?.last()
         id?.set(4,"0")
         val id_ = id?.map { it.toInt() }?.toTypedArray()
-        Toast.makeText(context,  id?.get(0).toString() +"",Toast.LENGTH_LONG).show()
-        val viewModelFactory = SubViewModelFactory(dataSource2,application,id_!!,dataSource3,
-          0)
+        val viewModelFactory = SubViewModelFactory(dataSource2,application,id_!!,dataSource3, 0)
         binding.lifecycleOwner =this
         val viewModel = ViewModelProvider(this,viewModelFactory).get(SubViewModel::class.java)
         binding.subViewModel = viewModel

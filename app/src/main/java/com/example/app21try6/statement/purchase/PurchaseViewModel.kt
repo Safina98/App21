@@ -1,6 +1,7 @@
 package com.example.app21try6.statement.purchase
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -123,7 +124,10 @@ class PurchaseViewModel(application: Application,
             item.purchaseDate= Date()
             if (index != -1) {
                 inventoryList[index] = item
+                _inventoryPurchaseList.value=inventoryList
             }
+            onClearClick()
+
             _isAddItemClick.value=true
         }
     }
@@ -145,7 +149,6 @@ class PurchaseViewModel(application: Application,
                 val cleanedText = totalTransSum.value?.replace("[Rp,.\\s]".toRegex(), "")
                 expenses.expense_ammount=cleanedText?.toInt()?: 0
                 expenses.expense_name="Bayar ${suplierName.value}"
-                //update(expenses)
                 updatePurchasesAndExpense(expenses,inventoryPurchaseList.value!!)
             }
             _isNavigateToExpense.value=true
@@ -169,6 +172,7 @@ class PurchaseViewModel(application: Application,
         inventoryList.add(item)
         _inventoryPurchaseList.value=inventoryList
         _isAddItemClick.value=true
+        onClearClick()
     }
     fun rvClick(item: InventoryPurchase){
         productName.value=item.subProductName
@@ -193,7 +197,7 @@ class PurchaseViewModel(application: Application,
                 val inventoryLog=InventoryLog()
                 inventoryLog.detailWarnaRef=subDetail.ref
                 inventoryLog.barangLogDate=i.purchaseDate
-                inventoryLog.subProductId=i.subProductId?:0
+                inventoryLog.subProductId=i.subProductId
                 inventoryLog.productId=getProductId(i.subProductId!!)
                 inventoryLog.brandId=getBrandId(inventoryLog.productId?:0)
                 inventoryLog.barangLogDate=i.purchaseDate
@@ -202,13 +206,25 @@ class PurchaseViewModel(application: Application,
                 inventoryLog.pcs=i.batchCount.toInt()
                 inventoryLog.barangLogKet="PENDING"
                 logList.add(inventoryLog)
-            }
 
+            }
+            upsertDetailWarnaAndLog(subDetailList,logList)
         }
     }
+
+    fun getDetailWarnaANdInventoryLog(){
+        viewModelScope.launch {
+            val detailWarnaList= withContext(Dispatchers.IO){inventoryLogDao.selectAllDetailWarna()}
+            val inventoryLog= withContext(Dispatchers.IO){inventoryLogDao.selectAllDetailWarna()}
+            Log.i(tagp,"$detailWarnaList")
+            Log.i(tagp,"$inventoryLog")
+        }
+    }
+
     fun deletePurchase(purchase: InventoryPurchase){
         inventoryList.remove(purchase)
         _inventoryPurchaseList.value=inventoryList
+        _isAddItemClick.value=true
     }
 
     fun onItemAdded(){
@@ -221,7 +237,7 @@ class PurchaseViewModel(application: Application,
 
     fun onClearClick(){
         productName.value=""
-        productQty.value=0
+        productQty.value=1
         productNet.value=0.0
         productPrice.value=0.0
     }
@@ -257,14 +273,20 @@ class PurchaseViewModel(application: Application,
             expenseCategoryDao.getECIdByName(name)
         }
     }
-    private suspend fun getBrandId(productId:Int):Int{
+    private suspend fun getBrandId(productId:Int?):Int?{
         return withContext(Dispatchers.IO){
             productDao.getBrandIdByProductId(productId)
         }
     }
-    private suspend fun getProductId(subId:Int):Int{
+    private suspend fun getProductId(subId:Int?):Int?{
         return withContext(Dispatchers.IO){
             subProductDao.getProductIdBySubId(subId)
+        }
+    }
+    private suspend fun upsertDetailWarnaAndLog(detailWarnaList:List<DetailWarnaTable>,
+                                                 inventoryLogList: MutableList<InventoryLog>){
+        withContext(Dispatchers.IO){
+            inventoryLogDao.updateInsertDetailWarnaAndLog(detailWarnaList,inventoryLogList)
         }
     }
 

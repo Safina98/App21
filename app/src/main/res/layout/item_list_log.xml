@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="item"
+            type="com.example.app21try6.database.tables.InventoryLog" />
+        <variable
+            name="updateLisener"
+            type="com.example.app21try6.stock.inventorylog.InventoryLogUpdateListener" />
+        <variable
+            name="deleteLisener"
+            type="com.example.app21try6.stock.inventorylog.InventoryLogDeleteListener" />
+
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_margin="@dimen/small_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/lbl_tanggal"
+                style="@style/active_transaction_small_txt"
+                android:layout_margin="@dimen/small_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tanggal: "
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/txt_log_date"
+                style="@style/active_transaction_small_txt"
+                android:layout_margin="@dimen/small_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                app:layout_constraintStart_toEndOf="@+id/lbl_tanggal"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/lbl_product_name"
+                style="@style/active_transaction_small_txt"
+                android:layout_margin="@dimen/small_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nama Barang: "
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lbl_tanggal" />
+
+            <TextView
+                android:id="@+id/txt_inventory_name"
+                style="@style/active_transaction_small_txt"
+                android:layout_margin="@dimen/small_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                app:layout_constraintStart_toEndOf="@+id/lbl_product_name"
+                app:layout_constraintTop_toBottomOf="@+id/lbl_tanggal" />
+
+            <TextView
+                android:id="@+id/lbl_jumlah"
+                style="@style/active_transaction_small_txt"
+                android:layout_margin="@dimen/small_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jumlah:"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lbl_product_name" />
+
+            <TextView
+                android:id="@+id/txt_batch_count"
+                style="@style/active_transaction_small_txt"
+                android:layout_margin="@dimen/small_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                app:layout_constraintStart_toEndOf="@+id/lbl_jumlah"
+                app:layout_constraintTop_toBottomOf="@+id/txt_inventory_name" />
+
+            <TextView
+                android:id="@+id/lbl_isi"
+                style="@style/active_transaction_small_txt"
+                android:layout_margin="@dimen/small_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Isi: "
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lbl_jumlah" />
+
+            <TextView
+                android:id="@+id/txt_isi"
+                style="@style/active_transaction_small_txt"
+                android:layout_margin="@dimen/small_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                app:layout_constraintStart_toEndOf="@+id/lbl_isi"
+                app:layout_constraintTop_toBottomOf="@+id/txt_batch_count" />
+
+            <TextView
+                android:id="@+id/lbl_keterangan"
+                style="@style/active_transaction_small_txt"
+                android:layout_margin="@dimen/small_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Keterangan:"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lbl_isi" />
+
+            <TextView
+                android:id="@+id/txt_keterangan"
+                style="@style/active_transaction_small_txt"
+                android:layout_margin="@dimen/small_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                app:layout_constraintStart_toEndOf="@+id/lbl_keterangan"
+                app:layout_constraintTop_toBottomOf="@+id/lbl_isi" />
+            <ImageView
+                android:id="@+id/img_delete"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_margin"
+                android:onClick="@{() ->deleteLisener.onClick(item)}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/baseline_delete_forever_24" />
+            <ImageView
+                android:id="@+id/img_update"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/medium_margin"
+                android:onClick="@{() ->updateLisener.onClick(item)}"
+                app:layout_constraintEnd_toStartOf="@id/img_delete"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/baseline_edit_24" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+</layout>

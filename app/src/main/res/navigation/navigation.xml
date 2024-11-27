@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/transactionActiveFragment">
+    app:startDestination="@id/inventoryLogFragment">
 
     <fragment
         android:id="@+id/bookKeepeingFragment"
@@ -190,5 +190,9 @@
             android:id="@+id/action_transactionPurchase_to_expensesFragment"
             app:destination="@id/expensesFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/inventoryLogFragment"
+        android:name="com.example.app21try6.stock.inventorylog.InventoryLogFragment"
+        android:label="InventoryLogFragment" />
 
 </navigation>

@@ -25,7 +25,7 @@ interface ProductDao {
     @Query("SELECT * FROM product_table WHERE product_id =:id")
     fun getProductById(id:Int):Product
     @Query("SELECT brand_code FROM product_table WHERE product_id =:id")
-    fun getBrandIdByProductId(id:Int):Int
+    fun getBrandIdByProductId(id:Int?):Int?
     @Query("SELECT * FROM product_table WHERE cath_code = :c_id_")
     fun getCategoriedProduct(c_id_:Int): LiveData<List<Product>>
     //@Query("SELECT * FROM product_table WHERE cath_code = :c_id_")
