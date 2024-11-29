@@ -225,6 +225,16 @@ class TransactionEditViewModel(
             }
         }
     }
+    fun updateDate(){
+        viewModelScope.launch {
+            if (transSum.value!=null) {
+                val transsummary = transSum.value!!
+                transsummary.trans_date = Date()
+                updateSum(transsummary)
+                setMutableTransSum()
+            }
+        }
+    }
 
     /////////////////////////////////Transaction Summary////////////////////////////
     //get custName value
@@ -239,15 +249,10 @@ class TransactionEditViewModel(
         viewModelScope.launch {
             val transactionSummary = withContext(Dispatchers.IO){datasource1.getTrans(id)}
             mutableTransSum.value = transactionSummary
-            Log.i("CustNameProbs","setMutableTransSum transSumS ${transactionSummary}")
         }
     }
 
     //set trasactionSummary customername from editText
-    fun setCustomerName(){
-        transSum.value?.cust_name = custName.value ?: "-"
-        mutableTransSum.value?.cust_name=custName.value ?: "-"
-    }
 
     //update Transaction Detail recyclerview item name
     fun updateTransDetailItemName(transactionDetail: TransactionDetail, itemName: String){
@@ -285,9 +290,8 @@ class TransactionEditViewModel(
     //update transactionSUmmary CustomerName
     fun updateCustNameSum(){
         viewModelScope.launch {
-            var transSumS: TransactionSummary = withContext(Dispatchers.IO){ datasource1.getTrans(id)}
+            val transSumS: TransactionSummary = withContext(Dispatchers.IO){ datasource1.getTrans(id)}
             transSumS.cust_name=custName.value?: "-"
-            Log.i("CustNameProbs","updateCustNameSum transSumS ${transSumS}")
             updateSum(transSumS)
             setMutableTransSum()
         }

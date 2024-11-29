@@ -11,6 +11,7 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
 import com.example.app21try6.DETAILED_DATE_FORMATTER
 import com.example.app21try6.DISCTYPE
+import com.example.app21try6.database.DateTypeConverter
 import com.example.app21try6.database.daos.CustomerDao
 import com.example.app21try6.database.daos.DiscountDao
 import com.example.app21try6.database.daos.DiscountTransDao
@@ -152,14 +153,22 @@ class TransactionDetailViewModel (application: Application,
     fun getSummaryWithNullProductId(){
         viewModelScope.launch {
             //val list = withContext(Dispatchers.IO){database.getAllSummaryProductId()}
-            val simpleFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val date = simpleFormatter.parse("2024-10-24")
-            val list = withContext(Dispatchers.IO){ datasource2.getTransactionDetailsWithSubIdAndTransDate(23,date!!)}
-            val sum = withContext(Dispatchers.IO){ datasource2.getSumTransactionDetailsWithSubIdAndDate(23,date!!)}
-            list.forEach { itemName ->
-                Log.d("idprobs", "${itemName.trans_detail_date?.let { DETAILED_DATE_FORMATTER.format(it) }} ${itemName.trans_item_name}: ${itemName.qty} ${itemName.unit_qty}")
+            val simpleFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+            val date = simpleFormatter.parse("2024-11-27 00:00")
+            val dateEnd = simpleFormatter.parse("2024-11-27 23:59")
+            //val list = withContext(Dispatchers.IO){ datasource2.getTransactionDetailsWithSubIdAndTransDate(23,date!!)}
+            //val sum = withContext(Dispatchers.IO){ datasource2.getSumTransactionDetailsWithSubIdAndDate(23,date!!)}
+            //withContext(Dispatchers.IO){ datasource2.updateTransDetailProductCapital()}
+            val startDate = simpleFormatter.parse("2024-01-01 00:00")!!
+            val endDate = simpleFormatter.parse("2024-12-01 00:00")!! // Exclusive end date
+
+            val sum = withContext(Dispatchers.IO) {
+                datasource2.getTransactionSum(startDate, endDate) ?: 0.0
             }
-            Log.d("idprobs", "total:  ${sum}:")
+            //val list = withContext(Dispatchers.IO){ datasource2.getTransDetailTableByDate()}
+            Log.d("idprobs", "Total Profit: ${formatRupiah(sum)}")
+
+
         }
     }
    fun deleteDiscount(id:Int){

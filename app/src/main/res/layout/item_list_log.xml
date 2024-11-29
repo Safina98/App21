@@ -6,23 +6,24 @@
     <data>
         <variable
             name="item"
-            type="com.example.app21try6.database.tables.InventoryLog" />
+            type="com.example.app21try6.database.models.InventoryLogWithSubProduct" />
         <variable
             name="updateLisener"
             type="com.example.app21try6.stock.inventorylog.InventoryLogUpdateListener" />
         <variable
             name="deleteLisener"
             type="com.example.app21try6.stock.inventorylog.InventoryLogDeleteListener" />
-
     </data>
 
     <androidx.cardview.widget.CardView
         android:layout_margin="@dimen/small_margin"
         android:layout_width="match_parent"
+        app:cardBackgroundColor="@color/logrvbg"
         android:layout_height="wrap_content">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/small_margin">
 
             <TextView
                 android:id="@+id/lbl_tanggal"

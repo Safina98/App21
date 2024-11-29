@@ -159,10 +159,7 @@ class TransactionActiveFragment : Fragment() {
                 adapter.notifyDataSetChanged()
             }
         })
-        //Obverve exported data
-        viewModel.allTransFromDB.observe(viewLifecycleOwner){
-            //Log.i("INSERTCSVPROB","AllTansSum: $it")
-            }
+
         //hide or chow checbox on rv
         viewModel.is_image_clicked.observe(this.viewLifecycleOwner, Observer {
             if (it == true) {

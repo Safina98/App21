@@ -8,6 +8,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
+import com.example.app21try6.BARANGLOGKET
 import com.example.app21try6.database.daos.ExpenseCategoryDao
 import com.example.app21try6.database.daos.ExpenseDao
 import com.example.app21try6.database.daos.ProductDao
@@ -46,6 +47,7 @@ class PurchaseViewModel(application: Application,
     val allSubProductFromDb=subProductDao.getSubProductWithPrice()
     private val _inventoryPurchaseList=MutableLiveData<List<InventoryPurchase>>()
     val inventoryPurchaseList:LiveData<List<InventoryPurchase>> get() = _inventoryPurchaseList
+    var inventoryPurchaseId:Int=0
 
     val totalTransSum: LiveData<String> = Transformations.map(inventoryPurchaseList) { list ->
         val sum = list.sumOf { it.totalPrice } ?:0.0
@@ -70,6 +72,7 @@ class PurchaseViewModel(application: Application,
     val productPrice=MutableLiveData<Double>(0.0)
     val productNet=MutableLiveData<Double>(0.0)
     val productQty=MutableLiveData<Int>(1)
+
     val totalPrice = MediatorLiveData<Double>().apply {
         addSource(productPrice) { calculateTotalPrice() }
         addSource(productNet) { calculateTotalPrice() }
@@ -89,6 +92,7 @@ class PurchaseViewModel(application: Application,
                 val list= withContext(Dispatchers.IO){invetoryPurchaseDao.selectPurchaseList(id)}
                 inventoryList=list.toMutableList()
                 _inventoryPurchaseList.value=list
+                if (inventoryList!=null) inventoryPurchaseId= inventoryList.last().id*-1
             }
         }
     }
@@ -118,7 +122,7 @@ class PurchaseViewModel(application: Application,
             item.price=productPrice.value?.toInt() ?: 0
             item.totalPrice=totalPrice.value?.toDouble() ?: 0.0
             item.ref=inventoryPurchase.value!!.ref
-            item.status="PENDING"
+            item.status=BARANGLOGKET.masuk
             item.subProductId=allSubProductFromDb.value?.find { it.subProduct.sub_name ==productName.value }?.subProduct?.sub_id ?: inventoryPurchase.value!!.subProductId
             item.suplierId=suplierDummy.value?.find { it.suplierName==suplierName.value }?.id ?: inventoryPurchase.value!!.suplierId
             item.purchaseDate= Date()
@@ -154,10 +158,14 @@ class PurchaseViewModel(application: Application,
             _isNavigateToExpense.value=true
         }
     }
+    fun getAutoIncrementId(){
+        inventoryPurchaseId-=1
+    }
 
     fun addItemToList(){
         val item=InventoryPurchase()
-        item.id=0
+        getAutoIncrementId()
+        item.id=inventoryPurchaseId
         item.subProductName=productName.value?:""
         item.suplierName=suplierName.value?:""
         item.net=productNet.value?.toDouble() ?: 0.0
@@ -172,7 +180,8 @@ class PurchaseViewModel(application: Application,
         inventoryList.add(item)
         _inventoryPurchaseList.value=inventoryList
         _isAddItemClick.value=true
-        onClearClick()
+        //onClearClick()
+        clearAllButName()
     }
     fun rvClick(item: InventoryPurchase){
         productName.value=item.subProductName
@@ -237,6 +246,9 @@ class PurchaseViewModel(application: Application,
 
     fun onClearClick(){
         productName.value=""
+        clearAllButName()
+    }
+    fun clearAllButName(){
         productQty.value=1
         productNet.value=0.0
         productPrice.value=0.0

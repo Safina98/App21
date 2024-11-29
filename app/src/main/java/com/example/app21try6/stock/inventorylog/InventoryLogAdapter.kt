@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.DETAILED_DATE_FORMATTER
-import com.example.app21try6.database.tables.InventoryLog
+import com.example.app21try6.database.models.InventoryLogWithSubProduct
 import com.example.app21try6.databinding.ItemListLogBinding
 import java.util.Locale
 
@@ -15,17 +15,17 @@ import java.util.Locale
 class InventoryLogAdapter (
    val updateListener: InventoryLogUpdateListener,
      val   deleteListener: InventoryLogDeleteListener
-             )   : ListAdapter<InventoryLog, InventoryLogAdapter.MyViewHolder>(InventoryLogDiffCallback()){
+             )   : ListAdapter<InventoryLogWithSubProduct, InventoryLogAdapter.MyViewHolder>(InventoryLogDiffCallback()){
     class MyViewHolder private constructor(val binding: ItemListLogBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(item: InventoryLog, updateListener: InventoryLogUpdateListener,deleteListener: InventoryLogDeleteListener){
+        fun bind(item: InventoryLogWithSubProduct, updateListener: InventoryLogUpdateListener,deleteListener: InventoryLogDeleteListener){
             binding.item = item
             binding.updateLisener=updateListener
             binding.deleteLisener=deleteListener
-            binding.txtLogDate.text= DETAILED_DATE_FORMATTER.format(item.barangLogDate)
-            binding.txtIsi.text=String.format(Locale.US,"%.2f", item.isi)
-            binding.txtInventoryName.text=item.detailWarnaRef
-            binding.txtBatchCount.text=item.pcs.toString()
-            binding.txtKeterangan.text=item.barangLogKet
+            binding.txtLogDate.text= DETAILED_DATE_FORMATTER.format(item.inventoryLog.barangLogDate)
+            binding.txtIsi.text=String.format(Locale.US,"%.2f", item.inventoryLog.isi)
+            binding.txtInventoryName.text=item.sub_name
+            binding.txtBatchCount.text=item.inventoryLog.pcs.toString()
+            binding.txtKeterangan.text=item.inventoryLog.barangLogKet
             binding.executePendingBindings()
         }
         companion object{
@@ -50,19 +50,19 @@ class InventoryLogAdapter (
 
 }
 
-class InventoryLogDiffCallback: DiffUtil.ItemCallback<InventoryLog>(){
-    override fun areItemsTheSame(oldItem: InventoryLog, newItem: InventoryLog): Boolean {
-        return oldItem.id == newItem.id
+class InventoryLogDiffCallback: DiffUtil.ItemCallback<InventoryLogWithSubProduct>(){
+    override fun areItemsTheSame(oldItem: InventoryLogWithSubProduct, newItem: InventoryLogWithSubProduct): Boolean {
+        return oldItem.inventoryLog.id == newItem.inventoryLog.id
     }
 
-    override fun areContentsTheSame(oldItem: InventoryLog, newItem: InventoryLog): Boolean {
+    override fun areContentsTheSame(oldItem: InventoryLogWithSubProduct, newItem: InventoryLogWithSubProduct): Boolean {
         return oldItem == newItem
     }
 
 }
-class InventoryLogUpdateListener(val clickListener: (inventoryLog: InventoryLog) -> Unit) {
-    fun onClick(inventoryLog: InventoryLog) = clickListener(inventoryLog)
+class InventoryLogUpdateListener(val clickListener: (inventoryLog: InventoryLogWithSubProduct) -> Unit) {
+    fun onClick(inventoryLog: InventoryLogWithSubProduct) = clickListener(inventoryLog)
 }
-class InventoryLogDeleteListener(val clickListener: (inventoryLog: InventoryLog) -> Unit) {
-    fun onClick(inventoryLog: InventoryLog) = clickListener(inventoryLog)
+class InventoryLogDeleteListener(val clickListener: (inventoryLog: InventoryLogWithSubProduct) -> Unit) {
+    fun onClick(inventoryLog: InventoryLogWithSubProduct) = clickListener(inventoryLog)
 }

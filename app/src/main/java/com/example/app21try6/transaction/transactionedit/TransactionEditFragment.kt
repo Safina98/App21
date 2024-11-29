@@ -4,7 +4,9 @@ package com.example.app21try6.transaction.transactionedit
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
 import android.text.InputType
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -118,27 +120,7 @@ class TransactionEditFragment : Fragment() {
        itemTouchHelper.attachToRecyclerView(binding.recyclerViewEditTrans)
 
         val autoCompleteTextView: AutoCompleteTextView = binding.custNameEdit
-        val suggestions = arrayOf(
-            "Asia Jok", "Alyka Jok","Aisya Jok","Auto 354","AMV","Akbar Sengkang","Asep Ramlan","Anugrah Mebel","AT Jok",
-            "Bandung Jok","Bandung Jok Gowa","Bagus Jok","Beo","Berkah Variasi",
-            "Cahaya Variasi",
-            "dr Jok","Dyna Jok","D'fun Kendari","Densus 99",
-            "Eka Jok","Evolution",
-            "Fiesta Jok","Fakhri Jok",
-            "Green Design",
-            "HSR Auto",
-            "Jabal","Jok 88",
-            "King Variasi","Karya Jok","Kubis Mebel",
-            "Makassar Variasi","Mega Buana","Mas Tono",
-            "Laquna",
-            "Pak Maliang", "Pak Ilham", "Pak Ramli Sidrap","Pak Ibet","Pak Agus Saputra","Pattalassang Variasi","Prima leather","Pak Alim",
-            "Rajawali Motor Timika","Rumah Kursi","Rumah Sofa Kolut","RGARAGE","Rezky Jok","Riski Jok",
-            "Sun Variasi","Susan Jok", "Sumber Jok","Surabaya Motor","Selayar","SKAAD Bintuni","Sam & Sons",
-            "Terminal Jok",
-            "Unang",
-            "Variasi 77",
-            "Wendy",
-            "Yusdar Motor")
+
         //val adapterr: ArrayAdapter<String> = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, suggestions)
         //autoCompleteTextView.setAdapter(adapterr)
 
@@ -158,6 +140,16 @@ class TransactionEditFragment : Fragment() {
             val adapterr = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, customerNames)
             autoCompleteTextView.setAdapter(adapterr)
         })
+
+        autoCompleteTextView.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.updateCustNameSum()
+            }
+        })
+
+
        viewModel.showDialog.observe(viewLifecycleOwner, Observer {
            if (it != null) {
                showDialog(it, viewModel, code)
@@ -172,7 +164,7 @@ class TransactionEditFragment : Fragment() {
        })
        viewModel.custName.observe(viewLifecycleOwner, Observer {
            it?.let{
-               viewModel.setCustomerName()
+
            }
        })
        viewModel.navigateToDetail.observe(viewLifecycleOwner, Observer {
@@ -185,7 +177,6 @@ class TransactionEditFragment : Fragment() {
        viewModel.navigateToVendible.observe(viewLifecycleOwner, Observer {
            if (it != null) {
                this.findNavController().navigate(TransactionEditFragmentDirections.actionTransactionEditFragmentToTransactionProductFragment(it))
-               viewModel.setCustomerName()
                viewModel.onNavigatedtoVendible()
 
            }
@@ -288,7 +279,6 @@ class TransactionEditFragment : Fragment() {
     }
 
     override fun onPause() {
-        viewModel.updateCustNameSum()
         super.onPause()
     }
 

@@ -3,10 +3,14 @@ package com.example.app21try6.database.daos
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.example.app21try6.BARANGLOGKET
+import com.example.app21try6.database.models.InventoryLogWithSubProduct
+import com.example.app21try6.database.models.SubWithPriceModel
 import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.statement.purchase.tagp
@@ -20,14 +24,21 @@ interface InventoryLogDao {
     @Insert
     fun insertDetailWarna(detailWarnaTable: DetailWarnaTable)
 
-    @Query("SELECT * FROM inventory_log_table")
-    fun selectAllInventoryLogLD():LiveData<List<InventoryLog>>
+    @Query("""
+    SELECT il.*,s.sub_name
+    FROM inventory_log_table il
+    INNER JOIN sub_table s ON il.subProductId = s.sub_id
+""")
+    fun selectAllInventoryLogLD():LiveData<List<InventoryLogWithSubProduct>>
 
     @Query("SELECT * FROM detail_warna_table")
     fun selectAllDetailWarna():List<DetailWarnaTable>
 
     @Query("SELECT * FROM inventory_log_table")
     fun selectAllInventoryLog():List<InventoryLog>
+
+    @Delete
+    fun deleteLog(log:InventoryLog)
 
 
         @Query("SELECT * FROM detail_warna_table WHERE net = :net AND subId = :subId")
@@ -79,14 +90,49 @@ interface InventoryLogDao {
                 }
             }
             insertInventoryLogs(inventoryLogList)
-
-
-            val detailWarnaList= selectAllDetailWarna()
-            val inventoryLog= selectAllInventoryLog()
-
-            Log.i(tagp,"$detailWarnaList")
-            Log.i(tagp,"$inventoryLog")
         }
 
+    @Transaction
+    fun updateLogAndDetailWarna(newInventoryLog: InventoryLogWithSubProduct){
+        //fin detail warna
+        /*
+            find the old inventorylog
+            if isi of the new inventorylog == isi of the old inventory log
+                 if old inventorylog ket is barang keluar
+                    detailwarna . pcs = detailwarna .pcs + old inventory log.pcs - new inventory log.pcs
+                 else
+                    detailwarna . pcs= detailwarna. pcs - old inventory log.pcs   + new inventory log.pcs
+                 update detailwarna
+            else if new inventory log isi != old inventory log isi
+                if old inventory log ket is barang keluar
+                detailwarna .pcs  = detailwarna .pcs + oldinventorylog.pcs
+                update detailwarna
+                newdetail wa
+
+
+         */
+    }
+
+    @Transaction
+    fun deleteLogAndUpdateDetailWarna(log:InventoryLogWithSubProduct){
+        /* find detail warna with the same sub id and isi
+            if log ket barang keluar
+                then add detail warna
+           else
+                then substract detail warna
+           delete log
+           update detailwarna
+         */
+        val detailWarna=getDetailByNetAndSubId(log.inventoryLog.isi,log.inventoryLog.subProductId!!)!!
+        if (log.inventoryLog.barangLogKet==BARANGLOGKET.keluar) {
+            detailWarna.batchCount=detailWarna.batchCount + log.inventoryLog.pcs
+        }else {
+            detailWarna.batchCount=detailWarna.batchCount - log.inventoryLog.pcs
+        }
+        deleteLog(log.inventoryLog)
+        updateDetail(detailWarna)
+        val list=selectAllDetailWarna()
+        Log.i("LOGPROBS","$list")
+    }
 
 }

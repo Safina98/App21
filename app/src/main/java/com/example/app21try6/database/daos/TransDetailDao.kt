@@ -9,6 +9,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.example.app21try6.bookkeeping.summary.MonthlyProfit
 import com.example.app21try6.database.tables.TransactionDetail
+import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.grafik.StockModel
 import com.example.app21try6.transaction.transactionactive.TransExportModel
 import com.example.app21try6.transaction.transactiondetail.TransactionDetailWithProduct
@@ -83,7 +84,29 @@ interface TransDetailDao {
             " JOIN trans_sum_table AS ts ON td.sum_id = ts.sum_id " +
             "WHERE td.unit is null and td.trans_price<225000 AND ts.trans_date >= :date AND ts.trans_date<:date2 " +
             "AND ts.is_keeped = 1")
+
     fun getTransactionSummariesAfterDate(date: Date,date2:Date): Double
+
+    @Query("""
+    SELECT SUM((COALESCE(td.trans_price, 0) - COALESCE(td.product_capital, 0)) * COALESCE(td.qty, 0)* COALESCE(td.unit_qty, 0)) AS total
+    FROM trans_detail_table AS td
+    JOIN trans_sum_table AS ts ON td.sum_id = ts.sum_id
+    WHERE ts.trans_date >= :startDate
+      AND ts.trans_date < :endDate
+
+      AND td.trans_price < 226000
+""")
+    fun getTransactionSum(startDate: Date, endDate: Date): Double?
+
+    @Query
+        ("""
+            SELECT *
+FROM trans_detail_table AS td
+JOIN trans_sum_table AS ts ON td.sum_id =ts.sum_id
+WHERE ts.trans_date >= '2024-11-01 00:00' 
+  AND ts.trans_date < '2024-12-01 00:00';
+        """)
+    fun getTransDetailTableByDate():List<TransactionDetail>
 
 
     @Query("""

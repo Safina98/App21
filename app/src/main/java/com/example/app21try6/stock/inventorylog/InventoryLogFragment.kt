@@ -32,7 +32,11 @@ class InventoryLogFragment : Fragment() {
         binding.lifecycleOwner =this
         val viewModel = ViewModelProvider(this,viewModelFactory).get(InventoryLogViewModel::class.java)
         binding.viewModel = viewModel
-        val adapter=InventoryLogAdapter(InventoryLogUpdateListener{},InventoryLogDeleteListener {  })
+        val adapter=InventoryLogAdapter(InventoryLogUpdateListener{
+            viewModel.updateLog(it)
+        },InventoryLogDeleteListener {
+            viewModel.deleteLog(it)
+        })
         binding.logRv.adapter=adapter
         viewModel.allLogFromD.observe(viewLifecycleOwner,Observer{
             it?.let {

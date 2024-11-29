@@ -13,6 +13,10 @@ val DETAILED_DATE_FORMAT ="dd-MM-yyyy HH:mm"
 val DETAILED_DATE_FORMATTER = SimpleDateFormat(DETAILED_DATE_FORMAT, Locale.getDefault())
 val SIMPLE_DATE_FORMAT ="dd-MM-yyyy"
 val SIMPLE_DATE_FORMATTER = SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault())
+object BARANGLOGKET {
+    const val masuk = "MASUK"
+    const val keluar = "KELUAR"
+}
 object DISCTYPE {
     const val CashbackPrinted = "Printed"
     const val CashbackNotPrinted = "Not Printed"

@@ -36,7 +36,7 @@ class TransactionActiveViewModel(
     private val _isLoading = MutableLiveData<Boolean>(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
     //All  trans for export
-    var allTransFromDB =datasource2.getExportedDataNew()
+    //var allTransFromDB =datasource2.getExportedDataNew()
     //All active trans to populate rv
     private var _active_trans = MutableLiveData<List<TransactionSummary>>()
     val active_trans :LiveData<List<TransactionSummary>> get() = _active_trans
@@ -58,14 +58,11 @@ class TransactionActiveViewModel(
    //Get active transaction from database
     fun getActiveTrans(){
         viewModelScope.launch {
-            val list = withContext(Dispatchers.IO){
-               datasource1.getActiveSumList(false)
-                //datasource1.getAllTransactionSumList()
-            }
-
+            val list = getActiveTransFromDb()
             _active_trans.value = list
         }
     }
+
     //Add or remove checked item from checkedItemList
     fun onCheckBoxClicked(stok: TransactionSummary, bool:Boolean){
         viewModelScope.launch {
@@ -114,6 +111,11 @@ class TransactionActiveViewModel(
     suspend fun delete_(list: MutableList<TransactionSummary>){
         withContext(Dispatchers.IO){
             datasource1.delete_(*list.toTypedArray())
+        }
+    }
+    private suspend fun getActiveTransFromDb():List<TransactionSummary>{
+        return withContext(Dispatchers.IO){
+            datasource1.getActiveSumList(false)
         }
     }
     //Navigations
@@ -208,6 +210,7 @@ class TransactionActiveViewModel(
                 bw.newLine()
                 val dateFormatter = SimpleDateFormat("dd/MM/yyyy") // Change the date format according to your requirements
                 // Write data to file
+                /*
                 allTransFromDB.value?.let {
                     for (j in allTransFromDB.value!!) {
                         if (j.trans_detail_id!=null) {
@@ -231,6 +234,8 @@ class TransactionActiveViewModel(
                     bw.close()
                     Toast.makeText(getApplication(), "Success", Toast.LENGTH_SHORT).show()
                 }
+
+                 */
             } catch (e: IOException) {
                 e.printStackTrace()
                 Toast.makeText(getApplication(),"Failed", Toast.LENGTH_SHORT).show()

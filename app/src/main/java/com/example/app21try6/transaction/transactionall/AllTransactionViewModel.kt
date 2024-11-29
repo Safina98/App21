@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.example.app21try6.DETAILED_DATE_FORMATTER
 import com.example.app21try6.database.daos.TransSumDao
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.database.VendibleDatabase
@@ -96,16 +97,29 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
             queryM.value=query
             val list = mutableListOf<TransactionSummary>()
             if(!query.isNullOrEmpty()) {
-                val listFilterByTransName= withContext(Dispatchers.IO){dataSource1.getTransactionSummariesByItemName(query)}
+
+                val listFilterByTransName= getSummaryByQuery(query)
+
                 list.addAll(_unFilteredrecyclerViewData.value!!.filter {
+
                     it.cust_name.lowercase(Locale.getDefault()).contains(query.toString().lowercase(Locale.getDefault()))})
+
                 list.addAll(listFilterByTransName)
+
                 val distinctList = list.distinctBy { it.sum_id }
+
                 _allTransactionSummary.value =distinctList
             } else {
                 list.addAll(_unFilteredrecyclerViewData.value!!)
                 _allTransactionSummary.value =list
             }
+            Log.i("SearchBarProbs","Query: $query")
+
+        }
+    }
+    private suspend fun getSummaryByQuery(query: String):List<TransactionSummary>{
+        return withContext(Dispatchers.IO){
+            dataSource1.getTransactionSummariesByItemName(query)
         }
     }
 
@@ -122,20 +136,30 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
 
     //get today's date
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun constructTodaysDate(month: Int): String? {
-        val date =Date()
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        return dateFormat.format(date)
-    }
-    //get yesterday's date
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun constructYesterdayDate(month: Int): String? {
+    private fun getTodayStartAndEnd(day:Int): Pair<String, String> {
         val calendar = Calendar.getInstance()
-        calendar.add(Calendar.DAY_OF_YEAR, -1)
-        val date = calendar.time
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        return dateFormat.format(date)
+        calendar.add(Calendar.DAY_OF_YEAR, day)
+        // Start of the day (00:00)
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        val startOfDay = calendar.time
+
+        // End of the day (23:59)
+
+        calendar.set(Calendar.HOUR_OF_DAY, 23)
+        calendar.set(Calendar.MINUTE, 59)
+        calendar.set(Calendar.SECOND, 59)
+        calendar.set(Calendar.MILLISECOND, 999)
+        val endOfDay = calendar.time
+
+        // Format the dates
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+        return Pair(dateFormat.format(startOfDay), dateFormat.format(endOfDay))
     }
+
+
     private fun constructMonthDate(isStart: Boolean): String? {
         val calendar = Calendar.getInstance()
         calendar.set(Calendar.DAY_OF_MONTH, if (isStart) 1 else calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
@@ -145,18 +169,21 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateRv4(){
         uiScope.launch {
-            var startDate: String?
-            var endDate: String?
+            val startDate: String?
+            val endDate: String?
             if (selectedSpinner.value != "Date Range") {
                 // Extract the month value from the selected date spinner
                 if (selectedSpinner.value == "Hari Ini") {
-                    startDate = constructTodaysDate(0)
-                    endDate =constructTodaysDate(0)
+                    val (start, end) = getTodayStartAndEnd(0) // Use destructuring declaration
+                    startDate = start
+                    endDate = end
                 }
                 else {
                     if (selectedSpinner.value=="Kemarin") {
-                        startDate = constructYesterdayDate(1)
-                        endDate = constructYesterdayDate(12)
+                        val (start, end) = getTodayStartAndEnd(-1) // Use destructuring declaration
+                        startDate = start
+                        endDate = end
+
                     } else if (selectedSpinner.value=="Semua"){
                         startDate = null
                         endDate = null
@@ -170,12 +197,14 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
                 startDate = formatDate(selectedStartDate.value)
                 endDate = formatDate(selectedEndDate.value)
             }
+            Log.i("DateProbs","Start of the day: $startDate")  // e.g., "2024-11-29 00:00"
+            Log.i("DateProbs","End of the day: $endDate")
             val query=queryM.value
             performDataFiltering(startDate, endDate,query)
         }
                 }
     //filter data from database by date
-    private fun performDataFiltering(startDate: String?, endDate: String?,query: String?) {
+    private suspend fun performDataFiltering(startDate: String?, endDate: String?,query: String?) {
 
             if ((startDate != null && !isValidDateFormat(startDate)) ||
                 (endDate != null && !isValidDateFormat(endDate))) {

@@ -82,6 +82,7 @@ interface InventoryPurchaseDao {
             // Ensure the ID is valid before proceeding
             if (id > 0) {
                 purchaseList.map { it.apply { expensesId = id } }
+                purchaseList.map { it.apply { it.id=0 } }
                 purchaseList.forEach{
                     Log.i("insertPurchaseAndExpense","$it")
                 }
@@ -112,8 +113,9 @@ interface InventoryPurchaseDao {
         deletePurchases(purchasesToDelete)
 
         purchaseList.forEach {
-            if (it.id==0){
+            if (it.id<0){
                 it.expensesId=expenses.id
+                it.id=0
                 insertPurchase(it)
             }else{
                 updatePurchase(it)
