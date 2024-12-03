@@ -96,26 +96,34 @@ class StatementHsFragment : Fragment() {
         val tvName= binding.textUpdateKet
         val tvLocation= binding.textUpdatePrice
         val tvTag1=binding.textCapital
+        binding.ilKet.hint="Nama"
+        binding.ilPrice.hint="Lokasi"
+        binding.ilCapital.hint="Alamat"
         binding.textDiscount.visibility=View.GONE
+        binding.textCapital2.visibility=View.GONE
+        binding.defaultNet.visibility=View.GONE
+        binding.purchaseUnit.visibility=View.GONE
+
+
 
         // Create the dialog using AlertDialog.Builder
         if (customerTable!=null){
             tvName.setText( customerTable.customerBussinessName)
             tvLocation.setText( customerTable.customerLocation)
+            tvTag1.setText(customerTable.customerAddress)
         }
         val dialogBuilder = AlertDialog.Builder(requireContext())
             .setView(binding.root)
-            .setTitle("Enter Discount Details")
+            .setTitle("Tambah Customer")
             .setPositiveButton("OK") { dialog, _ ->
                 // Get values from the input fields
                 val bussinessNmae= tvName.text.toString().uppercase().trim()
                 val location = tvLocation.text.toString().uppercase().trim()
-                Log.i("CUSTPROBS","fragment bussiness name $bussinessNmae")
-                Log.i("CUSTPROBS","fragment location $location")
+                val address = tvLocation.text.toString().uppercase().trim()
                 if (customerTable==null){
-                    viewModel.insertCustomer(null,bussinessNmae,location,null,null,null)
+                    viewModel.insertCustomer(null,bussinessNmae,location,address,null,null)
                 }else{
-                    viewModel.updateCustomer(customerTable.custId,null,bussinessNmae,location,null,null,null)
+                    viewModel.updateCustomer(customerTable.custId,null,bussinessNmae,location,address,null,null)
                 }
                 dialog.dismiss()
             }

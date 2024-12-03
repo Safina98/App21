@@ -55,7 +55,7 @@ object DialogUtils{
 
         builder.setView(view)
         builder.setPositiveButton("Update") { dialog, which ->
-            val newName = textKet.text.toString().toUpperCase().trim()
+            val newName = textKet.text.toString().uppercase().trim()
 
             if (model != null) {
                 setBrandName(model, newName)

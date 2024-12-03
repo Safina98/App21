@@ -125,6 +125,16 @@ fun Button.applyGradientBackground(isGradient: Boolean) {
     }
 }
 
+@BindingAdapter("dateFormattedNullable")
+fun bindDateFormattedNullale(textView: TextView, date: Date?) {
+    if (date != null) {
+        val dateString = SIMPLE_DATE_FORMATTER.format(date)
+        textView.text = dateString
+    } else {
+        textView.text = SIMPLE_DATE_FORMATTER.format(Date())
+    }
+}
+
 @BindingAdapter("dateFormatted")
 fun bindDateFormatted(textView: TextView, date: Date?) {
     if (date != null) {

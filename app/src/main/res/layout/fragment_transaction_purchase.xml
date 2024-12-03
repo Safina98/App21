@@ -23,6 +23,7 @@
             android:layout_margin="@dimen/small_margin"
             android:elevation="@dimen/medium_margin"
             android:text="Tanggal: "
+            android:onClick="@{()->viewModel.onTxtTransSumLongClikc()}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,7 +34,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/small_margin"
             android:elevation="@dimen/medium_margin"
-            app:dateFormatted="@{viewModel.inventoryPurchase.purchaseDate}"
+            android:onClick="@{()->viewModel.onTxtTransSumLongClikc()}"
+            app:dateFormattedNullable="@{viewModel.expenseMutable.expense_date}"
             app:layout_constraintStart_toEndOf="@id/lbl_suplier"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -203,7 +205,16 @@
             app:layout_constraintBottom_toTopOf="@+id/txt_total"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/il_total" />
-
+        <ImageView
+            android:id="@+id/trans_sum_note"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="@dimen/big_margin"
+            android:elevation="@dimen/medium_margin"
+            android:src="@drawable/baseline_discount_24"
+            android:onClick="@{()->viewModel.onDiscountClick()}"
+            app:layout_constraintBottom_toTopOf="@id/txt_total"
+            app:layout_constraintEnd_toEndOf="parent" />
         <TextView
             android:id="@+id/lbl_total"
             style="@style/active_transaction_text_style"

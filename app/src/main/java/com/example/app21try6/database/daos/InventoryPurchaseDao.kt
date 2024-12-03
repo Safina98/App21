@@ -12,6 +12,7 @@ import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.Expenses
 import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.database.tables.InventoryPurchase
+import java.util.Date
 
 @Dao
 interface InventoryPurchaseDao {
@@ -83,6 +84,7 @@ interface InventoryPurchaseDao {
             if (id > 0) {
                 purchaseList.map { it.apply { expensesId = id } }
                 purchaseList.map { it.apply { it.id=0 } }
+                purchaseList.map { it.apply { purchaseDate=expenses.expense_date?: Date() } }
                 purchaseList.forEach{
                     Log.i("insertPurchaseAndExpense","$it")
                 }
@@ -112,6 +114,7 @@ interface InventoryPurchaseDao {
         // Delete the purchases
         deletePurchases(purchasesToDelete)
 
+        purchaseList.map { it.apply { purchaseDate=expenses.expense_date?:Date()} }
         purchaseList.forEach {
             if (it.id<0){
                 it.expensesId=expenses.id

@@ -2,6 +2,7 @@ package com.example.app21try6.statement.purchase
 
 import android.app.Application
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -67,11 +68,19 @@ class PurchaseViewModel(application: Application,
     val subDetailList= mutableListOf<DetailWarnaTable>()
 
     val inventoryPurchase=MutableLiveData<InventoryPurchase?>()
+    val expenseMutable=MutableLiveData<Expenses>()
+
     val productName=MutableLiveData<String>("")
     val suplierName=MutableLiveData<String>("")
     val productPrice=MutableLiveData<Double>(0.0)
     val productNet=MutableLiveData<Double>(0.0)
     val productQty=MutableLiveData<Int>(1)
+
+    private val _transSumDateLongClick = MutableLiveData<Boolean>()
+    val transSumDateLongClick:LiveData<Boolean> get() = _transSumDateLongClick
+
+    private val _isDiscountClicked=MutableLiveData<InventoryPurchase?>()
+    val isDiscountClicked:LiveData<InventoryPurchase?> get() = _isDiscountClicked
 
     val totalPrice = MediatorLiveData<Double>().apply {
         addSource(productPrice) { calculateTotalPrice() }
@@ -93,6 +102,14 @@ class PurchaseViewModel(application: Application,
                 inventoryList=list.toMutableList()
                 _inventoryPurchaseList.value=list
                 if (inventoryList!=null) inventoryPurchaseId= inventoryList.last().id*-1
+            }
+        }
+    }
+    fun getExpense(id:Int){
+        viewModelScope.launch {
+            if (id!=-1){
+                val expense=getExpensesById(id)
+                expenseMutable.value=expense
             }
         }
     }
@@ -195,27 +212,28 @@ class PurchaseViewModel(application: Application,
     fun addInventoryLog(){
         viewModelScope.launch {
             for (i in inventoryList){
-                val subDetail= DetailWarnaTable()
-                subDetail.subId=i.subProductId!!
-                subDetail.batchCount=i.batchCount
-                subDetail.net=i.net
-                subDetail.ket
-                subDetail.ref=UUID.randomUUID().toString()
-                subDetailList.add(subDetail)
-                //update or insert detail
-                val inventoryLog=InventoryLog()
-                inventoryLog.detailWarnaRef=subDetail.ref
-                inventoryLog.barangLogDate=i.purchaseDate
-                inventoryLog.subProductId=i.subProductId
-                inventoryLog.productId=getProductId(i.subProductId!!)
-                inventoryLog.brandId=getBrandId(inventoryLog.productId?:0)
-                inventoryLog.barangLogDate=i.purchaseDate
-                inventoryLog.barangLogRef=UUID.randomUUID().toString()
-                inventoryLog.isi=i.net
-                inventoryLog.pcs=i.batchCount.toInt()
-                inventoryLog.barangLogKet="PENDING"
-                logList.add(inventoryLog)
-
+                if (i.status!="DISCOUNT"){
+                    val subDetail= DetailWarnaTable()
+                    subDetail.subId=i.subProductId!!
+                    subDetail.batchCount=i.batchCount
+                    subDetail.net=i.net
+                    subDetail.ket
+                    subDetail.ref=UUID.randomUUID().toString()
+                    subDetailList.add(subDetail)
+                    //update or insert detail
+                    val inventoryLog=InventoryLog()
+                    inventoryLog.detailWarnaRef=subDetail.ref
+                    inventoryLog.barangLogDate=i.purchaseDate
+                    inventoryLog.subProductId=i.subProductId
+                    inventoryLog.productId=getProductId(i.subProductId!!)
+                    inventoryLog.brandId=getBrandId(inventoryLog.productId?:0)
+                    inventoryLog.barangLogDate=i.purchaseDate
+                    inventoryLog.barangLogRef=UUID.randomUUID().toString()
+                    inventoryLog.isi=i.net
+                    inventoryLog.pcs=i.batchCount.toInt()
+                    inventoryLog.barangLogKet="PENDING"
+                    logList.add(inventoryLog)
+                }
             }
             upsertDetailWarnaAndLog(subDetailList,logList)
         }
@@ -236,13 +254,7 @@ class PurchaseViewModel(application: Application,
         _isAddItemClick.value=true
     }
 
-    fun onItemAdded(){
-        _isAddItemClick.value=false
-        _isRvClick.value=false
-    }
-    fun onNavigatedToExpense(){
-        _isNavigateToExpense.value=false
-    }
+
 
     fun onClearClick(){
         productName.value=""
@@ -253,6 +265,38 @@ class PurchaseViewModel(application: Application,
         productNet.value=0.0
         productPrice.value=0.0
     }
+    fun updateLongClickedDate(date:Date){
+        viewModelScope.launch {
+            if (id!=-1) {
+                val expense=getExpensesById(id)
+                expense.expense_date = date
+                updateExpense(expense)
+                expenseMutable.value=expense
+            }
+        }
+    }
+    fun addDiscount(price:Int){
+        val purchase=InventoryPurchase()
+        getAutoIncrementId()
+        purchase.id=inventoryPurchaseId
+        purchase.net=1.0
+        purchase.status="DISCOUNT"
+        purchase.ref=UUID.randomUUID().toString()
+        purchase.purchaseDate=Date()
+        purchase.price=price*-1
+        purchase.batchCount=1.0
+        purchase.subProductName="DISCOUNT"
+        purchase.totalPrice=price.toDouble() *-1
+        Log.i("DiskProbs","$price")
+        getAutoIncrementId()
+        inventoryList.add(purchase)
+        _inventoryPurchaseList.value=inventoryList
+    }
+    fun updateDiscount(item:InventoryPurchase){
+
+    }
+
+
 
     private suspend fun insertPurchase(expenses: Expenses,list:List<InventoryPurchase>){
         withContext(Dispatchers.IO){
@@ -262,6 +306,12 @@ class PurchaseViewModel(application: Application,
     private suspend fun updatePurchasesAndExpense(expenses: Expenses, list:List<InventoryPurchase>){
         withContext(Dispatchers.IO){
             invetoryPurchaseDao.updatePurchasesAndExpense(expenses,list)
+        }
+    }
+
+    private suspend fun updateExpense(expenses: Expenses){
+        withContext(Dispatchers.IO){
+            invetoryPurchaseDao.updateExpense(expenses)
         }
     }
 
@@ -300,6 +350,24 @@ class PurchaseViewModel(application: Application,
         withContext(Dispatchers.IO){
             inventoryLogDao.updateInsertDetailWarnaAndLog(detailWarnaList,inventoryLogList)
         }
+    }
+    fun onTxtTransSumLongClikc(){
+        _transSumDateLongClick.value = true
+    }
+    fun onTxtTransSumLongClikced(){_transSumDateLongClick.value = false}
+    fun onItemAdded(){
+        _isAddItemClick.value=false
+        _isRvClick.value=false
+    }
+    fun onNavigatedToExpense(){
+        _isNavigateToExpense.value=false
+    }
+    fun onDiscountClick(){
+        val purchase=InventoryPurchase()
+        _isDiscountClicked.value=purchase
+    }
+    fun onDiscountClicked(){
+        _isDiscountClicked.value=null
     }
 
 }

@@ -92,7 +92,7 @@ class SubProductStockFragment : Fragment() {
                     getBrandName = { (it as SubProduct).sub_name },
                     setBrandName = { it, name -> (it as SubProduct).sub_name = name },
                     updateFunction = { vm, item -> (vm as SubViewModel).updateSubProduct(item as SubProduct,"",1) },
-                    insertFunction = { vm, name -> (vm as SubViewModel).insertAnItemSubProductStock(name) }
+                    insertFunction = { vm, name -> (vm as SubViewModel).insertAnItemSubProductStock(name as String) }
                 )
                 viewModel.onItemAdded()
             }

@@ -127,7 +127,7 @@ class BrandStockFragment : Fragment() {
                     getBrandName = { (it as CategoryModel).categoryName },
                     setBrandName = { it, name -> (it as CategoryModel).categoryName = name },
                     updateFunction = { vm, item -> (vm as BrandStockViewModel).updateCath(item as CategoryModel) },
-                    insertFunction = { vm, name -> (vm as BrandStockViewModel).insertItemCath(name) }
+                    insertFunction = { vm, name -> (vm as BrandStockViewModel).insertItemCath(name as String) }
                 )
             },DeleteListener {
                 DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as BrandStockViewModel).deleteCategory(item as CategoryModel) })
@@ -223,7 +223,7 @@ class BrandStockFragment : Fragment() {
                         getBrandName = { (it as Brand).brand_name },
                         setBrandName = { it, name -> (it as Brand).brand_name = name },
                         updateFunction = { vm, item -> (vm as BrandStockViewModel).updateBrand(item as BrandProductModel) },
-                        insertFunction = { vm, name -> (vm as BrandStockViewModel).insertAnItemBrandStock(name) }
+                        insertFunction = { vm, name -> (vm as BrandStockViewModel).insertAnItemBrandStock(name as String) }
                     )
                 }
                 else  if(binding.rvProductStock.visibility==View.VISIBLE){
@@ -238,7 +238,7 @@ class BrandStockFragment : Fragment() {
                         getBrandName = { (it as CategoryModel).categoryName },
                         setBrandName = { it, name -> (it as CategoryModel).categoryName = name },
                         updateFunction = { vm, item -> (vm as BrandStockViewModel).updateCath(item as CategoryModel) },
-                        insertFunction = { vm, name -> (vm as BrandStockViewModel).insertItemCath(name) }
+                        insertFunction = { vm, name -> (vm as BrandStockViewModel).insertItemCath(name as String) }
                         )
                 }
                 viewModel.onItemAdded()
@@ -286,7 +286,7 @@ class BrandStockFragment : Fragment() {
                         getBrandName = { (it as BrandProductModel).name },
                         setBrandName = { it, name -> (it as BrandProductModel).name = name },
                         updateFunction = { vm, item -> (vm as BrandStockViewModel).updateBrand(item as BrandProductModel)},
-                        insertFunction = { vm, name -> (vm as BrandStockViewModel).insertAnItemBrandStock(name) }
+                        insertFunction = { vm, name -> (vm as BrandStockViewModel).insertAnItemBrandStock(name as String) }
                     )
                 }else{
                     DialogUtils.updateDialog(requireContext(),viewModel,list)

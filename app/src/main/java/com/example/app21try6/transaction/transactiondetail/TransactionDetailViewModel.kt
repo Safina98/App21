@@ -474,7 +474,7 @@ class TransactionDetailViewModel (application: Application,
     fun onLongClick(v: View): Boolean { return true }
     fun onTxtTransSumLongClikc(v:View):Boolean{
         _transSumDateLongClick.value = true
-    return true
+        return true
     }
     fun onTxtTransSumLongClikced(){_transSumDateLongClick.value = false}
 }
