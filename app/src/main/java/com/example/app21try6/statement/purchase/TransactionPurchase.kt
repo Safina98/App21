@@ -143,7 +143,9 @@ class TransactionPurchase : Fragment() {
 
     private fun showDatePickerDialog(paymentModel: PaymentModel?) {
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.pop_up_date_picker, null)
-        val datePickerStart = dialogView.findViewById<DatePicker>(R.id.date_picker)
+        val datePickerStart = dialogView.findViewById<DatePicker>(R.id.datePickerStart)
+        val datePickerEnd = dialogView.findViewById<DatePicker>(R.id.datePickerEnd)
+        datePickerEnd.visibility=View.GONE
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle("Select Date Range")
             .setView(dialogView)

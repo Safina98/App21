@@ -66,7 +66,7 @@ class AllTransactionsFragment : Fragment() {
         }
         viewModel.selectedSpinner.observe(viewLifecycleOwner){
             it?.let {
-                viewModel.updateRv4()
+               // viewModel.updateRv4()
             }
         }
         binding.searchAllTrans.setQueryHint("Search here...");
@@ -82,21 +82,16 @@ class AllTransactionsFragment : Fragment() {
         })
         viewModel.isStartDatePickerClicked.observe(viewLifecycleOwner) {
            if (it==true){
-               showDatePickerDialog(1)
+               showDatePickerDialog()
                viewModel.onStartDatePickerClicked()
            }
         }
-        viewModel.isEndDatePickerClicked.observe(viewLifecycleOwner) {
-            if (it==true){
-                showDatePickerDialog(2)
-                viewModel.onEndDatePickerClicked()
-            }
-        }
+
         viewModel.selectedStartDate.observe(viewLifecycleOwner) {
-            viewModel.updateRv4()
+            //viewModel.updateRv4()
         }
         viewModel.selectedEndDate.observe(viewLifecycleOwner) {
-            viewModel.updateRv4()
+           // viewModel.updateRv4()
         }
 
         viewModel.navigateToTransDetail.observe(viewLifecycleOwner){
@@ -108,23 +103,44 @@ class AllTransactionsFragment : Fragment() {
         return binding.root
 
     }
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun showDatePickerDialog(code:Int) {
+
+    private fun showDatePickerDialog() {
+
+        //clearSearchQuery()
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.pop_up_date_picker, null)
-        val datePickerStart = dialogView.findViewById<DatePicker>(R.id.date_picker)
+        val datePickerStart = dialogView.findViewById<DatePicker>(R.id.datePickerStart)
+        val datePickerEnd = dialogView.findViewById<DatePicker>(R.id.datePickerEnd)
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle("Select Date Range")
             .setView(dialogView)
             .setPositiveButton("OK") { _, _ ->
-                    val startDate = Calendar.getInstance().apply {
-                        set(datePickerStart.year, datePickerStart.month, datePickerStart.dayOfMonth)
-                    }.time
-                viewModel.setSelectedSpinner("Date Range")
-                if (code==1) viewModel.setStartDateRange(startDate)
-                else if (code==2) viewModel.setEndDateRange(startDate)
+                val startYear = datePickerStart.year
+                val startMonth = datePickerStart.month
+                val startDay = datePickerStart.dayOfMonth
+                val endYear = datePickerEnd.year
+                val endMonth = datePickerEnd.month
+                val endDay = datePickerEnd.dayOfMonth
+
+                val startDate = Calendar.getInstance().apply {
+                    set(startYear, startMonth, startDay, 0, 0, 1) // Set time to start of the day
+                    set(Calendar.MILLISECOND, 0)
+                }.time
+
+                val endDate = Calendar.getInstance().apply {
+                    set(endYear, endMonth, endDay, 23, 59, 58) // Set time to end of the day
+                    set(Calendar.MILLISECOND, 999)
+                }.time
+
+                viewModel.updateDateRangeString(startDate,endDate)
+                viewModel.setStartAndEndDateRange(startDate,endDate)
+                viewModel.updateRv5()
+                // viewModel.setEndDateRange(endDate)
             }
             .setNegativeButton("Cancel", null)
             .create()
+        dialog.setOnDismissListener {
+
+        }
 
         dialog.show()
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
@@ -136,7 +152,7 @@ class AllTransactionsFragment : Fragment() {
         super.onResume()
         val startDate = viewModel.selectedStartDate.value
         val endDate = viewModel.selectedEndDate.value
-        viewModel.updateRv4()
+        viewModel.updateRv5()
 
         Log.i("DateProb","on resume start date: $startDate")
         Log.i("DateProb","on resume End date: $endDate")

@@ -156,7 +156,8 @@
         android:label="Semua Nota">
         <action
             android:id="@+id/action_allTransactionsFragment_to_transactionDetailFragment"
-            app:destination="@id/transactionDetailFragment" />
+            app:destination="@id/transactionDetailFragment"
+            app:popUpTo="@id/allTransactionsFragment" />
     </fragment>
     <fragment
         android:id="@+id/graphicFragment"

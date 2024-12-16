@@ -49,12 +49,12 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
     //show or hide start date picker dialog
     private var _isStartDatePickerClicked = MutableLiveData<Boolean>()
     val isStartDatePickerClicked :LiveData<Boolean>get() = _isStartDatePickerClicked
-    //show or hide end date picker dialog
-    private var _isEndDatePickerClicked = MutableLiveData<Boolean>()
-    val isEndDatePickerClicked :LiveData<Boolean>get() = _isEndDatePickerClicked
+
     //To update icons color on night mode or liht mode
     private var _uiMode = MutableLiveData<Int>(16)
     val uiMode :LiveData<Int> get() =_uiMode
+
+    val _dateRangeString = MutableLiveData<String>()
 
     val queryM=MutableLiveData<String?>()
 
@@ -64,31 +64,46 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
         "${items.size} transaksi"
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun setSelectedSpinner(value:String){
-        _selectedSpinner.value = value
+        if(selectedSpinner.value!=value){
+            _selectedSpinner.value = value
+            val (start, end) = when (value){
+                "Hari Ini"->getTodayStartAndEnd(0)
+                "Kemarin"->getTodayStartAndEnd(-1)
+                "Semua"->Pair(null,null)
+                "Bulan Ini"->getCurrentMonthDateRange()
+                else->Pair(_selectedStartDate.value,selectedEndDate.value)
+            }
+            Log.i("DateProb","setSelectedSpinnercalled, value::$value")
+            _selectedStartDate.value = start
+            _selectedEndDate.value = end
+            updateRv5()
+            updateDateRangeString(start,end)
+        }
     }
 
-
+    fun updateDateRangeString(startDate: Date?, endDate: Date?) {
+        _dateRangeString.value = formatDateRange(startDate, endDate)
+    }
     //Set ui to change icons color when night mode or day mode on
     fun setUiMode(mode:Int){
         _uiMode.value = mode
     }
-    fun setStartDateRange(startDate: Date?){
-        uiScope.launch {
-            _selectedStartDate.value = startDate
-            if (selectedEndDate.value ==null)
-            {_selectedEndDate.value=startDate}
-            Log.i("DATEPROB","setStartDateRange stardate ${startDate.toString()}")
-            Log.i("DATEPROB","setStartDateRange stardate mutable ${_selectedStartDate.value .toString()}")
-            Log.i("DATEPROB","setStartDateRange enddate mutable ${_selectedEndDate.value .toString()}")
+    private fun formatDateRange(startDate: Date?, endDate: Date?): String {
+        return if (startDate != null && endDate != null) {
+            val dateFormat = SimpleDateFormat("EEEE, d MMMM yyyy", Locale("in", "ID"))
+            val startDateString = dateFormat.format(startDate)
+            val endDateString = dateFormat.format(endDate)
+            "$startDateString - $endDateString"
+        } else {
+            "Pilih Tanggal"
         }
     }
-    fun setEndDateRange(startDate: Date?){
-        uiScope.launch {
-            _selectedEndDate.value=startDate
-            Log.i("DATEPROB","setEndDateRange stardate ${startDate.toString()}")
-            Log.i("DATEPROB","setEndDateRange stardate mutable ${_selectedStartDate.value .toString()}")
-            Log.i("DATEPROB","setEndDateRange enddate mutable ${_selectedEndDate.value .toString()}")
+    fun setStartAndEndDateRange(startDate: Date?,endDate: Date?){
+        viewModelScope.launch {
+            _selectedStartDate.value = startDate
+            _selectedEndDate.value = endDate
         }
     }
     //Filter data based on search query
@@ -100,7 +115,7 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
 
                 val listFilterByTransName= getSummaryByQuery(query)
 
-                list.addAll(_unFilteredrecyclerViewData.value!!.filter {
+                list.addAll(_allTransactionSummary.value!!.filter {
 
                     it.cust_name.lowercase(Locale.getDefault()).contains(query.toString().lowercase(Locale.getDefault()))})
 
@@ -119,7 +134,7 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
     }
     private suspend fun getSummaryByQuery(query: String):List<TransactionSummary>{
         return withContext(Dispatchers.IO){
-            dataSource1.getTransactionSummariesByItemName(query)
+            dataSource1.getTransactionSummariesByItemName(query,_selectedStartDate.value,selectedEndDate.value)
         }
     }
 
@@ -136,7 +151,7 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
 
     //get today's date
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun getTodayStartAndEnd(day:Int): Pair<String, String> {
+    private fun getTodayStartAndEnd(day:Int): Pair<Date, Date> {
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DAY_OF_YEAR, day)
         // Start of the day (00:00)
@@ -156,87 +171,60 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
 
         // Format the dates
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-        return Pair(dateFormat.format(startOfDay), dateFormat.format(endOfDay))
+        return Pair(startOfDay, endOfDay)
     }
 
-
-    private fun constructMonthDate(isStart: Boolean): String? {
+    fun getCurrentMonthDateRange(): Pair<Date, Date> {
         val calendar = Calendar.getInstance()
-        calendar.set(Calendar.DAY_OF_MONTH, if (isStart) 1 else calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
-        return formatDate(calendar.time)
+
+        // Set to the first day of the current month at 00:00
+        calendar.set(Calendar.DAY_OF_MONTH, 1)
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        val firstDayOfMonth = calendar.time
+
+        // Set to the last day of the current month at 23:59
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+        calendar.set(Calendar.HOUR_OF_DAY, 23)
+        calendar.set(Calendar.MINUTE, 59)
+        calendar.set(Calendar.SECOND, 59)
+        calendar.set(Calendar.MILLISECOND, 999)
+        val lastDayOfMonth = calendar.time
+
+        return Pair(firstDayOfMonth, lastDayOfMonth)
     }
-    //Construcnt startDate and endDate spinner select or date picker select
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun updateRv4(){
-        uiScope.launch {
-            val startDate: String?
-            val endDate: String?
-            if (selectedSpinner.value != "Date Range") {
-                // Extract the month value from the selected date spinner
-                if (selectedSpinner.value == "Hari Ini") {
-                    val (start, end) = getTodayStartAndEnd(0) // Use destructuring declaration
-                    startDate = start
-                    endDate = end
-                }
-                else {
-                    if (selectedSpinner.value=="Kemarin") {
-                        val (start, end) = getTodayStartAndEnd(-1) // Use destructuring declaration
-                        startDate = start
-                        endDate = end
 
-                    } else if (selectedSpinner.value=="Semua"){
-                        startDate = null
-                        endDate = null
-                    } else{
-                        startDate = constructMonthDate(isStart = true)  // First day of the current month
-                        endDate = constructMonthDate(isStart = false)
-                    }
-                }
-            } else {
-                // Date range option selected, use the selected start and end dates
-                startDate = formatDate(selectedStartDate.value)
-                endDate = formatDate(selectedEndDate.value)
-            }
-            Log.i("DateProbs","Start of the day: $startDate")  // e.g., "2024-11-29 00:00"
-            Log.i("DateProbs","End of the day: $endDate")
-            val query=queryM.value
-            performDataFiltering(startDate, endDate,query)
+
+    fun updateRv5(){
+        viewModelScope.launch {
+            performDataFiltering(selectedStartDate.value, selectedEndDate.value)
         }
-                }
-    //filter data from database by date
-    private suspend fun performDataFiltering(startDate: String?, endDate: String?,query: String?) {
-
-            if ((startDate != null && !isValidDateFormat(startDate)) ||
-                (endDate != null && !isValidDateFormat(endDate))) {
-                Log.e("AllTransactionViewModel", "Invalid date format: startDate=$startDate, endDate=$endDate")
-                return
-            }
-            viewModelScope.launch {
-                Log.e("AllTransactionViewModel", "query:=$query")
+    }
+    private fun performDataFiltering(startDate: Date?, endDate: Date?) {
+        viewModelScope.launch {
+            try {
                 val filteredData = withContext(Dispatchers.IO) {
-                    dataSource1.getFilteredData3(startDate, endDate,query)
+                    dataSource1.getFilteredData4(startDate, endDate,null)
                 }
-                Log.e("AllTransactionViewModel", "filteredData $filteredData")
-                _allTransactionSummary.value = filteredData
-                _unFilteredrecyclerViewData.value = filteredData
+                // Update LiveData on the main thread
+                withContext(Dispatchers.Main) {
+                    _allTransactionSummary.value = filteredData
+                    _unFilteredrecyclerViewData.value = filteredData
+                }
+            } catch (e: Exception) {
+                Log.e("DataFilteringError", "Error during data filtering", e)
             }
-    }
-    fun isValidDateFormat(date: String, format: String = "yyyy-MM-dd"): Boolean {
-        return try {
-            val sdf = SimpleDateFormat(format, Locale.US)
-            sdf.isLenient = false
-            sdf.parse(date)
-            true
-        } catch (e: ParseException) {
-            Log.e("DateProb", " Invalid date format: $date", e)
-            false
         }
     }
+
+
+
     //show hide date picker dialog
     fun onStartDatePickerClick(){ _isStartDatePickerClicked.value = true }
     fun onStartDatePickerClicked(){ _isStartDatePickerClicked.value = false }
-    fun onEndDatePickerClick(){ _isEndDatePickerClicked.value = true }
-    fun onEndDatePickerClicked(){ _isEndDatePickerClicked.value = false }
+
     //Navigation
     fun onNavigatetoTransDetail(id:Int){ _navigateToTransDetail.value = id }
     fun onNavigatedToTransDetail(){ this._navigateToTransDetail.value = null }

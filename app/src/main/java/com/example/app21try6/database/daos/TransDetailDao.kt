@@ -30,21 +30,7 @@ interface TransDetailDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertN(transactionDetail: TransactionDetail):Long
-/*
-    @Query("""
-    SELECT strftime('%Y', trans_detail_table.trans_detail_date) AS year,
-           strftime('%m', trans_detail_table.trans_detail_date) AS month,
-           SUM((trans_detail_table.trans_price - trans_detail_table.product_capital) * trans_detail_table.qty) AS monthly_profit
-    FROM trans_detail_table
-    JOIN trans_sum_table ON trans_detail_table.sum_id = trans_sum_table.sum_id
-    WHERE trans_detail_table.unit IS NULL 
-      AND trans_sum_table.is_keeped = 0
-      AND trans_detail_table.trans_detail_date IS NOT NULL
-    GROUP BY year, month
-    ORDER BY year, month
-""")
 
- */
     @Query("""
     SELECT trans_detail_table.*
     FROM trans_detail_table

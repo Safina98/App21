@@ -87,8 +87,11 @@ interface TransSumDao {
     @Query("SELECT * from trans_sum_table order by sum_id DESC limit 1")
     fun getLastInserted():LiveData<TransactionSummary>
 
-    @Query("SELECT * FROM trans_sum_table AS ts JOIN trans_detail_table AS td ON ts.sum_id = td.sum_id WHERE td.trans_item_name LIKE '%' || :name || '%'")
-    fun getTransactionSummariesByItemName(name: String): List<TransactionSummary>
+    @Query("SELECT * FROM trans_sum_table AS ts JOIN trans_detail_table AS td ON ts.sum_id = td.sum_id " +
+            "WHERE td.trans_item_name LIKE '%' || :name || '%'" +
+            "AND (:startDate IS NULL OR ts.trans_date >= :startDate)\n" +
+            "        AND (:endDate IS NULL OR ts.trans_date <= :endDate)")
+    fun getTransactionSummariesByItemName(name: String, startDate: Date?,endDate: Date?): List<TransactionSummary>
 
     @Query("SELECT last_insert_rowid()")
     fun getLastInsertedIdN(): Int
@@ -124,6 +127,20 @@ interface TransSumDao {
     ORDER BY t.trans_date DESC
 """)
     fun getFilteredData3( startDate: String?, endDate: String?,name:String?): List<TransactionSummary>
+
+
+    @Query("""
+    SELECT DISTINCT t.sum_id, t.cust_name, t.total_trans, t.trans_date, t.paid, 
+                    t.is_taken, t.is_paid_off, t.is_keeped, t.ref, t.sum_note, t.custId 
+    FROM trans_sum_table t 
+    JOIN trans_detail_table AS td ON t.sum_id = td.sum_id 
+    WHERE 
+        (:name IS NULL OR td.trans_item_name IS NULL OR td.trans_item_name LIKE '%' || :name || '%')
+        AND (:startDate IS NULL OR t.trans_date >= :startDate)
+        AND (:endDate IS NULL OR t.trans_date <= :endDate)
+    ORDER BY t.trans_date DESC
+""")
+    fun getFilteredData4( startDate: Date?, endDate: Date?,name:String?): List<TransactionSummary>
 
     @Query("DELETE FROM trans_sum_table WHERE sum_id IN (:sumIds)")
     suspend fun deleteTransactionSummaries(sumIds: List<Int>)
