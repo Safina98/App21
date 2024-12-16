@@ -67,7 +67,11 @@ class GraphicFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>) {
             }
         }
-        viewModel.transDetailModel.observe(viewLifecycleOwner){
+        viewModel.transDetailModel.observe(viewLifecycleOwner){list->
+            list?.forEach {
+
+            }
+
         }
 
        // viewModel.modelList.observe(viewLifecycleOwner) {}
@@ -96,7 +100,6 @@ class GraphicFragment : Fragment() {
             viewModel.getProductEntriesStok()
         }
         viewModel.selectedStockProductSpinner.observe(viewLifecycleOwner){
-            Log.i("NotNullPointerProb",it.toString())
             viewModel.filterModelListStok()
         }
         viewModel.filteredmodelList.observe(viewLifecycleOwner) { value ->

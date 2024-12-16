@@ -2,6 +2,7 @@ package com.example.app21try6.statement.expenses
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -51,6 +53,7 @@ class ExpensesFragment : Fragment() {
     private lateinit var binding: FragmentExpensesBinding
     private lateinit var viewModel: StatementHSViewModel
     private lateinit var adapter:DiscountAdapter
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -79,9 +82,7 @@ class ExpensesFragment : Fragment() {
         binding.viewModel=viewModel
         adapter = DiscountAdapter(
             DiscountListener {
-
-                             viewModel.onNavigateToPurcase(it.id!!)
-
+                viewModel.onNavigateToPurcase(it.id!!)
             }, DiscountLongListener {
                 showExpensesDialog(it)
             },
@@ -90,9 +91,8 @@ class ExpensesFragment : Fragment() {
             })
         val categoryAdapter = CategoryAdapter(
         UpdateListener {
-                       showsAddExpenseCategoryDialog(it)
-        },
-            DeleteListener {
+            showsAddExpenseCategoryDialog(it)
+        }, DeleteListener {
                 DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as StatementHSViewModel).deleteExpenseCategory(item as CategoryModel) })
             }
         )
@@ -134,7 +134,7 @@ class ExpensesFragment : Fragment() {
         }
 
         viewModel.selectedECSpinner.observe(viewLifecycleOwner) {
-            viewModel.updateRv()
+            viewModel.updateRv4()
         }
 
         viewModel.allExpenseCategoryName.observe(viewLifecycleOwner, Observer {
@@ -161,6 +161,7 @@ class ExpensesFragment : Fragment() {
 
         return binding.root
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     fun showExpensesDialog(expenses: DiscountAdapterModel?) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Update")

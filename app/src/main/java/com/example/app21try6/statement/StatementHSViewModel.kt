@@ -1,7 +1,9 @@
 package com.example.app21try6.statement
 
 import android.app.Application
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -21,7 +23,11 @@ import com.example.app21try6.stock.brandstock.CategoryModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 import java.util.UUID
 
 class StatementHSViewModel(application: Application,
@@ -98,41 +104,55 @@ class StatementHSViewModel(application: Application,
         }
     }
 
-
-    fun updateRv(){
+    private fun formatDate(date: Date?): String? {
+        if (date != null) {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            return dateFormat.format(date)
+        }
+        return null
+    }
+    private fun constructMonthDate(isStart: Boolean): String? {
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.DAY_OF_MONTH, if (isStart) 1 else calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+        return formatDate(calendar.time)
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun updateRv4(){
         viewModelScope.launch {
-            val expenseList = getExpensesByCategory(ecId.value)
-            val sum = withContext(Dispatchers.IO){ expenseDao.getExpenseSum()}
-/*
-            val simpleFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val date1 = simpleFormatter.parse("2024-10-01")
-            val date2 = simpleFormatter.parse("2024-11-1")
-
-            val transSummarySum= withContext(Dispatchers.IO){transSumDao.getTransactionSummariesAfterDate(date1!!,date2!!)}
-            val transSummarySumNK= withContext(Dispatchers.IO){transSumDao.getTransactionSummariesAfterDateNotBooked(date1!!,date2!!)}
-            val transSummarySumK= withContext(Dispatchers.IO){transSumDao.getTransactionSummariesAfterDateBooked(date1!!,date2!!)}
-            val transList= withContext(Dispatchers.IO){transSumDao.getTransactionSummariesAfterDateList(date1!!,date2) }
-            val transDetailSum= withContext(Dispatchers.IO){transDetailDao.getTransactionSummariesAfterDate(date1!!,date2!!)}
-
-            Log.i(tagg,"income summary all ${formatRupiah(transSummarySum)}")
-            Log.i(tagg,"income summary not booked ${formatRupiah(transSummarySumNK)}")
-            Log.i(tagg,"income summary booked ${formatRupiah(transSummarySumK)}")
-            Log.i(tagg,"income summary booked + not booked ${formatRupiah(transSummarySumNK+transSummarySumK)}")
-            Log.i(tagg,"income detail ${formatRupiah(transDetailSum)}")
-            Log.i(tagg,"profit ${formatRupiah(transSummarySum-sum.toDouble())}")
-            Log.i(tagg,"profit ${formatRupiah(transSummarySumNK -sum.toDouble())}")
-
-            val manualSum = transList.sumOf { it.total_trans }
-            Log.i(tagg,"manual sum ${formatRupiah(manualSum)}")
-            transList.forEach {
-               // Log.i(tagg,"${DATE_FORMAT.format(it.trans_date)},\n ${it.cust_name}: ${formatRupiah(it.total_trans)}\n")
-            }
-
- */
-            _expenseSum.value= formatRupiah(sum.toDouble())?:"Rp. 0"
-            _allExpenseFromDb.value = expenseList
+            val startDate: String?
+            val endDate: String?
+            startDate = constructMonthDate(isStart = true)  // First day of the current month
+            endDate = constructMonthDate(isStart = false)
+            performDataFiltering(startDate, endDate)
         }
     }
+    //filter data from database by date
+    private suspend fun performDataFiltering(startDate: String?, endDate: String?) {
+
+        if ((startDate != null && !isValidDateFormat(startDate)) ||
+            (endDate != null && !isValidDateFormat(endDate))) {
+            return
+        }
+            val filteredData = withContext(Dispatchers.IO) { expenseDao.getAllExpense(startDate,endDate,ecId.value)}
+        val sum = withContext(Dispatchers.IO){ expenseDao.getExpenseSum(startDate,endDate,ecId.value)}
+        Log.e("AllTransactionViewModel", "filteredData $filteredData")
+            _allExpenseFromDb.value = filteredData
+        _expenseSum.value=formatRupiah(sum.toDouble())?:"-1"
+            //_unFilteredrecyclerViewData.value = filteredData
+
+    }
+    fun isValidDateFormat(date: String, format: String = "yyyy-MM-dd"): Boolean {
+        return try {
+            val sdf = SimpleDateFormat(format, Locale.US)
+            sdf.isLenient = false
+            sdf.parse(date)
+            true
+        } catch (e: ParseException) {
+            Log.e("DateProb", " Invalid date format: $date", e)
+            false
+        }
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
     fun insertExpense(expenseNamed:String, expenseAmmount:Int?, expenseDate: Date, expenseCatName:String){
         viewModelScope.launch{
             val expenses= Expenses()
@@ -145,9 +165,10 @@ class StatementHSViewModel(application: Application,
             //Log.i(tagg,"date $expenseDate")
             insertExpense(expenses)
 
-            updateRv()
+            updateRv4()
         }
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     fun updateExpenses(expensesM: DiscountAdapterModel){
         viewModelScope.launch {
             val expenses= Expenses()
@@ -159,13 +180,14 @@ class StatementHSViewModel(application: Application,
             expenses.expense_ref=expensesM.expense_ref!!
             expenses.expense_date=expensesM.date
             updateExpenseToDao(expenses)
-            updateRv()
+            updateRv4()
         }
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     fun deleteExpense(id: Int){
         viewModelScope.launch {
             deleteExpensesToDao(id)
-            updateRv()
+            updateRv4()
         }
     }
     fun getAllExpense(){}
@@ -181,11 +203,7 @@ class StatementHSViewModel(application: Application,
            expenseCategoryDao.getECIdByName(name)
         }
     }
-    private suspend fun getExpensesByCategory(cEid:Int?):List<DiscountAdapterModel>{
-        return withContext(Dispatchers.IO){
-            expenseDao.getAllExpense(cEid)
-        }
-    }
+    
 
  ////////////////////////////////////////////Customer////////////////////////////////////////////
     fun insertCustomer(name:String?,businessName:String,location:String?,address:String?,level:String?,tag1:String?){

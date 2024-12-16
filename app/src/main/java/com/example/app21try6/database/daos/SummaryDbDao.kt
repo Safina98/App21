@@ -183,14 +183,17 @@ interface SummaryDbDao {
             s.price, 
             s.total_income, 
             s.item_sold AS itemCount,
+            s.sub_id,
             c.category_name, 
             p.product_name, 
-            p.product_capital, 
-            ((s.price - p.product_capital) * s.item_sold) AS productNet 
+            p.product_capital,
+             p.product_id,
+            ((s.price - p.product_capital) * s.item_sold) AS productNet
+             
         FROM 
             summary_table s 
         JOIN 
-            product_table p ON s.item_name = p.product_name 
+            product_table p ON s.product_id = p.product_id 
         JOIN 
             category_table c ON p.cath_code = c.category_id
         """)

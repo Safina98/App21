@@ -232,13 +232,33 @@ WHERE ts.trans_date >= '2024-11-01 00:00'
             trans_detail_table.trans_item_name AS item_name,
             trans_detail_table.qty AS itemCount,
             category_table.category_name AS category_name,
-            product_table.product_name AS product_name
+            product_table.product_name AS product_name,
+            product_table.product_id AS product_id,
+            trans_detail_table.sub_id AS sub_id
         FROM trans_detail_table
-        JOIN sub_table ON trans_detail_table.trans_item_name = sub_table.sub_name
+        JOIN sub_table ON trans_detail_table.sub_id = sub_table.sub_id
         JOIN category_table ON sub_table.cath_code = category_table.category_id
         JOIN product_table ON sub_table.product_code = product_table.product_id
     """)
     fun getTransactionDetails(): LiveData<List<StockModel>>
+
+    @Query("""
+        SELECT
+            COALESCE(strftime('%Y', trans_detail_table.trans_detail_date), '1990') AS year,
+            COALESCE(strftime('%m', trans_detail_table.trans_detail_date), '05') AS month,
+            trans_detail_table.trans_item_name AS item_name,
+            trans_detail_table.qty AS itemCount,
+            category_table.category_name AS category_name,
+            product_table.product_name AS product_name,
+            sub_table.sub_name AS sub_name,
+            product_table.product_id AS product_id,
+            trans_detail_table.sub_id AS sub_id
+        FROM trans_detail_table
+        JOIN sub_table ON trans_detail_table.sub_id = sub_table.sub_id
+        JOIN category_table ON sub_table.cath_code = category_table.category_id
+        JOIN product_table ON sub_table.product_code = product_table.product_id
+    """)
+    fun getTransactionDetailsList(): List<StockModel>
 
     @Query("SELECT * FROM trans_detail_table")
     fun getAllTransDetail():List<TransactionDetail>

@@ -20,6 +20,7 @@ import com.example.app21try6.database.daos.SummaryDbDao
 import com.example.app21try6.database.daos.TransDetailDao
 import com.example.app21try6.database.daos.TransSumDao
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.getMonthName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -41,6 +42,9 @@ class GraphicViewModel(application: Application,
     private val _summarycombinedLiveData = MediatorLiveData<List<StockModel>?>()
 
     val transDetailModel = TransDetailSource4.getTransactionDetails()
+
+
+    private val _unFilteredmodelList = MutableLiveData<List<StockModel>>()
 
     private val _filteredmodelList = MutableLiveData<List<StockModel>>()
     val filteredmodelList: LiveData<List<StockModel>> get() = _filteredmodelList
@@ -97,9 +101,13 @@ class GraphicViewModel(application: Application,
     }
     fun getCombinedStockLiveData(){
         viewModelScope.launch {
-            var list = withContext(Dispatchers.IO){
-                summarySource.getAllStockModels()
+            val stockList = withContext(Dispatchers.IO){
+                TransDetailSource4.getTransactionDetailsList()
             }
+            val list=stockList.map { stock ->
+                stock.copy(month = getMonthName(stock.month.toInt())) // Replace numeric month with its name
+            }
+            _unFilteredmodelList.value=list
             _combinedStockLiveData.value = list
             _summarycombinedLiveData.value =list
         }
@@ -108,7 +116,7 @@ class GraphicViewModel(application: Application,
     // populate category entries
     fun getKategoriEntries(){
         viewModelScope.launch {
-            var newData = withContext(Dispatchers.IO) {
+            val newData = withContext(Dispatchers.IO) {
                 val list = categorySource3.getAllCategoryName()
                 val modifiedList = listOf("ALL") + list // Create a new list with the added value
                 modifiedList // Return the modified list
@@ -119,7 +127,7 @@ class GraphicViewModel(application: Application,
     // populate product entries
     fun getProductEntriesStok(){
         viewModelScope.launch {
-            var newData = withContext(Dispatchers.IO) {
+            val newData = withContext(Dispatchers.IO) {
                 val list = productSource1.getProductNameByCategoryName(selectedStockCategorySpinner.value?:"")
                 val modifiedList = listOf("Off","ALL") + list // Create a new list with the added value
                 modifiedList // Return the modified list
@@ -145,10 +153,17 @@ class GraphicViewModel(application: Application,
     }
     //set selected product spinner
     fun setSelectedProductValueStok(selectedItem: String){
+
         if(selectedItem =="Off"){
-            _combinedStockLiveData.value = _summarycombinedLiveData.value
+            val updatedStockList = _summarycombinedLiveData.value?.map { stock ->
+                stock.copy(item_name = stock.product_name ?: stock.item_name) // Use `product_name` if available, otherwise keep `item_name`
+            }
+            _combinedStockLiveData.value = updatedStockList
         }else {
-            _combinedStockLiveData.value = transDetailModel.value
+            val updatedStockList = _summarycombinedLiveData.value?.map { stock ->
+                stock.copy(item_name = stock.sub_name ?: stock.item_name) // Use `product_name` if available, otherwise keep `item_name`
+            }
+            _combinedStockLiveData.value = updatedStockList
         }
         _selectedStockProductSpinner.value = selectedItem
     }
@@ -173,6 +188,9 @@ class GraphicViewModel(application: Application,
     }
     fun filteredmodelListByProductStok(){
         val filteredList = _filteredmodelList.value?.filter { model -> model.product_name == selectedStockProductSpinner.value }
+        filteredList?.forEach {
+            Log.i("GRAPHICPROBS","$it")
+        }
         _filteredmodelList.value = filteredList!!
     }
     fun filterModelListByCategoryStok() {
