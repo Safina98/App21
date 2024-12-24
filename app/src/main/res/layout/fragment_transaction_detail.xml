@@ -62,7 +62,7 @@
             android:src="@drawable/baseline_calendar_month_24"
             app:layout_constraintEnd_toStartOf="@id/btn_edit_trans_new"
             app:layout_constraintTop_toBottomOf="@id/txt_cust_name"
-           />
+            />
         <ImageView
             android:id="@+id/btn_print_new"
             android:layout_width="36dp"
@@ -164,42 +164,42 @@
             app:layout_constraintTop_toBottomOf="@id/txt_date"
             app:layout_constraintBottom_toTopOf="@id/txt_bayar_sum">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/medium_margin">
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView_detail_trans"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-            <TextView
-                android:id="@+id/txt_total_sum"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="viewEnd"
-                android:layout_marginEnd="48dp"
-                style="@style/text_subproduct_small_style"
-                android:text="@{viewModel.transTotal}"
-                android:textSize="24sp" />
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView_discount"
-                android:layout_marginEnd="32dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                android:orientation="vertical"
+                android:padding="@dimen/medium_margin">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView_detail_trans"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                <TextView
+                    android:id="@+id/txt_total_sum"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="viewEnd"
+                    android:layout_marginEnd="48dp"
+                    style="@style/text_subproduct_small_style"
+                    android:text="@{viewModel.transTotal}"
+                    android:textSize="24sp" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView_discount"
+                    android:layout_marginEnd="32dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView_bayar"
-                android:layout_marginEnd="32dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView_bayar"
+                    android:layout_marginEnd="32dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-        </LinearLayout>
+            </LinearLayout>
         </androidx.core.widget.NestedScrollView>
         <TextView
             android:id="@+id/txt_bayar_sum"

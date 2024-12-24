@@ -58,7 +58,9 @@ class TransactionDetailFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater,
            R.layout.fragment_transaction_detail,container,false)
         val application= requireNotNull(this.activity).application
-        val id= arguments?.let{ TransactionDetailFragmentArgs.fromBundle(it).id}
+        Log.d("DetailFragment", "onCreateView called")
+        val id = arguments?.let { TransactionDetailFragmentArgs.fromBundle(it).id }
+            ?: throw IllegalArgumentException("ID argument is missing")
         val datasource1 = VendibleDatabase.getInstance(application).transSumDao
         val datasource2 = VendibleDatabase.getInstance(application).transDetailDao
         val datasource3 = VendibleDatabase.getInstance(application).summaryDbDao
@@ -70,13 +72,14 @@ class TransactionDetailFragment : Fragment() {
         val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         val viewModelFactory = TransactionDetailViewModelFactory(application,datasource1,datasource2,datasource3,datasource4,datasource5,datasource6,datasource8,datasource7,id!!)
         viewModel =ViewModelProvider(this,viewModelFactory).get(TransactionDetailViewModel::class.java)
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
         val img =  requireActivity().findViewById<ImageView>(R.id.delete_image)
-        img.visibility = View.GONE
+        img?.visibility = View.GONE
+
         binding.viewModel = viewModel
         viewModel.getSummaryWithNullProductId()
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-        val paymentAdapter = PaymentAdapter(viewModel.transSum.value?.is_paid_off,
+        val paymentAdapter = PaymentAdapter(viewModel.transSum.value?.is_paid_off ?: false,
             TransPaymentClickListener {
               showBayarDialog(it,type.Payment)
             },TransPaymentLongListener {
@@ -119,12 +122,7 @@ class TransactionDetailFragment : Fragment() {
             ////viewModel.calculateDisc()
            // viewModel.deleteAllTrans()
         }
-        viewModel.transDetail.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                adapter.submitList(it)
-                adapter.notifyDataSetChanged()
-            }
-        })
+
         viewModel.transDetail.observe(viewLifecycleOwner, Observer {
             it?.let {
                 adapter.submitList(it)
@@ -151,8 +149,10 @@ class TransactionDetailFragment : Fragment() {
 
         viewModel.setUiMode(nightModeFlags)
 
-        viewModel.transSum.observe(viewLifecycleOwner){
+        viewModel.transSum.observe(viewLifecycleOwner){it?.let{
             viewModel.setTxtNoteValue(it.sum_note)
+        }
+
         }
 
         viewModel.isn.observe(this, Observer { isNoteActive -> })
@@ -202,6 +202,8 @@ class TransactionDetailFragment : Fragment() {
                 viewModel.onNavigatedToEdit()
             }
         })
+
+
 
         return binding.root
     }

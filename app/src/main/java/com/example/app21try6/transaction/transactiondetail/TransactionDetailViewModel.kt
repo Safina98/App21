@@ -89,8 +89,13 @@ class TransactionDetailViewModel (application: Application,
 
         // Observe 'transSum' to get total transaction amount
         addSource(transSum) { item ->
-            transactionTotal = item.total_trans ?: 0.0
-            paidAmount = item.paid.toDouble() ?: 0.0 // Get paid amount
+            if (item != null) {
+                transactionTotal = item.total_trans ?: 0.0
+                paidAmount = item.paid?.toDouble() ?: 0.0
+            } else {
+                transactionTotal = 0.0
+                paidAmount = 0.0
+            }
             updateBayar()
         }
 

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="view_model"
+            type="com.example.app21try6.transaction.transactionall.AllTransactionViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".transaction.transactionall.AllTransactionsFragment">
+        <Spinner
+            android:id="@+id/spinner_d"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/cal_icon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="@dimen/medium_margin"
+            android:elevation="@dimen/medium_margin"
+            android:src="@drawable/baseline_calendar_month_24"
+            app:layout_constraintEnd_toStartOf="@id/transaction_detail_fragment_container"
+            app:layout_constraintHorizontal_weight="4"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txt_start_date"
+            style="@style/active_transaction_small_txt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:onClick="@{()->view_model.onStartDatePickerClick()}"
+            android:text="@{view_model._dateRangeString}"
+            app:layout_constraintEnd_toStartOf="@id/cal_icon"
+            app:layout_constraintStart_toEndOf="@+id/spinner_d"
+            app:layout_constraintTop_toTopOf="parent" />
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search_allTrans"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:iconifiedByDefault="false"
+            app:layout_constraintEnd_toStartOf="@id/transaction_detail_fragment_container"
+            app:layout_constraintHorizontal_weight="4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spinner_d"
+            app:queryHint="Enter Customer Name..." />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView_all_trans"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@id/txt_item_count"
+            app:layout_constraintEnd_toStartOf="@id/transaction_detail_fragment_container"
+            app:layout_constraintHorizontal_weight="4"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/search_allTrans" />
+        <TextView
+            android:id="@+id/txt_item_count"
+            style="@style/text_subproduct_small_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/medium_margin"
+            android:text="@{view_model.itemCount}"
+            android:textAlignment="viewEnd"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/transaction_detail_fragment_container"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_weight="7"
+            app:layout_constraintStart_toEndOf="@id/recyclerView_all_trans"
+            app:layout_constraintTop_toTopOf="parent"
+
+            tools:layout="@layout/fragment_transaction_detail" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

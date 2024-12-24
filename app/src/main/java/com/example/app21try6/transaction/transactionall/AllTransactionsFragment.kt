@@ -21,6 +21,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
 import com.example.app21try6.databinding.FragmentAllTransactionsBinding
+import com.example.app21try6.transaction.transactiondetail.TransactionDetailFragment
 import java.util.Calendar
 
 class AllTransactionsFragment : Fragment() {
@@ -38,9 +39,23 @@ class AllTransactionsFragment : Fragment() {
         val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         val img =  requireActivity().findViewById<ImageView>(R.id.delete_image)
         img.visibility = View.GONE
+
         val adapter = AllTransactionAdapter(
             AllTransClickListener {
-            viewModel.onNavigatetoTransDetail(it.sum_id)
+                if (binding.transactionDetailFragmentContainer != null) {
+                    val bundle = Bundle().apply {
+                        putInt("id", it.sum_id)
+                    }
+                    val transactionDetailFragment = TransactionDetailFragment().apply {
+                        arguments = bundle
+                    }
+                    childFragmentManager.beginTransaction()
+                        .replace(binding.transactionDetailFragmentContainer!!.id, transactionDetailFragment)
+                        .commit()
+                }else{
+                    viewModel.onNavigatetoTransDetail(it.sum_id)
+                }
+
         },
             CheckBoxListenerTransAll{ view, stok ->
             }
@@ -150,6 +165,17 @@ class AllTransactionsFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
         super.onResume()
+        if (binding.transactionDetailFragmentContainer != null) {
+            val bundle = Bundle().apply {
+                putInt("id", -1)
+            }
+            val transactionDetailFragment = TransactionDetailFragment().apply {
+                arguments = bundle
+            }
+            childFragmentManager.beginTransaction()
+                .replace(binding.transactionDetailFragmentContainer!!.id, transactionDetailFragment)
+                .commit()
+        }
         val startDate = viewModel.selectedStartDate.value
         val endDate = viewModel.selectedEndDate.value
         viewModel.updateRv5()

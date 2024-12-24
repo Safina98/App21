@@ -4,11 +4,13 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.DETAILED_DATE_FORMATTER
+import com.example.app21try6.R
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.databinding.ItemListTransactionAllBinding
 import com.example.app21try6.formatRupiah
@@ -34,6 +36,12 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
             }
             binding.item = item
             binding.txtNamaPe.text = item.cust_name
+            val cardView = binding.cardViewAllTrans
+            if (item.is_keeped) { // Example condition
+                cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, R.color.transActiveBgColor))
+            } else {
+                cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, R.color.logrvbg))
+            }
             //binding.txtTglTrans.text = item.trans_date
             binding.txtTotalTrans.text = formatRupiah(item.total_trans.toDouble()).toString()
             binding.clickListener = clickListener

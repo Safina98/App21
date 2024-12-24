@@ -17,6 +17,7 @@
     </data>
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardViewAllTrans"
         android:layout_width="match_parent"
         android:layout_margin="2dp"
         android:layout_height="wrap_content">
