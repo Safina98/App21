@@ -4,6 +4,20 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 object Migrations {
+    val MIGRATION_39_TO_40 = object : Migration(39, 40) { // Replace X and Y with the appropriate schema version numbers
+        override fun migrate(database: SupportSQLiteDatabase) {
+            // Step 1: Add the new column `alternate_capital` to the product_table
+            database.execSQL("ALTER TABLE product_table ADD COLUMN alternate_capital REAL NOT NULL DEFAULT 0.0")
+
+            // Step 2: Copy the value of `alternate_price` to `alternate_capital`
+            database.execSQL("UPDATE product_table SET alternate_capital = alternate_price")
+
+            // Step 3: Set the value of `alternate_price` to 0
+            database.execSQL("UPDATE product_table SET alternate_price = 0.0")
+        }
+    }
+
+
     val MIGRATION_38_39 = object : Migration(38, 39) {
         override fun migrate(database: SupportSQLiteDatabase) {
             // Add the purchasePrice and purchaseUnit columns to product_table

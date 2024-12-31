@@ -8,6 +8,7 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.app21try6.database.Migrations.MIGRATION_38_39
+import com.example.app21try6.database.Migrations.MIGRATION_39_TO_40
 import com.example.app21try6.database.daos.BrandDao
 import com.example.app21try6.database.tables.Category
 import com.example.app21try6.database.daos.CategoryDao
@@ -48,7 +49,7 @@ import com.example.app21try6.database.tables.TransactionSummary
     TransactionSummary::class, TransactionDetail::class, Payment::class, Expenses::class,
     ExpenseCategory::class, Summary::class, DiscountTable::class, DiscountTransaction::class,
     CustomerTable::class,DetailWarnaTable::class,InventoryLog::class,
-    SuplierTable::class,InventoryPurchase::class],version=39, exportSchema = true)
+    SuplierTable::class,InventoryPurchase::class],version=40, exportSchema = true)
 @TypeConverters(DateTypeConverter::class)
 abstract class VendibleDatabase:RoomDatabase(){
     abstract val brandDao : BrandDao
@@ -162,7 +163,7 @@ abstract class VendibleDatabase:RoomDatabase(){
                             VendibleDatabase::class.java,
                             "vendible_table"
                     )
-                        .addMigrations(MIGRATION_38_39)
+                        .addMigrations(MIGRATION_39_TO_40)
 
                         // .fallbackToDestructiveMigration()
                     .build()

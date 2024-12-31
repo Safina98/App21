@@ -152,6 +152,7 @@ class TransactionSelectFragment : Fragment() {
             when (code) {
                 Code.LONGSUBS -> {
                     transSelectModel.qty = transSelectModel.qty -v.toDouble()
+
                     viewModel.updateTransDetail(transSelectModel)
                 }
                 Code.LONGPLUS -> {

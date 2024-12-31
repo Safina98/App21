@@ -1,6 +1,7 @@
 package com.example.app21try6.transaction.transactionall
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,13 +23,16 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
     :ListAdapter<TransactionSummary,AllTransactionAdapter.MyViewHolder>(AllTransDiffCallBack()) {
     private var is_active = MutableLiveData<Boolean>(false)
     private var unfilteredList = listOf<TransactionSummary>()
+   var selectedPosition: Int = RecyclerView.NO_POSITION
+
 
     class MyViewHolder private constructor(val binding: ItemListTransactionAllBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(
             item: TransactionSummary,
             clickListener: AllTransClickListener,
             checkBoxListener: CheckBoxListenerTransAll,
-            bool:Boolean
+            bool:Boolean,
+            isSelected: Boolean
         ){
             binding.checkboxTransActive.visibility = when(bool){
                 true ->View.VISIBLE
@@ -39,9 +43,14 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
             val cardView = binding.cardViewAllTrans
             if (item.is_keeped) { // Example condition
                 cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, R.color.transActiveBgColor))
-            } else {
-                cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, R.color.logrvbg))
             }
+
+            cardView.setCardBackgroundColor(
+                if (isSelected) ContextCompat.getColor(itemView.context, R.color.pastel_green2)
+                else if(item.is_keeped)ContextCompat.getColor(itemView.context, R.color.transActiveBgColor)
+                else ContextCompat.getColor(itemView.context, R.color.logrvbg)
+            )
+
             //binding.txtTglTrans.text = item.trans_date
             binding.txtTotalTrans.text = formatRupiah(item.total_trans.toDouble()).toString()
             binding.clickListener = clickListener
@@ -80,10 +89,25 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(getItem(position),clickListener,
+        holder.bind(
+            getItem(position),
+            clickListener,
             checkBoxListener,
-            is_active.value!!
+            is_active.value!!,
+            position == selectedPosition // Pass the selected state
         )
+
+
+        // Handle click events to update the selected position
+        holder.itemView.setOnClickListener {
+            Log.i("ClickProbs","selectedPosition: $selectedPosition")
+            Log.i("ClickProbs","position: $position")
+            val previousPosition = selectedPosition
+            selectedPosition = position
+            notifyItemChanged(previousPosition) // Update the old selected item
+            notifyItemChanged(selectedPosition) // Update the new selected item
+            clickListener.onClick(getItem(position)) // Trigger click listener
+        }
     }
 }
 class AllTransDiffCallBack: DiffUtil.ItemCallback<TransactionSummary>(){

@@ -8,9 +8,11 @@ import com.example.app21try6.database.*
 import com.example.app21try6.database.daos.CustomerDao
 import com.example.app21try6.database.daos.DiscountDao
 import com.example.app21try6.database.daos.DiscountTransDao
+import com.example.app21try6.database.daos.ProductDao
 import com.example.app21try6.database.daos.TransDetailDao
 import com.example.app21try6.database.daos.TransSumDao
 import com.example.app21try6.database.tables.DiscountTransaction
+import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.formatRupiah
@@ -27,6 +29,7 @@ class TransactionEditViewModel(
     private val discountDao: DiscountDao,
     private val discountTransDao: DiscountTransDao,
     private val customerDao: CustomerDao,
+    private val productDao:ProductDao,
     var id:Int
 ):AndroidViewModel(application){
 
@@ -205,6 +208,11 @@ class TransactionEditViewModel(
     fun updateTransDetail(transactionDetail: TransactionDetail, i: Double){
         viewModelScope.launch {
             transactionDetail.qty = transactionDetail.qty + i
+            if (transactionDetail.qty<0.35){
+                transactionDetail.trans_price=transactionDetail.trans_price+9000
+            }else if(transactionDetail.qty<0.9){
+                transactionDetail.trans_price=transactionDetail.trans_price+6000
+            }
             transactionDetail.total_price = transactionDetail.trans_price*transactionDetail.qty*transactionDetail.unit_qty
             _updateTransDetail(transactionDetail)
         }
@@ -219,6 +227,14 @@ class TransactionEditViewModel(
                     updateUitQty(transactionDetail,1.0)
                 }
                 else {
+                    //get product by id
+                    val product = getProduductById(transactionDetail.sub_id)
+                    if (selectedItem=="ROLL") {
+                        transactionDetail.unit_qty=product.default_net
+
+                    }
+                    transactionDetail.trans_price=product.alternate_price.toInt()
+                    transactionDetail.total_price=transactionDetail.trans_price*transactionDetail.unit_qty*transactionDetail.qty
                     transactionDetail.unit = selectedItem
                 }
                 _updateTransDetail(transactionDetail)
@@ -325,6 +341,11 @@ class TransactionEditViewModel(
     private suspend fun delete_(idm: Long){
         withContext(Dispatchers.IO){
             datasource2.deleteAnItemTransDetail(idm)
+        }
+    }
+    private suspend fun getProduductById(idm: Int?):Product{
+        return withContext(Dispatchers.IO){
+            productDao.getProductBySubId(idm)
         }
     }
     ////////////////////////////////Navigation//////////////////////////////////////

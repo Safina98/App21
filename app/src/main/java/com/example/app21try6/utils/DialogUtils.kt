@@ -96,8 +96,10 @@ object DialogUtils{
         val textPurchasePrice=dialogBinding.purchasePrice
         val textPurchaseUnit=dialogBinding.purchaseUnit
         val tVId=dialogBinding.txtId
+        val textAlternatePrice=dialogBinding.textUpdateAlternatePrice
 
-        dialogBinding.ilCapital2.hint="Modal 2"
+
+        dialogBinding.ilCapital2.hint="Modal Alternatif"
         dialogBinding.ilDefaultNet.hint="net modus"
         dialogBinding.ilKet.hint="Product"
         dialogBinding.ilPrice.hint="Harga"
@@ -105,6 +107,7 @@ object DialogUtils{
         dialogBinding.ilDisc.hint="Diskon"
         dialogBinding.ilPurchasePrice.hint="Harga Beli"
         dialogBinding.ilPurchaseUnit.hint="Unit"
+        dialogBinding.ilAlternatePrice.hint="Harga Alternatif"
 
         val discName=viewModel.discountName.value
         // Set up the AutoCompleteTextView with a mutable adapter
@@ -120,11 +123,12 @@ object DialogUtils{
             textKet.setText(vendible.product_name.toString())
             textPrice.setText(vendible.product_price.toString())
             textCapital.setText(vendible.product_capital.toString())
-            textCapital2.setText(vendible.alternate_price.toString())
+            textCapital2.setText(vendible.alternate_capital.toString())
             textModusNoet.setText(vendible.default_net.toString())
             tVId.setText(vendible.product_id.toString())
             textPurchasePrice.setText(vendible.purchasePrice?.let { it.toString() }?:"")
             textPurchaseUnit.setText(vendible.puchaseUnit?.let { it }?:"")
+            textAlternatePrice.setText(vendible.alternate_price.toString())
 
             if (discName!=null) textDisc.setText(discName)
             textKet.requestFocus()
@@ -138,6 +142,7 @@ object DialogUtils{
             val price = priceString.toIntOrNull()
             val capital = capitalString.toIntOrNull()
             val alternateCapital =textCapital2.text.toString().toDoubleOrNull()
+            val alternatePrice =textAlternatePrice.text.toString().toDoubleOrNull()
             val modusNet =textModusNoet.text.toString().toDoubleOrNull()
             val product_name=textKet.text.toString().uppercase().trim()
             val purchasePrice=textPurchasePrice.text.toString().trim().toIntOrNull()
@@ -148,8 +153,11 @@ object DialogUtils{
             if (capital != null) {
                 vendible?.product_capital = capital
             }
+
+
             vendible?.product_name = product_name
-            vendible?.alternate_price=alternateCapital?:0.0
+            vendible?.alternate_capital=alternateCapital?:0.0
+            vendible?.alternate_price=alternatePrice?:0.0
             vendible?.default_net=modusNet ?: 0.0
             vendible?.purchasePrice=purchasePrice
             vendible?.puchaseUnit=purchaseUnit

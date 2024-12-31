@@ -312,7 +312,7 @@ class BrandStockViewModel(
                 product.product_capital = price
                 product.discountId=getDiscIdByName(discName)
                 product.product_capital=capital
-                product.alternate_price=capital2
+                product.alternate_capital=capital2
                 product.default_net=modusNet
                 product.purchasePrice=purchasePrice
                 product.puchaseUnit=purcaseUnit

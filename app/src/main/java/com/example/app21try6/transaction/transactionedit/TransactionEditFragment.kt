@@ -50,9 +50,10 @@ class TransactionEditFragment : Fragment() {
         val datasource3 = VendibleDatabase.getInstance(application).discountDao
         val datasource4 = VendibleDatabase.getInstance(application).customerDao
         val datasource5 = VendibleDatabase.getInstance(application).discountTransDao
+        val datasource6 = VendibleDatabase.getInstance(application).productDao
         val id= arguments?.let{TransactionEditFragmentArgs.fromBundle(it).id}
 
-        val viewModelFactory = TransactionEditViewModelFactory(application, datasource1, datasource2,datasource3,datasource5,datasource4, id!!)
+        val viewModelFactory = TransactionEditViewModelFactory(application, datasource1, datasource2,datasource3,datasource5,datasource4, datasource6,id!!)
         val viewModel = ViewModelProvider(this, viewModelFactory).get(TransactionEditViewModel::class.java)
 
         binding.lifecycleOwner = this

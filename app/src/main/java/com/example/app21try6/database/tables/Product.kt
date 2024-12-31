@@ -40,9 +40,9 @@ data class Product(
         @ColumnInfo(name="best_selling")
         var bestSelling: Boolean = false,
         @ColumnInfo(name = "default_net")
-        var default_net:Double = 0.0,//newly added
+        var default_net:Double = 0.0,
         @ColumnInfo(name = "alternate_price")
-        var alternate_price:Double = 0.0,//newly added
+        var alternate_price:Double = 0.0,
         @ColumnInfo(name="brand_code")
         var brand_code:Int=0,
         @ColumnInfo(name = "cath_code")
@@ -53,6 +53,7 @@ data class Product(
         @ColumnInfo(name="purchasePrice")
         var purchasePrice:Int?=null,
         @ColumnInfo(name="purchaseUnit")
-        var puchaseUnit:String?=null
-
+        var puchaseUnit:String?=null,
+        @ColumnInfo(name = "alternate_capital") //newly added
+        var alternate_capital:Double = 0.0,
 )

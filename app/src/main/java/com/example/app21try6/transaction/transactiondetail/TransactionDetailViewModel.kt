@@ -343,7 +343,7 @@ class TransactionDetailViewModel (application: Application,
                         summary.item_sold = it.qty * 12
                         summary.product_capital = (product?.product_capital ?: 0.0).toInt()
                     } else if (it.unit!=null && unitQty == 1.0) {
-                        summary.product_capital = (product?.alternate_price ?: it.total_price).toInt()
+                        summary.product_capital = (product?.alternate_capital ?: it.total_price).toInt()
                     }
                     // Log.i("profitbrobs","${summary.item_name} ${summary?.product_capital}")
                     //Log.i("profitbrobs","${product}")

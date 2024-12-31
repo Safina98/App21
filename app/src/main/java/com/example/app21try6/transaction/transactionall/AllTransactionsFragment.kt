@@ -41,10 +41,10 @@ class AllTransactionsFragment : Fragment() {
         img.visibility = View.GONE
 
         val adapter = AllTransactionAdapter(
-            AllTransClickListener {
+            AllTransClickListener {transaction->
                 if (binding.transactionDetailFragmentContainer != null) {
                     val bundle = Bundle().apply {
-                        putInt("id", it.sum_id)
+                        putInt("id", transaction.sum_id)
                     }
                     val transactionDetailFragment = TransactionDetailFragment().apply {
                         arguments = bundle
@@ -52,14 +52,14 @@ class AllTransactionsFragment : Fragment() {
                     childFragmentManager.beginTransaction()
                         .replace(binding.transactionDetailFragmentContainer!!.id, transactionDetailFragment)
                         .commit()
-                }else{
-                    viewModel.onNavigatetoTransDetail(it.sum_id)
+                } else {
+                    viewModel.onNavigatetoTransDetail(transaction.sum_id)
                 }
 
-        },
-            CheckBoxListenerTransAll{ view, stok ->
-            }
+            },
+            CheckBoxListenerTransAll { view, stok -> }
         )
+
         val adapterSpinnerTransAll = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line,getResources().getStringArray(R.array.spinner_all_trans) )
         binding.spinnerD.adapter = adapterSpinnerTransAll
         binding.recyclerViewAllTrans.adapter = adapter
@@ -67,7 +67,6 @@ class AllTransactionsFragment : Fragment() {
         viewModel.allTransactionSummary.observe(viewLifecycleOwner){
             it?.let {
                 adapter.submitList(it)
-                //Log.i("WorkerProbs","$it")
             }
         }
 
@@ -118,7 +117,7 @@ class AllTransactionsFragment : Fragment() {
         return binding.root
 
     }
-
+//6777101991667
     private fun showDatePickerDialog() {
 
         //clearSearchQuery()
@@ -165,17 +164,7 @@ class AllTransactionsFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
         super.onResume()
-        if (binding.transactionDetailFragmentContainer != null) {
-            val bundle = Bundle().apply {
-                putInt("id", -1)
-            }
-            val transactionDetailFragment = TransactionDetailFragment().apply {
-                arguments = bundle
-            }
-            childFragmentManager.beginTransaction()
-                .replace(binding.transactionDetailFragmentContainer!!.id, transactionDetailFragment)
-                .commit()
-        }
+
         val startDate = viewModel.selectedStartDate.value
         val endDate = viewModel.selectedEndDate.value
         viewModel.updateRv5()
