@@ -126,10 +126,10 @@ class TransactionSelectViewModel(
     fun updateTransDetail(s:TransSelectModel){
         viewModelScope.launch {
             Log.i("QTYProbs","${s.item_name}: ${s.qty}")
-            if(s.qty<0.4){
+            if(s.qty<0.35){
                 s.item_price=s.item_price+9000
             }else if(s.qty<0.9){
-                s.item_price=s.item_price+6000
+                s.item_price += if ((s.item_price / 1000) % 2 == 0) 6000 else 5000
             }
             val t = converter(s)
             var id =s.trans_detail_id

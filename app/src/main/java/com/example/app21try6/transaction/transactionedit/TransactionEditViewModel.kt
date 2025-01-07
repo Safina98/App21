@@ -182,38 +182,20 @@ class TransactionEditViewModel(
         }
     }
 
-    private suspend fun insertDiscountTransToDB(discList:List<DiscountTransaction>){
-        withContext(Dispatchers.IO){
-            discountTransDao.insertAll(discList)
-        }
-    }
-    private suspend fun insertDiscountTransToDB(disc: DiscountTransaction){
-        withContext(Dispatchers.IO){
-            discountTransDao.insert(disc)
-        }
-    }
-    private suspend fun updateDiscountTransToDB(disc: DiscountTransaction){
-        withContext(Dispatchers.IO){
-            discountTransDao.update(disc)
-        }
-    }
-    private suspend fun deleteDiscountTransToDB(disc: DiscountTransaction){
-        withContext(Dispatchers.IO){
-            discountTransDao.delete(disc)
-        }
-    }
-
 
     //update transactionDetail qty and total price
     fun updateTransDetail(transactionDetail: TransactionDetail, i: Double){
         viewModelScope.launch {
+            Log.i("modulo","${(transactionDetail.trans_price/1000)%2}")
             transactionDetail.qty = transactionDetail.qty + i
-            if (transactionDetail.qty<0.35){
-                transactionDetail.trans_price=transactionDetail.trans_price+9000
-            }else if(transactionDetail.qty<0.9){
-                transactionDetail.trans_price=transactionDetail.trans_price+6000
+            if (transactionDetail.qty < 0.35) {
+                transactionDetail.trans_price += 9000
+            } else if (transactionDetail.qty < 0.9) {
+                transactionDetail.trans_price += if ((transactionDetail.trans_price / 1000) % 2 == 0) 6000 else 5000
             }
-            transactionDetail.total_price = transactionDetail.trans_price*transactionDetail.qty*transactionDetail.unit_qty
+
+            transactionDetail.total_price = transactionDetail.trans_price * transactionDetail.qty * transactionDetail.unit_qty
+
             _updateTransDetail(transactionDetail)
         }
     }
@@ -348,6 +330,28 @@ class TransactionEditViewModel(
             productDao.getProductBySubId(idm)
         }
     }
+    private suspend fun insertDiscountTransToDB(discList:List<DiscountTransaction>){
+        withContext(Dispatchers.IO){
+            discountTransDao.insertAll(discList)
+        }
+    }
+    private suspend fun insertDiscountTransToDB(disc: DiscountTransaction){
+        withContext(Dispatchers.IO){
+            discountTransDao.insert(disc)
+        }
+    }
+    private suspend fun updateDiscountTransToDB(disc: DiscountTransaction){
+        withContext(Dispatchers.IO){
+            discountTransDao.update(disc)
+        }
+    }
+    private suspend fun deleteDiscountTransToDB(disc: DiscountTransaction){
+        withContext(Dispatchers.IO){
+            discountTransDao.delete(disc)
+        }
+    }
+
+
     ////////////////////////////////Navigation//////////////////////////////////////
     fun onNavigatetoDetail(idm:Int){
         viewModelScope.launch {

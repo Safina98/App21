@@ -1,7 +1,9 @@
 package com.example.app21try6.grafik
 
 import android.app.Application
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -24,7 +26,12 @@ import com.example.app21try6.getMonthName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Calendar
+import java.util.Locale
 
+@RequiresApi(Build.VERSION_CODES.O)
 class GraphicViewModel(application: Application,
                        private val productSource1: ProductDao,
                        private val summarySource: SummaryDbDao,
@@ -96,17 +103,23 @@ class GraphicViewModel(application: Application,
             }
     }
     init {
+
         getKategoriEntries()
         getCombinedStockLiveData()
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getCombinedStockLiveData(){
         viewModelScope.launch {
             val stockList = withContext(Dispatchers.IO){
                 TransDetailSource4.getTransactionDetailsList()
             }
+            val thisMonthStok= withContext(Dispatchers.IO){
+
+            }
             val list=stockList.map { stock ->
                 stock.copy(month = getMonthName(stock.month.toInt())) // Replace numeric month with its name
             }
+
             _unFilteredmodelList.value=list
             _combinedStockLiveData.value = list
             _summarycombinedLiveData.value =list
@@ -138,6 +151,15 @@ class GraphicViewModel(application: Application,
     //populate _fileredModelList
     fun populateListModelStok(){
         _filteredmodelList.value = combinedStockLiveData.value
+    }
+    fun getCurrentYearAndMothData(){
+        val year = Calendar.getInstance().get(Calendar.YEAR).toString()
+        val currentMonth = LocalDate.now().month.getDisplayName(TextStyle.FULL, Locale("id", "ID"))
+        val filteredList = combinedStockLiveData.value?.filter { model ->
+            model.year.toString() == year &&
+                    model.month.toString()==currentMonth
+        }
+        _filteredmodelList.value=filteredList
     }
     //set selected spinner tahun
     fun setSelectedYearValueStok(selectedItem:String){
@@ -171,6 +193,7 @@ class GraphicViewModel(application: Application,
     fun filterModelListStok() {
         if (_filteredmodelList.value != null) {
             populateListModelStok()
+
             if (selectedStockYearSpinner.value != "ALL") {
                 filterModelListByYearStok()
             }

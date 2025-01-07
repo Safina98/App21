@@ -118,7 +118,11 @@ class PurchaseViewModel(application: Application,
         viewModelScope.launch {
             val selectedSubProduct = allSubProductFromDb.value?.find { it.subProduct.sub_name == name }
             productPrice.value = selectedSubProduct?.purchasePrice?.toDouble() ?: 0.0
-            productNet.value = selectedSubProduct?.default_net?:0.0
+            if((selectedSubProduct?.purchasePrice ?: 0) > 220000){
+                productNet.value = 1.0
+            }else{
+                productNet.value = selectedSubProduct?.default_net?:0.0
+            }
         }
     }
     fun onAddClick(){
