@@ -9,9 +9,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
-import com.example.app21try6.DETAILED_DATE_FORMATTER
 import com.example.app21try6.DISCTYPE
-import com.example.app21try6.database.DateTypeConverter
 import com.example.app21try6.database.daos.CustomerDao
 import com.example.app21try6.database.daos.DiscountDao
 import com.example.app21try6.database.daos.DiscountTransDao

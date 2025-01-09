@@ -12,16 +12,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.example.app21try6.DETAILED_DATE_FORMATTER
 import com.example.app21try6.database.daos.TransSumDao
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.formatRupiah
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -44,7 +43,7 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
     private val _selectedEndDate = MutableLiveData<Date?>()
     val selectedEndDate: LiveData<Date?> get() = _selectedEndDate
     //selected spinner value
-    private val _selectedSpinner = MutableLiveData<String>()
+    private val _selectedSpinner = MutableLiveData<String>("Hari Ini")
     val selectedSpinner: LiveData<String> get() =_selectedSpinner
     //show or hide start date picker dialog
     private var _isStartDatePickerClicked = MutableLiveData<Boolean>()
@@ -63,6 +62,17 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
     var itemCount :LiveData<String> = Transformations.map(allTransactionSummary) { items->
         "${items.size} transaksi"
     }
+    var totalTrans:LiveData<String> = Transformations.map(allTransactionSummary){items->
+        val totalSum = items.sumOf { it.total_trans }
+        val formattedTotal = formatRupiah(totalSum)
+        "${formattedTotal}"
+    }
+
+            val isTextViewVisible = MutableLiveData<Boolean>(true)
+
+    fun toggleTextViewVisibility() {
+        isTextViewVisible.value = !(isTextViewVisible.value ?: true)
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun setSelectedSpinner(value:String){
@@ -76,6 +86,8 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
                 else->Pair(_selectedStartDate.value,selectedEndDate.value)
             }
             Log.i("DateProb","setSelectedSpinnercalled, value::$value")
+            Log.i("DateProb","setSelectedSpinner startDate: $start")
+            Log.i("DateProb","setSelectedSpinner endDate: $end")
             _selectedStartDate.value = start
             _selectedEndDate.value = end
             updateRv5()

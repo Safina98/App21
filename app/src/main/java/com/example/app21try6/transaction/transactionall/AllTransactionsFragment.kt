@@ -117,9 +117,8 @@ class AllTransactionsFragment : Fragment() {
         return binding.root
 
     }
-//6777101991667
-    private fun showDatePickerDialog() {
 
+    private fun showDatePickerDialog() {
         //clearSearchQuery()
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.pop_up_date_picker, null)
         val datePickerStart = dialogView.findViewById<DatePicker>(R.id.datePickerStart)
@@ -167,14 +166,14 @@ class AllTransactionsFragment : Fragment() {
 
         val startDate = viewModel.selectedStartDate.value
         val endDate = viewModel.selectedEndDate.value
-        viewModel.updateRv5()
-
-        Log.i("DateProb","on resume start date: $startDate")
-        Log.i("DateProb","on resume End date: $endDate")
+        viewModel.setSelectedSpinner("Hari Ini")
+        Log.i("DateProb","on resume startDate: $startDate")
+        Log.i("DateProb","on resume endDate: $endDate")
+       // viewModel.updateRv5()
     }
     override fun onPause() {
        // viewModel.cancelJob()
-        Log.i("DateProb","on pause")
+
         super.onPause()
     }
 }

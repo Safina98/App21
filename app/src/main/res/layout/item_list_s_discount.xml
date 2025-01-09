@@ -71,6 +71,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Lokasi Pembeli: "
+            style="@style/texr_detail_style"
+            android:textSize="@dimen/_15sp"
             android:layout_margin="@dimen/medium_margin"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_min_qty" />

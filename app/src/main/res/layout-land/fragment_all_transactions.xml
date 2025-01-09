@@ -80,13 +80,36 @@
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+        <TextView
+            android:id="@+id/txt_total_trans_sum"
+            style="@style/text_subproduct_small_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/medium_margin"
+            android:text="@{view_model.totalTrans}"
+            app:viewVisibility="@{view_model.isTextViewVisible}"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/key_icon" />
+
+        <ImageView
+            android:id="@+id/key_icon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="@dimen/medium_margin"
+            android:elevation="@dimen/medium_margin"
+            android:onClick="@{() -> view_model.toggleTextViewVisibility()}"
+            android:src="@drawable/baseline_visibility_off_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/transaction_detail_fragment_container"
+             />
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/transaction_detail_fragment_container"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="7"
+            app:layout_constraintHorizontal_weight="6"
             app:layout_constraintStart_toEndOf="@id/recyclerView_all_trans"
             app:layout_constraintTop_toTopOf="parent"
 

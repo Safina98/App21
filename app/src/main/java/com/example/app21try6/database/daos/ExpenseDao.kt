@@ -54,7 +54,30 @@ interface ExpenseDao {
         AND (:endDate IS NULL OR expense_date <= :endDate)
     ORDER BY expense_date DESC
 """)// Correct join condition
-    fun getAllExpense( startDate: String?, endDate: String?,ceId:Int?): List<DiscountAdapterModel>
+    fun Old( startDate: String?, endDate: String?,ceId:Int?): List<DiscountAdapterModel>
+
+    @Query("""
+        SELECT e.id, 
+               e.sum_id, 
+               e.expense_category_id, 
+               e.expense_name, 
+               e.expense_ammount, 
+               e.expense_date, 
+               e.expense_ref, 
+               ec.expense_category_name AS expense_category_name 
+        FROM expenses_table e
+        LEFT JOIN expense_category_table ec 
+        ON e.expense_category_id = ec.id
+        WHERE (:ceId IS NULL OR e.expense_category_id = :ceId)
+            AND(:selectedYear IS NULL OR strftime('%Y', e.expense_date) = :selectedYear)
+          AND (:selectedMonth IS NULL OR strftime('%m', e.expense_date) = :selectedMonth)
+    """)
+    suspend fun getAllExpense(
+        selectedMonth: String?,
+        selectedYear: String?,
+        ceId:Int?
+    ): List<DiscountAdapterModel>
+
     @Query("DELETE FROM expenses_table WHERE id=:id")
     fun delete(id:Int)
 }

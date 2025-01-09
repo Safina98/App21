@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -22,7 +23,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.app21try6.DETAILED_DATE_FORMATTER
 import com.example.app21try6.R
 import com.example.app21try6.DETAILED_DATE_FORMAT
+import com.example.app21try6.MODELTYPE
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.databinding.FragmentExpensesBinding
 import com.example.app21try6.databinding.PopUpUpdateProductDialogBinding
 import com.example.app21try6.statement.DiscountAdapter
@@ -33,6 +36,7 @@ import com.example.app21try6.statement.DiscountLongListener
 import com.example.app21try6.statement.StatementHSViewModel
 import com.example.app21try6.statement.StatementHSViewModelFactory
 import com.example.app21try6.statement.purchase.tagp
+import com.example.app21try6.stock.brandstock.BrandStockViewModel
 import com.example.app21try6.stock.brandstock.CategoryAdapter
 import com.example.app21try6.stock.brandstock.CategoryModel
 
@@ -41,6 +45,8 @@ import com.example.app21try6.stock.brandstock.UpdateListener
 import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.TextStyle
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -86,8 +92,17 @@ class ExpensesFragment : Fragment() {
             }, DiscountLongListener {
                 showExpensesDialog(it)
             },
-            DiscountDelListener {
-                viewModel.deleteExpense(it.id!!)
+            DiscountDelListener {item->
+                val id=item.id
+                DialogUtils.showDeleteDialog(
+                    requireContext(),
+                    this,
+                    viewModel,
+                    item, { vm, item ->
+                            (vm as  StatementHSViewModel).deleteExpense(item as DiscountAdapterModel)
+
+                    })
+
             })
         val categoryAdapter = CategoryAdapter(
         UpdateListener {
@@ -100,6 +115,38 @@ class ExpensesFragment : Fragment() {
         binding.rvCat.addItemDecoration(dividerItemDecoration)
         binding.rvDisc.adapter=adapter
         binding.rvCat.adapter=categoryAdapter
+
+        val adapterYear = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.tahun))
+        binding.spinnerYear.adapter = adapterYear
+
+        val year = Calendar.getInstance().get(Calendar.YEAR).toString()
+
+        val position = (binding.spinnerYear.adapter as ArrayAdapter<String>).getPosition(year)
+        binding.spinnerYear.setSelection(position)
+
+
+        val adapterMonth = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, getResources().getStringArray(R.array.bulan))
+        binding.spinnerMonth.adapter = adapterMonth
+        val currentMonth = LocalDate.now().month.getDisplayName(TextStyle.FULL, Locale("id", "ID"))
+
+        val positionM = (binding.spinnerMonth.adapter as ArrayAdapter<String>).getPosition(currentMonth)
+        binding.spinnerMonth.setSelection(positionM)
+        binding.spinnerYear.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedItem = parent.getItemAtPosition(position).toString()
+                viewModel.setSelectedYearValue(selectedItem)
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {
+            }
+        }
+        binding.spinnerMonth.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedItem = parent.getItemAtPosition(position).toString()
+                viewModel.setSelectedMonthValue(selectedItem)
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {
+            }
+        }
         binding.spinnerC.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selectedItem = parent.getItemAtPosition(position).toString()
@@ -108,7 +155,6 @@ class ExpensesFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>) {
             }
         }
-
         binding.btnEditEcNew.setOnClickListener {
             if (layoutOneViews[0].visibility == View.VISIBLE) {
                 layoutOneViews.forEach { it.visibility = View.GONE }
@@ -125,6 +171,15 @@ class ExpensesFragment : Fragment() {
                 showsAddExpenseCategoryDialog(null)
             }
         }
+        binding.searchAllExpense.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
+            }
+            override fun onQueryTextChange(newText: String?): Boolean {
+                viewModel.filterProduct(newText)
+                return true
+            }
+        })
         viewModel.allExpenseCategory.observe(viewLifecycleOwner, Observer {
             categoryAdapter.submitList(it)
         })
@@ -135,6 +190,12 @@ class ExpensesFragment : Fragment() {
 
         viewModel.selectedECSpinner.observe(viewLifecycleOwner) {
             viewModel.updateRv4()
+        }
+        viewModel.selectedYearSpinner.observe(viewLifecycleOwner){
+            Log.i(tagg,"selectedYearObserver: $it")
+        }
+        viewModel.selectedMonthSpinner.observe(viewLifecycleOwner){
+            Log.i(tagg,"selectedMonthObserver: $it")
         }
 
         viewModel.allExpenseCategoryName.observe(viewLifecycleOwner, Observer {
@@ -182,6 +243,9 @@ class ExpensesFragment : Fragment() {
         dialogBinding.defaultNet.visibility = View.GONE
         dialogBinding.ilCapital2.visibility = View.GONE
         dialogBinding.ilDefaultNet.visibility = View.GONE
+        dialogBinding.ilPurchaseUnit.visibility=View.GONE
+        dialogBinding.ilPurchasePrice.visibility=View.GONE
+        dialogBinding.ilAlternatePrice.visibility=View.GONE
         dialogBinding.ilKet.hint = "Nama Pengeluaran"
         dialogBinding.ilPrice.hint = "Jumlah"
         dialogBinding.ilCapital.hint = "Tanggal"
@@ -259,6 +323,7 @@ class ExpensesFragment : Fragment() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun showsAddExpenseCategoryDialog(expenseCategory: CategoryModel?){
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Kategori")
@@ -289,6 +354,7 @@ class ExpensesFragment : Fragment() {
         alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onStart() {
         super.onStart()
         viewModel.getAllexpenseCategory()

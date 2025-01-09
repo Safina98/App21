@@ -265,3 +265,7 @@ fun setIntTextListener(editText: EditText, listener: InverseBindingListener?) {
     })
 }
 
+@BindingAdapter("isVisible")
+fun setTextTotalTransVisibility(view: View, isVisible: Boolean) {
+    view.visibility = if (isVisible) View.VISIBLE else View.GONE
+}

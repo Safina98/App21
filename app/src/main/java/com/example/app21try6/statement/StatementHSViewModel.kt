@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
 import com.example.app21try6.database.daos.CustomerDao
 import com.example.app21try6.database.tables.CustomerTable
@@ -18,7 +19,10 @@ import com.example.app21try6.database.daos.ExpenseDao
 import com.example.app21try6.database.tables.Expenses
 import com.example.app21try6.database.daos.TransDetailDao
 import com.example.app21try6.database.daos.TransSumDao
+import com.example.app21try6.database.tables.Product
 import com.example.app21try6.formatRupiah
+import com.example.app21try6.getMonthNumber
+import com.example.app21try6.statement.expenses.tagg
 import com.example.app21try6.stock.brandstock.CategoryModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,7 +33,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
-
+@RequiresApi(Build.VERSION_CODES.O)
 class StatementHSViewModel(application: Application,
                            val discountDao: DiscountDao,
                            val customerDao: CustomerDao,
@@ -51,11 +55,21 @@ class StatementHSViewModel(application: Application,
     val allExpenseCategory=expenseCategoryDao.getAllExpenseCategoryModel()
     private val _selectedECSpinner = MutableLiveData<String>()
     val selectedECSpinner: LiveData<String> get() = _selectedECSpinner
+    private val _selectedYearSpinner=MutableLiveData<String>()
+    val selectedYearSpinner:LiveData<String>get()=_selectedYearSpinner
+    private val _selectedMonthSpinner=MutableLiveData<String>()
+    val selectedMonthSpinner:LiveData<String>get()=_selectedMonthSpinner
+
     var ecId = MutableLiveData<Int?>(null)
 
-    val _expenseSum=MutableLiveData<String>("Rp.")
-    val expenseSum: LiveData<String> get() = _expenseSum
+   // val _expenseSum=MutableLiveData<String>("Rp.")
+    //val expenseSum: LiveData<String> get() = _expenseSum
 
+    val expenseSum = Transformations.map(allExpensesFromDB){items->
+        val total = items.sumOf { it.expense_ammount?:0 }
+        formatRupiah(total.toDouble())
+
+    }
     private val _isNavigateToPurchase=MutableLiveData<Int?>(null)
     val isNavigateToPurchase:LiveData<Int?> get()=_isNavigateToPurchase
 
@@ -63,12 +77,17 @@ class StatementHSViewModel(application: Application,
     val isAddExpense=MutableLiveData<Boolean>(true)
 
    ////////////////////////////////////Expenses/////////////////////////////////////////////////
-   fun getExpenseCategoryNameById(id:Int?){
-       viewModelScope.launch {
-           val expenseCatName = withContext(Dispatchers.IO){expenseCategoryDao.getExpenseCategoryNameById(id)}
-           expenseCategoryName.value=expenseCatName
+   fun filterProduct(query: String?) {
+       val list = mutableListOf<DiscountAdapterModel>()
+       if(!query.isNullOrEmpty()) {
+           list.addAll(_allExpenseFromDb.value!!.filter {
+               it.expense_name?.lowercase(Locale.getDefault())!!.contains(query.toString().lowercase(Locale.getDefault()))})
+       } else {
+           list.addAll(_allExpenseFromDb.value!!)
        }
+       _allExpenseFromDb.value =list
    }
+
     fun insertExpenseCategory(categoryName:String){
         viewModelScope.launch {
             val expenseCategory= ExpenseCategory()
@@ -119,39 +138,28 @@ class StatementHSViewModel(application: Application,
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateRv4(){
         viewModelScope.launch {
-            val startDate: String?
-            val endDate: String?
-            startDate = constructMonthDate(isStart = true)  // First day of the current month
-            endDate = constructMonthDate(isStart = false)
-            performDataFiltering(startDate, endDate)
+            val month: String?
+            val year: String?
+            month = getMonthNumber(_selectedMonthSpinner.value)
+            year = if(_selectedYearSpinner.value=="ALL") null else _selectedYearSpinner.value
+            performDataFiltering(month, year)
         }
     }
     //filter data from database by date
     private suspend fun performDataFiltering(startDate: String?, endDate: String?) {
 
-        if ((startDate != null && !isValidDateFormat(startDate)) ||
-            (endDate != null && !isValidDateFormat(endDate))) {
-            return
-        }
-            val filteredData = withContext(Dispatchers.IO) { expenseDao.getAllExpense(startDate,endDate,ecId.value)}
+
+
+        Log.i(tagg,"$startDate $endDate")
+        val filteredData = withContext(Dispatchers.IO) { expenseDao.getAllExpense(startDate,endDate,ecId.value)}
         val sum = withContext(Dispatchers.IO){ expenseDao.getExpenseSum(startDate,endDate,ecId.value)}
-        Log.e("AllTransactionViewModel", "filteredData $filteredData")
+        Log.i(tagg, "filteredData $filteredData")
             _allExpenseFromDb.value = filteredData
-        _expenseSum.value=formatRupiah(sum.toDouble())?:"-1"
+       /// _expenseSum.value=formatRupiah(sum.toDouble())?:"-1"
             //_unFilteredrecyclerViewData.value = filteredData
 
     }
-    fun isValidDateFormat(date: String, format: String = "yyyy-MM-dd"): Boolean {
-        return try {
-            val sdf = SimpleDateFormat(format, Locale.US)
-            sdf.isLenient = false
-            sdf.parse(date)
-            true
-        } catch (e: ParseException) {
-            Log.e("DateProb", " Invalid date format: $date", e)
-            false
-        }
-    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun insertExpense(expenseNamed:String, expenseAmmount:Int?, expenseDate: Date, expenseCatName:String){
         viewModelScope.launch{
@@ -184,9 +192,10 @@ class StatementHSViewModel(application: Application,
         }
     }
     @RequiresApi(Build.VERSION_CODES.O)
-    fun deleteExpense(id: Int){
+    fun deleteExpense(model: DiscountAdapterModel){
         viewModelScope.launch {
-            deleteExpensesToDao(id)
+            val id=model.id
+            deleteExpensesToDao(id!!)
             updateRv4()
         }
     }
@@ -196,6 +205,19 @@ class StatementHSViewModel(application: Application,
             val id = getCEIdByName(value)
             ecId.value = id
             _selectedECSpinner.value = value
+        }
+    }
+    fun setSelectedYearValue(value: String){
+        viewModelScope.launch {
+            _selectedYearSpinner.value=value
+            updateRv4()
+        }
+    }
+
+    fun setSelectedMonthValue(value: String){
+        viewModelScope.launch {
+            _selectedMonthSpinner.value=value
+            updateRv4()
         }
     }
     private suspend fun getCEIdByName(name: String):Int?{

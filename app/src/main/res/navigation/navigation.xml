@@ -174,22 +174,25 @@
     <fragment
         android:id="@+id/expensesFragment"
         android:name="com.example.app21try6.statement.expenses.ExpensesFragment"
-        android:label="ExpensesFragment" >
+        android:label="Pengeluaran">
 
         <action
             android:id="@+id/action_expensesFragment_to_transactionPurchase"
-            app:destination="@id/transactionPurchase" />
+            app:destination="@id/transactionPurchase"
+            />
     </fragment>
     <fragment
         android:id="@+id/transactionPurchase"
         android:name="com.example.app21try6.statement.purchase.TransactionPurchase"
-        android:label="TransactionPurchase" >
+        android:label="Beli Barang">
         <argument
             android:name="exId"
             app:argType="integer" />
         <action
             android:id="@+id/action_transactionPurchase_to_expensesFragment"
-            app:destination="@id/expensesFragment" />
+            app:destination="@id/expensesFragment"
+            app:popUpTo="@id/transactionPurchase"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/inventoryLogFragment"

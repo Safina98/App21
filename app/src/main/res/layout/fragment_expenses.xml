@@ -16,17 +16,51 @@
         tools:context=".statement.expenses.ExpensesFragment">
 
         <Spinner
+            android:id="@+id/spinner_year"
+            android:layout_width="182dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0.5"
+            android:foregroundGravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:visibility="visible"
+            app:layout_constraintEnd_toStartOf="@+id/btn_edit_ec_new"
+
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Spinner
+            android:id="@+id/spinner_month"
+            android:layout_width="182dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0.5"
+            android:foregroundGravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Spinner
             android:id="@+id/spinner_c"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
             android:foregroundGravity="center_horizontal"
-            android:visibility="visible"
             android:gravity="center_horizontal"
+            android:visibility="visible"
             app:layout_constraintEnd_toStartOf="@+id/btn_edit_ec_new"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/spinner_month" />
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search_all_expense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconifiedByDefault="false"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spinner_c"
+            app:queryHint="Cari..." />
 
 
         <ImageView
@@ -34,9 +68,9 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_margin="@dimen/medium_margin"
-            android:visibility="visible"
             android:elevation="@dimen/medium_margin"
             android:src="@drawable/baseline_edit_24"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -50,7 +84,7 @@
             app:layout_constraintBottom_toTopOf="@+id/txt_total"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinner_c" />
+            app:layout_constraintTop_toBottomOf="@id/search_all_expense" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_add_new_expense"
@@ -73,23 +107,23 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_edit_ec_new" >
+            app:layout_constraintTop_toBottomOf="@id/btn_edit_ec_new">
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_cat"
-                    android:layout_margin="@dimen/small_margin"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_cat"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/small_margin"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
         </androidx.cardview.widget.CardView>
 
         <TextView
             android:id="@+id/lbl_total"
+            style="@style/texr_detail_style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Total: "
             android:visibility="visible"
-            style="@style/texr_detail_style"
             app:layout_constraintBottom_toTopOf="@id/btn_purchase"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -103,14 +137,15 @@
             app:layout_constraintBottom_toTopOf="@id/btn_purchase"
             app:layout_constraintEnd_toStartOf="@+id/btn_add_new_expense"
             app:layout_constraintStart_toEndOf="@+id/lbl_total" />
+
         <Button
             android:id="@+id/btn_purchase"
-            android:layout_margin="@dimen/small_margin"
-            android:padding="@dimen/small_margin"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="PURCHASE"
+            android:layout_margin="@dimen/small_margin"
             android:onClick="@{()->viewModel.onNavigateToPurcase(-1)}"
+            android:padding="@dimen/small_margin"
+            android:text="PURCHASE"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_add_new_expense"
