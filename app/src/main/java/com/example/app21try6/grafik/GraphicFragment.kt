@@ -13,6 +13,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import com.example.app21try6.R
 import com.example.app21try6.databinding.FragmentGraphicBinding
+import com.example.app21try6.transaction.transactionall.AllTransClickListener
+import com.example.app21try6.transaction.transactionall.AllTransactionAdapter
+import com.example.app21try6.transaction.transactionall.CheckBoxListenerTransAll
 import com.github.mikephil.charting.charts.BarChart
 import java.time.LocalDate
 import java.time.format.TextStyle
@@ -37,13 +40,19 @@ class GraphicFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         binding  = DataBindingUtil.inflate(inflater,R.layout.fragment_graphic,container,false)
-        layout = binding.mainLayout
+        //layout = binding.mainLayout
         barChart = binding.barChart
         chartRenderer = ChartRenderer(requireContext())
 
         val adapter_year = ArrayAdapter(requireContext(), androidx.transition.R.layout.support_simple_spinner_dropdown_item, resources.getStringArray(R.array.tahun))
         val adapter_month = ArrayAdapter(requireContext(), androidx.transition.R.layout.support_simple_spinner_dropdown_item, resources.getStringArray(R.array.bulan))
 
+
+        val rvAdapter=AllTransactionAdapter(AllTransClickListener {
+
+        }, CheckBoxListenerTransAll{view, stok ->
+
+        })
 
         binding.spinnerTahun.adapter = adapter_year
         val year = Calendar.getInstance().get(Calendar.YEAR).toString()
@@ -59,7 +68,7 @@ class GraphicFragment : Fragment() {
         binding.spinnerBulan.setSelection(positionM)
         viewModel.setSelectedYearValueStok(year)
 
-
+        binding.rvChart.adapter=rvAdapter
 
         binding.spinnerTahun.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
@@ -132,6 +141,10 @@ class GraphicFragment : Fragment() {
         }
         viewModel.mapModel.observe(viewLifecycleOwner) { value ->
             viewModel.getTopEightItemsStok(value)
+            viewModel.getRvData(value)
+        }
+        viewModel.rvData.observe(viewLifecycleOwner){value->
+            rvAdapter.submitList(value)
         }
         viewModel.topEightMap.observe(viewLifecycleOwner) { value ->
             chartRenderer.showChart(barChart, value)

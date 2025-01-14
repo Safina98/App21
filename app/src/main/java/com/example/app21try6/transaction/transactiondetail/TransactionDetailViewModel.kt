@@ -159,17 +159,10 @@ class TransactionDetailViewModel (application: Application,
             val simpleFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
             val date = simpleFormatter.parse("2024-11-27 00:00")
             val dateEnd = simpleFormatter.parse("2024-11-27 23:59")
-            //val list = withContext(Dispatchers.IO){ datasource2.getTransactionDetailsWithSubIdAndTransDate(23,date!!)}
-            //val sum = withContext(Dispatchers.IO){ datasource2.getSumTransactionDetailsWithSubIdAndDate(23,date!!)}
-            //withContext(Dispatchers.IO){ datasource2.updateTransDetailProductCapital()}
+
             val startDate = simpleFormatter.parse("2024-01-01 00:00")!!
             val endDate = simpleFormatter.parse("2024-12-01 00:00")!! // Exclusive end date
 
-            val sum = withContext(Dispatchers.IO) {
-                datasource2.getTransactionSum(startDate, endDate) ?: 0.0
-            }
-            //val list = withContext(Dispatchers.IO){ datasource2.getTransDetailTableByDate()}
-            Log.d("idprobs", "Total Profit: ${formatRupiah(sum)}")
 
 
         }

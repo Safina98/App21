@@ -9,15 +9,29 @@
             type="com.example.app21try6.stock.subproductstock.SubViewModel" />
     </data>
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".stock.subproductstock.SubProductStockFragment">
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search_bar_sub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:queryHint="Search here..."
+            app:iconifiedByDefault="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_brand_stock"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/search_bar_sub"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:visibility="visible" />
         
@@ -26,7 +40,9 @@
             android:id="@+id/btn_add_new_brand_"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+
             android:src="@drawable/fab"
             app:fabCustomSize="56dp"
             app:maxImageSize="56dp"
@@ -44,7 +60,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Reset"
-            android:layout_gravity="end|top" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/search_bar_sub" />
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

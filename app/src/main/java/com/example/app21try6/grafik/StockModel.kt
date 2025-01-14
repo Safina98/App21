@@ -10,6 +10,7 @@ data class StockModel(
     var price:Double?,
     var total_income : Double?,
     var itemCount:Double,
+    var unit_qty:Double?,
     var category_name:String,
     var product_name:String?=null,
     var product_capital:Int?,

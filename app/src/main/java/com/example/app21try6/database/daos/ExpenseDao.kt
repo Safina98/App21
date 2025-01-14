@@ -57,20 +57,18 @@ interface ExpenseDao {
     fun Old( startDate: String?, endDate: String?,ceId:Int?): List<DiscountAdapterModel>
 
     @Query("""
-        SELECT e.id, 
-               e.sum_id, 
-               e.expense_category_id, 
-               e.expense_name, 
-               e.expense_ammount, 
-               e.expense_date, 
-               e.expense_ref, 
-               ec.expense_category_name AS expense_category_name 
+        SELECT e.id as id,  
+            e.expense_name as expense_name,  
+            e.expense_ammount as expense_ammount, 
+            e.expense_date as date,  
+            e.expense_ref as expense_ref,  
+            ec.expense_category_name as expense_category_name
         FROM expenses_table e
-        LEFT JOIN expense_category_table ec 
-        ON e.expense_category_id = ec.id
+          LEFT JOIN expense_category_table ec ON e.expense_category_id = ec.id
         WHERE (:ceId IS NULL OR e.expense_category_id = :ceId)
             AND(:selectedYear IS NULL OR strftime('%Y', e.expense_date) = :selectedYear)
           AND (:selectedMonth IS NULL OR strftime('%m', e.expense_date) = :selectedMonth)
+          ORDER BY expense_date DESC
     """)
     suspend fun getAllExpense(
         selectedMonth: String?,

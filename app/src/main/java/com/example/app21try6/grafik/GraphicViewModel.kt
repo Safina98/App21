@@ -22,6 +22,7 @@ import com.example.app21try6.database.daos.SummaryDbDao
 import com.example.app21try6.database.daos.TransDetailDao
 import com.example.app21try6.database.daos.TransSumDao
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.getMonthName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -62,6 +63,10 @@ class GraphicViewModel(application: Application,
     //live data untuk top 8 map
     val _topEightMap = MutableLiveData<Map<String,Double>>()
     val topEightMap: LiveData<Map<String, Double>> get() = _topEightMap
+
+    //live data untuk recyclerview
+    val _rvData=MutableLiveData<List<TransactionSummary>>()
+    val rvData:LiveData<List<TransactionSummary>> get() = _rvData
 
     //spinner category entries
     private var _categoryEntries = MutableLiveData<List<String>>()
@@ -113,9 +118,7 @@ class GraphicViewModel(application: Application,
             val stockList = withContext(Dispatchers.IO){
                 TransDetailSource4.getTransactionDetailsList()
             }
-            val thisMonthStok= withContext(Dispatchers.IO){
 
-            }
             val list=stockList.map { stock ->
                 stock.copy(month = getMonthName(stock.month.toInt())) // Replace numeric month with its name
             }
@@ -125,6 +128,7 @@ class GraphicViewModel(application: Application,
             _summarycombinedLiveData.value =list
         }
     }
+
 
     // populate category entries
     fun getKategoriEntries(){
@@ -159,7 +163,10 @@ class GraphicViewModel(application: Application,
             model.year.toString() == year &&
                     model.month.toString()==currentMonth
         }
-        _filteredmodelList.value=filteredList
+        if (filteredList!=null){
+            _filteredmodelList.value=filteredList!!
+        }
+
     }
     //set selected spinner tahun
     fun setSelectedYearValueStok(selectedItem:String){
@@ -250,6 +257,24 @@ class GraphicViewModel(application: Application,
         //mau dihapus
         return _mapModel.value!!
     }
+    //fungsi untuk load recyclerview
+    fun getRvData(map: Map<String, Double>) {
+        val sortedEntries = map.entries.sortedByDescending { it.value }
+        val tsList = mutableListOf<TransactionSummary>()
+        var id = -1
+        for ((key, value) in sortedEntries) {
+            // Create a new TransactionSummary object for each entry
+            val item = TransactionSummary()
+            item.cust_name = key
+            item.total_trans = value
+            item.sum_id = id
+            tsList.add(item)
+
+            id -= 1
+        }
+        _rvData.value = tsList
+    }
+
     //fungsi untuk top 8 map
     fun getTopEightItemsStok(map: Map<String, Double>) {
         // Sort the map by values in descending order

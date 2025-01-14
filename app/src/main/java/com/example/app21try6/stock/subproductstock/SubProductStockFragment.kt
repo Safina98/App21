@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -75,6 +76,25 @@ class SubProductStockFragment : Fragment() {
             viewModel.onBrandCLick(arrayOf(it.sub_id.toString(),it.product_code.toString(),it.brand_code.toString(),it.cath_code.toString()))
         })
         binding.rvBrandStock.adapter = adapter
+        binding.searchBarSub.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { query ->
+                    viewModel.all_product_from_db.observe(viewLifecycleOwner, Observer { list ->
+                        list?.let { items ->
+                            val filteredList = items.filter { item ->
+                                item.sub_name.contains(query, ignoreCase = true)
+                            }
+                            adapter.submitList(filteredList)
+                        }
+                    })
+                }
+                return true
+            }
+        })
         viewModel.all_product_from_db.observe(viewLifecycleOwner, Observer {
             it?.let {
                 adapter.submitList(it.sortedBy { it.sub_name })

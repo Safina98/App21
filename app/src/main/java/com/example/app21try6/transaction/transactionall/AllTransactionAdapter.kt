@@ -15,6 +15,7 @@ import com.example.app21try6.R
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.databinding.ItemListTransactionAllBinding
 import com.example.app21try6.formatRupiah
+import java.util.Locale
 
 class AllTransactionAdapter(val clickListener:AllTransClickListener,
                             val checkBoxListener: CheckBoxListenerTransAll
@@ -44,19 +45,25 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
             if (item.is_keeped) { // Example condition
                 cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, R.color.transActiveBgColor))
             }
-
             cardView.setCardBackgroundColor(
                 if (isSelected) ContextCompat.getColor(itemView.context, R.color.pastel_green2)
                 else if(item.is_keeped)ContextCompat.getColor(itemView.context, R.color.transActiveBgColor)
                 else ContextCompat.getColor(itemView.context, R.color.logrvbg)
             )
-
             //binding.txtTglTrans.text = item.trans_date
-            binding.txtTotalTrans.text = formatRupiah(item.total_trans.toDouble()).toString()
+            if (item.sum_id<0){
+                val i = String.format(Locale.US,"%.2f", item.total_trans)
+                binding.txtTglTrans.text=i.toString()
+                binding.txtTotalTrans.visibility=View.GONE
+            }else{
+                binding.txtTotalTrans.text = formatRupiah(item.total_trans.toDouble()).toString()
+                val formattedDate = DETAILED_DATE_FORMATTER.format(item.trans_date)
+                binding.txtTglTrans.text = formattedDate
+            }
+
             binding.clickListener = clickListener
             binding.checkboxListener = checkBoxListener
-            val formattedDate = DETAILED_DATE_FORMATTER.format(item.trans_date)
-            binding.txtTglTrans.text = formattedDate
+
             binding.executePendingBindings()
         }
         companion object{

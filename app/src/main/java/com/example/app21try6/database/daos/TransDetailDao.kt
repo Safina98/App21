@@ -94,6 +94,9 @@ WHERE ts.trans_date >= '2024-11-01 00:00'
         """)
     fun getTransDetailTableByDate():List<TransactionDetail>
 
+    @Query("SELECT * FROM trans_detail_table WHERE unit_qty < 1")
+    fun getTransDetailWith0UnitQty():List<TransactionDetail>
+
 
     @Query("""
     UPDATE trans_detail_table
@@ -233,7 +236,7 @@ WHERE ts.trans_date >= '2024-11-01 00:00'
             COALESCE(strftime('%Y', trans_detail_table.trans_detail_date), '1990') AS year,
             COALESCE(strftime('%m', trans_detail_table.trans_detail_date), '05') AS month,
             trans_detail_table.trans_item_name AS item_name,
-            trans_detail_table.qty AS itemCount,
+            (trans_detail_table.qty * trans_detail_table.unit_qty) AS itemCount,
             category_table.category_name AS category_name,
             product_table.product_name AS product_name,
             sub_table.sub_name AS sub_name,
