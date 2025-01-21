@@ -216,14 +216,18 @@ WHERE ts.trans_date >= '2024-11-01 00:00'
 
     @Query("""
         SELECT
-            COALESCE(strftime('%Y', trans_detail_table.trans_detail_date), '2024') AS year,
+           COALESCE(strftime('%Y', trans_detail_table.trans_detail_date), '1990') AS year,
             COALESCE(strftime('%m', trans_detail_table.trans_detail_date), '05') AS month,
             trans_detail_table.trans_item_name AS item_name,
-            trans_detail_table.qty AS itemCount,
+            (trans_detail_table.qty * trans_detail_table.unit_qty) AS itemCount,
             category_table.category_name AS category_name,
             product_table.product_name AS product_name,
+            sub_table.sub_name AS sub_name,
             product_table.product_id AS product_id,
-            trans_detail_table.sub_id AS sub_id
+            trans_detail_table.sub_id AS sub_id,
+            trans_detail_table.product_capital AS product_capital,
+            trans_detail_table.trans_price AS price,
+            trans_detail_table.total_price AS total_income
         FROM trans_detail_table
         JOIN sub_table ON trans_detail_table.sub_id = sub_table.sub_id
         JOIN category_table ON sub_table.cath_code = category_table.category_id
@@ -241,7 +245,10 @@ WHERE ts.trans_date >= '2024-11-01 00:00'
             product_table.product_name AS product_name,
             sub_table.sub_name AS sub_name,
             product_table.product_id AS product_id,
-            trans_detail_table.sub_id AS sub_id
+            trans_detail_table.sub_id AS sub_id,
+            trans_detail_table.product_capital AS product_capital,
+            trans_detail_table.trans_price AS price,
+            trans_detail_table.total_price AS total_income
         FROM trans_detail_table
         JOIN sub_table ON trans_detail_table.sub_id = sub_table.sub_id
         JOIN category_table ON sub_table.cath_code = category_table.category_id

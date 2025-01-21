@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.app21try6.statement.StatementHSViewModel" />
+            type="com.example.app21try6.statement.purchase.PurchaseViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

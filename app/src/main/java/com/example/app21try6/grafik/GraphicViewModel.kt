@@ -102,6 +102,7 @@ class GraphicViewModel(application: Application,
     val filteredmodelListProfit: LiveData<List<StockModel>> get() = _filteredmodelListProfit
 
     val monthIncomeMap: LiveData<Map<String, Double>> = Transformations.map(transDetailModel) { list ->
+
         list.groupBy { it.month }
             .mapValues { entry ->
                 entry.value.sumOf { it.total_income ?: 0.0 }
@@ -305,7 +306,8 @@ class GraphicViewModel(application: Application,
         for (model in stockModels) {
             val itemName = model.month
             try {
-                val doubleValue = model.total_income!!.toDouble()
+                //Log.i("ChartProb","${model.year}")
+                val doubleValue = model.total_income?:0.0
                 itemCountMap[itemName] = itemCountMap.getOrDefault(itemName, 0.0) + doubleValue
 
             } catch (e: NumberFormatException) {
@@ -330,6 +332,10 @@ class GraphicViewModel(application: Application,
     fun filterModelListByYearProfit() {
         val filteredList = _filteredmodelListProfit.value?.filter { model -> model.year.toString() == selectedProfitYearSpinner.value }
         // _filteredmodelList.postValue(filteredList!!)
+        Log.i("ChartProb","selected spinner${selectedProfitYearSpinner.value}")
+        filteredList?.forEach {
+            //Log.i("ChartProb","${it.year}")
+        }
         _filteredmodelListProfit.value = filteredList!!
     }
 

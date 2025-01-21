@@ -35,6 +35,8 @@ import com.example.app21try6.statement.DiscountListener
 import com.example.app21try6.statement.DiscountLongListener
 import com.example.app21try6.statement.StatementHSViewModel
 import com.example.app21try6.statement.StatementHSViewModelFactory
+import com.example.app21try6.statement.purchase.PurchaseViewModel
+import com.example.app21try6.statement.purchase.PurchaseViewModelFactory
 import com.example.app21try6.statement.purchase.tagp
 import com.example.app21try6.stock.brandstock.BrandStockViewModel
 import com.example.app21try6.stock.brandstock.CategoryAdapter
@@ -57,7 +59,7 @@ val tagg = "expenseprobs"
 class ExpensesFragment : Fragment() {
 
     private lateinit var binding: FragmentExpensesBinding
-    private lateinit var viewModel: StatementHSViewModel
+    private lateinit var viewModel: PurchaseViewModel
     private lateinit var adapter:DiscountAdapter
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
@@ -76,22 +78,30 @@ class ExpensesFragment : Fragment() {
             binding.lblTotal,
             binding.txtTotal
         )
-        val dataSource1 = VendibleDatabase.getInstance(application).discountDao
-        val dataSource2 = VendibleDatabase.getInstance(application).customerDao
         val dataSource3 = VendibleDatabase.getInstance(application).expenseDao
         val dataSource4 = VendibleDatabase.getInstance(application).expenseCategoryDao
-        val dataSource5 = VendibleDatabase.getInstance(application).transDetailDao
-        val dataSource6 = VendibleDatabase.getInstance(application).transSumDao
+        val dataSource5 = VendibleDatabase.getInstance(application).subProductDao
+        val dataSource6 = VendibleDatabase.getInstance(application).productDao
+        val dataSource7 = VendibleDatabase.getInstance(application).inventoryPurchaseDao
+        val dataSource8 = VendibleDatabase.getInstance(application).inventoryLogDao
+        val dataSource9 = VendibleDatabase.getInstance(application).detailWarnaDao
+        val dataSource10 = VendibleDatabase.getInstance(application).suplierDao
 
-        val viewModelFactory = StatementHSViewModelFactory(application,dataSource1,dataSource2,dataSource3,dataSource4,dataSource5,dataSource6)
-        viewModel = ViewModelProvider(this,viewModelFactory).get(StatementHSViewModel::class.java)
+        val viewModelFactory = PurchaseViewModelFactory(application,id,dataSource3,dataSource4,dataSource5,dataSource6,dataSource7,dataSource8,dataSource9,dataSource10)
+        viewModel = ViewModelProvider(this,viewModelFactory).get(PurchaseViewModel::class.java)
         binding.viewModel=viewModel
         adapter = DiscountAdapter(
             DiscountListener {
-                viewModel.onNavigateToPurcase(it.id!!)
+                if(it.expense_category_name=="BELI BARANG"){
+                    viewModel.onNavigateToPurcase(it.id!!)
+                }
+                else{
+                    showExpensesDialog(it)
+                }
             }, DiscountLongListener {
                 showExpensesDialog(it)
             },
+
             DiscountDelListener {item->
                 val id=item.id
                 DialogUtils.showDeleteDialog(
@@ -99,7 +109,7 @@ class ExpensesFragment : Fragment() {
                     this,
                     viewModel,
                     item, { vm, item ->
-                            (vm as  StatementHSViewModel).deleteExpense(item as DiscountAdapterModel)
+                            (vm as  PurchaseViewModel).deleteExpense(item as DiscountAdapterModel)
 
                     })
 
@@ -108,7 +118,7 @@ class ExpensesFragment : Fragment() {
         UpdateListener {
             showsAddExpenseCategoryDialog(it)
         }, DeleteListener {
-                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as StatementHSViewModel).deleteExpenseCategory(item as CategoryModel) })
+                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as PurchaseViewModel).deleteExpenseCategory(item as CategoryModel) })
             }
         )
         val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
@@ -270,8 +280,7 @@ class ExpensesFragment : Fragment() {
             textExpenseName.setText(expenses.expense_name.toString())
             textExpenseAmmount.setText(expenses.expense_ammount.toString())
             textExpensesDate.setText(DETAILED_DATE_FORMATTER.format(expenses.date))
-            val expenseCategoryName = viewModel.expenseCategoryName.value
-            if (expenseCategoryName != null) textExpensesCategory.setText(expenseCategoryName)
+            textExpensesCategory.setText(expenses.expense_category_name)
             textExpenseName.requestFocus()
         }else textExpensesDate.setText(DETAILED_DATE_FORMATTER.format(Date()))
 

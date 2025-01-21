@@ -24,7 +24,7 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
     :ListAdapter<TransactionSummary,AllTransactionAdapter.MyViewHolder>(AllTransDiffCallBack()) {
     private var is_active = MutableLiveData<Boolean>(false)
     private var unfilteredList = listOf<TransactionSummary>()
-   var selectedPosition: Int = RecyclerView.NO_POSITION
+    var selectedPosition: Int = RecyclerView.NO_POSITION
 
 
     class MyViewHolder private constructor(val binding: ItemListTransactionAllBinding):RecyclerView.ViewHolder(binding.root){

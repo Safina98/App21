@@ -1,5 +1,6 @@
 package com.example.app21try6.grafik.grafikprofit
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -8,10 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import com.example.app21try6.R
 import com.example.app21try6.databinding.FragmentGrapichProfitBinding
+import com.example.app21try6.formatRupiah
 import com.example.app21try6.grafik.GraphicViewModel
 import com.example.app21try6.grafik.StockModel
 import com.example.app21try6.grafik.MonthValueFormatter
@@ -22,7 +25,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.utils.ColorTemplate
 
-
+@RequiresApi(Build.VERSION_CODES.O)
 class GrapichProfitFragment : Fragment() {
     private val viewModel: GraphicViewModel by  activityViewModels { GraphicViewModel.Factory }
     private var listStockModel = mutableListOf<StockModel>()
@@ -30,6 +33,7 @@ class GrapichProfitFragment : Fragment() {
     private lateinit var binding: FragmentGrapichProfitBinding
     private lateinit var topfivemap :Map<String,Double>
     private lateinit var lineChart:LineChart
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -55,14 +59,21 @@ class GrapichProfitFragment : Fragment() {
             }
         }
 
-        viewModel.filteredmodelListProfit.observe(viewLifecycleOwner){it?.let {
-            Log.i("ChartProb","filteredmodeListProfit: $it")
-            val monthlyIncome = viewModel.calculateTotalItemCountProfit(it)
+        viewModel.filteredmodelListProfit.observe(viewLifecycleOwner){mapped->let {
+            mapped.forEach {
+                Log.i("ChartProb","${it.year}")
+            }
+
+            val monthlyIncome = viewModel.calculateTotalItemCountProfit(mapped)
+            monthlyIncome.forEach {
+
+
+            }
                 //viewModel.mapAndSumByMonth(it)
            // Log.i("ChartProb","monhtly income: $it")
             setupLineChart(monthlyIncome)
         } }
-        viewModel.monthIncomeMap.observe(viewLifecycleOwner){it?.let {
+        viewModel.monthIncomeMap.observe(viewLifecycleOwner){mapped->let {
 
         }}
 

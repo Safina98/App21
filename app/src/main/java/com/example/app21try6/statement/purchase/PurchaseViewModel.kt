@@ -1,7 +1,9 @@
 package com.example.app21try6.statement.purchase
 
 import android.app.Application
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -18,17 +20,25 @@ import com.example.app21try6.database.daos.InventoryLogDao
 import com.example.app21try6.database.daos.InventoryPurchaseDao
 import com.example.app21try6.database.daos.SuplierDao
 import com.example.app21try6.database.tables.DetailWarnaTable
+import com.example.app21try6.database.tables.ExpenseCategory
 import com.example.app21try6.database.tables.Expenses
 import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.database.tables.InventoryPurchase
+import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.formatRupiah
+import com.example.app21try6.getMonthNumber
+import com.example.app21try6.statement.DiscountAdapterModel
+import com.example.app21try6.statement.expenses.tagg
+import com.example.app21try6.stock.brandstock.CategoryModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Date
+import java.util.Locale
 import java.util.UUID
 
 val tagp="PURCHASEPROBS"
+@RequiresApi(Build.VERSION_CODES.O)
 class PurchaseViewModel(application: Application,
                         val id:Int,
                         val expenseDao: ExpenseDao,
@@ -42,6 +52,28 @@ class PurchaseViewModel(application: Application,
 
 ): AndroidViewModel(application) {
 
+    //expenses
+    var ecId = MutableLiveData<Int?>(null)
+    val allExpenseCategory=expenseCategoryDao.getAllExpenseCategoryModel()
+    val _allExpenseCategorName = MutableLiveData<List<String>>()
+    val allExpenseCategoryName:LiveData<List<String>> get() =_allExpenseCategorName
+    val _allExpenseFromDb = MutableLiveData<List<DiscountAdapterModel>>()
+    val allExpensesFromDB :LiveData<List<DiscountAdapterModel>> get() = _allExpenseFromDb
+    val _unfilteredExpesne=MutableLiveData<List<DiscountAdapterModel>>()
+    private val _selectedECSpinner = MutableLiveData<String>()
+    val selectedECSpinner: LiveData<String> get() = _selectedECSpinner
+    private val _selectedYearSpinner=MutableLiveData<String>()
+    val selectedYearSpinner:LiveData<String>get()=_selectedYearSpinner
+    private val _selectedMonthSpinner=MutableLiveData<String>()
+    val selectedMonthSpinner:LiveData<String>get()=_selectedMonthSpinner
+    private val _isNavigateToPurchase=MutableLiveData<Int?>(null)
+    val isNavigateToPurchase:LiveData<Int?> get()=_isNavigateToPurchase
+    val expenseSum = Transformations.map(allExpensesFromDB){items->
+        val total = items.sumOf { it.expense_ammount?:0 }
+        formatRupiah(total.toDouble())
+
+    }
+    //purchase
     val suplierDummy= suplierDao.getAllSuplier()
     var inventoryList= mutableListOf<InventoryPurchase>()
     val allSubProductFromDb=subProductDao.getSubProductWithPrice()
@@ -298,7 +330,136 @@ class PurchaseViewModel(application: Application,
     fun updateDiscount(item:InventoryPurchase){
 
     }
+//expenses
+    fun deleteExpense(model: DiscountAdapterModel){
+        viewModelScope.launch {
+            val id=model.id
+            deleteExpensesToDao(id!!)
+            updateRv4()
+        }
+    }
+    fun setSelectedECValue(value: String) {
+        viewModelScope.launch {
+            val id = getCEIdByName(value)
+            ecId.value = id
+            _selectedECSpinner.value = value
+        }
+    }
+    fun setSelectedYearValue(value: String){
+        viewModelScope.launch {
+            _selectedYearSpinner.value=value
+            updateRv4()
+        }
+    }
 
+    fun setSelectedMonthValue(value: String){
+        viewModelScope.launch {
+            _selectedMonthSpinner.value=value
+            updateRv4()
+        }
+    }
+    fun filterProduct(query: String?) {
+        viewModelScope.launch {
+            val list = mutableListOf<DiscountAdapterModel>()
+            if(!query.isNullOrEmpty()) {
+                val month =getMonthNumber(_selectedMonthSpinner.value)
+                val lislistByName=getExpenseByQuery(query,month)
+                list.addAll(_allExpenseFromDb.value!!.filter {
+                    it.expense_name?.lowercase(Locale.getDefault())!!.contains(query.toString().lowercase(
+                        Locale.getDefault()))})
+                list.addAll(lislistByName)
+                val distinctList = list.distinctBy { it.id}
+                _allExpenseFromDb.value =distinctList
+            } else {
+                list.addAll(_unfilteredExpesne.value!!)
+                _allExpenseFromDb.value =list
+            }
+
+        }
+
+    }
+    fun insertExpenseCategory(categoryName:String){
+        viewModelScope.launch {
+            val expenseCategory= ExpenseCategory()
+            expenseCategory.expense_category_name=categoryName
+            insertExpensesCategory(expenseCategory)
+            getAllexpenseCategory()
+        }
+    }
+    fun updateExpenseCategory(category: CategoryModel){
+        viewModelScope.launch {
+            val expenseCategory= ExpenseCategory()
+            expenseCategory.id =category.id
+            expenseCategory.expense_category_name=category.categoryName
+            updateExpensesCategory(expenseCategory)
+        }
+    }
+    fun deleteExpenseCategory(categoryModel: CategoryModel){
+        viewModelScope.launch{
+            deleteExpensesCategoryToDao(categoryModel.id)
+            getAllexpenseCategory()
+        }
+    }
+    fun getAllexpenseCategory(){
+        viewModelScope.launch {
+            val list = withContext(Dispatchers.IO){
+                expenseCategoryDao.getAllExpenseCategoryName()
+            }
+
+            val l =list.toMutableList()
+            l.add(0,"ALL")
+            _allExpenseCategorName.value=l
+
+        }
+    }
+    fun insertExpense(expenseNamed:String, expenseAmmount:Int?, expenseDate: Date, expenseCatName:String){
+        viewModelScope.launch{
+            val expenses= Expenses()
+            val catId =getECIdByName(expenseCatName)
+            expenses.expense_name=expenseNamed
+            expenses.expense_ammount=expenseAmmount
+            expenses.expense_date=expenseDate
+            expenses.expense_ref=UUID.randomUUID().toString()
+            expenses.expense_category_id=catId?:0
+            //Log.i(tagg,"date $expenseDate")
+            insertExpense(expenses)
+
+            updateRv4()
+        }
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun updateExpenses(expensesM: DiscountAdapterModel){
+        viewModelScope.launch {
+            val expenses= Expenses()
+            val catId =getECIdByName(expensesM.expense_category_name!!)
+            expenses.id=expensesM.id!!
+            expenses.expense_name=expensesM.expense_name!!
+            expenses.expense_category_id= catId?:0
+            expenses.expense_ammount=expensesM.expense_ammount
+            expenses.expense_ref=expensesM.expense_ref!!
+            expenses.expense_date=expensesM.date
+            updateExpenseToDao(expenses)
+            updateRv4()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun updateRv4(){
+        viewModelScope.launch {
+            val month: String?
+            val year: String?
+            month = getMonthNumber(_selectedMonthSpinner.value)
+            year = if(_selectedYearSpinner.value=="ALL") null else _selectedYearSpinner.value
+            performDataFiltering(month, year)
+        }
+    }
+    private suspend fun performDataFiltering(startDate: String?, endDate: String?) {
+        val filteredData = withContext(Dispatchers.IO) { expenseDao.getAllExpense(startDate,endDate,ecId.value)}
+
+        _allExpenseFromDb.value = filteredData
+        _unfilteredExpesne.value=filteredData
+
+    }
 
 
     private suspend fun insertPurchase(expenses: Expenses,list:List<InventoryPurchase>){
@@ -354,6 +515,49 @@ class PurchaseViewModel(application: Application,
             inventoryLogDao.updateInsertDetailWarnaAndLog(detailWarnaList,inventoryLogList)
         }
     }
+    //expenses
+    private suspend fun insertExpensesCategory(expenseCategory: ExpenseCategory){
+        withContext(Dispatchers.IO){
+            expenseCategoryDao.insert(expenseCategory)
+        }
+    }
+    private suspend fun updateExpensesCategory(expenseCategory: ExpenseCategory){
+        withContext(Dispatchers.IO){
+            expenseCategoryDao.update(expenseCategory)
+        }
+    }
+    private suspend fun deleteExpensesCategoryToDao(id:Int){
+        withContext(Dispatchers.IO){
+            expenseCategoryDao.delete(id)
+        }
+    }
+
+    private suspend fun updateExpenseToDao(expenses: Expenses){
+        withContext(Dispatchers.IO){
+            expenseDao.update(expenses)
+        }
+    }
+    private suspend fun getECIdByName(name:String):Int?{
+        return withContext(Dispatchers.IO){
+            expenseCategoryDao.getECIdByName(name)
+        }
+    }
+    private suspend fun deleteExpensesToDao(id:Int){
+        withContext(Dispatchers.IO){
+            expenseDao.delete(id)
+        }
+    }
+    private suspend fun getCEIdByName(name: String):Int?{
+        return withContext(Dispatchers.IO){
+            expenseCategoryDao.getECIdByName(name)
+        }
+    }
+    private suspend fun getExpenseByQuery(query: String,month:String?):List<DiscountAdapterModel>{
+        return withContext(Dispatchers.IO){
+            Log.i("FilterProbs","month: ${_selectedMonthSpinner.value}; year:${_selectedYearSpinner.value}")
+            expenseDao.getExpenseByQuery(query,month,_selectedYearSpinner.value)
+        }
+    }
     fun onTxtTransSumLongClikc(){
         _transSumDateLongClick.value = true
     }
@@ -371,6 +575,13 @@ class PurchaseViewModel(application: Application,
     }
     fun onDiscountClicked(){
         _isDiscountClicked.value=null
+    }
+
+    fun onNavigateToPurcase(id:Int){
+        _isNavigateToPurchase.value=id
+    }
+    fun onNavigatedToPurchase(){
+        _isNavigateToPurchase.value=null
     }
 
 }
