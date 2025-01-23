@@ -12,12 +12,12 @@
         android:gravity="center">
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ilUpdateDate"
             android:layout_width="300dp"
             android:layout_height="wrap_content">
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Date"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:id="@+id/textUpdateDate"

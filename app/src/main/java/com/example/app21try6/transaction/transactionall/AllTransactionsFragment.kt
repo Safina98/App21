@@ -102,10 +102,10 @@ class AllTransactionsFragment : Fragment() {
         }
 
         viewModel.selectedStartDate.observe(viewLifecycleOwner) {
-            //viewModel.updateRv4()
+
         }
         viewModel.selectedEndDate.observe(viewLifecycleOwner) {
-           // viewModel.updateRv4()
+
         }
 
         viewModel.navigateToTransDetail.observe(viewLifecycleOwner){
@@ -167,9 +167,7 @@ class AllTransactionsFragment : Fragment() {
         val startDate = viewModel.selectedStartDate.value
         val endDate = viewModel.selectedEndDate.value
         viewModel.setSelectedSpinner("Hari Ini")
-        Log.i("DateProb","on resume startDate: $startDate")
-        Log.i("DateProb","on resume endDate: $endDate")
-       // viewModel.updateRv5()
+
     }
     override fun onPause() {
        // viewModel.cancelJob()

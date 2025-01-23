@@ -64,6 +64,18 @@
             app:layout_constraintTop_toBottomOf="@id/txt_cust_name"
             />
         <ImageView
+            android:id="@+id/btn_disc"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="@dimen/big_margin"
+            android:src="@drawable/baseline_discount_24"
+            android:elevation="@dimen/medium_margin"
+            android:onClick="@{()->viewModel.onBtnDiscClick()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/trans_sum_note" />
+
+
+        <ImageView
             android:id="@+id/btn_print_new"
             android:layout_width="36dp"
             android:layout_height="36dp"
@@ -73,6 +85,7 @@
             app:layout_constraintBottom_toTopOf="@id/txt_bayar_sum"
             app:layout_constraintEnd_toEndOf="parent"
             />
+
         <ImageView
             android:id="@+id/btn_send_new"
             android:layout_width="36dp"
@@ -94,6 +107,7 @@
             android:onClick="@{()->viewModel.onBtnNoteClick()}"
             app:layout_constraintBottom_toTopOf="@id/btn_send_new"
             app:layout_constraintEnd_toEndOf="parent" />
+
         <androidx.cardview.widget.CardView
             android:id="@+id/card_note"
             android:layout_margin="@dimen/medium_margin"

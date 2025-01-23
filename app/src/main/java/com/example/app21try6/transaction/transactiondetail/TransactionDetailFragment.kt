@@ -33,10 +33,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
+import com.example.app21try6.SIMPLE_DATE_FORMATTER
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.PaymentModel
 import com.example.app21try6.databinding.FragmentTransactionDetailBinding
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -193,6 +195,12 @@ class TransactionDetailFragment : Fragment() {
                 viewModel.onBtnBayarClicked()
             }
         })
+        viewModel.isDiscClicked.observe(viewLifecycleOwner, Observer {
+            if (it==true){
+                showBayarDialog(PaymentModel(null,null,null,null,null,null,null,null),type.Discount)
+                viewModel.onBtnDiscClicked()
+            }
+        })
 
         viewModel.uiMode.observe(viewLifecycleOwner) {}
 
@@ -212,11 +220,21 @@ class TransactionDetailFragment : Fragment() {
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Bayar")
         val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.pop_up_update, null)
-        val textPrice = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
+        val view = inflater.inflate(R.layout.pop_up_update_bayar, null)
+        val textPrice = view.findViewById<TextInputEditText>(R.id.textUpdatePrice)
+        val textNameOrDate=view.findViewById<TextInputEditText>(R.id.textUpdateDate)
+        val ilDate=view.findViewById<TextInputLayout>(R.id.ilUpdateDate)
+
 
         if (paymentModel.payment_ammount!=null){
             textPrice.setText(paymentModel.payment_ammount.toString())
+        }
+        if (typem==type.Payment){
+        textNameOrDate.visibility=View.GONE
+            ilDate.visibility=View.GONE
+        //textNameOrDate.setText(SIMPLE_DATE_FORMATTER.format(paymentModel.payment_date ?: Date()))
+        }else{
+            textNameOrDate.setText(paymentModel.name?:"")
         }
 
         textPrice.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
@@ -227,8 +245,13 @@ class TransactionDetailFragment : Fragment() {
         builder.setPositiveButton("Ok") { dialog, which ->
             if(textPrice.text.toString().toIntOrNull()!=null){
                 paymentModel.payment_ammount = textPrice.text.toString().toInt()
-                if (typem==type.Payment) viewModel.bayar(paymentModel)
-                else viewModel.updateDiscount(paymentModel)
+                if (typem==type.Payment) {
+                    viewModel.bayar(paymentModel)
+                }
+                else{
+                    paymentModel.name = textNameOrDate.text.toString().trim().uppercase()
+                    viewModel.updateDiscount(paymentModel)
+                }
             }
         }
         builder.setNegativeButton("No") { dialog, which ->

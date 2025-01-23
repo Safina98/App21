@@ -23,6 +23,7 @@ import com.example.app21try6.database.daos.SummaryDbDao
 import com.example.app21try6.database.daos.TransDetailDao
 import com.example.app21try6.database.daos.TransSumDao
 import com.example.app21try6.database.models.PaymentModel
+import com.example.app21try6.database.tables.DiscountTransaction
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.formatRupiah
@@ -62,6 +63,9 @@ class TransactionDetailViewModel (application: Application,
     val uiMode :LiveData<Int> get() =_uiMode
     //Text Generator to send receipt
     private lateinit var textGenerator: TextGenerator
+
+    private var _isDiskClicked=MutableLiveData<Boolean>()
+    val isDiscClicked:LiveData<Boolean> get() = _isDiskClicked
 
     // Get the total discount from the database
     // Get the total discount from the database
@@ -247,14 +251,21 @@ class TransactionDetailViewModel (application: Application,
     }
     fun updateDiscount(paymentModel: PaymentModel){
         viewModelScope.launch {
-            updateDiscountToDb(paymentModel.id!!,paymentModel.payment_ammount!!.toDouble())
+            if(paymentModel.id==null){
+                var discount=DiscountTransaction()
+                discount.discTransRef =UUID.randomUUID().toString()
+                discount.discTransDate=Date()
+                discount.discTransName=paymentModel.name?:"Potongan: "
+                discount.discountAppliedValue=paymentModel.payment_ammount?.toDouble() ?: 0.0
+                discount.sum_id=id
+                insertDiscountToDb(discount)
+            }else{
+                updateDiscountToDb(paymentModel.id!!,paymentModel.payment_ammount!!.toDouble())
+            }
+
         }
     }
-    private suspend fun updateDiscountToDb(id:Int,ammount:Double){
-        withContext(Dispatchers.IO){
-            discountTransDao.updateById(id,ammount)
-        }
-    }
+
 
     private fun insertPayment(bayar: Payment){
         viewModelScope.launch {
@@ -437,6 +448,16 @@ class TransactionDetailViewModel (application: Application,
             datasource4.insert(payment)
         }
     }
+    private suspend fun insertDiscountToDb(discount:DiscountTransaction){
+        withContext(Dispatchers.IO){
+            discountTransDao.insert(discount)
+        }
+    }
+    private suspend fun updateDiscountToDb(id:Int,ammount:Double){
+        withContext(Dispatchers.IO){
+            discountTransDao.updateById(id,ammount)
+        }
+    }
 
     fun generateReceiptTextWa(): String {
         textGenerator = TextGenerator(transDetail.value,transSum.value,paymentModel.value,discountTransBySumId.value?.filter { it.discountType!=DISCTYPE.CashbackNotPrinted })
@@ -449,6 +470,13 @@ class TransactionDetailViewModel (application: Application,
     }
 
     /******************************************** Navigation**************************************/
+
+    fun onBtnDiscClick(){
+        _isDiskClicked.value=true
+    }
+    fun onBtnDiscClicked(){
+        _isDiskClicked.value=false
+    }
 
     fun onKirimBtnClick(){
         _sendReceipt.value=true

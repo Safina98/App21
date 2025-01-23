@@ -23,11 +23,11 @@ data class DiscountTransaction(
     @PrimaryKey(autoGenerate = true)
     var discTransId:Int = 0,//autoIncrement
     @ColumnInfo(name = "discTransRef" )
-    var discTransRef:String,
+    var discTransRef:String="",
     @ColumnInfo(name = "discountId" )
-    var discountId:Int?,//foreign key
+    var discountId:Int?=null,//foreign key
     @ColumnInfo(name = "sum_id")
-    var sum_id:Int,//foreign key
+    var sum_id:Int=0,//foreign key
     @ColumnInfo(name = "discTransDate" )
     var discTransDate: Date= Date(),
     @ColumnInfo(name = "discTransName" )
