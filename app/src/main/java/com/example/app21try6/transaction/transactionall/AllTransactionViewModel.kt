@@ -7,9 +7,9 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.app21try6.database.daos.TransSumDao
@@ -59,10 +59,10 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
 
     private val _navigateToTransDetail = MutableLiveData<Int>()
     val navigateToTransDetail: LiveData<Int> get() = _navigateToTransDetail
-    var itemCount :LiveData<String> = Transformations.map(allTransactionSummary) { items->
+    var itemCount :LiveData<String> = allTransactionSummary.map { items->
         "${items.size} transaksi"
     }
-    var totalTrans:LiveData<String> = Transformations.map(allTransactionSummary){items->
+    var totalTrans:LiveData<String> = allTransactionSummary.map{items->
         val totalSum = items.sumOf { it.total_trans }
         val formattedTotal = formatRupiah(totalSum)
         "${formattedTotal}"
@@ -83,11 +83,10 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
                 "Kemarin"->getTodayStartAndEnd(-1)
                 "Semua"->Pair(null,null)
                 "Bulan Ini"->getCurrentMonthDateRange()
+                "Tahun Ini"->getCurrentYearDateRange()
                 else->Pair(_selectedStartDate.value,selectedEndDate.value)
             }
-            Log.i("DateProb","setSelectedSpinnercalled, value::$value")
-            Log.i("DateProb","setSelectedSpinner startDate: $start")
-            Log.i("DateProb","setSelectedSpinner endDate: $end")
+
             _selectedStartDate.value = start
             _selectedEndDate.value = end
             updateRv5()
@@ -150,8 +149,6 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
         }
     }
 
-
-
     //convert date to string
     private fun formatDate(date: Date?): String? {
         if (date != null) {
@@ -208,6 +205,31 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
         return Pair(firstDayOfMonth, lastDayOfMonth)
     }
 
+    fun getCurrentYearDateRange(): Pair<Date, Date> {
+        val calendar = Calendar.getInstance()
+
+        // Set to the first day of the current year at 00:00
+        calendar.set(Calendar.MONTH, Calendar.JANUARY)
+        calendar.set(Calendar.DAY_OF_MONTH, 1)
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        val firstDayOfYear = calendar.time
+
+        // Set to the last day of the current year at 23:59
+        calendar.set(Calendar.MONTH, Calendar.DECEMBER)
+        calendar.set(Calendar.DAY_OF_MONTH, 31)
+        calendar.set(Calendar.HOUR_OF_DAY, 23)
+        calendar.set(Calendar.MINUTE, 59)
+        calendar.set(Calendar.SECOND, 59)
+        calendar.set(Calendar.MILLISECOND, 999)
+        val lastDayOfYear = calendar.time
+
+        return Pair(firstDayOfYear, lastDayOfYear)
+    }
+
+
 
     fun updateRv5(){
         viewModelScope.launch {
@@ -231,8 +253,6 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
         }
     }
 
-
-
     //show hide date picker dialog
     fun onStartDatePickerClick(){ _isStartDatePickerClicked.value = true }
     fun onStartDatePickerClicked(){ _isStartDatePickerClicked.value = false }
@@ -240,8 +260,6 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
     //Navigation
     fun onNavigatetoTransDetail(id:Int){ _navigateToTransDetail.value = id }
     fun onNavigatedToTransDetail(){ this._navigateToTransDetail.value = null }
-
-
 
     override fun onCleared() {
         super.onCleared()

@@ -47,7 +47,7 @@ class TransactionEditViewModel(
     //get total transaction
     val totalSum = datasource2.getTotalTrans(id)
     //format total transaction
-    val trans_total: LiveData<String> = Transformations.map(totalSum) { formatRupiah(it).toString() }
+    val trans_total: LiveData<String> = totalSum.map {   formatRupiah(it).toString() }
     //show or hide popupDialog
     private val _showDialog = MutableLiveData<TransactionDetail>()
     val showDialog:LiveData<TransactionDetail> get() = _showDialog

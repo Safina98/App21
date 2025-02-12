@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="brandStockViewModel"
+            type="com.example.app21try6.stock.brandstock.BrandStockViewModel" />
+    </data>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
+
+                  <!-- Main Content -->
+                    <Spinner
+                        android:id="@+id/spinner_m"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        app:layout_constraintEnd_toStartOf="@id/btn_edit_ec_new"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        />
+
+                    <ImageView
+                        android:id="@+id/btn_edit_ec_new"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_margin="@dimen/medium_margin"
+                        android:visibility="visible"
+                        android:elevation="@dimen/medium_margin"
+                        android:src="@drawable/baseline_edit_24"
+                        app:layout_constraintEnd_toStartOf="@id/rv_product_stock"
+                        app:layout_constraintStart_toEndOf="@id/spinner_m"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_brand_stock"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toStartOf="@id/rv_product_stock"
+                    app:layout_constraintTop_toBottomOf="@id/spinner_m"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                                />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_product_stock"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/rv_brand_stock"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+
+                    />
+                <TextView
+                    android:id="@+id/txt_brand"
+                    android:visibility="gone"
+                    style="@style/text_product_title"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_margin="@dimen/big_margin"
+                    android:text="@{brandStockViewModel.selectedBrand.brand_name}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/btn_edit_ec_new" >
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_cat"
+                        android:layout_margin="@dimen/small_margin"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+                </androidx.cardview.widget.CardView>
+
+
+            <!-- Centered ProgressBar -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+
+            <!-- Floating Action Button -->
+            <com.example.app21try6.DraggableFloatingActionButton
+                android:id="@+id/btn_add_new_brand_"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:src="@drawable/fab"
+                app:fabCustomSize="56dp"
+                app:maxImageSize="56dp"
+                android:scaleType="center"
+                android:contentDescription="@string/submit"
+                android:onClick="@{() -> brandStockViewModel.onAddItem()}"
+                android:onLongClick="@{(view) -> brandStockViewModel.onLongClick(view)}"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_margin="16dp"
+                />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

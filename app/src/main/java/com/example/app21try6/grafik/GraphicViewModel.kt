@@ -8,10 +8,11 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.app21try6.database.tables.Category
@@ -101,7 +102,7 @@ class GraphicViewModel(application: Application,
     private val _filteredmodelListProfit = MutableLiveData<List<StockModel>>()
     val filteredmodelListProfit: LiveData<List<StockModel>> get() = _filteredmodelListProfit
 
-    val monthIncomeMap: LiveData<Map<String, Double>> = Transformations.map(transDetailModel) { list ->
+    val monthIncomeMap: LiveData<Map<String, Double>> = transDetailModel.map { list ->
 
         list.groupBy { it.month }
             .mapValues { entry ->

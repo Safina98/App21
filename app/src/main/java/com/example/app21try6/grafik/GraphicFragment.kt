@@ -44,8 +44,8 @@ class GraphicFragment : Fragment() {
         barChart = binding.barChart
         chartRenderer = ChartRenderer(requireContext())
 
-        val adapter_year = ArrayAdapter(requireContext(), androidx.transition.R.layout.support_simple_spinner_dropdown_item, resources.getStringArray(R.array.tahun))
-        val adapter_month = ArrayAdapter(requireContext(), androidx.transition.R.layout.support_simple_spinner_dropdown_item, resources.getStringArray(R.array.bulan))
+        val adapter_year = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, resources.getStringArray(R.array.tahun))
+        val adapter_month = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, resources.getStringArray(R.array.bulan))
 
 
         val rvAdapter=AllTransactionAdapter(AllTransClickListener {

@@ -27,7 +27,7 @@ class DiscountAdapter(
                 binding.txtDiscountName.text=item.expense_category_name
                 binding.txtMinQty.text=item.expense_name
                 binding.txtCustLocation.text= item.date?.let { DETAILED_DATE_FORMATTER.format(it) }
-                binding.txtDiscValue.text = formatRupiah(item.expense_ammount!!.toDouble())
+                binding.txtDiscValue.text = formatRupiah(item.expense_ammount?.toDouble())
                 binding.lblCustLocation.text="Tanggal:"
                 binding.lblMinQty.text="Pengeluaran: "
                 binding.lblDiscType.visibility=View.GONE

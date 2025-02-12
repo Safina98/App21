@@ -8,7 +8,7 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.switchMap
 import com.example.app21try6.database.*
 import com.example.app21try6.database.daos.BrandDao
 import com.example.app21try6.database.daos.CategoryDao
@@ -49,7 +49,7 @@ class VendibleViewModel(val database: SummaryDbDao,
     var _itemCathPosition = MutableLiveData<Int>(0)
     val itemCathPosition :LiveData<Int>
         get() = _itemCathPosition
-    val all_item_from_db_new = Transformations.switchMap(itemCathPosition){
+    val all_item_from_db_new = itemCathPosition.switchMap{
         val cath = cathList.value
         val selectedCath = it?.let { cath?.get(it) }
         database2.getCategoriedProduct(selectedCath?.category_id ?: 0)

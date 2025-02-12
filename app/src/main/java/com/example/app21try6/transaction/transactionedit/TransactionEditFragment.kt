@@ -230,6 +230,8 @@ class TransactionEditFragment : Fragment() {
                     viewModel.updateTransDetailItemPrice(transactionDetail, v.toInt())
                 }Code.UNITQTY->{
                     viewModel.updateUitQty(transactionDetail,v.toDouble())
+                }else->{
+                    Toast.makeText(context,"Failed",Toast.LENGTH_SHORT).show()
                 }
             }
             imm.hideSoftInputFromWindow(view?.windowToken, 0)

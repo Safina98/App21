@@ -22,11 +22,13 @@ import com.example.app21try6.R
 import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.databinding.FragmentSubProductStockBinding
+import com.example.app21try6.databinding.PopUpUpdateBayarBinding
 import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 
 class SubProductStockFragment : Fragment() {
     private lateinit var binding: FragmentSubProductStockBinding
+    private lateinit var viewModel: SubViewModel
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -35,13 +37,14 @@ class SubProductStockFragment : Fragment() {
         val application = requireNotNull(this.activity).application
         val dataSource2 = VendibleDatabase.getInstance(application).subProductDao
         val dataSource3 = VendibleDatabase.getInstance(application).transDetailDao
+        val dataSource4 = VendibleDatabase.getInstance(application).detailWarnaDao
         val id = arguments?.let { SubProductStockFragmentArgs.fromBundle(it).productId }
         (activity as AppCompatActivity).supportActionBar?.title = id?.last()
         id?.set(4,"0")
         val id_ = id?.map { it.toInt() }?.toTypedArray()
-        val viewModelFactory = SubViewModelFactory(dataSource2,application,id_!!,dataSource3, 0)
+        val viewModelFactory = SubViewModelFactory(dataSource2,application,id_!!,dataSource3,dataSource4, 0)
         binding.lifecycleOwner =this
-        val viewModel = ViewModelProvider(this,viewModelFactory).get(SubViewModel::class.java)
+        viewModel = ViewModelProvider(this,viewModelFactory).get(SubViewModel::class.java)
         binding.subViewModel = viewModel
         binding.reset.setOnClickListener {
             DialogUtils.showDeleteDialog(requireContext(),this, viewModel, SubProduct(), { vm, item -> (vm as SubViewModel).resetAllSubProductStock() })
@@ -73,9 +76,15 @@ class SubProductStockFragment : Fragment() {
                     updateDialog(subProduct,  3, viewModel)
                 }, SubListener {
             //var path_ = arrayOf(it.id,path)
-            viewModel.onBrandCLick(arrayOf(it.sub_id.toString(),it.product_code.toString(),it.brand_code.toString(),it.cath_code.toString()))
+           // viewModel.onBrandCLick(arrayOf(it.sub_id.toString(),it.product_code.toString(),it.brand_code.toString(),it.cath_code.toString()))
+            viewModel.toggleSelectedSubProductId(it.sub_id)
+                viewModel.getDetailWarnaList(it.sub_id)
         })
-        binding.rvBrandStock.adapter = adapter
+        val detailWarnaAdapter=DetailWarnaAdapter(DetailWarnaLongListener {
+
+        })
+        binding.rvSubProduct.adapter = adapter
+        binding.rvSubDetail?.adapter=detailWarnaAdapter
         binding.searchBarSub.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true
@@ -99,21 +108,31 @@ class SubProductStockFragment : Fragment() {
             it?.let {
                 adapter.submitList(it.sortedBy { it.sub_name })
                 adapter.notifyDataSetChanged()
-                Log.e("SUM","sub product list is"+it.toString())
+
             }
         })
+        viewModel.detailWarnaList.observe(viewLifecycleOwner){it?.let {
+            detailWarnaAdapter.submitList(it)
+        }
+        }
         viewModel.addItem.observe(viewLifecycleOwner, Observer {
             if (it==true){
-                DialogUtils.updateDialog(
-                    context = requireContext(),
-                    viewModel = viewModel, // Replace with your ViewModel instance
-                    model = null,         // Replace with your model instance
-                    title = "Update Brand",
-                    getBrandName = { (it as SubProduct).sub_name },
-                    setBrandName = { it, name -> (it as SubProduct).sub_name = name },
-                    updateFunction = { vm, item -> (vm as SubViewModel).updateSubProduct(item as SubProduct,"",1) },
-                    insertFunction = { vm, name -> (vm as SubViewModel).insertAnItemSubProductStock(name as String) }
-                )
+                Log.i("DTP","fragment ${viewModel.selectedSubProductId.value}")
+                if (viewModel.selectedSubProductId.value==null){
+                    DialogUtils.updateDialog(
+                        context = requireContext(),
+                        viewModel = viewModel, // Replace with your ViewModel instance
+                        model = null,         // Replace with your model instance
+                        title = "Update Brand",
+                        getBrandName = { (it as SubProduct).sub_name },
+                        setBrandName = { it, name -> (it as SubProduct).sub_name = name },
+                        updateFunction = { vm, item -> (vm as SubViewModel).updateSubProduct(item as SubProduct,"",1) },
+                        insertFunction = { vm, name -> (vm as SubViewModel).insertAnItemSubProductStock(name as String) }
+                    )
+                }else{
+                    showAddDetailWarnaDialog()
+                }
+
                 viewModel.onItemAdded()
             }
         })
@@ -144,8 +163,8 @@ class SubProductStockFragment : Fragment() {
             }
         val alert = builder.create()
         alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
 
     }
 
@@ -176,9 +195,30 @@ class SubProductStockFragment : Fragment() {
         }
         val alert = builder.create()
         alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }
 
+    fun showAddDetailWarnaDialog() {
+        val inflater = LayoutInflater.from(requireContext())
+        val binding = PopUpUpdateBayarBinding.inflate(inflater)
+        val txtBatchCount=binding.textUpdateDate
+        val txtNet=binding.textUpdatePrice
 
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(binding.root)
+            .setTitle("Update Bayar")
+            .setPositiveButton("Save") { dialogInterface, _ ->
+                val batchCount=txtBatchCount.text.toString().trim().toDouble()
+                val net=txtNet.text.toString().trim().toDouble()
+                viewModel.insertDetailWarna(batchCount,net)
+                // Handle the save action (e.g., pass data to ViewModel or update UI)
+            }
+            .setNegativeButton("Cancel") { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }
+            .create()
+
+        dialog.show()
+    }
 }

@@ -12,5 +12,5 @@ data class PaymentModel (
     var paid:Int?=null,
     var name:String?="Bayar: ",
     var total_trans:Double?,
-    var discountType:String?=null
+    var discountType:String?=null,
 )

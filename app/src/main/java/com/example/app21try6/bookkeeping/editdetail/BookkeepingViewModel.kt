@@ -9,9 +9,11 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.map
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.app21try6.bookkeeping.summary.ListModel
@@ -47,19 +49,19 @@ private val tagg="ProfitProbs"
     private val _date = MutableLiveData(arrayOf("0","","0"))
     val date: LiveData<Array<String>> = _date
     //val dayly_sells = database.getToday(_date.value!![0].toInt(), _date.value!![1], _date.value!![2].toInt())
-    val daylySells: LiveData<List<Summary>> = Transformations.switchMap(date) { date ->
+    val daylySells: LiveData<List<Summary>> = date.switchMap { date ->
         database.getToday(date[0].toInt(),date[1],date[2].toInt())
     }
     private val totalToday:LiveData<Double> =
-        Transformations.switchMap(date) { date ->
+        date.switchMap { date ->
             database.getTotalToday(date[0].toInt(), date[1], date[2].toInt())
         }
-    val playerName: LiveData<String> = Transformations.map(totalToday) { formatRupiah(it).toString() }
+    val playerName: LiveData<String> = totalToday.map { formatRupiah(it).toString() }
     private val inFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
 
     val day = android.text.format.DateFormat.format("EEEE",inFormat.parse(date.value!![2]+"-"+months.indexOf(date.value!![1]).toString()+"-"+date.value!![0])) as String
-    val dayString :LiveData<String> = Transformations.map(date){ date->
-        day+date[2]+date[1]+date[0]
+    val dayString :LiveData<String> =date.map{ date->
+        day+date[2]+date[1]+date[0] ?: ""
    }
     var all_item_from_db = database2.getAllProduct()
     private val _navigateToVendible = MutableLiveData<Boolean>()

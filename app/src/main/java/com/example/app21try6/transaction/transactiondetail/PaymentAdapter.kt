@@ -33,7 +33,6 @@ class PaymentAdapter(
         binding.clickListener = clickListener
         binding.longClickListener = longListener
         binding.dateClickListener = datePaymentClickListener
-        Log.i("DiscProbs","${formatRupiah(item.payment_ammount?.toDouble())}")
         binding.txtBayarItemList.text = formatRupiah(item.payment_ammount?.toDouble())
         binding.executePendingBindings()
     }

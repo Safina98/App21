@@ -8,17 +8,21 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.app21try6.database.*
+import com.example.app21try6.database.daos.DetailWarnaDao
 import com.example.app21try6.database.daos.SubProductDao
 import com.example.app21try6.database.daos.TransDetailDao
+import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.database.tables.TransactionDetail
 import kotlinx.coroutines.*
+import java.util.UUID
 
 class SubViewModel (
     val database2: SubProductDao,
     application: Application,
     val product_id:Array<Int>,
     val database3 : TransDetailDao,
+    val detailWarnaDao:DetailWarnaDao,
     val sum_id:Int
 ): AndroidViewModel(application){
 
@@ -34,9 +38,47 @@ class SubViewModel (
         get() = _navigateProduct
     private var checkedItemList = mutableListOf<SubProduct>()
 
+    private val _detailWarnaList=MutableLiveData<List<DetailWarnaTable>>()
+    val detailWarnaList:LiveData<List<DetailWarnaTable>>get() = _detailWarnaList
+
+    val selectedSubProductId=MutableLiveData<Int?>()
+
+
+    fun toggleSelectedSubProductId(id: Int) {
+        selectedSubProductId.value = if (selectedSubProductId.value == id) null else id
+        Log.i("DTP","View model ${selectedSubProductId.value}")
+    }
+    fun insertDetailWarna(batchCount:Double,net:Double){
+        uiScope.launch {
+            val detailWarnaTable=DetailWarnaTable()
+            detailWarnaTable.batchCount=batchCount
+            detailWarnaTable.net=net
+            detailWarnaTable.ket="Stok Awal"
+            detailWarnaTable.subId=selectedSubProductId.value!!
+            detailWarnaTable.ref=UUID.randomUUID().toString()
+            insertDetailWarnaToDb(detailWarnaTable)
+        }
+    }
+    fun getDetailWarnaList(id:Int){
+        uiScope.launch {
+            val list=getDetailWarnaListFromDb(id)
+            _detailWarnaList.value=list
+        }
+    }
+    private suspend fun getDetailWarnaListFromDb(id:Int):List<DetailWarnaTable>{
+        return withContext(Dispatchers.IO){
+            detailWarnaDao.getDetailWarnaBySubId(id)
+        }
+    }
+    private suspend fun insertDetailWarnaToDb(detailWarnaTable: DetailWarnaTable){
+        withContext(Dispatchers.IO){
+            detailWarnaDao.insert(detailWarnaTable)
+        }
+    }
+
     fun onCheckBoxClicked(subProduct: SubProduct, bool:Boolean){
         uiScope.launch {
-            var transDetail = TransactionDetail()
+            val transDetail = TransactionDetail()
             transDetail.sum_id = product_id[3]
             transDetail.trans_item_name = subProduct.sub_name
             if(bool){

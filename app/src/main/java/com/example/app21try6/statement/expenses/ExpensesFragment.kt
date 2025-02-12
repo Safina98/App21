@@ -194,7 +194,9 @@ class ExpensesFragment : Fragment() {
             categoryAdapter.submitList(it)
         })
         viewModel.allExpenseCategoryName.observe(viewLifecycleOwner){ entries->
-            val adapter1 = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, entries)
+            val adapter1 = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, entries)
+
+
             binding.spinnerC.adapter = adapter1
         }
 

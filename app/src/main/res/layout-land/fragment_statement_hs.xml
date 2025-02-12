@@ -1,0 +1,67 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.app21try6.statement.StatementHSViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".statement.StatementHsFragment">
+
+        <Button
+            android:id="@+id/btn_add_discount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add discount"
+            android:layout_margin="@dimen/small_margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/rv_cust"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_cust"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="visible"
+            android:layout_margin="@dimen/small_margin"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/rv_disc"
+            app:layout_constraintTop_toBottomOf="@+id/btn_add_customer"
+            app:layout_constraintWidth_percent="0.6" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_disc"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="visible"
+            android:layout_margin="@dimen/small_margin"
+            app:layout_constraintTop_toBottomOf="@+id/btn_add_discount"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/rv_cust"
+            app:layout_constraintWidth_percent="0.4"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+
+
+        <Button
+            android:id="@+id/btn_add_customer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/small_margin"
+            android:text="Add Customer"
+            app:layout_constraintStart_toEndOf="@id/rv_disc"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" /> <!-- Centers the button vertically -->
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

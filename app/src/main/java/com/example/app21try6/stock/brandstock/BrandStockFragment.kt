@@ -108,10 +108,13 @@ class BrandStockFragment : Fragment() {
             BrandStockListener {
                 viewModel.getBrandIdByName(it)
                 viewModel.updateProductRv(it.id)
-                layoutOneViews.forEach { it.visibility = View.GONE }
-                binding.btnEditEcNew.visibility=View.GONE
-                binding.txtBrand.visibility=View.VISIBLE
-                binding.rvProductStock.visibility=View.VISIBLE
+                if (binding.linear1!=null){
+                    layoutOneViews.forEach { it.visibility = View.GONE }
+                    binding.btnEditEcNew.visibility=View.GONE
+                    binding.txtBrand.visibility=View.VISIBLE
+                    binding.rvProductStock.visibility=View.VISIBLE
+                }
+
             },BrandStockLongListener {
                 showDialogBox(viewModel,it,MODELTYPE.brand)
             })
@@ -184,7 +187,7 @@ class BrandStockFragment : Fragment() {
 
         //Spinner
         viewModel.cathList_.observe(viewLifecycleOwner){entries->
-            val adapter1 = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, entries)
+            val adapter1 = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, entries)
             binding.spinnerM.adapter = adapter1
         }
         viewModel.selectedKategoriSpinner.observe(viewLifecycleOwner) {
@@ -308,8 +311,8 @@ class BrandStockFragment : Fragment() {
             }
         val alert = builder.create()
         alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }
 
     private fun checkPermission(): Boolean {
@@ -553,14 +556,14 @@ class BrandStockFragment : Fragment() {
 
     fun loading(){
         binding.rvBrandStock.visibility = View.GONE
-        binding.linear1.visibility=View.GONE
+        binding.linear1?.visibility=View.GONE
         binding.btnAddNewBrand.visibility = View.GONE
 
         binding.progressBar.visibility=View.VISIBLE
     }
     fun loaded(){
         binding.rvBrandStock.visibility = View.VISIBLE
-        binding.linear1.visibility=View.VISIBLE
+        binding.linear1?.visibility=View.VISIBLE
         binding.btnAddNewBrand.visibility = View.VISIBLE
 
         binding.progressBar.visibility=View.GONE

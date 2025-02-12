@@ -20,10 +20,6 @@
         <variable
             name="delLongListenerV"
             type="com.example.app21try6.bookkeeping.vendiblelist.DelLongListenerV" />
-        <variable
-            name="checkBoxListener2"
-            type="com.example.app21try6.stock.subproductstock.CheckBoxListener2" />
-
     </data>
 
     <androidx.cardview.widget.CardView

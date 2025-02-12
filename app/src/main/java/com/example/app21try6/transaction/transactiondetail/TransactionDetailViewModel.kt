@@ -7,7 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.example.app21try6.DISCTYPE
 import com.example.app21try6.database.daos.CustomerDao
@@ -57,7 +57,7 @@ class TransactionDetailViewModel (application: Application,
     val transSum = datasource1.getTransSum(id)
     //Total Trans
     val transTotalDouble = datasource2.getTotalTrans(id)
-    val transTotal: LiveData<String> = Transformations.map(transTotalDouble) { formatRupiah(it).toString() }
+    val transTotal: LiveData<String> = transTotalDouble.map { formatRupiah(it).toString() }
    //To update icons color on night mode or liht mode
     private var _uiMode = MutableLiveData<Int>(16)
     val uiMode :LiveData<Int> get() =_uiMode
@@ -113,7 +113,7 @@ class TransactionDetailViewModel (application: Application,
     // Combine 'bayar' and 'discSum' into a single LiveData
 
 
-    var itemCount :LiveData<String> = Transformations.map(transDetail) { items->
+    var itemCount :LiveData<String> = transDetail.map{ items->
         "${items.size} item"
     }
 
@@ -141,7 +141,7 @@ class TransactionDetailViewModel (application: Application,
     val transSumDateLongClick:LiveData<Boolean> get() = _transSumDateLongClick
 
     // change the note icon collor if note not empty
-    var isn: LiveData<Boolean> = Transformations.map(transSum) { item ->
+    var isn: LiveData<Boolean> = transSum.map{ item ->
         if(item?.sum_note.isNullOrEmpty()) false else true
     }
     //Navigations

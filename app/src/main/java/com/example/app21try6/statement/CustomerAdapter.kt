@@ -19,6 +19,7 @@ class CustomerAdapter(
             binding.item=item
             binding.delListener=delListener
             binding.clickListener=customerListener
+            
             binding.executePendingBindings()
         }
         companion object{

@@ -8,7 +8,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.*
 import androidx.lifecycle.viewModelScope
 import com.example.app21try6.BARANGLOGKET
 import com.example.app21try6.database.daos.ExpenseCategoryDao
@@ -68,7 +68,7 @@ class PurchaseViewModel(application: Application,
     val selectedMonthSpinner:LiveData<String>get()=_selectedMonthSpinner
     private val _isNavigateToPurchase=MutableLiveData<Int?>(null)
     val isNavigateToPurchase:LiveData<Int?> get()=_isNavigateToPurchase
-    val expenseSum = Transformations.map(allExpensesFromDB){items->
+    val expenseSum = allExpensesFromDB.map{items->
         val total = items.sumOf { it.expense_ammount?:0 }
         formatRupiah(total.toDouble())
 
@@ -81,9 +81,9 @@ class PurchaseViewModel(application: Application,
     val inventoryPurchaseList:LiveData<List<InventoryPurchase>> get() = _inventoryPurchaseList
     var inventoryPurchaseId:Int=0
 
-    val totalTransSum: LiveData<String> = Transformations.map(inventoryPurchaseList) { list ->
+    val totalTransSum: LiveData<String> = inventoryPurchaseList.map{ list ->
         val sum = list.sumOf { it.totalPrice } ?:0.0
-        formatRupiah(sum)
+        formatRupiah(sum)?:""
     }
 
     private val _isAddItemClick=MutableLiveData<Boolean>(false)

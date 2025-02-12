@@ -20,6 +20,7 @@
         <item>Bulan Ini</item>
         <item>Hari Ini</item>
         <item>Kemarin</item>
+        <item>Tahun Ini</item>
         <item>Semua</item>
     </string-array>
     <string-array name="spinner_units">

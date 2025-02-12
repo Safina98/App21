@@ -3,6 +3,7 @@ package com.example.app21try6.grafik
 import android.content.Context
 import androidx.core.content.ContextCompat
 import com.example.app21try6.R
+
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -10,6 +11,8 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+
+
 
 class ChartRenderer(private val context: Context) {
 
@@ -40,4 +43,6 @@ class ChartRenderer(private val context: Context) {
         barChart.setFitBars(true)
         barChart.invalidate()
     }
+
+
 }
