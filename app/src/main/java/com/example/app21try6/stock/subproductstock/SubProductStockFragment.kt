@@ -50,6 +50,7 @@ class SubProductStockFragment : Fragment() {
             DialogUtils.showDeleteDialog(requireContext(),this, viewModel, SubProduct(), { vm, item -> (vm as SubViewModel).resetAllSubProductStock() })
         }
         val adapter = SubAdapter(id_[3],
+            null,
                 CheckBoxListenerSub({view:View,subProduct: SubProduct ->
                     val cb = view as CheckBox
                     subProduct.is_checked = cb.isChecked
@@ -70,15 +71,15 @@ class SubProductStockFragment : Fragment() {
         }, WarnaStokListener {
             subProduct ->
             updateDialog(subProduct,2, viewModel)
-        },
-                KetStokListener {
+        }, KetStokListener {
                     subProduct ->
                     updateDialog(subProduct,  3, viewModel)
                 }, SubListener {
             //var path_ = arrayOf(it.id,path)
            // viewModel.onBrandCLick(arrayOf(it.sub_id.toString(),it.product_code.toString(),it.brand_code.toString(),it.cath_code.toString()))
             viewModel.toggleSelectedSubProductId(it.sub_id)
-                viewModel.getDetailWarnaList(it.sub_id)
+                Log.i("DWT","fragment ${viewModel.selectedSubProductId.value}")
+               // viewModel.getDetailWarnaList(it.sub_id)
         })
         val detailWarnaAdapter=DetailWarnaAdapter(DetailWarnaLongListener {
 
@@ -92,7 +93,7 @@ class SubProductStockFragment : Fragment() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 newText?.let { query ->
-                    viewModel.all_product_from_db.observe(viewLifecycleOwner, Observer { list ->
+                    viewModel.allProductFromDb.observe(viewLifecycleOwner, Observer { list ->
                         list?.let { items ->
                             val filteredList = items.filter { item ->
                                 item.sub_name.contains(query, ignoreCase = true)
@@ -104,20 +105,28 @@ class SubProductStockFragment : Fragment() {
                 return true
             }
         })
-        viewModel.all_product_from_db.observe(viewLifecycleOwner, Observer {
+        viewModel.allProductFromDb.observe(viewLifecycleOwner, Observer {
             it?.let {
                 adapter.submitList(it.sortedBy { it.sub_name })
                 adapter.notifyDataSetChanged()
 
             }
         })
+        viewModel.selectedSubProductId.observe(viewLifecycleOwner){
+
+            viewModel.getDetailWarnaList(it)
+            adapter.selectedItemId = it  // Pass the selected ID to the adapter
+            adapter.notifyDataSetChanged()
+        }
         viewModel.detailWarnaList.observe(viewLifecycleOwner){it?.let {
             detailWarnaAdapter.submitList(it)
+
+           // adapter.notifyDataSetChanged()
         }
         }
         viewModel.addItem.observe(viewLifecycleOwner, Observer {
             if (it==true){
-                Log.i("DTP","fragment ${viewModel.selectedSubProductId.value}")
+                Log.i("DWT","fragment ${viewModel.selectedSubProductId.value}")
                 if (viewModel.selectedSubProductId.value==null){
                     DialogUtils.updateDialog(
                         context = requireContext(),

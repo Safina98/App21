@@ -7,7 +7,6 @@ import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.app21try6.database.*
 import com.example.app21try6.database.daos.DetailWarnaDao
 import com.example.app21try6.database.daos.SubProductDao
 import com.example.app21try6.database.daos.TransDetailDao
@@ -29,7 +28,8 @@ class SubViewModel (
     private var viewModelJob = Job()
     //ui scope for coroutines
     private val uiScope = CoroutineScope(Dispatchers.Main +  viewModelJob)
-    val all_product_from_db = database2.getAll(product_id[0])
+    val _allProductFromDb=MutableLiveData<List<SubProduct>>()
+    val allProductFromDb = database2.getAll(product_id[0])
     private val _addItem = MutableLiveData<Boolean>()
     val addItem: LiveData<Boolean>
         get() = _addItem
@@ -38,15 +38,17 @@ class SubViewModel (
         get() = _navigateProduct
     private var checkedItemList = mutableListOf<SubProduct>()
 
-    private val _detailWarnaList=MutableLiveData<List<DetailWarnaTable>>()
-    val detailWarnaList:LiveData<List<DetailWarnaTable>>get() = _detailWarnaList
+    private val _detailWarnaList=MutableLiveData<List<DetailWarnaTable>?>()
+    val detailWarnaList:LiveData<List<DetailWarnaTable>?>get() = _detailWarnaList
 
-    val selectedSubProductId=MutableLiveData<Int?>()
+   val _selectedSubProductId=MutableLiveData<Int?>()
+    val selectedSubProductId:LiveData<Int?>get() = _selectedSubProductId
+
 
 
     fun toggleSelectedSubProductId(id: Int) {
-        selectedSubProductId.value = if (selectedSubProductId.value == id) null else id
-        Log.i("DTP","View model ${selectedSubProductId.value}")
+        _selectedSubProductId.value = if (_selectedSubProductId.value == id) null else id
+       //if id not the same change rc background
     }
     fun insertDetailWarna(batchCount:Double,net:Double){
         uiScope.launch {
@@ -54,14 +56,15 @@ class SubViewModel (
             detailWarnaTable.batchCount=batchCount
             detailWarnaTable.net=net
             detailWarnaTable.ket="Stok Awal"
-            detailWarnaTable.subId=selectedSubProductId.value!!
+            detailWarnaTable.subId=_selectedSubProductId.value!!
             detailWarnaTable.ref=UUID.randomUUID().toString()
             insertDetailWarnaToDb(detailWarnaTable)
         }
     }
-    fun getDetailWarnaList(id:Int){
+    fun getDetailWarnaList(id:Int?){
         uiScope.launch {
-            val list=getDetailWarnaListFromDb(id)
+            val list= if (id!=null)getDetailWarnaListFromDb(id) else listOf()
+
             _detailWarnaList.value=list
         }
     }
@@ -151,7 +154,7 @@ class SubViewModel (
     }
     fun resetAllSubProductStock(){
         uiScope.launch {
-            val pList=all_product_from_db.value
+            val pList=allProductFromDb.value
             resetSupProductSuspend(pList!!)
 
         }

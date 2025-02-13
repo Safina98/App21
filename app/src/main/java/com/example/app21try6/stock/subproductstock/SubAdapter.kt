@@ -1,6 +1,7 @@
 package com.example.app21try6.stock.subproductstock
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.databinding.ItemListSubproductBinding
 
 class SubAdapter (val code:Int,
+                  var selectedItemId:Int?,
                   val checkBoxListenerSub: CheckBoxListenerSub,
     val longListener: SubStokLongListener,
     val plusListener: PlusStokListener,
@@ -22,7 +24,9 @@ class SubAdapter (val code:Int,
     ListAdapter<SubProduct,
             SubAdapter.MyViewHolder>(SubDiffCallback()){
     class MyViewHolder private constructor( val binding: ItemListSubproductBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(code: Int,longListener :SubStokLongListener,
+        fun bind(code: Int,
+                 isSelected:Boolean,
+                 longListener :SubStokLongListener,
                  plusListener:PlusStokListener,
                  subsListener : SubsStokListener,
                  warnaListener: WarnaStokListener,
@@ -47,6 +51,7 @@ class SubAdapter (val code:Int,
                 binding.warnaListener = warnaListener
                 binding.ketListener = ketListener
                 binding.subProductListener = subProductListener
+                binding.cvSub.setBackgroundColor(if (isSelected) Color.LTGRAY else Color.WHITE)
             }else
             {
                 binding.textStokGudang.visibility = View.GONE
@@ -81,8 +86,28 @@ class SubAdapter (val code:Int,
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(code,longListener,plusListener,subsListener, warnaListener,ketListener,subProductListener,
-                checkBoxListenerSub,getItem(position))
+        val item = getItem(position)
+
+        // Check if the item's ID matches the selectedSubProductId from ViewModel
+        val isSelected = item.sub_id == selectedItemId
+
+        // Change background color
+        //holder.binding.root.setBackgroundColor(if (isSelected) Color.LTGRAY else Color.TRANSPARENT)
+
+        holder.bind(
+            code,isSelected,
+            longListener,
+            plusListener,
+            subsListener,
+            warnaListener,
+            ketListener,
+            subProductListener,
+            checkBoxListenerSub,
+            item
+        )
+
+        // Handle item click
+
     }
 
 

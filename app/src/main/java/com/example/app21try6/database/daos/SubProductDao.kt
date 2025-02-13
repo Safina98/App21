@@ -24,6 +24,8 @@ interface SubProductDao {
     fun unchecked_allCheckbox()
     @Query("SELECT * FROM sub_table WHERE product_code = :product_id_")
     fun getAll(product_id_:Int):LiveData<List<SubProduct>>
+    @Query("SELECT * FROM sub_table WHERE product_code =:product_id")
+    fun getSubListByProductId(product_id: Int):List<SubProduct>
     @Query("SELECT * FROM sub_table")
     fun getAllSub():LiveData<List<SubProduct>>
     @Query("SELECT * FROM sub_table WHERE sub_id = :sub_id_")
