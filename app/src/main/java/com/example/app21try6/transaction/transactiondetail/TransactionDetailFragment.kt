@@ -157,7 +157,7 @@ class TransactionDetailFragment : Fragment() {
 
         }
 
-        viewModel.isn.observe(this, Observer { isNoteActive -> })
+        viewModel.isn.observe(viewLifecycleOwner, Observer { isNoteActive -> })
 
         viewModel.paymentModel.observe(viewLifecycleOwner, Observer {
             it?.let{
@@ -224,18 +224,20 @@ class TransactionDetailFragment : Fragment() {
         val textPrice = view.findViewById<TextInputEditText>(R.id.textUpdatePrice)
         val textNameOrDate=view.findViewById<TextInputEditText>(R.id.textUpdateDate)
         val ilDate=view.findViewById<TextInputLayout>(R.id.ilUpdateDate)
-
+        val ilPrice=view.findViewById<TextInputLayout>(R.id.il_harga)
 
         if (paymentModel.payment_ammount!=null){
             textPrice.setText(paymentModel.payment_ammount.toString())
         }
         if (typem==type.Payment){
-        textNameOrDate.visibility=View.GONE
+            textNameOrDate.visibility=View.GONE
             ilDate.visibility=View.GONE
         //textNameOrDate.setText(SIMPLE_DATE_FORMATTER.format(paymentModel.payment_date ?: Date()))
         }else{
             textNameOrDate.setText(paymentModel.name?:"")
+            ilDate.hint="Nama Diskon"
         }
+        ilPrice.hint="Jumlah"
 
         textPrice.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         textPrice.requestFocus()
@@ -260,8 +262,8 @@ class TransactionDetailFragment : Fragment() {
 
         val alert = builder.create()
         alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.primaryColor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.primaryColor))
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.primaryColor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.primaryColor))
 
     }
     private fun printReceipt() {
@@ -353,8 +355,8 @@ class TransactionDetailFragment : Fragment() {
             .create()
 
         dialog.show()
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }
     private fun deleteDialog(p_id:Int,typem:String) {
         val builder = AlertDialog.Builder(context, R.style.AlertDialogTheme)
@@ -364,7 +366,6 @@ class TransactionDetailFragment : Fragment() {
                 if (typem==type.Payment)
                 viewModel.deletePayment(p_id)
                 else {
-                    Log.i("DiscProbs","id: $p_id")
                     viewModel.deleteDiscount(p_id)
                 }
                 Toast.makeText(context, "Deleted!!", Toast.LENGTH_SHORT).show()
@@ -375,8 +376,8 @@ class TransactionDetailFragment : Fragment() {
             }
         val alert = builder.create()
         alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }
     fun fibrateOnClick(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { // API level 31 and above

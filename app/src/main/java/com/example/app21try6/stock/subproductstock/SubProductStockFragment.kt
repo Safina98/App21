@@ -5,12 +5,14 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
@@ -49,14 +51,16 @@ class SubProductStockFragment : Fragment() {
         binding.reset.setOnClickListener {
             DialogUtils.showDeleteDialog(requireContext(),this, viewModel, SubProduct(), { vm, item -> (vm as SubViewModel).resetAllSubProductStock() })
         }
+        // Handle back button press
+
+
         val adapter = SubAdapter(id_[3],
             null,
-                CheckBoxListenerSub({view:View,subProduct: SubProduct ->
-                    val cb = view as CheckBox
-                    subProduct.is_checked = cb.isChecked
-                    viewModel.onCheckBoxClicked(subProduct,cb.isChecked)
-                }),
-                SubStokLongListener{
+        CheckBoxListenerSub{view:View,subProduct: SubProduct ->
+            val cb = view as CheckBox
+            subProduct.is_checked = cb.isChecked
+            viewModel.onCheckBoxClicked(subProduct,cb.isChecked)
+        }, SubStokLongListener{
             subProduct->
             Toast.makeText(context,"long success",Toast.LENGTH_SHORT).show()
             showDialog(subProduct,1,viewModel)
@@ -72,14 +76,16 @@ class SubProductStockFragment : Fragment() {
             subProduct ->
             updateDialog(subProduct,2, viewModel)
         }, KetStokListener {
-                    subProduct ->
-                    updateDialog(subProduct,  3, viewModel)
-                }, SubListener {
+            subProduct ->
+            updateDialog(subProduct,  3, viewModel)
+        }, SubListener {
             //var path_ = arrayOf(it.id,path)
-           // viewModel.onBrandCLick(arrayOf(it.sub_id.toString(),it.product_code.toString(),it.brand_code.toString(),it.cath_code.toString()))
-            viewModel.toggleSelectedSubProductId(it.sub_id)
-                Log.i("DWT","fragment ${viewModel.selectedSubProductId.value}")
-               // viewModel.getDetailWarnaList(it.sub_id)
+            // viewModel.onBrandCLick(arrayOf(it.sub_id.toString(),it.product_code.toString(),it.brand_code.toString(),it.cath_code.toString()))
+
+            if (binding.rvSubDetail.visibility==View.GONE){
+                setDetailRvVisibility(true)
+            }
+            viewModel.toggleSelectedSubProductId(it)
         })
         val detailWarnaAdapter=DetailWarnaAdapter(DetailWarnaLongListener {
 
@@ -90,7 +96,6 @@ class SubProductStockFragment : Fragment() {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true
             }
-
             override fun onQueryTextChange(newText: String?): Boolean {
                 newText?.let { query ->
                     viewModel.allProductFromDb.observe(viewLifecycleOwner, Observer { list ->
@@ -109,25 +114,22 @@ class SubProductStockFragment : Fragment() {
             it?.let {
                 adapter.submitList(it.sortedBy { it.sub_name })
                 adapter.notifyDataSetChanged()
-
             }
         })
-        viewModel.selectedSubProductId.observe(viewLifecycleOwner){
+        viewModel.selectedSubProduct.observe(viewLifecycleOwner){
 
-            viewModel.getDetailWarnaList(it)
-            adapter.selectedItemId = it  // Pass the selected ID to the adapter
+            viewModel.getDetailWarnaList(it?.sub_id)
+            adapter.selectedItemId = it?.sub_id  // Pass the selected ID to the adapter
             adapter.notifyDataSetChanged()
         }
         viewModel.detailWarnaList.observe(viewLifecycleOwner){it?.let {
             detailWarnaAdapter.submitList(it)
-
            // adapter.notifyDataSetChanged()
-        }
+            }
         }
         viewModel.addItem.observe(viewLifecycleOwner, Observer {
             if (it==true){
-                Log.i("DWT","fragment ${viewModel.selectedSubProductId.value}")
-                if (viewModel.selectedSubProductId.value==null){
+                if (viewModel.selectedSubProduct.value==null){
                     DialogUtils.updateDialog(
                         context = requireContext(),
                         viewModel = viewModel, // Replace with your ViewModel instance
@@ -141,7 +143,6 @@ class SubProductStockFragment : Fragment() {
                 }else{
                     showAddDetailWarnaDialog()
                 }
-
                 viewModel.onItemAdded()
             }
         })
@@ -150,10 +151,15 @@ class SubProductStockFragment : Fragment() {
                 this.findNavController().navigate(SubProductStockFragmentDirections.actionSubProductStockFragmentToDetailFragment(id))
                 viewModel.onBrandNavigated()
             }
-
         })
-        // Inflate the layout for this fragment
+        binding.txtSubProduct?.setOnClickListener {
+            if (binding.rvSubProduct.visibility==View.GONE) {
+                viewModel.toggleSelectedSubProductId(null)
+                setDetailRvVisibility(false)
 
+            }
+        }
+        // Inflate the layout for this fragment
 
         return binding.root
     }
@@ -213,6 +219,10 @@ class SubProductStockFragment : Fragment() {
         val binding = PopUpUpdateBayarBinding.inflate(inflater)
         val txtBatchCount=binding.textUpdateDate
         val txtNet=binding.textUpdatePrice
+        val ilBatchCount=binding.ilUpdateDate
+        val ilNet=binding.ilHarga
+        ilBatchCount.hint="Jumlah"
+        ilNet.hint="Isi"
 
         val dialog = AlertDialog.Builder(requireContext())
             .setView(binding.root)
@@ -230,4 +240,28 @@ class SubProductStockFragment : Fragment() {
 
         dialog.show()
     }
+    fun setDetailRvVisibility(isVisible:Boolean){
+        if (isVisible){
+            binding.rvSubProduct.visibility=View.GONE
+            binding.rvSubDetail.visibility=View.VISIBLE
+            binding.txtSubProduct?.visibility=View.VISIBLE
+        }else{
+            binding.rvSubProduct.visibility=View.VISIBLE
+            binding.rvSubDetail.visibility=View.GONE
+            binding.txtSubProduct?.visibility=View.GONE
+        }
+
+    }
+    fun handleBackPress(): Boolean {
+        if (binding.rvSubDetail.visibility == View.VISIBLE) {
+            // Toggle RecyclerViews visibility
+            binding.rvSubDetail.visibility = View.GONE
+            binding.rvSubProduct.visibility = View.VISIBLE
+            viewModel.toggleSelectedSubProductId(null)
+            return true // Handled, so don't exit fragment
+        }
+        return false // Not handled, let activity navigate back
+    }
+
+
 }

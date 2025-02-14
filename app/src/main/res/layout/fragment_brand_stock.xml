@@ -45,7 +45,6 @@
                     android:src="@drawable/baseline_edit_24"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView

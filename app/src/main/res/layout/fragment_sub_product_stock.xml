@@ -23,7 +23,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             />
-
+        <TextView
+            android:id="@+id/txt_sub_product"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            style="@style/text_product_title_bookkeeping"
+            android:text="@{subViewModel.selectedSubProduct.sub_name}"
+            app:layout_constraintTop_toBottomOf="@+id/search_bar_sub"
+            android:visibility="gone"
+            />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_sub_product"
             android:layout_width="match_parent"
@@ -34,6 +44,17 @@
             app:layout_constraintTop_toBottomOf="@+id/search_bar_sub"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:visibility="visible" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_sub_detail"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txt_sub_product"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:visibility="gone" />
         
 
         <com.example.app21try6.DraggableFloatingActionButton
@@ -42,7 +63,6 @@
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-
             android:src="@drawable/fab"
             app:fabCustomSize="56dp"
             app:maxImageSize="56dp"

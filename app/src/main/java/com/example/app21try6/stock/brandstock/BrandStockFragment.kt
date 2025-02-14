@@ -15,6 +15,7 @@ import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -101,6 +102,21 @@ class BrandStockFragment : Fragment() {
         } else {
             requestPermission()
         }
+        ////////////////////////////////custom on back pressed////////////////////////////////
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (layoutOneViews[0].visibility == View.GONE) {
+                    layoutOneViews.forEach { it.visibility = View.VISIBLE }
+                    binding.rvProductStock.visibility = View.GONE
+                    binding.txtBrand.visibility=View.GONE
+                    binding.btnEditEcNew.visibility=View.VISIBLE
+                } else {
+                    // Allow default back button behavior
+                    isEnabled = false
+                    requireActivity().onBackPressed()
+                }
+            }
+        })
         /////////////////////////////////////Initalizing Adapter/////////////////////////////////
 
         //brand adapter
@@ -571,5 +587,19 @@ class BrandStockFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         ToolbarUtil.hideToolbarButtons(requireActivity())
+    }
+    fun handleBackPress(): Boolean {
+        val layoutOneViews = listOf(
+            binding.spinnerM,
+            binding.rvBrandStock,
+        )
+        if (layoutOneViews[0].visibility == View.GONE) {
+            layoutOneViews.forEach { it.visibility = View.VISIBLE }
+            binding.rvProductStock.visibility = View.GONE
+            binding.txtBrand.visibility=View.GONE
+            binding.btnEditEcNew.visibility=View.VISIBLE
+            return true
+        }
+        return false // Not handled, let activity navigate back
     }
 }

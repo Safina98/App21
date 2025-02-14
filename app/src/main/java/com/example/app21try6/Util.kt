@@ -17,6 +17,12 @@ object BARANGLOGKET {
     const val masuk = "MASUK"
     const val keluar = "KELUAR"
 }
+object VIEWOPTIONS {
+    const val potrait = "Portrait"
+    const val lanscape = "Lanscape"
+    const val smallScreen= "Small"
+    const val bigScreen="Big"
+}
 object DISCTYPE {
     const val CashbackPrinted = "Printed"
     const val CashbackNotPrinted = "Not Printed"
