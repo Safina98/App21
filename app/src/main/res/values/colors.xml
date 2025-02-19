@@ -37,7 +37,8 @@
 
     <color name="nightModeBackgroundColor">#121212</color>
     <color name="lightModeBackgroundColor">#FFFFFF</color>
-
+<!--#A3EBF4F6- -->
+    <!--#273A7D44- -->
     <color name="transActiveBgColor">#A3EBF4F6</color>
     <color name="logrvbg">#85FFFEF3</color>
 

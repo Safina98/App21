@@ -74,8 +74,14 @@ interface SubProductDao {
     FROM sub_table sp
     INNER JOIN product_table p ON sp.product_code = p.product_id
 """)
-    fun getSubProductWithPrice():LiveData<List<SubWithPriceModel>?>
+    fun getSubProductWithPriceOld():LiveData<List<SubWithPriceModel>?>
 
+    @Query("SELECT sp.*, p.purchasePrice, p.default_net " +
+            "FROM sub_table sp " +
+            "INNER JOIN product_table p ON sp.product_code = p.product_id " +
+            "WHERE sp.sub_name  LIKE '%' || :query || '%' " +
+            "LIMIT 20")
+    fun getSubProductWithPrice(query: String):LiveData<List<SubWithPriceModel>?>
 
 
     @Query("""

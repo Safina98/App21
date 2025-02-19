@@ -32,9 +32,7 @@ class SubProductStockFragment : Fragment() {
     private lateinit var binding: FragmentSubProductStockBinding
     private lateinit var viewModel: SubViewModel
 
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_sub_product_stock,container,false)
         val application = requireNotNull(this.activity).application
         val dataSource2 = VendibleDatabase.getInstance(application).subProductDao
@@ -52,7 +50,6 @@ class SubProductStockFragment : Fragment() {
             DialogUtils.showDeleteDialog(requireContext(),this, viewModel, SubProduct(), { vm, item -> (vm as SubViewModel).resetAllSubProductStock() })
         }
         // Handle back button press
-
 
         val adapter = SubAdapter(id_[3],
             null,
@@ -81,7 +78,6 @@ class SubProductStockFragment : Fragment() {
         }, SubListener {
             //var path_ = arrayOf(it.id,path)
             // viewModel.onBrandCLick(arrayOf(it.sub_id.toString(),it.product_code.toString(),it.brand_code.toString(),it.cath_code.toString()))
-
             if (binding.rvSubDetail.visibility==View.GONE){
                 setDetailRvVisibility(true)
             }
@@ -223,7 +219,6 @@ class SubProductStockFragment : Fragment() {
         val ilNet=binding.ilHarga
         ilBatchCount.hint="Jumlah"
         ilNet.hint="Isi"
-
         val dialog = AlertDialog.Builder(requireContext())
             .setView(binding.root)
             .setTitle("Update Bayar")
@@ -250,7 +245,6 @@ class SubProductStockFragment : Fragment() {
             binding.rvSubDetail.visibility=View.GONE
             binding.txtSubProduct?.visibility=View.GONE
         }
-
     }
     fun handleBackPress(): Boolean {
         if (binding.rvSubDetail.visibility == View.VISIBLE) {
@@ -262,6 +256,5 @@ class SubProductStockFragment : Fragment() {
         }
         return false // Not handled, let activity navigate back
     }
-
 
 }

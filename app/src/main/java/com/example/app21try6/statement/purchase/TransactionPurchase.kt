@@ -74,12 +74,15 @@ class TransactionPurchase : Fragment() {
         val autoCompleteSuplier: AutoCompleteTextView = binding.textDiscount
         val autoCompleteSubName: AutoCompleteTextView = binding.textSub
         viewModel.allSubProductFromDb.observe(viewLifecycleOwner) { subProductList ->
-            if (subProductList!=null){
+            if (!subProductList.isNullOrEmpty()){
                 val subNames = subProductList.map { it.subProduct.sub_name }
                 val adapterSub = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, subNames)
                 autoCompleteSubName.setAdapter(adapterSub)
+                adapterSub.notifyDataSetChanged()
+
             }
         }
+
         viewModel.isAddItemClick.observe(viewLifecycleOwner){
             if (it==true){
                // adapter.notifyDataSetChanged()
@@ -114,9 +117,15 @@ class TransactionPurchase : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 val subName = s.toString().trim().uppercase()
-                viewModel.setProductPriceAndNet(subName)
+                //viewModel.setProductPriceAndNet(subName)
+                viewModel.searchProduct(subName)
+                autoCompleteSubName.showDropDown()
             }
         })
+        autoCompleteSubName.setOnItemClickListener { _, _, position, _ ->
+           // val selectedProduct = adapter.getItem(position) ?: return@setOnItemClickListener
+           // viewModel.productName.set(selectedProduct)
+        }
         viewModel.suplierDummy.observe(viewLifecycleOwner, Observer {list->list?.let {
             val supNames=list.map { it.suplierName }
             val adapterSuplier = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, supNames)

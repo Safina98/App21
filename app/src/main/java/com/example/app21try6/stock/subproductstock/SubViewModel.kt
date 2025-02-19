@@ -10,9 +10,11 @@ import com.example.app21try6.database.daos.DetailWarnaDao
 import com.example.app21try6.database.daos.SubProductDao
 import com.example.app21try6.database.daos.TransDetailDao
 import com.example.app21try6.database.tables.DetailWarnaTable
+import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.database.tables.TransactionDetail
 import kotlinx.coroutines.*
+import java.util.Date
 import java.util.UUID
 
 class SubViewModel (
@@ -57,6 +59,17 @@ class SubViewModel (
             detailWarnaTable.ket="Stok Awal"
             detailWarnaTable.subId=_selectedSubProduct.value!!.sub_id
             detailWarnaTable.ref=UUID.randomUUID().toString()
+            val inventoryLog=InventoryLog()
+            inventoryLog.detailWarnaRef=detailWarnaTable.ref
+            inventoryLog.subProductId=detailWarnaTable.subId
+            inventoryLog.isi=detailWarnaTable.net
+            inventoryLog.pcs=detailWarnaTable.batchCount.toInt()
+            inventoryLog.barangLogKet="Masuk"
+            inventoryLog.barangLogDate= Date()
+            inventoryLog.barangLogRef=UUID.randomUUID().toString()
+            inventoryLog.brandId= null
+            inventoryLog.productId=null
+
             insertDetailWarnaToDb(detailWarnaTable)
             getDetailWarnaList(selectedSubProduct.value?.sub_id)
         }

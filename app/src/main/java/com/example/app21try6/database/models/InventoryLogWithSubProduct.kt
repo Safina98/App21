@@ -6,7 +6,6 @@ import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.database.tables.SubProduct
 
 data class InventoryLogWithSubProduct (
-
     @Embedded val inventoryLog: InventoryLog,
     @ColumnInfo(name="sub_name") var sub_name:String = "",
 )

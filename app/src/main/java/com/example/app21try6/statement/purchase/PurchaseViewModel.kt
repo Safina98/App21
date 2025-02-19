@@ -19,6 +19,7 @@ import com.example.app21try6.database.daos.DetailWarnaDao
 import com.example.app21try6.database.daos.InventoryLogDao
 import com.example.app21try6.database.daos.InventoryPurchaseDao
 import com.example.app21try6.database.daos.SuplierDao
+import com.example.app21try6.database.models.SubWithPriceModel
 import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.ExpenseCategory
 import com.example.app21try6.database.tables.Expenses
@@ -76,7 +77,11 @@ class PurchaseViewModel(application: Application,
     //purchase
     val suplierDummy= suplierDao.getAllSuplier()
     var inventoryList= mutableListOf<InventoryPurchase>()
-    val allSubProductFromDb=subProductDao.getSubProductWithPrice()
+    //val allSubProductFromDb=subProductDao.getSubProductWithPrice()
+    private val searchQuery = MutableLiveData<String>()
+    val allSubProductFromDb: LiveData<List<SubWithPriceModel>?> = searchQuery.switchMap { query ->
+        subProductDao.getSubProductWithPrice(query)
+    }
     private val _inventoryPurchaseList=MutableLiveData<List<InventoryPurchase>>()
     val inventoryPurchaseList:LiveData<List<InventoryPurchase>> get() = _inventoryPurchaseList
     var inventoryPurchaseId:Int=0
@@ -144,7 +149,16 @@ class PurchaseViewModel(application: Application,
             }
         }
     }
-
+    fun searchProduct(query: String) {
+        searchQuery.value = query
+        val selectedSubProduct = allSubProductFromDb.value?.find { it.subProduct.sub_name == query }
+        productPrice.value = selectedSubProduct?.purchasePrice?.toDouble() ?: 0.0
+        if((selectedSubProduct?.purchasePrice ?: 0) > 220000){
+            productNet.value = 1.0
+        }else{
+            productNet.value = selectedSubProduct?.default_net?:0.0
+        }
+    }
     fun setProductPriceAndNet(name:String){
         viewModelScope.launch {
             val selectedSubProduct = allSubProductFromDb.value?.find { it.subProduct.sub_name == name }
