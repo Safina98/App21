@@ -24,6 +24,10 @@ interface ProductDao {
 
     @Query("SELECT * FROM product_table WHERE product_id =:id")
     fun getProductById(id:Int):Product
+
+    @Query("SELECT brand_code FROM product_table WHERE product_id=:productId")
+    fun getBrandIdByProductId(productId:Int):Int
+
     @Query("SELECT p.*\n" +
             "FROM product_table p\n" +
             "JOIN sub_table s ON p.product_id = s.product_code\n" +

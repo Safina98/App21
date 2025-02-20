@@ -6,7 +6,9 @@ import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.app21try6.database.daos.BrandDao
 import com.example.app21try6.database.daos.DetailWarnaDao
+import com.example.app21try6.database.daos.ProductDao
 import com.example.app21try6.database.daos.SubProductDao
 import com.example.app21try6.database.daos.TransDetailDao
 import com.example.app21try6.database.tables.DetailWarnaTable
@@ -19,6 +21,7 @@ import java.util.UUID
 
 class SubViewModel (
     val database2: SubProductDao,
+    val productDao: ProductDao,
     application: Application,
     val product_id:Array<Int>,
     val database3 : TransDetailDao,
@@ -46,33 +49,49 @@ class SubViewModel (
    val _selectedSubProduct=MutableLiveData<SubProduct?>()
     val selectedSubProduct:LiveData<SubProduct?>get() = _selectedSubProduct
 
-
     fun toggleSelectedSubProductId(subProduct: SubProduct?) {
         _selectedSubProduct.value = if (_selectedSubProduct.value?.sub_id ==subProduct?.sub_id) null else subProduct
        //if id not the same change rc background
     }
-    fun insertDetailWarna(batchCount:Double,net:Double){
+    fun insertDetailWarna(batchCount: Double, net: Double) {
         uiScope.launch {
-            val detailWarnaTable=DetailWarnaTable()
-            detailWarnaTable.batchCount=batchCount
-            detailWarnaTable.net=net
-            detailWarnaTable.ket="Stok Awal"
-            detailWarnaTable.subId=_selectedSubProduct.value!!.sub_id
-            detailWarnaTable.ref=UUID.randomUUID().toString()
-            val inventoryLog=InventoryLog()
-            inventoryLog.detailWarnaRef=detailWarnaTable.ref
-            inventoryLog.subProductId=detailWarnaTable.subId
-            inventoryLog.isi=detailWarnaTable.net
-            inventoryLog.pcs=detailWarnaTable.batchCount.toInt()
-            inventoryLog.barangLogKet="Masuk"
-            inventoryLog.barangLogDate= Date()
-            inventoryLog.barangLogRef=UUID.randomUUID().toString()
-            inventoryLog.brandId= null
-            inventoryLog.productId=null
-
-            insertDetailWarnaToDb(detailWarnaTable)
-            getDetailWarnaList(selectedSubProduct.value?.sub_id)
+            val subId = _selectedSubProduct.value?.sub_id ?: return@launch
+            val productId = getProdutId(subId) ?: return@launch
+            val brandId = getBrandId(productId) ?: return@launch
+            val existingDetailWarna = isDetailWarnaExist(subId, net)
+            if (existingDetailWarna == null) {
+                // Insert new record
+                val newDetailWarna = DetailWarnaTable(
+                    subId = subId,
+                    net = net,
+                    batchCount = batchCount,
+                    ket = "Stok Awal",
+                    ref = UUID.randomUUID().toString()
+                )
+                insertDetailWarnaToDb(newDetailWarna, createInventoryLog(newDetailWarna, batchCount,productId, brandId))
+            } else {
+                // Update existing record
+                existingDetailWarna.batchCount += batchCount  // Accumulate batch count
+                updateDetailWarnaToDb(existingDetailWarna, createInventoryLog(existingDetailWarna, batchCount,productId, brandId))
+            }
+            getDetailWarnaList(subId) // Refresh UI
         }
+    }
+
+
+    fun createInventoryLog(detailWarnaTable: DetailWarnaTable,batchCount:Double,productId:Int,brandId:Int):InventoryLog{
+        val inventoryLog=InventoryLog()
+        inventoryLog.detailWarnaRef=detailWarnaTable.ref
+        inventoryLog.subProductId=detailWarnaTable.subId
+        inventoryLog.isi=detailWarnaTable.net
+        inventoryLog.pcs=batchCount.toInt()
+        inventoryLog.barangLogKet="Masuk"
+        inventoryLog.barangLogDate= Date()
+        inventoryLog.barangLogRef=UUID.randomUUID().toString()
+        inventoryLog.productId=productId
+        inventoryLog.brandId=brandId
+        return inventoryLog
+
     }
     fun getDetailWarnaList(id:Int?){
         uiScope.launch {
@@ -85,9 +104,14 @@ class SubViewModel (
             detailWarnaDao.getDetailWarnaBySubId(id)
         }
     }
-    private suspend fun insertDetailWarnaToDb(detailWarnaTable: DetailWarnaTable){
+    private suspend fun insertDetailWarnaToDb(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog){
         withContext(Dispatchers.IO){
-            detailWarnaDao.insert(detailWarnaTable)
+            detailWarnaDao.insertDetailWarnaAndLog(detailWarnaTable,inventoryLog)
+        }
+    }
+    private suspend fun updateDetailWarnaToDb(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog){
+        withContext(Dispatchers.IO){
+            detailWarnaDao.updateDetailWarnaAndInsertLog(detailWarnaTable,inventoryLog)
         }
     }
 
@@ -174,6 +198,21 @@ class SubViewModel (
     private suspend fun updateSubName(subProduct: SubProduct){
         withContext(Dispatchers.IO){
             database2.updateSubProductAndTransDetail(subProduct)
+        }
+    }
+    private suspend fun isDetailWarnaExist(subId:Int,net:Double):DetailWarnaTable?{
+       return withContext(Dispatchers.IO){
+            detailWarnaDao.getDetailBySubIdAndNet(subId,net)
+        }
+    }
+    private suspend fun getProdutId(subId:Int):Int?{
+        return withContext(Dispatchers.IO){
+           database2.getProductIdBySubId(subId)
+        }
+    }
+    private suspend fun getBrandId(subId:Int):Int?{
+        return withContext(Dispatchers.IO){
+            productDao.getBrandIdByProductId(subId)
         }
     }
     private suspend fun resetSupProductSuspend(pList:List<SubProduct>){

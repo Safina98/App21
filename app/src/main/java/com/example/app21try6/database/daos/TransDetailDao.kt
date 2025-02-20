@@ -262,18 +262,6 @@ WHERE ts.trans_date >= '2024-11-01 00:00'
     suspend fun updateTransactions(transactions: List<TransactionDetail>)
 
 
-/*
-SELECT u.user_name,c.name,i.name,used.frequency
-FROM users u
-LEFT OUTER JOIN category c
- ON(u.id = c.user_id)
-LEFT OUTER JOIN item i
- ON(i.category_id = c.id)
-INNER JOIN Used
- ON(i.id = used.item_id)
-WHERE u.user_id = YOUR_USER_HERE
- */
-
 
 
 

@@ -27,8 +27,11 @@ interface BrandDao {
     @Query("SELECT category_id FROM category_table WHERE category_name =:categoryName ")
     fun getKategoriIdByName(categoryName:String):Int
 
+
+
     @Query("SELECT * FROM brand_table WHERE cath_code = :kat_id")
     fun getBrandByKatId(kat_id:Int):List<Brand>
+
 
     @Query("SELECT sub_name as subProduct, warna as warna, roll_u as  roll_u, roll_b_t as roll_b_t, roll_s_t as roll_s_t,roll_k_t as roll_k_t,roll_b_g as roll_b_g,roll_s_g as roll_s_g,roll_k_g as roll_k_g,product_name as product, product_price as price, product_capital as capital,best_selling as bestSelling,brand_name as brand, category_name as category FROM sub_table INNER JOIN PRODUCT_TABLE ON product_id = sub_table.product_code INNER JOIN brand_table ON brand_id = sub_table.brand_code INNER JOIN category_table ON category_id = sub_table.cath_code")
     fun getExportedData():LiveData<List<ExportModel>>

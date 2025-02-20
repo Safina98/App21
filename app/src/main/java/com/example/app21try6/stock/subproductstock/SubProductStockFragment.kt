@@ -36,13 +36,14 @@ class SubProductStockFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_sub_product_stock,container,false)
         val application = requireNotNull(this.activity).application
         val dataSource2 = VendibleDatabase.getInstance(application).subProductDao
+        val productDao=VendibleDatabase.getInstance(application).productDao
         val dataSource3 = VendibleDatabase.getInstance(application).transDetailDao
         val dataSource4 = VendibleDatabase.getInstance(application).detailWarnaDao
         val id = arguments?.let { SubProductStockFragmentArgs.fromBundle(it).productId }
         (activity as AppCompatActivity).supportActionBar?.title = id?.last()
         id?.set(4,"0")
         val id_ = id?.map { it.toInt() }?.toTypedArray()
-        val viewModelFactory = SubViewModelFactory(dataSource2,application,id_!!,dataSource3,dataSource4, 0)
+        val viewModelFactory = SubViewModelFactory(dataSource2,productDao,application,id_!!,dataSource3,dataSource4, 0)
         binding.lifecycleOwner =this
         viewModel = ViewModelProvider(this,viewModelFactory).get(SubViewModel::class.java)
         binding.subViewModel = viewModel
