@@ -3,9 +3,7 @@
     <item
         android:id="@+id/brandStockFragment"
         android:title="@string/menu_stok" />
-    <item
-        android:id="@+id/inventoryLogFragment"
-        android:title="Log" />
+
     <item
         android:id="@+id/bookSummaryFragment"
         android:title="@string/pembukuan" />

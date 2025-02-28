@@ -53,7 +53,7 @@ class BrandStockViewModel(
     val all_brand_from_db :LiveData<List<BrandProductModel>> get()= _all_brand_from_db
 
     var kategori_id = MutableLiveData<Int>(-1)
-    var selectedBrand = MutableLiveData<Brand>()
+    var selectedBrand = MutableLiveData<BrandProductModel?>()
 
     private var checkedItemList = mutableListOf<Category>()
     val all_brand = database2.getAllBrand()
@@ -104,13 +104,16 @@ class BrandStockViewModel(
             _all_brand_from_db.value = brandlist
         }
     }
-    fun getBrandIdByName(branModel:BrandProductModel){
+    fun toggleSelectedSubProductId(subProduct: SubProduct?) {
+        //_selectedSubProduct.value = if (_selectedSubProduct.value?.sub_id ==subProduct?.sub_id) null else subProduct
+        //if id not the same change rc background
+    }
+    fun getBrandIdByName(branModel:BrandProductModel?){
         viewModelScope.launch {
-            val brand=Brand()
-            brand.brand_id=branModel.id
-            brand.cath_code=branModel.parentId!!
-            brand.brand_name=branModel.name
-            selectedBrand.value=brand
+            if (selectedBrand.value?.id==branModel?.id){
+                selectedBrand.value=null
+            }else {selectedBrand.value=branModel}
+            //Log.i("BRANDPROBS","${selectedBrand.value}")
         }
     }
 
@@ -282,8 +285,8 @@ class BrandStockViewModel(
 
     fun updateProductRv(brandId:Int?){
         viewModelScope.launch {
-            var list = withContext(Dispatchers.IO){ database3.getAll(brandId)}
-            _all_product_from_db.value=list
+                val list = withContext(Dispatchers.IO){ database3.getAll(brandId)}
+                _all_product_from_db.value=list
         }
     }
     fun getLongClickedProduct(id:Int){
@@ -305,7 +308,7 @@ class BrandStockViewModel(
         uiScope.launch {
             if (product_name!="") {
                 val product = Product()
-                product.brand_code = selectedBrand.value!!.brand_id
+                product.brand_code = selectedBrand.value!!.id
                 product.product_name = product_name
                 product.product_price = price
                 product.cath_code = kategori_id.value?:0
@@ -317,7 +320,7 @@ class BrandStockViewModel(
                 product.purchasePrice=purchasePrice
                 product.puchaseUnit=purcaseUnit
                 insert(product)
-                updateProductRv(selectedBrand.value?.brand_id)
+                updateProductRv(selectedBrand.value?.id)
             }
         }
     }

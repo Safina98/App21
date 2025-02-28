@@ -110,6 +110,8 @@ class BrandStockFragment : Fragment() {
                     binding.rvProductStock.visibility = View.GONE
                     binding.txtBrand.visibility=View.GONE
                     binding.btnEditEcNew.visibility=View.VISIBLE
+                    binding.rvCat.visibility=View.GONE
+                    viewModel.getBrandIdByName(null)
                 } else {
                     // Allow default back button behavior
                     isEnabled = false
@@ -118,12 +120,10 @@ class BrandStockFragment : Fragment() {
             }
         })
         /////////////////////////////////////Initalizing Adapter/////////////////////////////////
-
-        //brand adapter
+        //BRAND ADAPTER
         val adapter = BrandStockAdapter(
             BrandStockListener {
                 viewModel.getBrandIdByName(it)
-                viewModel.updateProductRv(it.id)
                 if (binding.linear1!=null){
                     layoutOneViews.forEach { it.visibility = View.GONE }
                     binding.btnEditEcNew.visibility=View.GONE
@@ -133,7 +133,7 @@ class BrandStockFragment : Fragment() {
 
             },BrandStockLongListener {
                 showDialogBox(viewModel,it,MODELTYPE.brand)
-            })
+            },null)
 
         //Kategori adapter
         val adapterCat = CategoryAdapter(
@@ -155,18 +155,19 @@ class BrandStockFragment : Fragment() {
         //Product adapter
         val adapterProduct = BrandStockAdapter(
             BrandStockListener {
-                viewModel.onProductCLick(arrayOf(it.id.toString(),it.parentId.toString(),viewModel.selectedBrand.value?.cath_code.toString(),"0",it.name))
+                viewModel.onProductCLick(arrayOf(it.id.toString(),it.parentId.toString(),viewModel.selectedBrand.value?.parentId.toString(),"0",it.name))
             }, BrandStockLongListener {
                 viewModel.getLongClickedProduct(it.id)
                 showDialogBox(viewModel,it,MODELTYPE.Product)
-            })
+            },null)
 
 
         //////////////////////////////bindings//////////////////////////////////////////////////
-        //Resycler view
+        //Recyler views
         binding.rvBrandStock.adapter = adapter
         binding.rvCat.adapter = adapterCat
         binding.rvProductStock.adapter = adapterProduct
+
         //Spinner
         binding.spinnerM.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
@@ -223,32 +224,38 @@ class BrandStockFragment : Fragment() {
         }
         // product adapter
         viewModel.all_product_from_db.observe(viewLifecycleOwner, Observer {
-            it?.let {
                 adapterProduct.submitList(it.sortedBy { it.name})
                 adapterProduct.notifyDataSetChanged()
-            }
         })
 
-        // show add dialog
-        viewModel.addItem.observe(viewLifecycleOwner, Observer {
+        viewModel.selectedBrand.observe(viewLifecycleOwner){
+            viewModel.updateProductRv(it?.id)
+            adapter.selectedItemId = it?.id  // Pass the selected ID to the adapter
+            adapter.notifyDataSetChanged()
+        }
+        //Obsserve add fab
+        viewModel.addItem.observe(viewLifecycleOwner,Observer{
             if (it==true){
+                if (layoutOneViews[0].visibility==View.VISIBLE){
+                    if (viewModel.selectedBrand.value==null){
+                        if (layoutOneViews[0].visibility == View.VISIBLE) {
+                            DialogUtils.updateDialog(
+                                context = requireContext(),
+                                viewModel = viewModel, // Replace with your ViewModel instance
+                                model = null,         // Replace with your model instance
+                                title = "Brand Baru",
+                                getBrandName = { (it as Brand).brand_name },
+                                setBrandName = { it, name -> (it as Brand).brand_name = name },
+                                updateFunction = { vm, item -> (vm as BrandStockViewModel).updateBrand(item as BrandProductModel) },
+                                insertFunction = { vm, name -> (vm as BrandStockViewModel).insertAnItemBrandStock(name as String) }
+                            )
+                        }
 
-                if (layoutOneViews[0].visibility == View.VISIBLE) {
-                    DialogUtils.updateDialog(
-                        context = requireContext(),
-                        viewModel = viewModel, // Replace with your ViewModel instance
-                        model = null,         // Replace with your model instance
-                        title = "Brand Baru",
-                        getBrandName = { (it as Brand).brand_name },
-                        setBrandName = { it, name -> (it as Brand).brand_name = name },
-                        updateFunction = { vm, item -> (vm as BrandStockViewModel).updateBrand(item as BrandProductModel) },
-                        insertFunction = { vm, name -> (vm as BrandStockViewModel).insertAnItemBrandStock(name as String) }
-                    )
-                }
-                else  if(binding.rvProductStock.visibility==View.VISIBLE){
-                    DialogUtils.updateDialog(requireContext(),viewModel,list)
-                }
-                else {
+                    }else{
+                        DialogUtils.updateDialog(requireContext(),viewModel,list)
+
+                    }
+                }else{
                     DialogUtils.updateDialog(
                         context = requireContext(),
                         viewModel = viewModel, // Replace with your ViewModel instance
@@ -258,11 +265,13 @@ class BrandStockFragment : Fragment() {
                         setBrandName = { it, name -> (it as CategoryModel).categoryName = name },
                         updateFunction = { vm, item -> (vm as BrandStockViewModel).updateCath(item as CategoryModel) },
                         insertFunction = { vm, name -> (vm as BrandStockViewModel).insertItemCath(name as String) }
-                        )
+                    )
+
                 }
                 viewModel.onItemAdded()
             }
         })
+
 
         viewModel.allDiscountFromDB.observe(viewLifecycleOwner, Observer {discounts ->
             if(discounts!=null){
@@ -593,11 +602,14 @@ class BrandStockFragment : Fragment() {
             binding.spinnerM,
             binding.rvBrandStock,
         )
+        viewModel.getBrandIdByName(null)
         if (layoutOneViews[0].visibility == View.GONE) {
             layoutOneViews.forEach { it.visibility = View.VISIBLE }
             binding.rvProductStock.visibility = View.GONE
             binding.txtBrand.visibility=View.GONE
             binding.btnEditEcNew.visibility=View.VISIBLE
+            binding.rvCat.visibility=View.GONE
+
             return true
         }
         return false // Not handled, let activity navigate back

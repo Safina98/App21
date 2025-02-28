@@ -1,4 +1,5 @@
 package com.example.app21try6.stock.brandstock
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,14 +11,16 @@ import com.example.app21try6.databinding.ItemListBrandBinding
 
 class BrandStockAdapter(
     val brandListener:BrandStockListener,
-    val longListener: BrandStockLongListener
+    val longListener: BrandStockLongListener,
+    var selectedItemId:Int?
 ):ListAdapter<BrandProductModel,BrandStockAdapter.MyViewHolder>(BrandStockDiffCallback()){
     class MyViewHolder private constructor(val binding: ItemListBrandBinding):RecyclerView.ViewHolder(binding.root){
-        fun bind(item: BrandProductModel, brandListener: BrandStockListener, longListener: BrandStockLongListener){
+        fun bind(item: BrandProductModel, brandListener: BrandStockListener, longListener: BrandStockLongListener, isSelected:Boolean){
             binding.brandStock = item
             binding.brandText.text = item.name.toString()
             binding.clickListener = brandListener
             binding.longListener = longListener
+            binding.brandCv.setBackgroundColor(if (isSelected) Color.LTGRAY else Color.TRANSPARENT)
             binding.executePendingBindings()
         }
         companion object{
@@ -37,7 +40,10 @@ class BrandStockAdapter(
     }
 
     override fun onBindViewHolder(holder: BrandStockAdapter.MyViewHolder, position: Int) {
-        holder.bind(getItem(position),brandListener,longListener)
+        val item = getItem(position)
+        val isSelected = item.id == selectedItemId
+
+        holder.bind(getItem(position),brandListener,longListener,isSelected)
     }
 
 }

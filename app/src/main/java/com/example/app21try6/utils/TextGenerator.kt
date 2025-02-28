@@ -1,7 +1,10 @@
 package com.example.app21try6.utils
 
 import android.util.Log
+import com.example.app21try6.DETAILED_DATE_FORMATTER
 import com.example.app21try6.DISCTYPE
+import com.example.app21try6.SIMPLE_DATE_FORMAT
+import com.example.app21try6.SIMPLE_DATE_FORMATTER
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.formatRupiah
@@ -18,6 +21,11 @@ class TextGenerator(
     var paymentModel: List<PaymentModel>?,
     var discountTransaction: List<PaymentModel>?
                     ) {
+    //Make today amazing!
+    //Rise, shine, repeat!
+    //"The best is yet to come! 🌟"
+    val message="Stay positive, shine on!"
+    val emoji="\uD83C\uDF1F"
     val decimalFormat = DecimalFormat("#.##")
     fun getPadding(value:String, position:String,constant:Int):Int {
         val stringLength = value.length
@@ -34,7 +42,9 @@ class TextGenerator(
         val storePhone = "Phone: 081343713281"
         val paddingStoreName = "-".repeat(getPadding(storeName,"Middle",50))
         // Get current date
-        val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+
+        val currentDate = SIMPLE_DATE_FORMATTER.format(transsum?.trans_date)
+
 
         var totalTransaction= transsum!!.total_trans
 
@@ -43,14 +53,13 @@ class TextGenerator(
         builder.append("$paddingStoreName $storeName $paddingStoreName\n")
         builder.append("$storeAddress\n")
         builder.append("$storePhone\n")
-        builder.append("Receipt:" +" ".repeat(getPadding("Receipt Receipt : Date : $currentDate","Right",50))+ "Date: $currentDate\n\n")
-        builder.append("-".repeat(getPadding("","Left",50))+"\n")
+        builder.append("Receipt: ${transsum.sum_id}" +" ".repeat(getPadding("Receipt Receipt :${transsum.sum_id} ${transsum.sum_id} Date : $currentDate","Right",50))+ "Date: $currentDate\n")
         builder.append("${transsum?.cust_name}\n")
-        builder.append("Barang  Jumlah  Harga  Total\n")
         builder.append("-".repeat(getPadding("","Left",50))+"\n")
+        //builder.append("Barang  Jumlah  Harga  Total\n")
+        //builder.append("-".repeat(getPadding("","Left",50))+"\n")
 
         decimalFormat.isDecimalSeparatorAlwaysShown = false
-
         // Receipt items
         val x ="x"
         if (items != null) {
@@ -70,7 +79,6 @@ class TextGenerator(
                         builder.append(String.format("%12s %1s  %3s %10s\n",  decimalFormat.format(item.qty),item.unit, x, price))
                     }
                 }
-
                 builder.append(String.format(" %44s\n", formatRupiah(itemTotalPrice)))
             }
         }
@@ -98,8 +106,7 @@ class TextGenerator(
                 val sisa = totalTransaction - paymentAmmountSum
                 builder.append(String.format("%-22s%14s\n", "Bayar :", formatRupiah(p.payment_ammount?.toDouble())))
                 builder.append("-".repeat(getPadding("","Left",50))+"\n")
-                if (totalTransaction>paymentAmmountSum)
-                {
+                if (totalTransaction>paymentAmmountSum) {
                     builder.append(String.format("%-24s%14s\n", "Sisa:", formatRupiah(sisa)))
                 }
                 else{
@@ -110,7 +117,7 @@ class TextGenerator(
 
         builder.append("-".repeat(getPadding("","Left",50))+"\n")
         builder.append("Terimakasih atas pembelian anda\n")
-        builder.append("                Have a nice day!\n")
+        builder.append("      $message\n")
         builder.append("-".repeat(getPadding("","Left",50))+"\n")
 
         return builder.toString()
@@ -128,7 +135,7 @@ class TextGenerator(
         val storePhone = "Phone: 081343713281"
         val paddingStoreName = "-".repeat(getPadding(storeName,"Middle",c))
         // Get current date
-        val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+        val currentDate = SIMPLE_DATE_FORMATTER.format(transsum?.trans_date)
         var totalTransaction= transsum!!.total_trans
         // Receipt header
 
@@ -159,7 +166,6 @@ class TextGenerator(
                     }else{
                         builder.append(String.format("%12s %1s  %3s %10s\n",  decimalFormat.format(item.qty),item.unit, x,  if(item.qty>=1) formatRupiah(item.trans_price.toDouble()) else "-"))
                     }
-
                 }
                 builder.append(String.format(" %27s\n", formatRupiah(itemTotalPrice)))
             }
@@ -201,7 +207,7 @@ class TextGenerator(
         }
         builder.append("-".repeat(getPadding("","Left",c))+"\n")
         builder.append("Terimakasih atas pembelian anda\n")
-        builder.append("      Have a nice day!\n\n\n\n")
+        builder.append("   $message!\n\n\n\n")
         Log.i("DiscProbs", "Formatted line: '${builder.toString()}'")
         return builder.toString()
     }
