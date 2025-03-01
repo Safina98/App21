@@ -103,33 +103,34 @@ class BrandStockFragment : Fragment() {
             requestPermission()
         }
         ////////////////////////////////custom on back pressed////////////////////////////////
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                val layoutOneViews = listOf(
+                    binding.spinnerM,
+                    binding.rvBrandStock,
+                )
+                viewModel.getBrandIdByName(null)
                 if (layoutOneViews[0].visibility == View.GONE) {
                     layoutOneViews.forEach { it.visibility = View.VISIBLE }
                     binding.rvProductStock.visibility = View.GONE
-                    binding.txtBrand.visibility=View.GONE
-                    binding.btnEditEcNew.visibility=View.VISIBLE
-                    binding.rvCat.visibility=View.GONE
-                    viewModel.getBrandIdByName(null)
-                } else {
-                    // Allow default back button behavior
-                    isEnabled = false
-                    requireActivity().onBackPressed()
+                    binding.txtBrand.visibility = View.GONE
+                    binding.btnEditEcNew.visibility = View.VISIBLE
+                    binding.rvCat.visibility = View.GONE
+
+                    return
                 }
             }
         })
+
+
+
         /////////////////////////////////////Initalizing Adapter/////////////////////////////////
         //BRAND ADAPTER
         val adapter = BrandStockAdapter(
             BrandStockListener {
                 viewModel.getBrandIdByName(it)
-                if (binding.linear1!=null){
-                    layoutOneViews.forEach { it.visibility = View.GONE }
-                    binding.btnEditEcNew.visibility=View.GONE
-                    binding.txtBrand.visibility=View.VISIBLE
-                    binding.rvProductStock.visibility=View.VISIBLE
-                }
+
 
             },BrandStockLongListener {
                 showDialogBox(viewModel,it,MODELTYPE.brand)
@@ -229,9 +230,16 @@ class BrandStockFragment : Fragment() {
         })
 
         viewModel.selectedBrand.observe(viewLifecycleOwner){
+            if (binding.linear1!=null){
+                layoutOneViews.forEach { it.visibility = View.GONE }
+                binding.btnEditEcNew.visibility=View.GONE
+                binding.txtBrand.visibility=View.VISIBLE
+                binding.rvProductStock.visibility=View.VISIBLE
+            }
             viewModel.updateProductRv(it?.id)
             adapter.selectedItemId = it?.id  // Pass the selected ID to the adapter
             adapter.notifyDataSetChanged()
+
         }
         //Obsserve add fab
         viewModel.addItem.observe(viewLifecycleOwner,Observer{
