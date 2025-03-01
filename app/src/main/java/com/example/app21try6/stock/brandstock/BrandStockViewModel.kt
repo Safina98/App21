@@ -162,8 +162,8 @@ class BrandStockViewModel(
                 try {
                     insertCath(category)
                 } catch (e: SQLiteException) {
-                    Toast.makeText(getApplication(), e.toString(), Toast.LENGTH_LONG).show()
-                    Log.i("tag_1", "message $e")
+                    Toast.makeText(getApplication(), "InsertItemCath", Toast.LENGTH_LONG).show()
+                    Log.e("CSV Import", "InsertItemCath $e")
                 }
             }
         }
@@ -178,8 +178,8 @@ class BrandStockViewModel(
             bw.newLine()
 
             for (j in all_item.value!!){
-                //bw.newLine()   0                  1        2           3           4                   5           6               7           8               9          10              11          12          13
-                var content = "${j.category},${j.brand},${j.product},${j.price},${j.bestSelling},${j.subProduct},${j.roll_u},${j.roll_b_t},${j.roll_s_t},${j.roll_k_t},${j.roll_b_g},${j.roll_s_g},${j.roll_k_g},${j.capital}"
+                //bw.newLine()   0                  1        2           3           4                   5           6               7           8               9          10              11          12          13              14              15                      16
+                var content = "${j.category},${j.brand},${j.product},${j.price},${j.bestSelling},${j.subProduct},${j.roll_u},${j.roll_b_t},${j.roll_s_t},${j.roll_k_t},${j.roll_b_g},${j.roll_s_g},${j.roll_k_g},${j.capital},${j.defaultNet},${j.alternate_capital},${j.alternate_price}"
                 bw.write(content)
                 bw.newLine()
             }
@@ -204,8 +204,8 @@ class BrandStockViewModel(
                 }
                 _insertionCompleted.value = true
             } catch (e: Exception) {
-                Log.i("INSERTCSVPROB","exception: $e")
-                Toast.makeText(getApplication(), e.toString(), Toast.LENGTH_LONG).show()
+                Log.e("CSV Import", "InsertCsvBatch $e")
+                Toast.makeText(getApplication(), "InsertCsvBatch $e", Toast.LENGTH_LONG).show()
             }finally {
                 _isLoading.value = false // Hide loading indicator
             }
@@ -218,12 +218,15 @@ class BrandStockViewModel(
         }
     }
     private suspend fun insertCSVN(token: List<String>) {
-       // Log.i("INSERTCSVPROB","brand token: $token")
+        Log.i("Import Csv","brand token: $token")
         val product= Product()
         product.product_name = token[2].uppercase().trim()
         product.product_price = token[3].toInt()
         product.bestSelling = token[4]=="TRUE"
         product.product_capital = token[13].toInt()
+        product.default_net = token.getOrNull(14)?.toDoubleOrNull() ?: 0.0
+        product.alternate_capital = token.getOrNull(15)?.toDoubleOrNull() ?: 0.0
+        product.alternate_price = token.getOrNull(16)?.toDoubleOrNull() ?: 0.0
         val subProduct = SubProduct()
         subProduct.sub_name = token[5].uppercase().trim()
         subProduct.roll_u = token[6].toInt()
@@ -237,7 +240,7 @@ class BrandStockViewModel(
         var categoryName = token[0].uppercase().trim()
         database1.insertIfNotExist(categoryName)
         database2.insertIfNotExist(brand_name,categoryName)
-        database3.insertIfNotExist(product.product_name,product.product_price,product.product_capital,product.bestSelling,brand_name,categoryName)
+        database3.insertIfNotExist(product.product_name,product.product_price,product.product_capital,product.default_net,product.alternate_capital,product.alternate_price,product.bestSelling,brand_name,categoryName)
         database4.insertIfNotExist(subProduct.sub_name,subProduct.warna,subProduct.ket,subProduct.roll_u,subProduct.roll_bt,subProduct.roll_st,subProduct.roll_kt,subProduct.roll_bg,subProduct.roll_sg,subProduct.roll_kg,product.product_name,brand_name,categoryName)
 
     }

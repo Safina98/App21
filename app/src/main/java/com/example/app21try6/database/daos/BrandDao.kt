@@ -33,10 +33,25 @@ interface BrandDao {
     fun getBrandByKatId(kat_id:Int):List<Brand>
 
 
-    @Query("SELECT sub_name as subProduct, warna as warna, roll_u as  roll_u, roll_b_t as roll_b_t, roll_s_t as roll_s_t,roll_k_t as roll_k_t,roll_b_g as roll_b_g,roll_s_g as roll_s_g,roll_k_g as roll_k_g,product_name as product, product_price as price, product_capital as capital,best_selling as bestSelling,brand_name as brand, category_name as category FROM sub_table INNER JOIN PRODUCT_TABLE ON product_id = sub_table.product_code INNER JOIN brand_table ON brand_id = sub_table.brand_code INNER JOIN category_table ON category_id = sub_table.cath_code")
+    @Query("SELECT sub_name as subProduct, " +
+            "warna as warna, " +
+            "roll_u as  roll_u," +
+            " roll_b_t as roll_b_t, " +
+            "roll_s_t as roll_s_t," +
+            "roll_k_t as roll_k_t," +
+            "roll_b_g as roll_b_g," +
+            "roll_s_g as roll_s_g," +
+            "roll_k_g as roll_k_g," +
+            "product_name as product, " +
+            "product_price as price, product_capital as capital," +
+            "best_selling as bestSelling," +
+            "default_net as defaultNet,alternate_capital as alternate_capital,alternate_price as alternate_price,  "+
+
+
+            "brand_name as brand, category_name as category FROM sub_table INNER JOIN PRODUCT_TABLE ON product_id = sub_table.product_code INNER JOIN brand_table ON brand_id = sub_table.brand_code INNER JOIN category_table ON category_id = sub_table.cath_code")
     fun getExportedData():LiveData<List<ExportModel>>
 
-    @Query("SELECT category_name as category, brand_name as brand,product_name as product, product_price as price,product_capital as capital,best_selling as bestSelling,sub_name as subProduct, warna as warna, roll_u as  roll_u, roll_b_t as roll_b_t, roll_s_t as roll_s_t,roll_k_t as roll_k_t,roll_b_g as roll_b_g,roll_s_g as roll_s_g,roll_k_g as roll_k_g  FROM category_table INNER JOIN brand_table ON brand_table.cath_code = category_table.category_id INNER JOIN PRODUCT_TABLE ON product_table.brand_code= brand_table.brand_id INNER JOIN sub_table ON sub_table.product_code = product_table.product_id")
+    @Query("SELECT category_name as category, brand_name as brand,product_name as product, product_price as price,product_capital as capital,best_selling as bestSelling,default_net as defaultNet,alternate_capital as alternate_capital,alternate_price as alternate_price,sub_name as subProduct, warna as warna, roll_u as  roll_u, roll_b_t as roll_b_t, roll_s_t as roll_s_t,roll_k_t as roll_k_t,roll_b_g as roll_b_g,roll_s_g as roll_s_g,roll_k_g as roll_k_g  FROM category_table INNER JOIN brand_table ON brand_table.cath_code = category_table.category_id INNER JOIN PRODUCT_TABLE ON product_table.brand_code= brand_table.brand_id INNER JOIN sub_table ON sub_table.product_code = product_table.product_id")
     fun getExportedDataNew():LiveData<List<ExportModel>>
 
     @Query("DELETE FROM brand_table WHERE brand_id = :id_")

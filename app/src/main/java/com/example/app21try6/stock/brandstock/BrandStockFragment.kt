@@ -35,6 +35,7 @@ import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.databinding.FragmentBrandStockBinding
 import com.example.app21try6.stock.productstock.ProductStockFragmentDirections
+import com.example.app21try6.utils.CsvHandler
 import com.example.app21try6.utils.DialogUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,33 +50,16 @@ import java.util.zip.ZipOutputStream
 class BrandStockFragment : Fragment() {
     private lateinit var binding: FragmentBrandStockBinding
     private val PERMISSION_REQUEST_CODE = 200
+    private lateinit var csvHandler: CsvHandler
     val requestcode = 1
     private val viewModel:BrandStockViewModel by viewModels()
     private var list= mutableListOf<String>()
-    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        Log.i("Insert Csv", "result Launcher")
-        if (result.resultCode == Activity.RESULT_OK) {
-            val data: Intent? = result.data
-            var isFirstLine = true
-            Log.i("InsertCsv", "result Launcher if " + data?.data?.path.toString())
-            val tokensList = mutableListOf<List<String>>()
-            try {
-                context?.contentResolver?.openInputStream(data!!.data!!)?.bufferedReader()
-                    ?.forEachLine { line ->
-                        if (!isFirstLine) {
-                            val tokens: List<String> = line.split(",")
-                            tokensList.add(tokens)
-                        }
-                        isFirstLine = false
-                    }
-                viewModel.insertCSVBatch(tokensList)
-            } catch (e: java.lang.Exception) {
-                Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show()
-                Log.e("Insert Csv", "Error reading CSV: $e")
+    private val resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            csvHandler.handleCsvResult(result) { tokensList ->
+                viewModel.insertCSVBatch(tokensList)  // Example: Using viewModel1
             }
-
         }
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -92,6 +76,7 @@ class BrandStockFragment : Fragment() {
             binding.spinnerM,
             binding.rvBrandStock,
         )
+        csvHandler = CsvHandler(requireContext())
         val viewModel = ViewModelProvider(this,viewModelFactory).get(BrandStockViewModel::class.java)
         binding.brandStockViewModel = viewModel
 
@@ -368,11 +353,11 @@ class BrandStockFragment : Fragment() {
         val id = item.itemId
         when (id) {
             R.id.menu_export_csv -> {
-                exportStockCSV()
+                exportCSV()
                 return true
             }
             R.id.menu_import->{
-                importCSVStock()
+                importCSV()
                 return  true
             }
             R.id.menu_export_database->{
@@ -387,32 +372,13 @@ class BrandStockFragment : Fragment() {
         return super.onOptionsItemSelected(item) // important line
     }
 
-    private fun importCSVStock() {
-        var fileIntent = Intent(Intent.ACTION_GET_CONTENT)
-        fileIntent.type = "text/*"
-        try { resultLauncher.launch(fileIntent) }
-        catch (e: FileNotFoundException) {
-            Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show() }
+    private fun importCSV() {
+        csvHandler.importCSVStock(resultLauncher)
     }
 
-    private fun exportStockCSV() {
-        val fileName = "Stok 21"
-        //var file:File
-        val file = File(context?.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName + ".csv")
-        Log.i("FilePath","else path: " +file.path.toString())
-        viewModel.writeCSV(file)
-
-        val photoURI: Uri = FileProvider.getUriForFile(this.requireContext(), requireContext().applicationContext.packageName + ".provider",file)
-        val shareIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_STREAM, photoURI)
-            type = "text/*"
-        }
-        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        try {
-            startActivity(Intent.createChooser(shareIntent, "Stok"))
-        }catch (e : java.lang.Exception){
-            Log.i("error_msg",e.toString())
+    private fun exportCSV() {
+        csvHandler.exportStockCSV("Stock_Export") { file ->
+            viewModel.writeCSV(file)  // Example: Using viewModel2
         }
     }
 
@@ -484,6 +450,7 @@ class BrandStockFragment : Fragment() {
             loaded()
             Toast.makeText(context, "Error selecting file", Toast.LENGTH_SHORT).show()
         }
+
     }
 
     private val resultLauncherNew = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
