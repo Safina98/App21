@@ -77,13 +77,11 @@ class SubProductStockFragment : Fragment() {
             subProduct ->
             updateDialog(subProduct,  3, viewModel)
         }, SubListener {
-            //var path_ = arrayOf(it.id,path)
-            // viewModel.onBrandCLick(arrayOf(it.sub_id.toString(),it.product_code.toString(),it.brand_code.toString(),it.cath_code.toString()))
             if (binding.rvSubDetail.visibility==View.GONE){
                 setDetailRvVisibility(true)
             }
             viewModel.toggleSelectedSubProductId(it)
-        })
+        },requireContext())
         val detailWarnaAdapter=DetailWarnaAdapter(DetailWarnaLongListener {
 
         })

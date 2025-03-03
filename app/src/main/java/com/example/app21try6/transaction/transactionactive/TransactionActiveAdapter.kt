@@ -1,13 +1,16 @@
 package com.example.app21try6.transaction.transactionactive
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.app21try6.R
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.databinding.ItemListTransactionActiveBinding
 import com.example.app21try6.formatRupiah
@@ -39,6 +42,7 @@ class TransactionActiveAdapter(
             binding.txtTotalTrans.text = formatRupiah(item.total_trans.toDouble()).toString()
             binding.clickListener = clickListener
            binding.checkboxListener = checkBoxListener
+
             binding.executePendingBindings()
         }
         companion object{

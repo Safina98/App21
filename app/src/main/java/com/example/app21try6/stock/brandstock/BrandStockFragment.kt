@@ -89,23 +89,43 @@ class BrandStockFragment : Fragment() {
             requestPermission()
         }
         ////////////////////////////////custom on back pressed////////////////////////////////
-
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val layoutOneViews = listOf(
                     binding.spinnerM,
                     binding.rvBrandStock,
                 )
-                viewModel.getBrandIdByName(null)
-                if (layoutOneViews[0].visibility == View.GONE) {
+                Log.i("CustomBackProbs","if condition met")
+                if (layoutOneViews[0].visibility == View.GONE && binding.rvProductStock.visibility==View.VISIBLE && binding.rvCat.visibility==View.GONE) {
+                    Log.i("CustomBackProbs","if condition met")
+                    viewModel.getBrandIdByName(null)
                     layoutOneViews.forEach { it.visibility = View.VISIBLE }
                     binding.rvProductStock.visibility = View.GONE
-                    binding.txtBrand.visibility = View.GONE
+                    binding.txtBrand?.visibility = View.GONE
                     binding.btnEditEcNew.visibility = View.VISIBLE
-                    binding.rvCat.visibility = View.GONE
-
+                    binding.cardView.visibility = View.GONE
                     return
+                }else if(layoutOneViews[0].visibility == View.VISIBLE && binding.rvProductStock.visibility==View.VISIBLE&&viewModel.selectedBrand.value!=null){
+                    Log.i("CustomBackProbs"," first if else condition met")
+                    viewModel.getBrandIdByName(null)
+                   // binding.rvProductStock.visibility = View.INVISIBLE
+                }else if(layoutOneViews[0].visibility == View.GONE && binding.rvCat.visibility==View.VISIBLE){
+                   // binding.btnEditEcNew.visibility = View.VISIBLE
+                    Log.i("CustomBackProbs"," second if else condition met")
+                    binding.cardView.visibility = View.GONE
+                    if(binding.txtBrand==null){
+                        binding.rvProductStock.visibility=View.VISIBLE
+                    }
+                    layoutOneViews.forEach { it.visibility = View.VISIBLE }
+
                 }
+
+                else {
+                    Log.i("CustomBackProbs","else condition met")
+                    isEnabled = false // Disable callback temporarily
+                    requireActivity().onBackPressed() // Trigger default back behavior
+                }
+
             }
         })
 
@@ -116,11 +136,9 @@ class BrandStockFragment : Fragment() {
         val adapter = BrandStockAdapter(
             BrandStockListener {
                 viewModel.getBrandIdByName(it)
-
-
             },BrandStockLongListener {
                 showDialogBox(viewModel,it,MODELTYPE.brand)
-            },null)
+            },null,requireContext())
 
         //Kategori adapter
         val adapterCat = CategoryAdapter(
@@ -146,7 +164,7 @@ class BrandStockFragment : Fragment() {
             }, BrandStockLongListener {
                 viewModel.getLongClickedProduct(it.id)
                 showDialogBox(viewModel,it,MODELTYPE.Product)
-            },null)
+            },null,requireContext())
 
 
         //////////////////////////////bindings//////////////////////////////////////////////////
@@ -169,16 +187,18 @@ class BrandStockFragment : Fragment() {
             if (layoutOneViews[0].visibility == View.VISIBLE) {
                 layoutOneViews.forEach { it.visibility = View.GONE }
                 binding.cardView.visibility = View.VISIBLE
+
+
             } else {
                 layoutOneViews.forEach { it.visibility = View.VISIBLE }
                 binding.cardView.visibility = View.GONE
             }
         }
-        binding.txtBrand.setOnClickListener {
+        binding.txtBrand?.setOnClickListener {
             if (layoutOneViews[0].visibility == View.GONE) {
                 layoutOneViews.forEach { it.visibility = View.VISIBLE }
                 binding.rvProductStock.visibility = View.GONE
-                binding.txtBrand.visibility=View.GONE
+                binding.txtBrand?.visibility=View.GONE
                 binding.btnEditEcNew.visibility=View.VISIBLE
             }
         }
@@ -219,13 +239,12 @@ class BrandStockFragment : Fragment() {
             if (binding.linear1!=null){
                 layoutOneViews.forEach { it.visibility = View.GONE }
                 binding.btnEditEcNew.visibility=View.GONE
-                binding.txtBrand.visibility=View.VISIBLE
+                binding.txtBrand?.visibility=View.VISIBLE
                 binding.rvProductStock.visibility=View.VISIBLE
             }
             viewModel.updateProductRv(it?.id)
             adapter.selectedItemId = it?.id  // Pass the selected ID to the adapter
             adapter.notifyDataSetChanged()
-
         }
         //Obsserve add fab
         viewModel.addItem.observe(viewLifecycleOwner,Observer{
@@ -271,7 +290,6 @@ class BrandStockFragment : Fragment() {
             if(discounts!=null){
                 list=discounts.toMutableList()
             }
-
         })
         viewModel.addProduct.observe(viewLifecycleOwner, Observer {
             if (it==true){
@@ -426,7 +444,7 @@ class BrandStockFragment : Fragment() {
         if (layoutOneViews[0].visibility == View.GONE) {
             layoutOneViews.forEach { it.visibility = View.VISIBLE }
             binding.rvProductStock.visibility = View.GONE
-            binding.txtBrand.visibility=View.GONE
+            binding.txtBrand?.visibility=View.GONE
             binding.btnEditEcNew.visibility=View.VISIBLE
             binding.rvCat.visibility=View.GONE
 

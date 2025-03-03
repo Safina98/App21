@@ -68,7 +68,11 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
         "${formattedTotal}"
     }
 
-            val isTextViewVisible = MutableLiveData<Boolean>(true)
+    val isTextViewVisible = MutableLiveData<Boolean>(true)
+
+    private val _selectedTransSum= MutableLiveData<Int?>()
+    val selectedTransSum:LiveData<Int?>get() = _selectedTransSum
+
 
     fun toggleTextViewVisibility() {
         isTextViewVisible.value = !(isTextViewVisible.value ?: true)
@@ -101,6 +105,13 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
     fun setUiMode(mode:Int){
         _uiMode.value = mode
     }
+
+    fun getSelectedTransSumId(id:Int?){
+        if (_selectedTransSum.value==id){
+            _selectedTransSum.value=null
+        }else {_selectedTransSum.value=id}
+    }
+
     private fun formatDateRange(startDate: Date?, endDate: Date?): String {
         return if (startDate != null && endDate != null) {
             val dateFormat = SimpleDateFormat("EEEE, d MMMM yyyy", Locale("in", "ID"))

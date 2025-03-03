@@ -18,7 +18,8 @@ import com.example.app21try6.formatRupiah
 import java.util.Locale
 
 class AllTransactionAdapter(val clickListener:AllTransClickListener,
-                            val checkBoxListener: CheckBoxListenerTransAll
+                            val checkBoxListener: CheckBoxListenerTransAll,
+                            var selectedItemId:Int?
 
 )
     :ListAdapter<TransactionSummary,AllTransactionAdapter.MyViewHolder>(AllTransDiffCallBack()) {
@@ -33,7 +34,8 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
             clickListener: AllTransClickListener,
             checkBoxListener: CheckBoxListenerTransAll,
             bool:Boolean,
-            isSelected: Boolean
+            isSelected: Boolean,
+            isIdSelected:Boolean,
         ){
             binding.checkboxTransActive.visibility = when(bool){
                 true ->View.VISIBLE
@@ -42,14 +44,13 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
             binding.item = item
             binding.txtNamaPe.text = item.cust_name
             val cardView = binding.cardViewAllTrans
-            if (item.is_keeped) { // Example condition
-                cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, R.color.transActiveBgColor))
+
+            val color = when {
+                isIdSelected -> R.color.dialogbtncolor
+                item.is_keeped -> R.color.transActiveBgColor
+                else -> R.color.logrvbg
             }
-            cardView.setCardBackgroundColor(
-                if (isSelected) ContextCompat.getColor(itemView.context, R.color.pastel_green2)
-                else if(item.is_keeped)ContextCompat.getColor(itemView.context, R.color.transActiveBgColor)
-                else ContextCompat.getColor(itemView.context, R.color.logrvbg)
-            )
+            cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, color))
             //binding.txtTglTrans.text = item.trans_date
             if (item.sum_id<0){
                 val i = String.format(Locale.US,"%.2f", item.total_trans)
@@ -96,12 +97,15 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val item = getItem(position)
+        val isIdSelected = item.sum_id == selectedItemId
         holder.bind(
             getItem(position),
             clickListener,
             checkBoxListener,
             is_active.value!!,
-            position == selectedPosition // Pass the selected state
+            position == selectedPosition,
+            isIdSelected
         )
 
 

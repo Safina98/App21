@@ -52,7 +52,7 @@ class GraphicFragment : Fragment() {
 
         }, CheckBoxListenerTransAll{view, stok ->
 
-        })
+        },null)
 
         binding.spinnerTahun.adapter = adapter_year
         val year = Calendar.getInstance().get(Calendar.YEAR).toString()

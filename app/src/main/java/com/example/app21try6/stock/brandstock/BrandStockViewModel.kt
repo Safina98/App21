@@ -108,6 +108,7 @@ class BrandStockViewModel(
         //_selectedSubProduct.value = if (_selectedSubProduct.value?.sub_id ==subProduct?.sub_id) null else subProduct
         //if id not the same change rc background
     }
+    //toggle selectedBrand value, null/brandModel
     fun getBrandIdByName(branModel:BrandProductModel?){
         viewModelScope.launch {
             if (selectedBrand.value?.id==branModel?.id){
@@ -288,8 +289,8 @@ class BrandStockViewModel(
 
     fun updateProductRv(brandId:Int?){
         viewModelScope.launch {
-                val list = withContext(Dispatchers.IO){ database3.getAll(brandId)}
-                _all_product_from_db.value=list
+            val list =if (brandId!=null) withContext(Dispatchers.IO){ database3.getAll(brandId)} else listOf()
+            _all_product_from_db.value=list
         }
     }
     fun getLongClickedProduct(id:Int){

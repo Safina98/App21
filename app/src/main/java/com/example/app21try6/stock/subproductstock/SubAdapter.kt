@@ -1,13 +1,16 @@
 package com.example.app21try6.stock.subproductstock
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.app21try6.R
 import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.databinding.ItemListSubproductBinding
 
@@ -19,7 +22,8 @@ class SubAdapter (val code:Int,
     val subsListener : SubsStokListener,
     val warnaListener: WarnaStokListener,
     val ketListener:KetStokListener,
-    val subProductListener:SubListener
+    val subProductListener:SubListener,
+    val context: Context
 ) :
     ListAdapter<SubProduct,
             SubAdapter.MyViewHolder>(SubDiffCallback()){
@@ -33,8 +37,8 @@ class SubAdapter (val code:Int,
                  ketListener: KetStokListener,
                  subProductListener:SubListener,
                  checkBoxListenerSub: CheckBoxListenerSub,
-
-                 item: SubProduct
+                 item: SubProduct,
+                 context: Context
         ){
             binding.subProduct = item
             binding.subProductTxt.text = item.sub_name
@@ -51,7 +55,10 @@ class SubAdapter (val code:Int,
                 binding.warnaListener = warnaListener
                 binding.ketListener = ketListener
                 binding.subProductListener = subProductListener
-                binding.cvSub.setBackgroundColor(if (isSelected) Color.LTGRAY else Color.WHITE)
+               // binding.cvSub.setBackgroundColor(if (isSelected) Color.LTGRAY else Color.WHITE)
+                binding.cvSub.setBackgroundColor(
+                    if (isSelected) ContextCompat.getColor(context, R.color.dialogbtncolor) else ContextCompat.getColor(context, R.color.logrvbg)
+                )
             }else
             {
                 binding.textStokGudang.visibility = View.GONE
@@ -103,7 +110,8 @@ class SubAdapter (val code:Int,
             ketListener,
             subProductListener,
             checkBoxListenerSub,
-            item
+            item,
+            context
         )
 
         // Handle item click

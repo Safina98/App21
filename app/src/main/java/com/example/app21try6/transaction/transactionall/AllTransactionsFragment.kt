@@ -52,12 +52,16 @@ class AllTransactionsFragment : Fragment() {
                     childFragmentManager.beginTransaction()
                         .replace(binding.transactionDetailFragmentContainer!!.id, transactionDetailFragment)
                         .commit()
+                    //for toggle color
+                    viewModel.getSelectedTransSumId(transaction.sum_id)
+
                 } else {
                     viewModel.onNavigatetoTransDetail(transaction.sum_id)
                 }
 
             },
-            CheckBoxListenerTransAll { view, stok -> }
+            CheckBoxListenerTransAll { view, stok -> },
+            null
         )
 
         val adapterSpinnerTransAll = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line,getResources().getStringArray(R.array.spinner_all_trans) )
@@ -82,6 +86,15 @@ class AllTransactionsFragment : Fragment() {
             it?.let {
                // viewModel.updateRv4()
             }
+        }
+        viewModel.selectedTransSum.observe(viewLifecycleOwner){
+            if (it==null) {
+                binding.transactionDetailFragmentContainer?.visibility = View.INVISIBLE
+            }else{
+                binding.transactionDetailFragmentContainer?.visibility = View.VISIBLE
+            }
+            adapter.selectedItemId = it  // Pass the selected ID to the adapter
+            adapter.notifyDataSetChanged()
         }
         binding.searchAllTrans.setQueryHint("Search here...");
         binding.searchAllTrans.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
