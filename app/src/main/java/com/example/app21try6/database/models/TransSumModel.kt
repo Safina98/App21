@@ -9,6 +9,8 @@ data class TransSumModel(var sum_id:Int = 0,
 
                          var total_trans:Double=0.0,
 
+                         var total_after_discount:Double=0.0,
+
                          var paid:Int=0,
 
                          var trans_date: Date? =null,

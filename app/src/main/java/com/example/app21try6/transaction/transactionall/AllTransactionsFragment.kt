@@ -87,6 +87,7 @@ class AllTransactionsFragment : Fragment() {
                // viewModel.updateRv4()
             }
         }
+        viewModel.getStrandedData()
         viewModel.selectedTransSum.observe(viewLifecycleOwner){
             if (it==null) {
                 binding.transactionDetailFragmentContainer?.visibility = View.INVISIBLE

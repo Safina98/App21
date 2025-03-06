@@ -63,7 +63,7 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
         "${items.size} transaksi"
     }
     var totalTrans:LiveData<String> = allTransactionSummary.map{items->
-        val totalSum = items.sumOf { it.total_trans }
+        val totalSum = items.sumOf { it.total_after_discount }
         val formattedTotal = formatRupiah(totalSum)
         "${formattedTotal}"
     }
@@ -90,11 +90,29 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
                 "Tahun Ini"->getCurrentYearDateRange()
                 else->Pair(_selectedStartDate.value,selectedEndDate.value)
             }
-
             _selectedStartDate.value = start
             _selectedEndDate.value = end
             updateRv5()
             updateDateRangeString(start,end)
+        }
+    }
+    fun getStrandedData(){
+        viewModelScope.launch {
+           // val list= getStrandedDataFromDb(871000.0,"Pak Ibet")
+            //list.forEach { Log.i("StrandedData","$it") }
+/*
+            val dataBefore= withContext(Dispatchers.IO){ dataSource1.getStrandedData(3688) }
+            val data= withContext(Dispatchers.IO){ dataSource1.getStrandedData(3689) }
+            val dataAfter= withContext(Dispatchers.IO){ dataSource1.getStrandedData(3690) }
+            Log.i("StrandedData","$dataBefore")
+            Log.i("StrandedData","$data")
+            Log.i("StrandedData","$dataAfter")
+ */
+        }
+    }
+    private suspend fun getStrandedDataFromDb(totalSum:Double,custName:String):List<TransactionSummary>{
+        return withContext(Dispatchers.IO){
+            dataSource1.getStrandedData(totalSum,custName)
         }
     }
 

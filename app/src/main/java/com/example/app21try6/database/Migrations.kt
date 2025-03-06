@@ -4,6 +4,12 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 object Migrations {
+    val MIGRATION_40_41 = object : Migration(40, 41) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            // Add the new column with a default value of 0.0
+            database.execSQL("ALTER TABLE trans_sum_table ADD COLUMN total_after_discount REAL NOT NULL DEFAULT 0.0")
+        }
+    }
     val MIGRATION_39_TO_40 = object : Migration(39, 40) { // Replace X and Y with the appropriate schema version numbers
         override fun migrate(database: SupportSQLiteDatabase) {
             // Step 1: Add the new column `alternate_capital` to the product_table

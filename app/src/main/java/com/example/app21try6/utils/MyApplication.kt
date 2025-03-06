@@ -5,6 +5,7 @@ import android.preference.PreferenceManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.app21try6.MainActivity
@@ -21,6 +22,7 @@ class MyApplication: Application()  {
         val observer = AppLifecycleObserver(mainActivity)
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(observer)
+        //runUpdateTotalAfterDiscountWorker()
         //updateSummaryProductId()
         // removeDuplicatesTransSum()
        // if (isFirstRun) {
@@ -28,6 +30,7 @@ class MyApplication: Application()  {
             //scheduleOneTimeUpdateMerkWarna()
            // markFirstRunCompleted() // Set the flag after scheduling
         //}
+        //runUpdateTotalAfterDiscountWorker()
     }
     private fun markFirstRunCompleted() {
         val wmbPreference = PreferenceManager.getDefaultSharedPreferences(this)
@@ -48,6 +51,9 @@ class MyApplication: Application()  {
             workRequest
         )
     }
-
+    private fun runUpdateTotalAfterDiscountWorker() {
+        val updateWorkRequest = OneTimeWorkRequest.from(UpdateTotalAfterDiscountWorker::class.java)
+        WorkManager.getInstance(this).enqueue(updateWorkRequest)
+    }
 
 }

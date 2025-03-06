@@ -2,6 +2,7 @@ package com.example.app21try6.transaction.transactiondetail
 
 import android.Manifest
 import android.app.AlertDialog
+import android.app.TimePickerDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothClass
 import android.bluetooth.BluetoothDevice
@@ -101,8 +102,7 @@ class TransactionDetailFragment : Fragment() {
             })
         //Transaction Detail Adapter
         val adapter = TransactionDetailAdapter(
-            TransDetailClickListener {
-            },
+            TransDetailClickListener {},
             TransDetailLongListener {it->
                 it.is_prepared = it.is_prepared.not()
                 viewModel.updateTransDetail(it)
@@ -120,9 +120,6 @@ class TransactionDetailFragment : Fragment() {
         binding.btnPrintNew.setOnClickListener {
             fibrateOnClick()
             printReceipt()
-            //viewModel.generateReceiptTextNew()
-            ////viewModel.calculateDisc()
-           // viewModel.deleteAllTrans()
         }
 
         viewModel.transDetail.observe(viewLifecycleOwner, Observer {
@@ -314,7 +311,7 @@ class TransactionDetailFragment : Fragment() {
     }
 
 
-       private fun exportTextToWhatsApp(text: String) {
+    private fun exportTextToWhatsApp(text: String) {
         val sendIntent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, text)
@@ -336,28 +333,45 @@ class TransactionDetailFragment : Fragment() {
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.pop_up_date_picker, null)
         val datePickerStart = dialogView.findViewById<DatePicker>(R.id.datePickerStart)
         val datePickerEnd = dialogView.findViewById<DatePicker>(R.id.datePickerEnd)
-        datePickerEnd.visibility=View.GONE
+        datePickerEnd.visibility = View.GONE
+
         val dialog = AlertDialog.Builder(requireContext())
-            .setTitle("Select Date Range")
+            .setTitle("Select Date")
             .setView(dialogView)
             .setPositiveButton("OK") { _, _ ->
-                val startDate = Calendar.getInstance().apply {
+                // Get the selected date
+                val calendar = Calendar.getInstance().apply {
                     set(datePickerStart.year, datePickerStart.month, datePickerStart.dayOfMonth)
-                }.time
-                if (paymentModel!=null) {
-                    paymentModel.payment_date = startDate
-                    viewModel.bayar(paymentModel)
                 }
-                else viewModel.updateLongClickedDate(startDate)
 
+                // Show Time Picker Dialog
+                TimePickerDialog(requireContext(), { _, hour, minute ->
+                    // Set selected time
+                    calendar.set(Calendar.HOUR_OF_DAY, hour)
+                    calendar.set(Calendar.MINUTE, minute)
+
+                    val selectedDateTime = calendar.time // Convert to Date object
+
+                    // Update PaymentModel or ViewModel
+                    if (paymentModel != null) {
+                        paymentModel.payment_date = selectedDateTime
+                        viewModel.bayar(paymentModel)
+                    } else {
+                        viewModel.updateLongClickedDate(selectedDateTime)
+                    }
+                }, 12, 0, true).show() // Default time is 12:00, 24-hour format enabled
             }
             .setNegativeButton("Cancel", null)
             .create()
 
         dialog.show()
+
+        // Customize button colors
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+
     }
+
     private fun deleteDialog(p_id:Int,typem:String) {
         val builder = AlertDialog.Builder(context, R.style.AlertDialogTheme)
         builder.setMessage("Are you sure you want to Delete?")

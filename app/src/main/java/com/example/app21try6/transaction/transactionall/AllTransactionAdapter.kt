@@ -57,7 +57,7 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
                 binding.txtTglTrans.text=i.toString()
                 binding.txtTotalTrans.visibility=View.GONE
             }else{
-                binding.txtTotalTrans.text = formatRupiah(item.total_trans.toDouble()).toString()
+                binding.txtTotalTrans.text = formatRupiah(item.total_after_discount.toDouble()).toString()
                 val formattedDate = DETAILED_DATE_FORMATTER.format(item.trans_date)
                 binding.txtTglTrans.text = formattedDate
             }

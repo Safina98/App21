@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
-import com.example.app21try6.database.*
 import com.example.app21try6.database.daos.CustomerDao
 import com.example.app21try6.database.daos.DiscountDao
 import com.example.app21try6.database.daos.DiscountTransDao
@@ -86,6 +85,7 @@ class TransactionEditViewModel(
         }
     }
 
+    //Calculate discount
     fun calculateDisc() {
         viewModelScope.launch {
             val startTime = System.currentTimeMillis()
@@ -132,15 +132,15 @@ class TransactionEditViewModel(
                                 discountAppliedValue = discountAppliedValue
                             )
                         } else {
-                            Log.i("DiscProbs", "min qty not met")
+                            //Log.i("DiscProbs", "min qty not met")
                             null // No discount if minimumQty condition is not met
                         }
                     } else {
-                        Log.i("DiscProbs", "no matching discount for this transaction")
+                       // Log.i("DiscProbs", "no matching discount for this transaction")
                         null // No matching transactions for this discount
                     }
                 } else {
-                    Log.i("DiscProbs", "location doesnot match")
+                   // Log.i("DiscProbs", "location doesnot match")
                     null // Location does not match
                 }
             }
@@ -167,6 +167,14 @@ class TransactionEditViewModel(
                     itemsInFirstNotInSecond.forEach { deleteDiscountTransToDB(it) }
                 }
             }
+            val totalDiscount=discountTransactionList.sumOf { it.discountAppliedValue }
+            val transSumS: TransactionSummary = datasource1.getTrans(id)
+            transSumS.total_after_discount = transSumS.total_trans-totalDiscount
+            Log.i("DiscProbs","total trans: ${transSumS.total_trans}")
+            Log.i("DiscProbs","diskon: ${totalDiscount}")
+            Log.i("DiscProbs","total after discount: ${transSumS.total_after_discount}")
+
+            updateSum(transSumS)
 
 
             val endTime = System.currentTimeMillis()
@@ -281,6 +289,18 @@ class TransactionEditViewModel(
         viewModelScope.launch {
             val transSumS: TransactionSummary = datasource1.getTrans(id)
             transSumS.total_trans = totalSum.value ?: 0.0
+            updateSum(transSumS)
+            setMutableTransSum()
+        }
+    }
+    fun updateTotalAfterDiscountSum(totalDiscount:Double){
+        viewModelScope.launch {
+            val transSumS: TransactionSummary = datasource1.getTrans(id)
+            transSumS.total_after_discount = transSumS.total_trans-totalDiscount
+            Log.i("DiscProbs","total trans: ${transSumS.total_trans}")
+            Log.i("DiscProbs","diskon: ${totalDiscount}")
+            Log.i("DiscProbs","total after discount: ${transSumS.total_after_discount}")
+
             updateSum(transSumS)
             setMutableTransSum()
         }

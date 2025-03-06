@@ -26,6 +26,9 @@ data class TransactionSummary (
         var cust_name:String = "",
         @ColumnInfo(name = "total_trans")
         var total_trans:Double=0.0,
+        //total_after_discount
+        @ColumnInfo(name = "total_after_discount")//new added column
+        var total_after_discount:Double=0.0,
         @ColumnInfo(name = "paid")
         var paid:Int=0,
         @ColumnInfo(name = "trans_date")

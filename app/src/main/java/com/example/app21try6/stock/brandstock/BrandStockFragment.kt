@@ -235,6 +235,7 @@ class BrandStockFragment : Fragment() {
                 adapterProduct.notifyDataSetChanged()
         })
 
+        //to toggle selected recyclerview
         viewModel.selectedBrand.observe(viewLifecycleOwner){
             if (binding.linear1!=null){
                 layoutOneViews.forEach { it.visibility = View.GONE }

@@ -8,6 +8,10 @@ import java.util.Date
 
 @Dao
 interface TransSumDao {
+    //worker
+    @Query("UPDATE trans_sum_table SET total_after_discount = :totalAfterDiscount WHERE sum_id = :sumId")
+    fun updateTotalAfterDiscount(sumId: Int, totalAfterDiscount: Double)
+
     @Query("SELECT SUM(total_trans) as total FROM trans_sum_table WHERE trans_date >= :date AND trans_date<:date2")
     fun getTransactionSummariesAfterDate(date: Date,date2:Date): Double
     @Query("SELECT SUM(total_trans) as total FROM trans_sum_table WHERE trans_date >= :date AND trans_date<:date2 AND is_keeped = 0")
@@ -114,10 +118,16 @@ interface TransSumDao {
     @Query("SELECT * FROM trans_sum_table WHERE trans_date >= :startOfDay AND trans_date < :startOfNextDay")
     fun getTransactionsForToday(startOfDay: Date, startOfNextDay: Date): List<TransactionSummary>
 
+    @Query("SELECT * FROM trans_sum_table WHERE total_trans=:totalSum AND cust_name=:custName")
+    fun getStrandedData(totalSum:Double,custName:String):List<TransactionSummary>
+
+    @Query("SELECT * FROM trans_sum_table WHERE sum_id=:id")
+    fun getStrandedData(id:Int):TransactionSummary
+
 
     @Query("""
     SELECT DISTINCT t.sum_id, t.cust_name, t.total_trans, t.trans_date, t.paid, 
-                    t.is_taken, t.is_paid_off, t.is_keeped, t.ref, t.sum_note, t.custId 
+                    t.is_taken, t.is_paid_off, t.is_keeped, t.ref, t.sum_note, t.custId ,t.total_after_discount
     FROM trans_sum_table t 
     JOIN trans_detail_table AS td ON t.sum_id = td.sum_id 
     WHERE 
@@ -131,7 +141,7 @@ interface TransSumDao {
 
     @Query("""
     SELECT DISTINCT t.sum_id, t.cust_name, t.total_trans, t.trans_date, t.paid, 
-                    t.is_taken, t.is_paid_off, t.is_keeped, t.ref, t.sum_note, t.custId 
+                    t.is_taken, t.is_paid_off, t.is_keeped, t.ref, t.sum_note, t.custId ,t.total_after_discount
     FROM trans_sum_table t 
     JOIN trans_detail_table AS td ON t.sum_id = td.sum_id 
     WHERE 
@@ -156,5 +166,5 @@ interface TransSumDao {
         }
     }
     @Query("SELECT * FROM trans_sum_table ORDER BY trans_date")
-    fun getAllTransactionSumList():List<TransSumModel>
+    fun getAllTransactionSumList():List<TransactionSummary>
 }
