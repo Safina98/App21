@@ -31,15 +31,14 @@ class TransactionActiveAdapter(
             checkBoxListener: CheckBoxListenerTransActive,
             bool:Boolean
         ){
-                binding.checkboxTransActive.visibility = when(bool){
-                    true ->View.VISIBLE
-                    else -> View.GONE
-                }
+            binding.checkboxTransActive.visibility = when(bool){
+                true ->View.VISIBLE
+                else -> View.GONE
+            }
 
             binding.item = item
             binding.txtNamaPe.text = item.cust_name
-          //  binding.txtTglTrans.text = item.trans_date
-            binding.txtTotalTrans.text = formatRupiah(item.total_trans.toDouble()).toString()
+            binding.txtTotalTrans.text = formatRupiah(item.total_after_discount.toDouble()).toString()
             binding.clickListener = clickListener
            binding.checkboxListener = checkBoxListener
 

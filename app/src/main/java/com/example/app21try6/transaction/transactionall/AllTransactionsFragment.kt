@@ -13,12 +13,15 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.DatePicker
 import android.widget.ImageView
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.R
 import com.example.app21try6.databinding.FragmentAllTransactionsBinding
 import com.example.app21try6.transaction.transactiondetail.TransactionDetailFragment
@@ -39,6 +42,20 @@ class AllTransactionsFragment : Fragment() {
         val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         val img =  requireActivity().findViewById<ImageView>(R.id.delete_image)
         img.visibility = View.GONE
+        //////////////////////////////////Custom Back Pressed////////////////////////////////////////////
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (binding.transactionDetailFragmentContainer?.visibility==View.VISIBLE&& viewModel.selectedTransSum.value!=null) {
+                    viewModel.getSelectedTransSumId(null)
+                    return
+                }
+                else {
+                    Log.i("CustomBackProbs","else condition met")
+                    isEnabled = false // Disable callback temporarily
+                    requireActivity().onBackPressed() // Trigger default back behavior
+                }
+            }
+        })
 
         val adapter = AllTransactionAdapter(
             AllTransClickListener {transaction->
@@ -71,6 +88,7 @@ class AllTransactionsFragment : Fragment() {
         viewModel.allTransactionSummary.observe(viewLifecycleOwner){
             it?.let {
                 adapter.submitList(it)
+                //adapter.notifyDataSetChanged()
             }
         }
 
@@ -84,10 +102,35 @@ class AllTransactionsFragment : Fragment() {
         }
         viewModel.selectedSpinner.observe(viewLifecycleOwner){
             it?.let {
-               // viewModel.updateRv4()
+
             }
         }
-        viewModel.getStrandedData()
+
+        //limit selected data on recylerview
+        binding.recyclerViewAllTrans.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            private var isLoading = false
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
+                val pastVisibleItems = layoutManager.findFirstVisibleItemPosition()
+
+                if (!isLoading && (visibleItemCount + pastVisibleItems) >= totalItemCount && dy > 0) {
+                    isLoading = true // Set the flag to prevent multiple triggers
+                    viewModel.loadMoreData()
+                }
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    isLoading = false // Reset the flag when scrolling stops
+                }
+            }
+        })
+
         viewModel.selectedTransSum.observe(viewLifecycleOwner){
             if (it==null) {
                 binding.transactionDetailFragmentContainer?.visibility = View.INVISIBLE
@@ -115,12 +158,8 @@ class AllTransactionsFragment : Fragment() {
            }
         }
 
-        viewModel.selectedStartDate.observe(viewLifecycleOwner) {
-
-        }
-        viewModel.selectedEndDate.observe(viewLifecycleOwner) {
-
-        }
+        viewModel.selectedStartDate.observe(viewLifecycleOwner) {}
+        viewModel.selectedEndDate.observe(viewLifecycleOwner) {}
 
         viewModel.navigateToTransDetail.observe(viewLifecycleOwner){
             it?.let {
@@ -161,6 +200,7 @@ class AllTransactionsFragment : Fragment() {
                 viewModel.updateDateRangeString(startDate,endDate)
                 viewModel.setStartAndEndDateRange(startDate,endDate)
                 viewModel.updateRv5()
+
                 // viewModel.setEndDateRange(endDate)
             }
             .setNegativeButton("Cancel", null)
@@ -170,8 +210,8 @@ class AllTransactionsFragment : Fragment() {
         }
 
         dialog.show()
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -180,7 +220,10 @@ class AllTransactionsFragment : Fragment() {
 
         val startDate = viewModel.selectedStartDate.value
         val endDate = viewModel.selectedEndDate.value
-        viewModel.setSelectedSpinner("Hari Ini")
+        if (startDate==null){
+            viewModel.setSelectedSpinner("Bulan Ini")
+        }
+
 
     }
     override fun onPause() {

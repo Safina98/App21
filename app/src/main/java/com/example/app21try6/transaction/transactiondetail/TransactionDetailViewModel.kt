@@ -252,7 +252,7 @@ class TransactionDetailViewModel (application: Application,
     fun updateDiscount(paymentModel: PaymentModel){
         viewModelScope.launch {
             if(paymentModel.id==null){
-                var discount=DiscountTransaction()
+                val discount=DiscountTransaction()
                 discount.discTransRef =UUID.randomUUID().toString()
                 discount.discTransDate=Date()
                 discount.discTransName=paymentModel.name?:"Potongan: "
@@ -262,10 +262,28 @@ class TransactionDetailViewModel (application: Application,
             }else{
                 updateDiscountToDb(paymentModel.id!!,paymentModel.payment_ammount!!.toDouble())
             }
-
+            val discountList = withContext(Dispatchers.IO) { discountTransDao.getDiscountListBySumId(id) }
+            updateTotalAfterDiscount(discountList)
         }
     }
+    fun updateTotalAfterDiscount(discountList: List<DiscountTransaction>){
+        viewModelScope.launch {
+            val totalDiscount = discountList.sumOf { it.discountAppliedValue}
+            val transSumS: TransactionSummary = withContext(Dispatchers.IO){datasource1.getTrans(id)}
+            transSumS.total_after_discount = transSumS.total_trans-totalDiscount
+            Log.i("DiscProbs","total trans: ${transSumS.total_trans}")
+            Log.i("DiscProbs","diskon: ${totalDiscount}")
+            Log.i("DiscProbs","total after discount: ${transSumS.total_after_discount}")
 
+            updateTotalAfterDiscountToDb(transSumS)
+        }
+    }
+    private suspend fun updateTotalAfterDiscountToDb(transSum: TransactionSummary){
+        withContext(Dispatchers.IO){
+            datasource1.update(transSum)
+        }
+
+    }
 
     private fun insertPayment(bayar: Payment){
         viewModelScope.launch {

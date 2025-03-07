@@ -62,6 +62,11 @@ interface DiscountTransDao {
             "    d.sum_id = :sumId")
     fun selectDiscAsPaymentModel(sumId:Int):LiveData<List<PaymentModel>>
 
+    @Query("SELECT * FROM discout_transaction_table WHERE sum_id =:sumId")
+    fun getDiscountListBySumId(sumId: Int):List<DiscountTransaction>
+
+
+
     @Query("SELECT SUM(d.discountAppliedValue) FROM discout_transaction_table d WHERE d.sum_id = :sumId")
     fun getTotalDiscountBySumId(sumId: Int): LiveData<Double>
 

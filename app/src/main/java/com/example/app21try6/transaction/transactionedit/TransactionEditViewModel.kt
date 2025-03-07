@@ -168,11 +168,8 @@ class TransactionEditViewModel(
                 }
             }
             val totalDiscount=discountTransactionList.sumOf { it.discountAppliedValue }
-            val transSumS: TransactionSummary = datasource1.getTrans(id)
+            val transSumS: TransactionSummary = withContext(Dispatchers.IO){ datasource1.getTrans(id)}
             transSumS.total_after_discount = transSumS.total_trans-totalDiscount
-            Log.i("DiscProbs","total trans: ${transSumS.total_trans}")
-            Log.i("DiscProbs","diskon: ${totalDiscount}")
-            Log.i("DiscProbs","total after discount: ${transSumS.total_after_discount}")
 
             updateSum(transSumS)
 

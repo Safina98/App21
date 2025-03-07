@@ -141,7 +141,7 @@ class TransactionDetailFragment : Fragment() {
             it?.let {
                 discAdapter.submitList(it)
                 adapter.notifyDataSetChanged()
-                Log.i("DiscProbs","Observer $it")
+                Log.i("DiscProbs","Observer ${it.sumOf { it.payment_ammount!! }}")
             }
         })
         binding.recyclerViewBayar.adapter = paymentAdapter
@@ -150,9 +150,7 @@ class TransactionDetailFragment : Fragment() {
 
         viewModel.transSum.observe(viewLifecycleOwner){it?.let{
             viewModel.setTxtNoteValue(it.sum_note)
-        }
-
-        }
+        } }
 
         viewModel.isn.observe(viewLifecycleOwner, Observer { isNoteActive -> })
 
