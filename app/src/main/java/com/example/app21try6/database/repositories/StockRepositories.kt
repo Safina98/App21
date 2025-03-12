@@ -9,6 +9,8 @@ import com.example.app21try6.database.daos.SubProductDao
 import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.tables.Category
+import com.example.app21try6.database.tables.DetailWarnaTable
+import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.stock.brandstock.CategoryModel
@@ -52,22 +54,17 @@ class StockRepositories (
             categoryDao.delete(id)
         }
     }
+    ////////////////////////////////////////Brand////////////////////////////////////////////////////////
 
-    suspend fun insertBrand(brand: Brand){
-        withContext(Dispatchers.IO){
-            brandDao.insert(brand)
-        }
-    }
+    suspend fun insertBrand(brand: Brand){ withContext(Dispatchers.IO){ brandDao.insert(brand) } }
     // get brand recycler view data by categoryId
-    suspend fun getBrandByCategoryId(id:Int):List<BrandProductModel>{
-        return withContext(Dispatchers.IO){
-           brandDao.getBrandModelByCatId(id)
-        }
-    }
+    suspend fun getBrandByCategoryId(id:Int):List<BrandProductModel>{ return withContext(Dispatchers.IO){ brandDao.getBrandModelByCatId(id) } }
     //update brand
     suspend fun updateBrand(brand: Brand){ withContext(Dispatchers.IO){ brandDao.update(brand) } }
     //delete brand
     suspend fun deleteBrand(id:Int){ withContext(Dispatchers.IO){ brandDao.deleteBrand(id) } }
+    //get brand id by product id
+    suspend fun getBrandId(subId:Int?):Int?{ return withContext(Dispatchers.IO){ productDao.getBrandIdByProductId(subId) } }
 
     //////////////////////////////////////Product///////////////////////////////////////
     //get product recyclerview data
@@ -79,10 +76,58 @@ class StockRepositories (
     suspend fun getProductById(id:Int):Product{
         return withContext(Dispatchers.IO){productDao.getProductById(id)}
     }
+    //get product id by sub  id
+    suspend fun getProdutId(subId:Int):Int?{ return withContext(Dispatchers.IO){ subProductDao.getProductIdBySubId(subId) } }
     suspend fun updateProduct(product: Product){ withContext(Dispatchers.IO){ productDao.update(product) } }
     suspend fun deleteProduct(id:Int){ withContext(Dispatchers.IO){ productDao.delete(id) } }
     suspend fun insertProduct(product: Product){ withContext(Dispatchers.IO){ productDao.insert(product) } }
+////////////////////////////////////////////////SubProduct//////////////////////////////////////////
+    fun getSubProductLiveData(id:Int): LiveData<List<SubProduct>> {
+        return  subProductDao.getAll(id)
+    }
+    suspend fun updateSubProduct(subProduct: SubProduct){
+        withContext(Dispatchers.IO){
+            subProductDao.update(subProduct)
+        }
+    }
+    suspend fun deleteSubProduct(subProduct: SubProduct){
+        withContext(Dispatchers.IO){
+            subProductDao.delete(subProduct.sub_id)
+        }
+    }
+    suspend fun insertSubProduct(subProduct: SubProduct){
+        withContext(Dispatchers.IO){
+            subProductDao.insert(subProduct)
+        }
+    }
+    suspend fun updateSubName(subProduct: SubProduct){
+        withContext(Dispatchers.IO){
+            subProductDao.updateSubProductAndTransDetail(subProduct)
+        }
+    }
 
+    //////////////////////////////////////Detail Warna////////////////////////////////////////////////
+
+    suspend fun getDetailWarnaList(id:Int):List<DetailWarnaTable>{
+        return withContext(Dispatchers.IO){
+            detailWarnaDao.getDetailWarnaBySubId(id)
+        }
+    }
+    suspend fun insertDetailWarna(detailWarnaTable: DetailWarnaTable, inventoryLog: InventoryLog){
+        withContext(Dispatchers.IO){
+            detailWarnaDao.insertDetailWarnaAndLog(detailWarnaTable,inventoryLog)
+        }
+    }
+    suspend fun updateDetailWarna(detailWarnaTable: DetailWarnaTable, inventoryLog: InventoryLog){
+        withContext(Dispatchers.IO){
+            detailWarnaDao.updateDetailWarnaAndInsertLog(detailWarnaTable,inventoryLog)
+        }
+    }
+    suspend fun isDetailWarnaExist(subId:Int,net:Double):DetailWarnaTable?{
+        return withContext(Dispatchers.IO){
+            detailWarnaDao.getDetailBySubIdAndNet(subId,net)
+        }
+    }
     ////////////////////////////CSV///////////////////////////////////////////////////
     suspend fun insertCSVBatch(tokensList: List<List<String>>) {
         categoryDao.performTransaction {

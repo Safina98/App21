@@ -23,6 +23,8 @@ import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
 import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.database.repositories.StockRepositories
+import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentSubProductStockBinding
 import com.example.app21try6.databinding.PopUpUpdateBayarBinding
 import com.example.app21try6.utils.DialogUtils
@@ -35,15 +37,21 @@ class SubProductStockFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_sub_product_stock,container,false)
         val application = requireNotNull(this.activity).application
-        val dataSource2 = VendibleDatabase.getInstance(application).subProductDao
+        val categoryDao = VendibleDatabase.getInstance(application).categoryDao
+        val brandDao=VendibleDatabase.getInstance(application).brandDao
+        val subProductDao = VendibleDatabase.getInstance(application).subProductDao
+        val detailWarnaDao=VendibleDatabase.getInstance(application).detailWarnaDao
+
         val productDao=VendibleDatabase.getInstance(application).productDao
-        val dataSource3 = VendibleDatabase.getInstance(application).transDetailDao
-        val dataSource4 = VendibleDatabase.getInstance(application).detailWarnaDao
+        val transDetailDao = VendibleDatabase.getInstance(application).transDetailDao
+        val transSumDao=VendibleDatabase.getInstance(application).transSumDao
+        val stockRepo = StockRepositories(categoryDao,brandDao,productDao,subProductDao,detailWarnaDao)
+        val transRepo=TransactionsRepository(transDetailDao,transSumDao)
         val id = arguments?.let { SubProductStockFragmentArgs.fromBundle(it).productId }
         (activity as AppCompatActivity).supportActionBar?.title = id?.last()
         id?.set(4,"0")
         val id_ = id?.map { it.toInt() }?.toTypedArray()
-        val viewModelFactory = SubViewModelFactory(dataSource2,productDao,application,id_!!,dataSource3,dataSource4, 0)
+        val viewModelFactory = SubViewModelFactory(stockRepo,transRepo,0,id_!!,application)
         binding.lifecycleOwner =this
         viewModel = ViewModelProvider(this,viewModelFactory).get(SubViewModel::class.java)
         binding.subViewModel = viewModel
