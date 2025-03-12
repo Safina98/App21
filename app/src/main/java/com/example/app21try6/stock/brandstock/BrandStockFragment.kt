@@ -33,6 +33,8 @@ import com.example.app21try6.ToolbarUtil
 import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.BrandProductModel
+import com.example.app21try6.database.repositories.DiscountRepository
+import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.databinding.FragmentBrandStockBinding
 import com.example.app21try6.stock.productstock.ProductStockFragmentDirections
 import com.example.app21try6.utils.CsvHandler
@@ -71,7 +73,11 @@ class BrandStockFragment : Fragment() {
         val dataSource3 = VendibleDatabase.getInstance(application).productDao
         val dataSource4 = VendibleDatabase.getInstance(application).subProductDao
         val dataSource5 = VendibleDatabase.getInstance(application).discountDao
-        val viewModelFactory = BrandStockViewModelFactory(dataSource1,dataSource2,dataSource3,dataSource4,dataSource5,application)
+        val dataSource6 = VendibleDatabase.getInstance(application).detailWarnaDao
+        val dataSource7 = VendibleDatabase.getInstance(application).discountTransDao
+        val repository = StockRepositories(dataSource1,dataSource2,dataSource3,dataSource4,dataSource6)
+        val discountRepository=DiscountRepository(dataSource7, dataSource5)
+        val viewModelFactory = BrandStockViewModelFactory(repository,discountRepository,application)
         binding.lifecycleOwner =this
         val layoutOneViews = listOf(
             binding.spinnerM,
@@ -204,10 +210,10 @@ class BrandStockFragment : Fragment() {
         }
         ///////////////////////////////Observers///////////////////////////////////////////////
         //write csv
-        viewModel.all_brand.observe(viewLifecycleOwner, Observer {})
+        //viewModel.all_brand.observe(viewLifecycleOwner, Observer {})
         viewModel.all_item.observe(viewLifecycleOwner, Observer {})
-        viewModel.all_product.observe(viewLifecycleOwner, Observer {})
-        viewModel.all_sub.observe(viewLifecycleOwner, Observer {})
+       // viewModel.all_product.observe(viewLifecycleOwner, Observer {})
+        //viewModel.all_sub.observe(viewLifecycleOwner, Observer {})
 
         //Spinner
         viewModel.cathList_.observe(viewLifecycleOwner){entries->

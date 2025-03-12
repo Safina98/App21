@@ -18,6 +18,8 @@ import com.example.app21try6.database.daos.DiscountDao
 import com.example.app21try6.database.daos.ProductDao
 import com.example.app21try6.database.daos.SubProductDao
 import com.example.app21try6.database.models.BrandProductModel
+import com.example.app21try6.database.repositories.DiscountRepository
+import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.tables.SubProduct
@@ -28,12 +30,17 @@ import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 
-class BrandStockViewModel(
-    val database1: CategoryDao,
+/*
+val database1: CategoryDao,
     val database2: BrandDao,
     val database3: ProductDao,
     val database4: SubProductDao,
     val discountDao: DiscountDao,
+ */
+class BrandStockViewModel(
+    private val repository: StockRepositories,
+    private val discountRepository:DiscountRepository,
+
     application: Application): AndroidViewModel(application){
     private var viewModelJob = Job()
     //ui scope for coroutines
@@ -46,8 +53,10 @@ class BrandStockViewModel(
     val addItem: LiveData<Boolean> get() = _addItem
 
     //Display Data
-    val cathList = database1.getCategoryModelList()
-    val cathList_ = database1.getName()
+    //category recyclerview data
+    val cathList = repository.getCategoryModelLiveData()
+    //spinner entries
+    val cathList_ = repository.getCategoryNameLiveData()
 
     var _all_brand_from_db = MutableLiveData<List<BrandProductModel>>()
     val all_brand_from_db :LiveData<List<BrandProductModel>> get()= _all_brand_from_db
@@ -56,10 +65,10 @@ class BrandStockViewModel(
     var selectedBrand = MutableLiveData<BrandProductModel?>()
 
     private var checkedItemList = mutableListOf<Category>()
-    val all_brand = database2.getAllBrand()
-    val all_item = database2.getExportedData()
-    val all_product = database3.getAllProduct()
-    val all_sub = database4.getAllSub()
+    //val all_brand = database2.getAllBrand()
+    val all_item = repository.getExportedStockData()
+    //val all_product = database3.getAllProduct()
+    //val all_sub = database4.getAllSub()
     private val _selectedKategoriSpinner = MutableLiveData<String>()
     val selectedKategoriSpinner: LiveData<String> get() = _selectedKategoriSpinner
 
@@ -79,35 +88,27 @@ class BrandStockViewModel(
 
     private val _addProduct = MutableLiveData<Boolean>()
     val addProduct: LiveData<Boolean> get() = _addProduct
-    val allDiscountFromDB=discountDao.getAllDiscountName()
+    val allDiscountFromDB=discountRepository.getAllDicountName()
     val discountName=MutableLiveData<String?>("")
     val _product=MutableLiveData<Product?>()
 
 
     fun setSelectedKategoriValue(value: String) {
         viewModelScope.launch {
-            var id = getKategoriIdByName(value)
+            var id = repository.getCategoryIdByName(value)
             kategori_id.value = id
             _selectedKategoriSpinner.value = value
         }
 
     }
-    private suspend fun getKategoriIdByName(id: String):Int{
-        return withContext(Dispatchers.IO){
-            database2.getKategoriIdByName(id)
-        }
 
-    }
     fun updateRv(){
         viewModelScope.launch {
-            var brandlist = getBrandByKatId(kategori_id.value ?: 0)
+            val brandlist = repository.getBrandByCategoryId(kategori_id.value ?:0)
             _all_brand_from_db.value = brandlist
         }
     }
-    fun toggleSelectedSubProductId(subProduct: SubProduct?) {
-        //_selectedSubProduct.value = if (_selectedSubProduct.value?.sub_id ==subProduct?.sub_id) null else subProduct
-        //if id not the same change rc background
-    }
+
     //toggle selectedBrand value, null/brandModel
     fun getBrandIdByName(branModel:BrandProductModel?){
         viewModelScope.launch {
@@ -120,21 +121,14 @@ class BrandStockViewModel(
 
     fun deleteCategory(category:CategoryModel){
         viewModelScope.launch {
-            deleteCategoryToDao(category.id)
-        }
-    }
-    private suspend fun deleteCategoryToDao(id:Int){
-        withContext(Dispatchers.IO){
-            database1.delete(id)
-        }
-    }
-    private suspend fun getBrandByKatId(id:Int):List<BrandProductModel>{
-        return withContext(Dispatchers.IO){
-            database2.getBrandModelByCatId(id)
+            repository.deleteCategory(category.id)
         }
     }
 
+
+
     fun onCheckBoxClicked(category: Category, bool:Boolean){ if(bool){ checkedItemList.add(category)} else{ checkedItemList.remove(category) } }
+    /*
     fun deleteDialog(){
         uiScope.launch {
             for(v in checkedItemList){
@@ -143,14 +137,16 @@ class BrandStockViewModel(
             clearCheckedItemList()
         }
     }
-    private suspend fun deleteC(categoryName: String){ withContext(Dispatchers.IO){ database1.clear(categoryName) }}
+
+     */
+   // private suspend fun deleteC(categoryName: String){ withContext(Dispatchers.IO){ database1.clear(categoryName) }}
     fun insertAnItemBrandStock(brand_name:String){
         uiScope.launch {
             if (brand_name!="") {
                 val brand = Brand()
                 brand.brand_name = brand_name
-                brand.cath_code = getKategoriIdByName(selectedKategoriSpinner.value ?: "")
-                insert(brand)
+                brand.cath_code = repository.getCategoryIdByName(selectedKategoriSpinner.value ?: "")
+                repository.insertBrand(brand)
                 updateRv()
             }
         }
@@ -161,7 +157,7 @@ class BrandStockViewModel(
                 val category = Category()
                 category.category_name = cath_name
                 try {
-                    insertCath(category)
+                    repository.insertCategory(category)
                 } catch (e: SQLiteException) {
                     Toast.makeText(getApplication(), "InsertItemCath", Toast.LENGTH_LONG).show()
                     Log.e("CSV Import", "InsertItemCath $e")
@@ -196,83 +192,39 @@ class BrandStockViewModel(
         viewModelScope.launch {
             try {
                 _isLoading.value = true
-                database1.performTransaction {
-                    val batchSize = 100 // Define your batch size here
-                    for (i in 0 until tokensList.size step batchSize) {
-                        val batch = tokensList.subList(i, minOf(i + batchSize, tokensList.size))
-                        insertBatch(batch)
-                    }
-                }
+                repository.insertCSVBatch(tokensList)
                 _insertionCompleted.value = true
             } catch (e: Exception) {
                 Log.e("CSV Import", "InsertCsvBatch $e")
                 Toast.makeText(getApplication(), "InsertCsvBatch $e", Toast.LENGTH_LONG).show()
-            }finally {
-                _isLoading.value = false // Hide loading indicator
+            } finally {
+                _isLoading.value = false
             }
         }
     }
-
-    private suspend fun insertBatch(batch: List<List<String>>) {
-        batch.forEach { tokens ->
-            insertCSVN(tokens)
-        }
-    }
-    private suspend fun insertCSVN(token: List<String>) {
-        Log.i("Import Csv","brand token: $token")
-        val product= Product()
-        product.product_name = token[2].uppercase().trim()
-        product.product_price = token[3].toInt()
-        product.bestSelling = token[4]=="TRUE"
-        product.product_capital = token[13].toInt()
-        product.default_net = token.getOrNull(14)?.toDoubleOrNull() ?: 0.0
-        product.alternate_capital = token.getOrNull(15)?.toDoubleOrNull() ?: 0.0
-        product.alternate_price = token.getOrNull(16)?.toDoubleOrNull() ?: 0.0
-        val subProduct = SubProduct()
-        subProduct.sub_name = token[5].uppercase().trim()
-        subProduct.roll_u = token[6].toInt()
-        subProduct.roll_bt = token[7].toInt()
-        subProduct.roll_st = token[8].toInt()
-        subProduct.roll_kt = token[9].toInt()
-        subProduct.roll_bg = token[10].toInt()
-        subProduct.roll_sg = token[11].toInt()
-        subProduct.roll_kg = token[12].toInt()
-        var brand_name = token[1].uppercase().trim()
-        var categoryName = token[0].uppercase().trim()
-        database1.insertIfNotExist(categoryName)
-        database2.insertIfNotExist(brand_name,categoryName)
-        database3.insertIfNotExist(product.product_name,product.product_price,product.product_capital,product.default_net,product.alternate_capital,product.alternate_price,product.bestSelling,brand_name,categoryName)
-        database4.insertIfNotExist(subProduct.sub_name,subProduct.warna,subProduct.ket,subProduct.roll_u,subProduct.roll_bt,subProduct.roll_st,subProduct.roll_kt,subProduct.roll_bg,subProduct.roll_sg,subProduct.roll_kg,product.product_name,brand_name,categoryName)
-
-    }
-    // Function to start a transaction
-    private suspend fun insertCath(category: Category){ withContext(Dispatchers.IO){ database1.insert(category) } }
 
     fun updateCath(categoryModel: CategoryModel){
         uiScope.launch {
         val category= Category()
         category.category_id=categoryModel.id
         category.category_name=categoryModel.categoryName
-        updateCath_(category)
+        repository.updateCategory(category)
         }
     }
-    private suspend fun updateCath_(category: Category){withContext(Dispatchers.IO){ database1.update(category) } }
-
-    private suspend fun insert(brand: Brand){ withContext(Dispatchers.IO){ database2.insert(brand) } }
     fun updateBrand(brandPm: BrandProductModel){ uiScope.launch {
         val brand=Brand()
         brand.brand_name=brandPm.name
         brand.brand_id=brandPm.id
         brand.cath_code=brandPm.parentId!!
-        update(brand)
+        repository.updateBrand(brand)
         updateRv()
     } }
-    private suspend fun update(brand: Brand){ withContext(Dispatchers.IO){ database2.update(brand) } }
+
     fun deleteBrand(brand: BrandProductModel){ uiScope.launch {
-        deleteBrandToDao(brand.id)
+        repository.deleteBrand(brand.id)
         updateRv()
     } }
-    private suspend fun deleteBrandToDao(id:Int){ withContext(Dispatchers.IO){ database2.deleteBrand(id) } }
+
     fun clearCheckedItemList(){checkedItemList.clear()}
 
     fun onAddItem(){ _addItem.value = true }
@@ -289,21 +241,21 @@ class BrandStockViewModel(
 
     fun updateProductRv(brandId:Int?){
         viewModelScope.launch {
-            val list =if (brandId!=null) withContext(Dispatchers.IO){ database3.getAll(brandId)} else listOf()
+            val list =if (brandId!=null) repository.getProductModel(brandId) else listOf()
             _all_product_from_db.value=list
         }
     }
     fun getLongClickedProduct(id:Int){
         viewModelScope.launch {
-            val product= withContext(Dispatchers.IO){database3.getProductById(id)}
+            val product= repository.getProductById(id)
             _product.value=product
             getDiscNameById(product.discountId)
         }
     }
     fun updateProduct(product: Product, discName:String){
         uiScope.launch{
-            product.discountId=getDiscIdByName(discName)
-            update(product)
+            product.discountId=discountRepository.getDiscountIdByName(discName)
+            repository.updateProduct(product)
             _product.value=null
             updateProductRv(product.brand_code)
         }
@@ -317,38 +269,33 @@ class BrandStockViewModel(
                 product.product_price = price
                 product.cath_code = kategori_id.value?:0
                 product.product_capital = price
-                product.discountId=getDiscIdByName(discName)
+                product.discountId=discountRepository.getDiscountIdByName(discName)
                 product.product_capital=capital
                 product.alternate_capital=capital2
                 product.default_net=modusNet
                 product.purchasePrice=purchasePrice
                 product.puchaseUnit=purcaseUnit
-                insert(product)
+                repository.insertProduct(product)
                 updateProductRv(selectedBrand.value?.id)
             }
         }
     }
     fun getDiscNameById(id:Int?){
         viewModelScope.launch {
-            val disc = withContext(Dispatchers.IO){discountDao.getDiscountNameById(id)}
+            val disc = discountRepository.getDiscountNameById(id)
             discountName.value=disc
         }
     }
     fun onProductAdded(){ _addProduct.value = false}
-    private suspend fun update(product: Product){ withContext(Dispatchers.IO){ database3.update(product) } }
+
     fun deleteProduct(product: BrandProductModel){
         uiScope.launch {
-            deleteProductToDao(product.id)
+           repository.deleteProduct(product.id)
             updateProductRv(product.parentId)
 
         } }
-    private suspend fun deleteProductToDao(id:Int){ withContext(Dispatchers.IO){ database3.delete(id) } }
-    private suspend fun insert(product: Product){ withContext(Dispatchers.IO){ database3.insert(product) } }
-    private suspend fun getDiscIdByName(discName:String):Int?{
-        return withContext(Dispatchers.IO){
-            discountDao.getDiscountIdByName(discName)
-        }
-    }
+
+
     override fun onCleared() {
         super.onCleared()
         viewModelJob.cancel()

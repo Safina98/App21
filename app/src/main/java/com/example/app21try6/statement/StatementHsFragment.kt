@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -42,7 +43,6 @@ class StatementHsFragment : Fragment() {
         val viewModelFactory = StatementHSViewModelFactory(application,dataSource1,dataSource2,dataSource3,dataSource4,dataSource5,dataSource6)
         viewModel = ViewModelProvider(this,viewModelFactory).get(StatementHSViewModel::class.java)
         binding.viewModel=viewModel
-
         val adapter = DiscountAdapter(
             DiscountListener {
                 showDiscountDialog(it)
@@ -82,6 +82,24 @@ class StatementHsFragment : Fragment() {
             adapterCustomer.submitList(it.sortedBy { it.customerBussinessName })
             adapter.notifyDataSetChanged()
         })
+        binding.searchCustomer?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
+            }
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let { query ->
+                    viewModel.allCustomerFromDb.observe(viewLifecycleOwner, Observer { list ->
+                        list?.let { items ->
+                            val filteredList = items.filter { item ->
+                                item.customerBussinessName.contains(query, ignoreCase = true)
+                            }
+                            adapterCustomer.submitList(filteredList)
+                        }
+                    })
+                }
+                return true
+            }
+        })
 
         return binding.root
     }
@@ -103,9 +121,6 @@ class StatementHsFragment : Fragment() {
         binding.textCapital2.visibility=View.GONE
         binding.defaultNet.visibility=View.GONE
         binding.purchaseUnit.visibility=View.GONE
-
-
-
         // Create the dialog using AlertDialog.Builder
         if (customerTable!=null){
             tvName.setText( customerTable.customerBussinessName)
@@ -134,8 +149,8 @@ class StatementHsFragment : Fragment() {
         // Show the dialog
         val dialog = dialogBuilder.create()
         dialog.show()
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }
     private fun showDiscountDialog(discountTable: DiscountAdapterModel?) {
         // Inflate the layout using data binding
@@ -176,12 +191,10 @@ class StatementHsFragment : Fragment() {
             .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
             }
-
         // Show the dialog
         val dialog = dialogBuilder.create()
         dialog.show()
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }
-
 }
