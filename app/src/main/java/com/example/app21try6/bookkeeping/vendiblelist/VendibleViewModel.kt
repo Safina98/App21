@@ -15,18 +15,25 @@ import com.example.app21try6.database.daos.CategoryDao
 import com.example.app21try6.database.daos.ProductDao
 import com.example.app21try6.database.daos.SubProductDao
 import com.example.app21try6.database.daos.SummaryDbDao
+import com.example.app21try6.database.repositories.BookkeepingRepository
+import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.tables.Summary
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 
-class VendibleViewModel(val database: SummaryDbDao,
-                        val database1: CategoryDao,
-                        val database2: ProductDao,
-                        val database3: BrandDao,
-                        val database4: SubProductDao,
-                        val date:Array<String>,
-                        application: Application):AndroidViewModel(application){
+/*
+ val database: SummaryDbDao,
+    val database1: CategoryDao,
+    val database2: ProductDao,
+    val database3: BrandDao,
+    val database4: SubProductDao,
+ */
+class VendibleViewModel(
+    private val bookRepo: BookkeepingRepository,
+    private val stockRepo: StockRepositories,
+    val date:Array<String>,
+    application: Application):AndroidViewModel(application){
 
     private var viewModelJob = Job()
     //ui scope for coroutines
@@ -44,27 +51,16 @@ class VendibleViewModel(val database: SummaryDbDao,
     private val _addItem = MutableLiveData<Boolean>()
     val addItem:LiveData<Boolean>
         get() = _addItem
-    val cathList = database1.getAll()
-    val cathList_ = database1.getName()
+    val cathList = stockRepo.getCategoryModelLiveData()
+    val cathList_ = stockRepo.getCategoryNameLiveData()
     var _itemCathPosition = MutableLiveData<Int>(0)
     val itemCathPosition :LiveData<Int>
         get() = _itemCathPosition
-    val all_item_from_db_new = itemCathPosition.switchMap{
-        val cath = cathList.value
-        val selectedCath = it?.let { cath?.get(it) }
-        database2.getCategoriedProduct(selectedCath?.category_id ?: 0)
-    }
+
     val all_item_from_db get() = itemCathPosition.value.let {position->
         val cath = cathList.value
         val selectedCath = position?.let { cath?.get(it) }
-        database2.getCategoriedProduct(selectedCath?.category_id ?: 0)
-        /*
-        if (selectedCath!=null){
-            database2.getCategoriedProduct(selectedCath.category_id)}
-        else{
-            database2.getCategoriedProduct(0)
-        }
-         */
+        stockRepo.getProductByCategoryId(selectedCath?.id ?: 0)
     }
     fun onCheckBoxClicked(product: Product, bool:Boolean){
         if(bool){
@@ -85,7 +81,7 @@ class VendibleViewModel(val database: SummaryDbDao,
                         summary.day_name = day
                         summary.item_name = v.product_name
                         summary.price = v.product_price.toDouble()
-                        insertItemToSummary_(summary)
+                       bookRepo.insertItemToSummary(summary)
             }
             checkedItemList.clear()
             _navigateToEditDetail.value = true
@@ -94,9 +90,8 @@ class VendibleViewModel(val database: SummaryDbDao,
     fun insertVendible(cath:String,brand:String,product: Product){
         uiScope.launch {
             try {
-                insertCath(cath)
-                insert(brand,cath)
-                insertTry(product,brand,cath)
+                stockRepo.insertIfNotExist(brand,cath)
+                stockRepo.insertTry(product,brand,cath)
             } catch (e: SQLiteException) {
                 Toast.makeText(getApplication(),e.toString(),Toast.LENGTH_LONG).show()
                 Log.i("tag_1", "message $e")
@@ -104,16 +99,13 @@ class VendibleViewModel(val database: SummaryDbDao,
         }
     }
 
-    fun deleteItemVendible(item_id:Int){ uiScope.launch { deleteItemVendible_(item_id)} }
-    fun updateVendible(product: Product){ uiScope.launch { update(product) } }
-    //////////////////////////////////////////////SUSPEND////////////////////////////////////////////////
-    private suspend fun insertItemToSummary_(summary: Summary){ withContext(Dispatchers.IO) { database.insert(summary) } }
-    private suspend fun insertCath(category: String){ withContext(Dispatchers.IO){  database1.insertIfNotExist(category) } }
-    private suspend fun update(product: Product) { withContext(Dispatchers.IO){ database2.update(product) } }
-    private suspend fun deleteItemVendible_(item_id:Int){ withContext(Dispatchers.IO){ database2.delete(item_id) } }
-    private suspend fun insertTry(product: Product, brand: String, cath: String){ withContext(Dispatchers.IO){ database2.inserProduct(product.product_name,product.product_price,product.bestSelling,brand,cath) } }
-    private suspend fun insert(brand: String,cath: String){ withContext(Dispatchers.IO){
-        database3.insertIfNotExist(brand,cath) } }
+    fun deleteItemVendible(item_id:Int){ uiScope.launch { stockRepo.deleteProduct(item_id)} }
+    fun updateVendible(product: Product){ uiScope.launch { stockRepo.updateProduct(product) } }
+    //////////////////////////////////////////////SUSPEND///////////////////////////////////////////////
+
+
+
+
     ///////////////////////////////////NAVIGATION/////////////////////////////////////////////////////////
     fun onAddItem(){ _addItem.value = true }
     fun onItemAdded(){ _addItem.value = false }

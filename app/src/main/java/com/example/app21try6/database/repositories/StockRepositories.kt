@@ -76,6 +76,14 @@ class StockRepositories (
     suspend fun getProductById(id:Int):Product{
         return withContext(Dispatchers.IO){productDao.getProductById(id)}
     }
+    fun getProductByCategoryId(id:Int):LiveData<List<Product>>{
+        return productDao.getCategoriedProduct(id)
+    }
+
+    fun getAllProduct(): LiveData<List<Product>> {
+        return productDao.getAllProduct()
+    }
+   suspend fun insertTry(product: Product, brand: String, cath: String){ withContext(Dispatchers.IO){ productDao.inserProduct(product.product_name,product.product_price,product.bestSelling,brand,cath) } }
     //get product id by sub  id
     suspend fun getProdutId(subId:Int):Int?{ return withContext(Dispatchers.IO){ subProductDao.getProductIdBySubId(subId) } }
     suspend fun updateProduct(product: Product){ withContext(Dispatchers.IO){ productDao.update(product) } }
@@ -126,6 +134,11 @@ class StockRepositories (
     suspend fun isDetailWarnaExist(subId:Int,net:Double):DetailWarnaTable?{
         return withContext(Dispatchers.IO){
             detailWarnaDao.getDetailBySubIdAndNet(subId,net)
+        }
+    }
+    suspend fun insertIfNotExist(brandName:String,categoryName:String){
+        withContext(Dispatchers.IO){
+            brandDao.insertIfNotExist(brandName,categoryName)
         }
     }
     ////////////////////////////CSV///////////////////////////////////////////////////

@@ -16,6 +16,8 @@ import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
 import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.database.repositories.BookkeepingRepository
+import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.databinding.FragmentVendibleBinding
 import com.google.android.material.textfield.TextInputEditText
 
@@ -26,15 +28,20 @@ class VendibleFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_vendible,container,false)
         val application = requireNotNull(this.activity).application
-        val dataSource = VendibleDatabase.getInstance(application).summaryDbDao
+        val dataSourceSum = VendibleDatabase.getInstance(application).summaryDbDao
+
         val dataSource1 = VendibleDatabase.getInstance(application).categoryDao
-        val dataSource2 = VendibleDatabase.getInstance(application).productDao
-        val dataSource3 = VendibleDatabase.getInstance(application).brandDao
+        val dataSource2 = VendibleDatabase.getInstance(application).brandDao
+        val dataSource3 = VendibleDatabase.getInstance(application).productDao
         val dataSource4 = VendibleDatabase.getInstance(application).subProductDao
+        val dataSource5 = VendibleDatabase.getInstance(application).discountDao
+        val dataSource6 = VendibleDatabase.getInstance(application).detailWarnaDao
+        val dataSource7 = VendibleDatabase.getInstance(application).discountTransDao
+        val repository = StockRepositories(dataSource1,dataSource2,dataSource3,dataSource4,dataSource6)
+        val sumRepo = BookkeepingRepository(dataSourceSum)
         val date= arguments?.let { VendibleFragmentArgs.fromBundle(it).date }
         var datee  = date!!.toMutableList()
-        val viewModelFactory = VendibleViewModelFactory(dataSource,dataSource1,dataSource2,dataSource3,dataSource4,
-            date,application)
+        val viewModelFactory = VendibleViewModelFactory(sumRepo,repository, date,application)
         binding.lifecycleOwner =this
         val vendibleViewModel =ViewModelProvider(this,viewModelFactory)
             .get(VendibleViewModel::class.java)
@@ -123,8 +130,8 @@ class VendibleFragment : Fragment() {
         }
         val alert = builder.create()
         alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }
 
     fun showAddDialog(vendibleViewModel: VendibleViewModel){
@@ -153,8 +160,8 @@ class VendibleFragment : Fragment() {
         }
         val alert = builder.create()
         alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }
     private fun deleteDialog(product: Product, vendibleViewModel: VendibleViewModel) {
         val builder = AlertDialog.Builder(context)
@@ -170,7 +177,7 @@ class VendibleFragment : Fragment() {
                 }
         val alert = builder.create()
         alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }
 }

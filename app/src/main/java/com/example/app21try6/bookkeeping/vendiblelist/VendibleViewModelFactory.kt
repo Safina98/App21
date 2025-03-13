@@ -9,19 +9,18 @@ import com.example.app21try6.database.daos.CategoryDao
 import com.example.app21try6.database.daos.ProductDao
 import com.example.app21try6.database.daos.SubProductDao
 import com.example.app21try6.database.daos.SummaryDbDao
+import com.example.app21try6.database.repositories.BookkeepingRepository
+import com.example.app21try6.database.repositories.StockRepositories
 
 
-class VendibleViewModelFactory (private val dataSource: SummaryDbDao,
-                                private val dataSource1: CategoryDao,
-                                private val dataSource2: ProductDao,
-                                private val datasource3: BrandDao,
-                                private val dataSource4: SubProductDao,
+class VendibleViewModelFactory (private val bookRepo: BookkeepingRepository,
+                                private val stockRepo: StockRepositories,
                                 private val date:Array<String>,
                                 private val application: Application):ViewModelProvider.Factory{
     @Suppress("unchecked_cast")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(VendibleViewModel::class.java)) {
-            return VendibleViewModel(dataSource,dataSource1,dataSource2,datasource3,dataSource4,date,application) as T
+            return VendibleViewModel(bookRepo,stockRepo,date,application) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

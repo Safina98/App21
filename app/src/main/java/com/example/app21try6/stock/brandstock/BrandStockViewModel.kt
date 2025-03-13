@@ -128,17 +128,7 @@ class BrandStockViewModel(
 
 
     fun onCheckBoxClicked(category: Category, bool:Boolean){ if(bool){ checkedItemList.add(category)} else{ checkedItemList.remove(category) } }
-    /*
-    fun deleteDialog(){
-        uiScope.launch {
-            for(v in checkedItemList){
-               deleteC(v.category_name)
-            }
-            clearCheckedItemList()
-        }
-    }
 
-     */
    // private suspend fun deleteC(categoryName: String){ withContext(Dispatchers.IO){ database1.clear(categoryName) }}
     fun insertAnItemBrandStock(brand_name:String){
         uiScope.launch {

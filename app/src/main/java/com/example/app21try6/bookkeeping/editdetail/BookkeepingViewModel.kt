@@ -20,6 +20,8 @@ import com.example.app21try6.bookkeeping.summary.ListModel
 import com.example.app21try6.database.*
 import com.example.app21try6.database.daos.ProductDao
 import com.example.app21try6.database.daos.SummaryDbDao
+import com.example.app21try6.database.repositories.BookkeepingRepository
+import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.tables.Summary
 import com.example.app21try6.formatRupiah
 import com.example.app21try6.getDateFromComponents
@@ -34,27 +36,28 @@ import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.*
 
-
-class BookkeepingViewModel(val database: SummaryDbDao,
+/*
+val database: SummaryDbDao,
                            val database2: ProductDao,
+ */
+
+class BookkeepingViewModel(
+                            private val bookRepo:BookkeepingRepository,
+                            private val stockRepo:StockRepositories,
                            application: Application,
                            ): AndroidViewModel(application) {
 private val tagg="ProfitProbs"
-    //private var viewModelJob = Job()
-    //private val _insertionStatus = MutableLiveData<Boolean>()
-    //val insertionStatus: LiveData<Boolean> = _insertionStatus
-    //ui scope for coroutines
-    //private val uiScope = CoroutineScope(Dispatchers.Main +  viewModelJob)
+
     private val months = arrayOf("all","Januari", "Februari", "Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember")
     private val _date = MutableLiveData(arrayOf("0","","0"))
     val date: LiveData<Array<String>> = _date
     //val dayly_sells = database.getToday(_date.value!![0].toInt(), _date.value!![1], _date.value!![2].toInt())
     val daylySells: LiveData<List<Summary>> = date.switchMap { date ->
-        database.getToday(date[0].toInt(),date[1],date[2].toInt())
+        bookRepo.getDailySells(date)
     }
     private val totalToday:LiveData<Double> =
         date.switchMap { date ->
-            database.getTotalToday(date[0].toInt(), date[1], date[2].toInt())
+            bookRepo.getDailyTotal(date)
         }
     val playerName: LiveData<String> = totalToday.map { formatRupiah(it).toString() }
     private val inFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
@@ -63,7 +66,7 @@ private val tagg="ProfitProbs"
     val dayString :LiveData<String> =date.map{ date->
         day+date[2]+date[1]+date[0] ?: ""
    }
-    var all_item_from_db = database2.getAllProduct()
+    var all_item_from_db = stockRepo.getAllProduct()
     private val _navigateToVendible = MutableLiveData<Boolean>()
     val navigateToVendible:LiveData<Boolean> get() = _navigateToVendible
     private val _addItem = MutableLiveData<Boolean>()
@@ -82,7 +85,7 @@ private val tagg="ProfitProbs"
     val year = Calendar.getInstance().get(Calendar.YEAR)
     //to create pdf
 
-    val allItemFromSummary = database.getAllSummary()
+    val allItemFromSummary = bookRepo.getAllSummary()
     //selected spinner
     private val _selectedYear= MutableLiveData<Int>(year)
     val selectedYear:LiveData<Int>get() = _selectedYear
@@ -114,7 +117,7 @@ private val tagg="ProfitProbs"
                         summary.day_name = day
                         summary.item_name = v.product_name
                         summary.price = v.product_price.toDouble()
-                        insertItemToSummary_(summary)
+                        bookRepo.insertItemToSummary(summary)
                         }
                 }
             }
@@ -124,16 +127,16 @@ private val tagg="ProfitProbs"
     //fun clearProduct(){ viewModelScope.launch { clear()} }
     //delete today
     fun clearSummary(){
-   viewModelScope.launch { clearToday(date.value!![0].toInt(), date.value!![1], date.value!![2].toInt())}
+   viewModelScope.launch { bookRepo.clearToday(date.value!![0].toInt(), date.value!![1], date.value!![2].toInt())}
     }
     fun deleteItemSummary(item_name: Summary){
-      viewModelScope.launch { deleteItemSummary_(item_name.year,item_name.month, item_name.day,item_name.id_m)}
+      viewModelScope.launch { bookRepo.deleteItemSummary(item_name.year,item_name.month, item_name.day,item_name.id_m)}
     }
     fun addBtnClicked(summary: Summary){
         viewModelScope.launch {
             summary.item_sold = summary.item_sold+1
             summary.total_income = summary.item_sold*summary.price
-            update(summary)
+            bookRepo.update(summary)
         }
     }
     fun btnLongClick(summary: Summary, number:Double, code:Int){
@@ -147,14 +150,14 @@ private val tagg="ProfitProbs"
                 summary.total_income = summary.price*summary.item_sold
             }
             summary.total_income = summary.item_sold*summary.price
-            update(summary)
+            bookRepo.update(summary)
         }
     }
     fun subsBtnClicked(summary: Summary){
         viewModelScope.launch {
             summary.item_sold = summary.item_sold-1
             summary.total_income = summary.item_sold*summary.price
-            update(summary)
+            bookRepo.update(summary)
         }
     }
     fun onAddItem(){
@@ -170,33 +173,7 @@ private val tagg="ProfitProbs"
     fun onNavigatedToVendivle() {
         _navigateToVendible.value  = false
     }
-    suspend fun update(summary: Summary){
-        withContext(Dispatchers.IO){
-            database.update(summary)}
-    }
-    suspend fun deleteItemSummary_(year:Int, month:String, day: Int, item_name: Int){
-        withContext(Dispatchers.IO){
-            database.deleteItemSummary(year,month,day,item_name)
-        }
-    }
-    suspend fun clearToday(year:Int, month:String, day: Int) {
-        withContext(Dispatchers.IO) {
-            database.clearToday(year, month, day)
-        }
-    }
-    //suspend fun clear() { withContext(Dispatchers.IO) { //database2.deleteAll() } }
-    private suspend fun insertItemToSummary_(summary: Summary){
-        withContext(Dispatchers.IO) {
-            database.insert(summary)
-        }
-    }
-/*
-    override fun onCleared() {
-        super.onCleared()
-        viewModelJob.cancel()
-    }
 
- */
     ////////////////////////////////////Summary Functions////////////////////////////////////
 @RequiresApi(Build.VERSION_CODES.O)
 fun onRvClick(listModel: ListModel){
@@ -207,19 +184,10 @@ fun onRvClick(listModel: ListModel){
             setSelectedMonth(listModel.month_n)
             setSelectedYear(listModel.year_n.toString())
         }
-
     }
     fun getSummaryWithNullProductId(){
         viewModelScope.launch {
-            //val list = withContext(Dispatchers.IO){database.getAllSummaryProductId()}
-            val list = withContext(Dispatchers.IO){database.getMonthlyProfitN()}
-
-            Log.d("idprobs", "${list.size} }")
-            list.forEach { itemName ->
-                Log.d("idprobs", "${itemName.year} ${itemName.month}  ${formatRupiah(itemName.monthly_profit) }")
-                //Log.d("idprobs", "${itemName.product_name} ${itemName.product_id}  ${formatRupiah(itemName.profit_by_product) }")
-            }
-
+            val list = bookRepo.getMothlyProfit()
         }
     }
 
@@ -280,31 +248,16 @@ fun onRvClick(listModel: ListModel){
             val currentList = mutableListOf<ListModel>()
             if (selectedMonth.value == "All") {
                 initialRv()
-                val filteredData = getMonthlyData()
+                val filteredData = bookRepo.getMonthlyData(_selectedYear.value?:year)
                 updateListWithFilteredData(currentList, filteredData)
             } else {
-                val filteredData = getDailyDataForSelectedMonth()
+                val filteredData = bookRepo.getDailyDataForSelectedMonth(_selectedYear.value?:year,selectedMonth.value!!)
                 updateListForSelectedMonth(currentList, filteredData)
             }
             _recyclerViewData.value = currentList
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private suspend fun getMonthlyData(): List<ListModel> {
-        return withContext(Dispatchers.IO) {
-            database.getMonthlyData(_selectedYear.value ?: year)
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private suspend fun getDailyDataForSelectedMonth(): List<ListModel> {
-        return withContext(Dispatchers.IO) {
-            database.getDailyData(_selectedYear.value ?: year, selectedMonth.value!!)
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun updateListWithFilteredData(currentList: MutableList<ListModel>, filteredData: List<ListModel>) {
         withContext(Dispatchers.IO){
             currentList.addAll(_recyclerViewData.value.orEmpty())
@@ -323,7 +276,6 @@ fun onRvClick(listModel: ListModel){
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun updateListForSelectedMonth(currentList: MutableList<ListModel>, filteredData: List<ListModel>) {
         withContext(Dispatchers.IO){
             val monthNumber = monthToNumber(selectedMonth.value)
@@ -343,9 +295,6 @@ fun onRvClick(listModel: ListModel){
         }
 
     }
-
-   // fun onClear() { viewModelScope.launch {clear() } }
-    //suspend fun clear() { withContext(Dispatchers.IO) { database.clear() } }
 
     fun writeCSV(file: File) {
         try {
@@ -381,13 +330,7 @@ fun insertCSVBatch(tokensList: List<List<String>>) {
     viewModelScope.launch {
         try {
             _isLoading.value = true
-            database.performTransaction {
-                val batchSize = 1000 // Define your batch size here
-                for (i in 0 until tokensList.size step batchSize) {
-                    val batch = tokensList.subList(i, minOf(i + batchSize, tokensList.size))
-                    insertBatch(batch)
-                }
-            }
+            bookRepo.insertCSVBatch(tokensList)
             _insertionCompleted.value = true
         } catch (e: Exception) {
             Toast.makeText(getApplication(), e.toString(), Toast.LENGTH_LONG).show()
@@ -396,31 +339,6 @@ fun insertCSVBatch(tokensList: List<List<String>>) {
         }
     }
 }
-
-
-    private suspend fun insertBatch(batch: List<List<String>>) {
-        batch.forEach { tokens ->
-            insertCSVN(tokens)
-        }
-    }
-
-    private suspend fun insertCSVN(token: List<String>) {
-        val summary = Summary().apply {
-            year = token[0].toInt()
-            month = token[1]
-            month_number = token[2].toInt()
-            day_name= token[4]
-            day = token[3].toInt()
-            date = getDateFromComponents(year, month, month_number, day, day_name)
-            item_name = token[5]
-            item_sold = token[7].toDouble()
-            price = token[6].toDouble()
-            total_income = token[8].toDouble()
-        }
-        database.insert(summary)
-    }
-
-
 
     @SuppressLint("NullSafeMutableLiveData")
     fun onDayNavigated() { _navigateBookKeeping.value  = null }
@@ -439,11 +357,19 @@ fun insertCSVBatch(tokensList: List<List<String>>) {
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
                 // Create a SavedStateHandle for this ViewModel from extras
                // val savedStateHandle = extras.createSavedStateHandle()
-                val dataSource = VendibleDatabase.getInstance(application).summaryDbDao
-                val dataSource2 = VendibleDatabase.getInstance(application).productDao
+                val dataSourceSum = VendibleDatabase.getInstance(application).summaryDbDao
 
+                val dataSource1 = VendibleDatabase.getInstance(application).categoryDao
+                val dataSource2 = VendibleDatabase.getInstance(application).brandDao
+                val dataSource3 = VendibleDatabase.getInstance(application).productDao
+                val dataSource4 = VendibleDatabase.getInstance(application).subProductDao
+                val dataSource5 = VendibleDatabase.getInstance(application).discountDao
+                val dataSource6 = VendibleDatabase.getInstance(application).detailWarnaDao
+                val dataSource7 = VendibleDatabase.getInstance(application).discountTransDao
+                val repository = StockRepositories(dataSource1,dataSource2,dataSource3,dataSource4,dataSource6)
+                val sumRepo = BookkeepingRepository(dataSourceSum)
                 return BookkeepingViewModel(
-                    dataSource,dataSource2,application,
+                    sumRepo,repository,application,
                 ) as T
             }
         }
