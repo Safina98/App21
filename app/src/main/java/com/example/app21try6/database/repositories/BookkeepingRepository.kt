@@ -35,8 +35,14 @@ class BookkeepingRepository(
             summaryDbDao.clearToday(year, month, day)
         }
     }
+    suspend fun insertTransactionToSummary(summary: Summary){
+        withContext(Dispatchers.IO){
+            summaryDbDao.insertOrUpdate(summary)
+        }
+    }
 
-    suspend fun insertItemToSummary(summary: Summary){
+
+        suspend fun insertItemToSummary(summary: Summary){
         withContext(Dispatchers.IO) {
             summaryDbDao.insert(summary)
         }

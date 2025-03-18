@@ -1,11 +1,13 @@
 package com.example.app21try6
 
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.FragmentActivity
 import java.text.NumberFormat
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -104,6 +106,28 @@ fun getMonthNumber(month: String?): String? {
         "Desember" -> "12"
         else -> null
     }
+}
+//trans detail and trans sum csv
+fun parseDate(dateString: String): Date? {
+    // Specify the format pattern
+    val pattern = "EEE MMM dd HH:mm:ss zzz yyyy"
+    // Create a SimpleDateFormat instance with the specified pattern and locale
+    val dateFormat = SimpleDateFormat(pattern, Locale.ENGLISH)
+
+    return try {
+        // Parse the date string into a Date object
+        dateFormat.parse(dateString)
+    } catch (e: ParseException) {
+        // Handle the exception if the date string is unparseable
+        e.printStackTrace()
+        Log.i("INSERTCSVPROB","parse date catch: $e")
+        null
+    }
+}
+// trans detail and trans sum insert csv
+fun getDate(dateString:String?):Date?{
+    val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    return if (dateString!==null)inputFormat.parse(dateString) else null
 }
 
 object ToolbarUtil {

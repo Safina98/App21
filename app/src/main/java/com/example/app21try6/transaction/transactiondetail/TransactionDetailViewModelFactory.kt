@@ -11,22 +11,23 @@ import com.example.app21try6.database.daos.SubProductDao
 import com.example.app21try6.database.daos.SummaryDbDao
 import com.example.app21try6.database.daos.TransDetailDao
 import com.example.app21try6.database.daos.TransSumDao
+import com.example.app21try6.database.repositories.BookkeepingRepository
+import com.example.app21try6.database.repositories.DiscountRepository
+import com.example.app21try6.database.repositories.StockRepositories
+import com.example.app21try6.database.repositories.TransactionsRepository
 
 
-class TransactionDetailViewModelFactory  (private val application: Application,
-                                          private val datasource1: TransSumDao,
-                                          private val datasource2: TransDetailDao,
-                                          private val datasource3: SummaryDbDao,
-                                          private val datasource4: PaymentDao,
-                                          private val datasource5: SubProductDao,
-                                          private val discountDao: DiscountDao,
-                                          private val discountTransDao: DiscountTransDao,
-                                          private val customerDao: CustomerDao,
+class TransactionDetailViewModelFactory  (private val stockRepos: StockRepositories,
+                                          private val bookRepo: BookkeepingRepository,
+                                          private val transRepo: TransactionsRepository,
+                                          private val discountRepo: DiscountRepository,
+
+    private val application: Application,
                                           private val id:Int): ViewModelProvider.Factory{
     @Suppress("unchecked_cast")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TransactionDetailViewModel::class.java)) {
-            return TransactionDetailViewModel(application,datasource1,datasource2,datasource3,datasource4,datasource5,discountDao,discountTransDao,customerDao,id) as T
+            return TransactionDetailViewModel(stockRepos,bookRepo,transRepo,discountRepo,application,id) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

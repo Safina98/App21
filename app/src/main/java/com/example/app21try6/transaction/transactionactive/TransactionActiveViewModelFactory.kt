@@ -5,16 +5,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.app21try6.database.daos.TransDetailDao
 import com.example.app21try6.database.daos.TransSumDao
+import com.example.app21try6.database.repositories.TransactionsRepository
 
 class TransactionActiveViewModelFactory(
     private val application: Application,
-    private val datasource1: TransSumDao,
-    private val datasource2: TransDetailDao
+    private val transRepo:TransactionsRepository
 ):ViewModelProvider.Factory{
     @Suppress("unchecked_cast")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TransactionActiveViewModel::class.java)) {
-            return TransactionActiveViewModel(application,datasource1,datasource2) as T
+            return TransactionActiveViewModel(application,transRepo) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

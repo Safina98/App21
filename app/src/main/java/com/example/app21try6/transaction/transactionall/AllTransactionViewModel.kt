@@ -11,21 +11,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.example.app21try6.database.daos.TransSumDao
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.formatRupiah
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-
-class AllTransactionViewModel(application: Application,var dataSource1: TransSumDao):AndroidViewModel(application) {
+//var dataSource1: TransSumDao
+class AllTransactionViewModel(application: Application,val transRepo: TransactionsRepository):AndroidViewModel(application) {
 
 
     private var viewModelJob = Job()
@@ -104,12 +103,6 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
         }
     }
 
-    private suspend fun getStrandedDataFromDb(totalSum:Double,custName:String):List<TransactionSummary>{
-        return withContext(Dispatchers.IO){
-            dataSource1.getStrandedData(totalSum,custName)
-        }
-    }
-
     fun updateDateRangeString(startDate: Date?, endDate: Date?) {
         _dateRangeString.value = formatDateRange(startDate, endDate)
     }
@@ -148,7 +141,7 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
             queryM.value=query
             val list = mutableListOf<TransactionSummary>()
             if(!query.isNullOrEmpty()) {
-                val listFilterByTransName= getSummaryByQueryFromDb(query,limit, offset)
+                val listFilterByTransName= transRepo.filterTransSum(query, limit, offset,_selectedStartDate.value,_selectedEndDate.value)
                 getTransactionCount(selectedStartDate.value,selectedEndDate.value,query)
                 getTotalTransactionAfterDiscount(selectedStartDate.value,selectedEndDate.value,query)
                 val distinctList =  listFilterByTransName.distinctBy { it.sum_id }
@@ -166,11 +159,7 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
         }
     }
 
-    private suspend fun getSummaryByQueryFromDb(query: String, limit:Int, offset:Int):List<TransactionSummary>{
-        return withContext(Dispatchers.IO){
-            dataSource1.getTransactionSummariesByItemName(query,_selectedStartDate.value,selectedEndDate.value,limit,offset)
-        }
-    }
+
 
     //convert date to string
     private fun formatDate(date: Date?): String? {
@@ -244,28 +233,6 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
     }
 
 
-
-    fun updateRv5Old(){
-        viewModelScope.launch {
-            performDataFiltering(selectedStartDate.value, selectedEndDate.value)
-        }
-    }
-    private fun performDataFilteringOld(startDate: Date?, endDate: Date?) {
-        viewModelScope.launch {
-            try {
-                val filteredData = withContext(Dispatchers.IO) {
-                    dataSource1.getFilteredDataOld(startDate, endDate,null)
-                }
-                // Update LiveData on the main thread
-                withContext(Dispatchers.Main) {
-                    _allTransactionSummary.value = filteredData
-                    _unFilteredrecyclerViewData.value = filteredData
-                }
-            } catch (e: Exception) {
-                Log.e("DataFilteringError", "Error during data filtering", e)
-            }
-        }
-    }
     fun resetLogs() {
         offset = 0
         _allTransactionSummary.value = emptyList()
@@ -282,23 +249,19 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
     }
     fun getTransactionCount(startDate: Date?, endDate: Date?,name:String?){
         viewModelScope.launch {
-            val items= withContext(Dispatchers.IO){ dataSource1.getTransactionCount(startDate,endDate,name) }
+            val items= transRepo.getTransactionCount(name,startDate,endDate)
             val itemCountText= "$items Transaksi"
             itemCount.value=itemCountText
         }
     }
     fun getTotalTransactionAfterDiscount(startDate: Date?, endDate: Date?,name:String?){
         viewModelScope.launch {
-            val total = withContext(Dispatchers.IO){dataSource1.getTotalAfterDiscount(startDate,endDate,name)}
+            val total = transRepo.getTotalTransactionAfterDiscount(name,startDate,endDate)
             val totalText = formatRupiah(total)
             totalTrans.value=totalText ?: "Rp."
         }
     }
-    private suspend fun getTotalTransactonAfterDiscount(startDate: Date?, endDate: Date?,name:String?):Double{
-        return withContext(Dispatchers.IO){
-            dataSource1.getTotalAfterDiscount(startDate,endDate,name)
-        }
-    }
+
     fun loadMoreData() {
         if (!hasMoreData) return
         performDataFiltering(
@@ -309,10 +272,7 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
         viewModelScope.launch {
             try {
 
-                val newLogs= withContext(Dispatchers.IO){
-                dataSource1.getTransactionSummariesByItemName(queryM.value,startDate, endDate,limit, offset)
-                //dataSource1.getFilteredData4(startDate, endDate,null,limit, offset)
-                }
+                val newLogs= transRepo.filterTransSum(queryM.value,limit,offset,startDate,endDate)
                 if (newLogs.isNotEmpty()) {
                     offset += limit
                 }
@@ -360,8 +320,10 @@ class AllTransactionViewModel(application: Application,var dataSource1: TransSum
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
                 // Create a SavedStateHandle for this ViewModel from extras
                 val dataSource1 = VendibleDatabase.getInstance(application).transSumDao
+                val dataSource2 = VendibleDatabase.getInstance(application).transDetailDao
+                val transRepo=TransactionsRepository(dataSource2,dataSource1)
                 return AllTransactionViewModel(
-                    application,dataSource1
+                    application,transRepo
                 ) as T
             }
         }

@@ -75,8 +75,9 @@ class BrandStockFragment : Fragment() {
         val dataSource5 = VendibleDatabase.getInstance(application).discountDao
         val dataSource6 = VendibleDatabase.getInstance(application).detailWarnaDao
         val dataSource7 = VendibleDatabase.getInstance(application).discountTransDao
+        val dataSource8 = VendibleDatabase.getInstance(application).paymentDao
         val repository = StockRepositories(dataSource1,dataSource2,dataSource3,dataSource4,dataSource6)
-        val discountRepository=DiscountRepository(dataSource7, dataSource5)
+        val discountRepository=DiscountRepository(dataSource7, dataSource5, dataSource8)
         val viewModelFactory = BrandStockViewModelFactory(repository,discountRepository,application)
         binding.lifecycleOwner =this
         val layoutOneViews = listOf(

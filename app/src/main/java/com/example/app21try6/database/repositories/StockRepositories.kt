@@ -76,6 +76,16 @@ class StockRepositories (
     suspend fun getProductById(id:Int):Product{
         return withContext(Dispatchers.IO){productDao.getProductById(id)}
     }
+    suspend fun getProductName(subName:String):String?{
+        return withContext(Dispatchers.IO){
+            subProductDao.getProductName(subName)
+        }
+    }
+    suspend fun getProductBySubId(subId:Int): Product?{
+        return withContext(Dispatchers.IO){
+            subProductDao.getProduct(subId)
+        }
+    }
     fun getProductByCategoryId(id:Int):LiveData<List<Product>>{
         return productDao.getCategoriedProduct(id)
     }

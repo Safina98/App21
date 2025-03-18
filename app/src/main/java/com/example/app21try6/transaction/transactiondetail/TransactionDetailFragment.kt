@@ -37,6 +37,10 @@ import com.example.app21try6.R
 import com.example.app21try6.SIMPLE_DATE_FORMATTER
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.PaymentModel
+import com.example.app21try6.database.repositories.BookkeepingRepository
+import com.example.app21try6.database.repositories.DiscountRepository
+import com.example.app21try6.database.repositories.StockRepositories
+import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentTransactionDetailBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -72,8 +76,18 @@ class TransactionDetailFragment : Fragment() {
         val datasource6 = VendibleDatabase.getInstance(application).discountDao
         val datasource7 = VendibleDatabase.getInstance(application).customerDao
         val datasource8 = VendibleDatabase.getInstance(application).discountTransDao
+        val dataSource9 = VendibleDatabase.getInstance(application).categoryDao
+        val dataSource10 = VendibleDatabase.getInstance(application).brandDao
+        val dataSource11 = VendibleDatabase.getInstance(application).productDao
+        val dataSource12 = VendibleDatabase.getInstance(application).detailWarnaDao
+        val dataSource13 = VendibleDatabase.getInstance(application).summaryDbDao
+        val stockRepositories=StockRepositories(dataSource9,dataSource10,dataSource11,datasource5,dataSource12)
+        val transRepositories=TransactionsRepository(datasource2,datasource1)
+        val bookRepository = BookkeepingRepository(dataSource13)
+        val discountRepository=DiscountRepository(datasource8,datasource6,datasource4)
+
         val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        val viewModelFactory = TransactionDetailViewModelFactory(application,datasource1,datasource2,datasource3,datasource4,datasource5,datasource6,datasource8,datasource7,id!!)
+        val viewModelFactory = TransactionDetailViewModelFactory(stockRepositories,bookRepository,transRepositories,discountRepository,application,id!!)
         viewModel =ViewModelProvider(this,viewModelFactory).get(TransactionDetailViewModel::class.java)
         binding.lifecycleOwner = viewLifecycleOwner
         val img =  requireActivity().findViewById<ImageView>(R.id.delete_image)

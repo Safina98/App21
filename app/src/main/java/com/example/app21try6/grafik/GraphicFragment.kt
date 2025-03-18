@@ -49,9 +49,7 @@ class GraphicFragment : Fragment() {
 
 
         val rvAdapter=AllTransactionAdapter(AllTransClickListener {
-
         }, CheckBoxListenerTransAll{view, stok ->
-
         },null)
 
         binding.spinnerTahun.adapter = adapter_year

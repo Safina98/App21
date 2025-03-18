@@ -37,6 +37,7 @@ import com.example.app21try6.R
 import com.example.app21try6.ToolbarUtil
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentTransactionActiveBinding
 import com.example.app21try6.utils.DialogUtils
 import java.io.File
@@ -80,7 +81,8 @@ class TransactionActiveFragment : Fragment() {
         val application = requireNotNull(this.activity).application
         val datasource1= VendibleDatabase.getInstance(application).transSumDao
         val datasource2= VendibleDatabase.getInstance(application).transDetailDao
-        val viewModelFactory = TransactionActiveViewModelFactory(application,datasource1,datasource2)
+        val transRepo=TransactionsRepository(datasource2,datasource1)
+        val viewModelFactory = TransactionActiveViewModelFactory(application,transRepo)
         val viewModel = ViewModelProvider(this,viewModelFactory).get(TransactionActiveViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel

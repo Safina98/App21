@@ -10,27 +10,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.example.app21try6.DISCTYPE
-import com.example.app21try6.database.daos.CustomerDao
-import com.example.app21try6.database.daos.DiscountDao
-import com.example.app21try6.database.daos.DiscountTransDao
 import com.example.app21try6.database.tables.Payment
 
-import com.example.app21try6.database.daos.PaymentDao
-import com.example.app21try6.database.tables.Product
-import com.example.app21try6.database.daos.SubProductDao
 import com.example.app21try6.database.tables.Summary
-import com.example.app21try6.database.daos.SummaryDbDao
-import com.example.app21try6.database.daos.TransDetailDao
-import com.example.app21try6.database.daos.TransSumDao
 import com.example.app21try6.database.models.PaymentModel
+import com.example.app21try6.database.repositories.BookkeepingRepository
+import com.example.app21try6.database.repositories.DiscountRepository
+import com.example.app21try6.database.repositories.StockRepositories
+import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.database.tables.DiscountTransaction
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.formatRupiah
 import com.example.app21try6.utils.TextGenerator
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.lang.Math.abs
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -38,9 +31,8 @@ import java.util.Date
 import java.util.Locale
 import java.util.UUID
 
-
-class TransactionDetailViewModel (application: Application,
-                                  private val datasource1: TransSumDao,
+/*
+ private val datasource1: TransSumDao,
                                   private val datasource2: TransDetailDao,
                                   private val datasource3: SummaryDbDao,
                                   private val datasource4: PaymentDao,
@@ -48,15 +40,22 @@ class TransactionDetailViewModel (application: Application,
                                   private val discountDao: DiscountDao,
                                   private val discountTransDao: DiscountTransDao,
                                   private val customerDao: CustomerDao,
-                                  var id:Int):AndroidViewModel(application){
+ */
+class TransactionDetailViewModel (
+    val stockRepo: StockRepositories,
+    val bookRepo: BookkeepingRepository,
+    val transRepo: TransactionsRepository,
+    val discountRepo:DiscountRepository,
+    application: Application,
+    var id:Int):AndroidViewModel(application){
 
     //transaction detail for recyclerview
-    val transDetail = datasource2.selectATransDetail(id)
-    val transDetailWithProduct= datasource2.getTransactionDetailsWithProduct(id)
+    val transDetail = transRepo.getTransactionDetails(id)
+    val transDetailWithProduct= transRepo.getTransactionDetailsWithProductID(id)
     //Transaction Summary
-    val transSum = datasource1.getTransSum(id)
+    val transSum = transRepo.getTransactionSummary(id)
     //Total Trans
-    val transTotalDouble = datasource2.getTotalTrans(id)
+    val transTotalDouble = transRepo.getTotalTransaction(id)
     val transTotal: LiveData<String> = transTotalDouble.map { formatRupiah(it).toString() }
    //To update icons color on night mode or liht mode
     private var _uiMode = MutableLiveData<Int>(16)
@@ -69,7 +68,7 @@ class TransactionDetailViewModel (application: Application,
 
     // Get the total discount from the database
     // Get the total discount from the database
-    val discSum: LiveData<Double> = discountTransDao.getTotalDiscountBySumId(id)
+    val discSum: LiveData<Double> = discountRepo.getTransactionTotalDiscounts(id)
 
     // Calculate 'bayar' with the discount applied
     var bayar: MediatorLiveData<String> = MediatorLiveData<String>().apply {
@@ -119,7 +118,8 @@ class TransactionDetailViewModel (application: Application,
 
     //Transaction Summary note on edit text and carview
     var txtNote =MutableLiveData<String?>()
-    val paymentModel = datasource4.selectPaymentModelBySumId(id)
+    //payments
+    val paymentModel = discountRepo.getTransactionPayments(id)
 
     //Toggle boolean
     private var _isBtnBayarClicked = MutableLiveData<Boolean>(false)
@@ -148,9 +148,7 @@ class TransactionDetailViewModel (application: Application,
     private val _navigateToEdit = MutableLiveData<Int>()
     val navigateToEdit: LiveData<Int> get() = _navigateToEdit
 
-
-    //val discountTransBySumId=discountTransDao.selectAllDiscTrans(id)
-    val discountTransBySumId=discountTransDao.selectDiscAsPaymentModel(id)
+    val discountTransBySumId=discountRepo.getTransactionDiscounts(id)
     //Set ui to change icons color when night mode or day mode on
     fun setUiMode(mode:Int){
         _uiMode.value = mode
@@ -173,20 +171,16 @@ class TransactionDetailViewModel (application: Application,
     }
    fun deleteDiscount(id:Int){
        viewModelScope.launch {
-           deleteDiscTransToDB(id)
+           discountRepo.deleteTransactionDiscount(id)
        }
    }
-   private suspend fun deleteDiscTransToDB(id: Int){
-       withContext(Dispatchers.IO){
-           discountTransDao.delete(id)
-       }
-   }
+
     //Toggle and update Transaction Summary is_taken value when btn_is_taken clicked
     fun updateBooleanValue() {
        viewModelScope.launch {
            val transSum = transSum.value
            transSum?.is_taken_ = transSum?.is_taken_?.not() ?: true
-           transSum?.let { updataTransSumDB(it) }
+           transSum?.let { transRepo.updateTransactionSummary(it) }
        }
     }
 
@@ -209,7 +203,7 @@ class TransactionDetailViewModel (application: Application,
             onTxtNoteClick()
             val transum = transSum.value
             transum?.sum_note = txtNote.value
-            updateTransSumDB(transum!!)
+            transRepo.updateTransactionSummary(transum!!)
         }
     }
 
@@ -242,7 +236,7 @@ class TransactionDetailViewModel (application: Application,
             val bayar = modelToPaymentConverter(paymentModel)
             if (paymentModel.id!=null){
                 bayar.id = paymentModel.id!!
-                updatePaymentDB(bayar) }
+                discountRepo.updatePayment(bayar) }
             else{
                 insertPayment(bayar)
                 }
@@ -258,45 +252,39 @@ class TransactionDetailViewModel (application: Application,
                 discount.discTransName=paymentModel.name?:"Potongan: "
                 discount.discountAppliedValue=paymentModel.payment_ammount?.toDouble() ?: 0.0
                 discount.sum_id=id
-                insertDiscountToDb(discount)
+                discountRepo.insertTransactionDiscount(discount)
             }else{
-                updateDiscountToDb(paymentModel.id!!,paymentModel.payment_ammount!!.toDouble())
+                discountRepo.updateTransactionDiscount(paymentModel.id!!,paymentModel.payment_ammount!!.toDouble())
             }
-            val discountList = withContext(Dispatchers.IO) { discountTransDao.getDiscountListBySumId(id) }
+            val discountList = discountRepo.getDiscountTransactionList(id)
             updateTotalAfterDiscount(discountList)
         }
     }
     fun updateTotalAfterDiscount(discountList: List<DiscountTransaction>){
         viewModelScope.launch {
             val totalDiscount = discountList.sumOf { it.discountAppliedValue}
-            val transSumS: TransactionSummary = withContext(Dispatchers.IO){datasource1.getTrans(id)}
+            val transSumS: TransactionSummary = transRepo.getTransactionSummaryById(id)
             transSumS.total_after_discount = transSumS.total_trans-totalDiscount
             Log.i("DiscProbs","total trans: ${transSumS.total_trans}")
             Log.i("DiscProbs","diskon: ${totalDiscount}")
             Log.i("DiscProbs","total after discount: ${transSumS.total_after_discount}")
-
-            updateTotalAfterDiscountToDb(transSumS)
+            transRepo.updateTransactionSummary(transSumS)
         }
     }
-    private suspend fun updateTotalAfterDiscountToDb(transSum: TransactionSummary){
-        withContext(Dispatchers.IO){
-            datasource1.update(transSum)
-        }
 
-    }
 
     private fun insertPayment(bayar: Payment){
         viewModelScope.launch {
             bayar.payment_date =Date()
             bayar.sum_id = transSum.value?.sum_id ?:-1
             bayar.payment_ref = UUID.randomUUID().toString()
-            insertPaymentToDB(bayar)
+            discountRepo.insertPayment(bayar)
             updateTransSum()
         }
     }
     fun deletePayment(id:Int){
         viewModelScope.launch {
-            deletePaymentDB(id)
+            discountRepo.deletePayment(id)
             updateTransSum()
         }
     }
@@ -314,12 +302,10 @@ class TransactionDetailViewModel (application: Application,
     // update Transum value
     private fun updateTransSum(){
         viewModelScope.launch {
-            val bayar = withContext(Dispatchers.IO){
-                datasource4.selectSumFragmentBySumId(transSum.value!!.sum_id)
-            }
+            val bayar =discountRepo.getTransactionTotalPayment(id)
             val transSum = transSum.value!!
             transSum.paid= bayar
-            updateTransSumDB(transSum)
+            transRepo.updateTransactionSummary(transSum)
         }
     }
 
@@ -330,7 +316,7 @@ class TransactionDetailViewModel (application: Application,
             val transsummary = transSum.value
             if (transsummary?.is_keeped==false){
                 transsummary.is_keeped = transsummary.is_keeped.not() ?: true
-                updataTransSumDB(transsummary)
+                transRepo.updateTransactionSummary(transsummary)
                 insertToSummary()
             }
         }
@@ -342,7 +328,7 @@ class TransactionDetailViewModel (application: Application,
             calendar.time = transSum.value!!.trans_date
             val dateFormat = SimpleDateFormat("MMMM", Locale.getDefault())
             transDetail.value?.forEach { it ->
-                val product = getProduct(it.sub_id?:-1)
+                val product = stockRepo.getProductBySubId(it.sub_id?:-1)
                 if(product?.product_name?.contains("biaya", ignoreCase = true) != true){
                     val summary = Summary().apply {
                         year = calendar.get(Calendar.YEAR)
@@ -367,7 +353,7 @@ class TransactionDetailViewModel (application: Application,
                     }
                     // Log.i("profitbrobs","${summary.item_name} ${summary?.product_capital}")
                     //Log.i("profitbrobs","${product}")
-                    insertItemToSummaryDB(summary)
+                    bookRepo.insertTransactionToSummary(summary)
                 }
 
             }
@@ -383,7 +369,7 @@ class TransactionDetailViewModel (application: Application,
                 summary.price = it.payment_ammount?.toDouble()?.times((-1)) ?: 0.0
                 summary.item_sold = 1.0
                 summary.total_income = it.payment_ammount?.toDouble()?.times((-1)) ?: 0.0
-                insertDiscountToSummaryDB(summary)
+                bookRepo.insertTransactionToSummary(summary)
             }
 
         }
@@ -394,7 +380,7 @@ class TransactionDetailViewModel (application: Application,
             if (transSum.value!=null) {
                 val transsummary = transSum.value!!
                 transsummary.trans_date = Date()
-                updateTransSumDB(transsummary)
+                transRepo.updateTransactionSummary(transsummary)
             }
         }
     }
@@ -403,7 +389,7 @@ class TransactionDetailViewModel (application: Application,
             if (transSum.value!=null) {
                 val transsummary = transSum.value!!
                 transsummary.trans_date = date
-                updateTransSumDB(transsummary)
+                transRepo.updateTransactionSummary(transsummary)
             }
         }
     }
@@ -411,71 +397,16 @@ class TransactionDetailViewModel (application: Application,
     //Update Trans Detail value
     fun updateTransDetail(transdetail: TransactionDetail){
         viewModelScope.launch {
-            updateTransDetailDB(transdetail)
+            transRepo.updateTransDetail(transdetail)
         }
     }
     /******************************************** Suspend **************************************/
 
-    private suspend fun updatePaymentDB(payment: Payment) {
-        withContext(Dispatchers.IO) {
-             datasource4.update(payment)
-        }
-    }
-    private suspend fun deletePaymentDB(id:Int){
-        withContext(Dispatchers.IO){
-            datasource4.deletePayment(id)
-        }
-    }
-    private suspend fun updateTransSumDB(transSum: TransactionSummary){
-        withContext(Dispatchers.IO){
-            datasource1.update(transSum)
-        }
-    }
-    private suspend fun updataTransSumDB(transSum: TransactionSummary){
-        withContext(Dispatchers.IO){
-            datasource1.update(transSum)
-        }
-    }
-    private suspend fun getProductName(subName:String):String?{
-        return withContext(Dispatchers.IO){
-            datasource5.getProductName(subName)
-        }
-    }
-    private suspend fun getProduct(subId:Int): Product?{
-        return withContext(Dispatchers.IO){
-            datasource5.getProduct(subId)
-        }
-    }
-    private suspend fun insertItemToSummaryDB(summary: Summary){
-        withContext(Dispatchers.IO){
-            datasource3.insertOrUpdate(summary)
-        }
-    }
-    private suspend fun insertDiscountToSummaryDB(summary: Summary){
-        withContext(Dispatchers.IO){
-            datasource3.insertOrUpdateD(summary)
-        }
-    }
-    private suspend fun updateTransDetailDB(transdetail: TransactionDetail){
-        withContext(Dispatchers.IO){
-            datasource2.update(transdetail)
-        }
-    }
-    private suspend fun insertPaymentToDB(payment: Payment){
-        withContext(Dispatchers.IO){
-            datasource4.insert(payment)
-        }
-    }
-    private suspend fun insertDiscountToDb(discount:DiscountTransaction){
-        withContext(Dispatchers.IO){
-            discountTransDao.insert(discount)
-        }
-    }
-    private suspend fun updateDiscountToDb(id:Int,ammount:Double){
-        withContext(Dispatchers.IO){
-            discountTransDao.updateById(id,ammount)
-        }
-    }
+
+
+
+
+
 
     fun generateReceiptTextWa(): String {
         textGenerator = TextGenerator(transDetail.value,transSum.value,paymentModel.value,discountTransBySumId.value?.filter { it.discountType!=DISCTYPE.CashbackNotPrinted })
