@@ -8,13 +8,6 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.switchMap
-import com.example.app21try6.database.*
-import com.example.app21try6.database.daos.BrandDao
-import com.example.app21try6.database.daos.CategoryDao
-import com.example.app21try6.database.daos.ProductDao
-import com.example.app21try6.database.daos.SubProductDao
-import com.example.app21try6.database.daos.SummaryDbDao
 import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.tables.Product
@@ -60,7 +53,7 @@ class VendibleViewModel(
     val all_item_from_db get() = itemCathPosition.value.let {position->
         val cath = cathList.value
         val selectedCath = position?.let { cath?.get(it) }
-        stockRepo.getProductByCategoryId(selectedCath?.id ?: 0)
+        stockRepo.getProductLiveDataByCategoryId(selectedCath?.id ?: 0)
     }
     fun onCheckBoxClicked(product: Product, bool:Boolean){
         if(bool){

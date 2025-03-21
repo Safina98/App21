@@ -20,6 +20,8 @@ import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
 import com.example.app21try6.bookkeeping.vendiblelist.VendibleFragmentArgs
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.database.repositories.StockRepositories
+import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentTransactionSelectBinding
 import com.example.app21try6.transaction.transactionedit.Code
 import com.google.android.material.textfield.TextInputEditText
@@ -35,15 +37,13 @@ class TransactionSelectFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_transaction_select,container,false)
         val application = requireNotNull(this.activity).application
-        val dataSource1 = VendibleDatabase.getInstance(application).categoryDao
-        val dataSource2 = VendibleDatabase.getInstance(application).productDao
-        val dataSource4 = VendibleDatabase.getInstance(application).subProductDao
-        val dataSource6 = VendibleDatabase.getInstance(application).transDetailDao
+        val stockRepo= StockRepositories(application)
+        val transRepo= TransactionsRepository(application)
         val date= arguments?.let { VendibleFragmentArgs.fromBundle(it).date }
 
         var datee  = date!!.toMutableList()
 
-        viewModel = ViewModelProvider(requireActivity(), TransactionSelectViewModelFactory(date[0].toInt()!!,dataSource1,dataSource2,dataSource4,date,dataSource6,application))
+        viewModel = ViewModelProvider(requireActivity(), TransactionSelectViewModelFactory(stockRepo,transRepo,date[0].toInt()!!,date,application))
             .get(TransactionSelectViewModel::class.java)
         var i = date!![1].toInt()
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {

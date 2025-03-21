@@ -28,15 +28,9 @@ class VendibleFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_vendible,container,false)
         val application = requireNotNull(this.activity).application
-        val dataSourceSum = VendibleDatabase.getInstance(application).summaryDbDao
 
-        val dataSource1 = VendibleDatabase.getInstance(application).categoryDao
-        val dataSource2 = VendibleDatabase.getInstance(application).brandDao
-        val dataSource3 = VendibleDatabase.getInstance(application).productDao
-        val dataSource4 = VendibleDatabase.getInstance(application).subProductDao
-        val dataSource6 = VendibleDatabase.getInstance(application).detailWarnaDao
-        val repository = StockRepositories(dataSource1,dataSource2,dataSource3,dataSource4,dataSource6)
-        val sumRepo = BookkeepingRepository(dataSourceSum)
+        val repository = StockRepositories(application)
+        val sumRepo = BookkeepingRepository(application)
         val date= arguments?.let { VendibleFragmentArgs.fromBundle(it).date }
         val datee  = date!!.toMutableList()
         val viewModelFactory = VendibleViewModelFactory(sumRepo,repository, date,application)

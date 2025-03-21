@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.app21try6.R
 import com.example.app21try6.bookkeeping.vendiblelist.VendibleFragmentArgs
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.database.repositories.StockRepositories
+import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentTransactionProductBinding
 import com.example.app21try6.transaction.transactionselect.TransactionSelectViewModel
 import com.example.app21try6.transaction.transactionselect.TransactionSelectViewModelFactory
@@ -38,23 +40,13 @@ class TransactionProductFragment : Fragment() {
 
 
         val application = requireNotNull(this.activity).application
-        val dataSource = VendibleDatabase.getInstance(application).summaryDbDao
-        val dataSource1 = VendibleDatabase.getInstance(application).categoryDao
-        val dataSource2 = VendibleDatabase.getInstance(application).productDao
-        val dataSource3 = VendibleDatabase.getInstance(application).brandDao
-        val dataSource4 = VendibleDatabase.getInstance(application).subProductDao
-        val dataSource5 = VendibleDatabase.getInstance(application).transSumDao
-        val dataSource6 = VendibleDatabase.getInstance(application).transDetailDao
+        val stockRepo= StockRepositories(application)
+        val transRepo= TransactionsRepository(application)
         val sumAndProductId= arguments?.let { VendibleFragmentArgs.fromBundle(it).date }
         var datee  = sumAndProductId!!.toMutableList()
         Log.i("SUMIDPROB","TransactionProductFragment arguments $sumAndProductId[0]")
-/*
-        val viewModelFactory = TransactionSelectViewModelFactory(date[0].toInt()!!,dataSource1,dataSource2,dataSource4,date,dataSource6,application)
-        val viewModel = ViewModelProvider(this, viewModelFactory).get(TransactionSelectViewModel::class.java)
 
-
- */
-        viewModel = ViewModelProvider(requireActivity(), TransactionSelectViewModelFactory(sumAndProductId[0].toInt()!!,dataSource1,dataSource2,dataSource4,sumAndProductId,dataSource6,application))
+        viewModel = ViewModelProvider(requireActivity(), TransactionSelectViewModelFactory(stockRepo,transRepo,sumAndProductId[0].toInt()!!,sumAndProductId,application))
             .get(TransactionSelectViewModel::class.java)
 
         binding.lifecycleOwner = this

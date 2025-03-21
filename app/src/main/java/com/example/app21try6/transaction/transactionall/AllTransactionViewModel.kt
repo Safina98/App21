@@ -319,9 +319,8 @@ class AllTransactionViewModel(application: Application,val transRepo: Transactio
                 // Get the Application object from extras
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
                 // Create a SavedStateHandle for this ViewModel from extras
-                val dataSource1 = VendibleDatabase.getInstance(application).transSumDao
-                val dataSource2 = VendibleDatabase.getInstance(application).transDetailDao
-                val transRepo=TransactionsRepository(dataSource2,dataSource1)
+
+                val transRepo=TransactionsRepository(application)
                 return AllTransactionViewModel(
                     application,transRepo
                 ) as T

@@ -79,9 +79,8 @@ class TransactionActiveFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_transaction_active,container,false)
         val application = requireNotNull(this.activity).application
-        val datasource1= VendibleDatabase.getInstance(application).transSumDao
-        val datasource2= VendibleDatabase.getInstance(application).transDetailDao
-        val transRepo=TransactionsRepository(datasource2,datasource1)
+
+        val transRepo=TransactionsRepository(application)
         val viewModelFactory = TransactionActiveViewModelFactory(application,transRepo)
         val viewModel = ViewModelProvider(this,viewModelFactory).get(TransactionActiveViewModel::class.java)
         binding.lifecycleOwner = this

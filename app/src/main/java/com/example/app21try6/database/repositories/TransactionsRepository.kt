@@ -1,7 +1,9 @@
 package com.example.app21try6.database.repositories
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
+import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.daos.TransDetailDao
 import com.example.app21try6.database.daos.TransSumDao
 import com.example.app21try6.database.tables.Summary
@@ -10,25 +12,32 @@ import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.getDate
 import com.example.app21try6.parseDate
 import com.example.app21try6.transaction.transactiondetail.TransactionDetailWithProduct
+import com.example.app21try6.transaction.transactionselect.TransSelectModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Date
 
 class TransactionsRepository(
-    private val transDetailDao:TransDetailDao,
-    private val transSumDao:TransSumDao
+    application: Application
 ) {
+    private val transDetailDao= VendibleDatabase.getInstance(application).transDetailDao
+    private val transSumDao=VendibleDatabase.getInstance(application).transSumDao
+
+
     fun getTransactionDetails(id:Int): LiveData<List<TransactionDetail>> {
         return transDetailDao.selectATransDetail(id)
     }
     fun getTransactionDetailsWithProductID(id:Int): LiveData<List<TransactionDetailWithProduct>> {
         return transDetailDao.getTransactionDetailsWithProduct(id)
     }
+    suspend fun getTransactionDetailsWithProductIDList(id:Int): List<TransactionDetailWithProduct>? {
+        return withContext(Dispatchers.IO){ transDetailDao.getTransactionDetailsWithProductList(id)}
+    }
     fun getTotalTransaction(id:Int): LiveData<Double> {
         return transDetailDao.getTotalTrans(id)
     }
-    suspend fun insertTransDetail(transDetail: TransactionDetail){
-        withContext(Dispatchers.IO){
+    suspend fun insertTransDetail(transDetail: TransactionDetail):Long{
+       return withContext(Dispatchers.IO){
             transDetailDao.insert(transDetail)
         }
     }
@@ -37,11 +46,21 @@ class TransactionsRepository(
            transDetailDao.deteleAnItemTransDetailSub(sum_id,name)
         }
     }
+    suspend fun deleteTransDetail(id:Long){
+        withContext(Dispatchers.IO){
+            transDetailDao.deleteAnItemTransDetail(id)
+        }
+    }
 
 
     suspend fun updateTransDetail(transdetail: TransactionDetail){
         withContext(Dispatchers.IO){
             transDetailDao.update(transdetail)
+        }
+    }
+    suspend fun getTransSelectModel(productId:Int,sum_id: Int):List<TransSelectModel>{
+       return withContext(Dispatchers.IO){
+            transDetailDao.getSubProductM(productId,sum_id ?: 0)
         }
     }
     ///////////////////////////////////TransSum////////////////////////////////////////////////////////

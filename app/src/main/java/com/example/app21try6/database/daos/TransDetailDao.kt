@@ -20,8 +20,8 @@ import java.util.Date
 interface TransDetailDao {
 
 
-    @Insert
-    fun insert(transactionDetail: TransactionDetail)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(transactionDetail: TransactionDetail):Long
     @Update
     fun update(transactionDetail: TransactionDetail)
 

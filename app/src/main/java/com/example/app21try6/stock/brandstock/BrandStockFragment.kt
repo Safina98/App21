@@ -68,16 +68,8 @@ class BrandStockFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_brand_stock,container,false)
         val application = requireNotNull(this.activity).application
-        val dataSource1 = VendibleDatabase.getInstance(application).categoryDao
-        val dataSource2 = VendibleDatabase.getInstance(application).brandDao
-        val dataSource3 = VendibleDatabase.getInstance(application).productDao
-        val dataSource4 = VendibleDatabase.getInstance(application).subProductDao
-        val dataSource5 = VendibleDatabase.getInstance(application).discountDao
-        val dataSource6 = VendibleDatabase.getInstance(application).detailWarnaDao
-        val dataSource7 = VendibleDatabase.getInstance(application).discountTransDao
-        val dataSource8 = VendibleDatabase.getInstance(application).paymentDao
-        val repository = StockRepositories(dataSource1,dataSource2,dataSource3,dataSource4,dataSource6)
-        val discountRepository=DiscountRepository(dataSource7, dataSource5, dataSource8)
+        val repository = StockRepositories(application)
+        val discountRepository=DiscountRepository(application)
         val viewModelFactory = BrandStockViewModelFactory(repository,discountRepository,application)
         binding.lifecycleOwner =this
         val layoutOneViews = listOf(

@@ -1,22 +1,34 @@
 package com.example.app21try6.database.repositories
 
+import android.app.Application
 import androidx.lifecycle.LiveData
+import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.daos.DiscountDao
 import com.example.app21try6.database.daos.DiscountTransDao
 import com.example.app21try6.database.daos.PaymentDao
 import com.example.app21try6.database.models.PaymentModel
+import com.example.app21try6.database.tables.CustomerTable
+import com.example.app21try6.database.tables.DiscountTable
 import com.example.app21try6.database.tables.DiscountTransaction
 import com.example.app21try6.database.tables.Payment
+import com.example.app21try6.utils.MyApplication
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class DiscountRepository(
-    private val discountTransDao: DiscountTransDao,
-    private val discountDao: DiscountDao,
-    private val paymentDao: PaymentDao
+    application: Application
 ) {
+
+    private val customerDao=VendibleDatabase.getInstance(application).customerDao
+    private val discountTransDao=VendibleDatabase.getInstance(application).discountTransDao
+    private val discountDao=VendibleDatabase.getInstance(application).discountDao
+    private val paymentDao=VendibleDatabase.getInstance(application).paymentDao
+
     fun getAllDicountName(): LiveData<List<String>> {
         return discountDao.getAllDiscountName()
+    }
+    suspend fun getAllDicountNameList(): List<DiscountTable> {
+        return withContext(Dispatchers.IO){ discountDao.getAllDiscountList()}
     }
 
     suspend fun getDiscountNameById(id:Int?):String?{
@@ -39,6 +51,9 @@ class DiscountRepository(
             discountTransDao.delete(id)
         }
     }
+    suspend fun selectExistingDiscount(sumId: Int,discName: String):DiscountTransaction?{
+        return withContext(Dispatchers.IO){discountTransDao.selectDiscTransBySumIdAndDiscName(sumId ,discName)}
+    }
     suspend fun insertTransactionDiscount(discount:DiscountTransaction){
         withContext(Dispatchers.IO){
             discountTransDao.insert(discount)
@@ -49,6 +64,7 @@ class DiscountRepository(
             discountTransDao.updateById(id,ammount)
         }
     }
+
     suspend fun getDiscountTransactionList(id:Int):List<DiscountTransaction>{
         return withContext(Dispatchers.IO) { discountTransDao.getDiscountListBySumId(id) }
     }
@@ -77,5 +93,20 @@ class DiscountRepository(
             paymentDao.insert(payment)
         }
     }
+    //..................................CustomerDao.............................................../
+    fun getAllCustomers():LiveData<List<CustomerTable>>{
+        return customerDao.allCustomer()
+    }
+
+    suspend fun getCustomerByName(name:String):CustomerTable?{
+        return withContext(Dispatchers.IO){customerDao.getCustomerByName(name)}
+
+    }
+    suspend fun getCustomerId(name:String):Int?{
+        return withContext(Dispatchers.IO){
+            customerDao.getIdByName(name)
+        }
+    }
+
 
 }

@@ -1,11 +1,8 @@
 package com.example.app21try6.database.repositories
 
+import android.app.Application
 import androidx.lifecycle.LiveData
-import com.example.app21try6.database.daos.BrandDao
-import com.example.app21try6.database.daos.CategoryDao
-import com.example.app21try6.database.daos.DetailWarnaDao
-import com.example.app21try6.database.daos.ProductDao
-import com.example.app21try6.database.daos.SubProductDao
+import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.tables.Category
@@ -19,12 +16,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class StockRepositories (
-    private val categoryDao: CategoryDao,
-    private val brandDao: BrandDao,
-    private val productDao: ProductDao,
-    private val subProductDao: SubProductDao,
-    private val detailWarnaDao: DetailWarnaDao
+   application: Application
                             ){
+    private val categoryDao= VendibleDatabase.getInstance(application).categoryDao
+    private val brandDao=VendibleDatabase.getInstance(application).brandDao
+    private val productDao=VendibleDatabase.getInstance(application).productDao
+    private val subProductDao=VendibleDatabase.getInstance(application).subProductDao
+    private val detailWarnaDao=VendibleDatabase.getInstance(application).detailWarnaDao
 
     //category rv data
     fun getCategoryModelLiveData(): LiveData<List<CategoryModel>> {
@@ -38,7 +36,13 @@ class StockRepositories (
     fun getExportedStockData(): LiveData<List<ExportModel>> {
         return brandDao.getExportedData()
     }
-
+    suspend fun getCategoryNameListWithAll():List<String>{
+        return withContext(Dispatchers.IO) {
+            val list = categoryDao.getAllCategoryName()
+            val modifiedList = listOf("ALL") + list // Create a new list with the added value
+            modifiedList // Return the modified list
+        }
+    }
     // get category id by category name
     suspend fun getCategoryIdByName(id: String):Int{
         return withContext(Dispatchers.IO){
@@ -86,8 +90,13 @@ class StockRepositories (
             subProductDao.getProduct(subId)
         }
     }
-    fun getProductByCategoryId(id:Int):LiveData<List<Product>>{
+    fun getProductLiveDataByCategoryId(id:Int):LiveData<List<Product>>{
         return productDao.getCategoriedProduct(id)
+    }
+    suspend fun getProductListByCategoryId(category_id:Int?):List<Product>{
+        return withContext(Dispatchers.IO){
+            productDao.getProductByCategory(category_id)
+        }
     }
 
     fun getAllProduct(): LiveData<List<Product>> {
@@ -123,7 +132,16 @@ class StockRepositories (
             subProductDao.updateSubProductAndTransDetail(subProduct)
         }
     }
-
+   suspend fun checkedSub(name:String,bool:Int){
+        withContext(Dispatchers.IO){
+            subProductDao.update_checkbox(name,bool)
+        }
+    }
+    suspend fun uncheckedAllSubs(){
+        withContext(Dispatchers.IO){
+            subProductDao.unchecked_allCheckbox()
+        }
+    }
     //////////////////////////////////////Detail Warna////////////////////////////////////////////////
 
     suspend fun getDetailWarnaList(id:Int):List<DetailWarnaTable>{

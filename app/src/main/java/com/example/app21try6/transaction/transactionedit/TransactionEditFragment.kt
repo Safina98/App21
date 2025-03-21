@@ -27,6 +27,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.R
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.database.repositories.BookkeepingRepository
+import com.example.app21try6.database.repositories.DiscountRepository
+import com.example.app21try6.database.repositories.StockRepositories
+import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentTransactionEditBinding
 import com.example.app21try6.databinding.PopUpUnitBinding
 import com.example.app21try6.utils.DialogUtils
@@ -45,15 +49,13 @@ class TransactionEditFragment : Fragment() {
 
         val application = requireNotNull(this.activity).application
 
-        val datasource1 = VendibleDatabase.getInstance(application).transSumDao
-        val datasource2 = VendibleDatabase.getInstance(application).transDetailDao
-        val datasource3 = VendibleDatabase.getInstance(application).discountDao
-        val datasource4 = VendibleDatabase.getInstance(application).customerDao
-        val datasource5 = VendibleDatabase.getInstance(application).discountTransDao
-        val datasource6 = VendibleDatabase.getInstance(application).productDao
+        val stockRepositories= StockRepositories(application)
+        val transRepositories= TransactionsRepository(application)
+
+        val discountRepository= DiscountRepository(application)
         val id= arguments?.let{TransactionEditFragmentArgs.fromBundle(it).id}
 
-        val viewModelFactory = TransactionEditViewModelFactory(application, datasource1, datasource2,datasource3,datasource5,datasource4, datasource6,id!!)
+        val viewModelFactory = TransactionEditViewModelFactory(stockRepositories,transRepositories,discountRepository,application, id!!)
         val viewModel = ViewModelProvider(this, viewModelFactory).get(TransactionEditViewModel::class.java)
 
         binding.lifecycleOwner = this
@@ -248,8 +250,8 @@ class TransactionEditFragment : Fragment() {
 
         val alert = builder.create()
         alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
 
     }
 
@@ -271,8 +273,8 @@ class TransactionEditFragment : Fragment() {
             .setNegativeButton("Cancel", null)
             .create()
         dialog.show()
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
 
     }
 

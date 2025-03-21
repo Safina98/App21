@@ -37,16 +37,9 @@ class SubProductStockFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_sub_product_stock,container,false)
         val application = requireNotNull(this.activity).application
-        val categoryDao = VendibleDatabase.getInstance(application).categoryDao
-        val brandDao=VendibleDatabase.getInstance(application).brandDao
-        val subProductDao = VendibleDatabase.getInstance(application).subProductDao
-        val detailWarnaDao=VendibleDatabase.getInstance(application).detailWarnaDao
 
-        val productDao=VendibleDatabase.getInstance(application).productDao
-        val transDetailDao = VendibleDatabase.getInstance(application).transDetailDao
-        val transSumDao=VendibleDatabase.getInstance(application).transSumDao
-        val stockRepo = StockRepositories(categoryDao,brandDao,productDao,subProductDao,detailWarnaDao)
-        val transRepo=TransactionsRepository(transDetailDao,transSumDao)
+        val stockRepo = StockRepositories(application)
+        val transRepo=TransactionsRepository(application)
         val id = arguments?.let { SubProductStockFragmentArgs.fromBundle(it).productId }
         (activity as AppCompatActivity).supportActionBar?.title = id?.last()
         id?.set(4,"0")

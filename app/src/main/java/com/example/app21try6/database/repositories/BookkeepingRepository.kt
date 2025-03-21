@@ -1,8 +1,10 @@
 package com.example.app21try6.database.repositories
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import com.example.app21try6.bookkeeping.summary.ListModel
 import com.example.app21try6.bookkeeping.summary.MonthlyProfit
+import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.daos.SummaryDbDao
 import com.example.app21try6.database.tables.Summary
 import com.example.app21try6.getDateFromComponents
@@ -10,8 +12,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class BookkeepingRepository(
-    private val summaryDbDao: SummaryDbDao
+    application: Application
 ) {
+    private val summaryDbDao= VendibleDatabase.getInstance(application).summaryDbDao
     fun getDailySells(date: Array<String>): LiveData<List<Summary>> {
         return summaryDbDao.getToday(date[0].toInt(), date[1], date[2].toInt())
     }

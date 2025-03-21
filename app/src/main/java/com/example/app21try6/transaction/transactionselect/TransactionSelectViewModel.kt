@@ -12,23 +12,27 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.app21try6.database.*
-import com.example.app21try6.database.daos.CategoryDao
-import com.example.app21try6.database.daos.ProductDao
-import com.example.app21try6.database.daos.SubProductDao
-import com.example.app21try6.database.daos.TransDetailDao
+import com.example.app21try6.database.repositories.StockRepositories
+import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.tables.TransactionDetail
 import kotlinx.coroutines.*
 import java.util.Date
 import java.util.Locale
 
-class TransactionSelectViewModel(
-    val sum_id:Int,
-    val database1: CategoryDao,
+/*
+
+val database1: CategoryDao,
     val database2: ProductDao,
     val database4: SubProductDao,
-    val sumAndProductId:Array<String>,
+    ,
     val database6: TransDetailDao,
+ */
+class TransactionSelectViewModel(
+    private val stockRepo: StockRepositories,
+    private val transRepo:TransactionsRepository,
+    val sum_id:Int,
+    val sumAndProductId:Array<String>,
     application: Application): AndroidViewModel(application){
    // val trans_select_model =database6.getSubProduct(date[1].toInt(),sum_id)
     var transSelectModel = MutableLiveData<List<TransSelectModel>>()
@@ -88,9 +92,7 @@ class TransactionSelectViewModel(
 
     fun getTransModel(productId:Int){
         viewModelScope.launch {
-           val list = withContext(Dispatchers.IO){
-               database6.getSubProductM(productId,_sumId.value ?: 0)
-           }
+           val list = transRepo.getTransSelectModel(productId,_sumId.value?:0)
             transSelectModel.value = list
         }
     }
@@ -105,7 +107,7 @@ class TransactionSelectViewModel(
         if (id != null) {
             if (id >= 0)
             {
-                _sumId.value = id
+                _sumId.value = id?:0
             }else
             {
                 expenseId.value=id*-1
@@ -133,7 +135,7 @@ class TransactionSelectViewModel(
             }
             val t = converter(s)
             var id =s.trans_detail_id
-            if (id==0L) id = insertDetailToDBandGetId(t) else _updateTransDetail(t)
+            if (id==0L) id = transRepo.insertTransDetail(t) else transRepo.updateTransDetail(t)
             s.trans_detail_id  = id ?: -1L
             updateTransDetaill(s)
         }
@@ -160,7 +162,7 @@ class TransactionSelectViewModel(
             if (boolean == true) {
                 var t = converter(s)
                 try {
-                    var id = insertDetailToDBandGetId(t)
+                    var id = transRepo.insertTransDetail(t)
                     s.trans_detail_id  = id ?: -1L
                      updateTransDetaill(s)
                 }catch (e:Exception)
@@ -175,42 +177,24 @@ class TransactionSelectViewModel(
         viewModelScope.launch {
             Log.i("DuplicateProbs","s id ${s.trans_detail_id}")
             val t = converter(s)
-            val id = insertDetailToDBandGetId(t)
+            val id =transRepo.insertTransDetail(t)
             Log.i("DuplicateProbs","inserted id $id")
             s.trans_detail_id  = id ?: -1L
             getTransModel(_productId.value!!)
             updateTransDetaill(s)
         }
     }
-    private suspend fun insertDetailToDBandGetId(t: TransactionDetail):Long{
-       return withContext(Dispatchers.IO){
-            database6.insertN(t)
-        }
-    }
-    private suspend fun checkedSub(name:String,bool:Int){
-        withContext(Dispatchers.IO){
-            database4.update_checkbox(name,bool)
-        }
-    }
+
+
 
     fun delete(s:TransSelectModel){
         viewModelScope.launch {
-            _delete(s)
-        }
-    }
-    private suspend fun _delete(s:TransSelectModel){
-        withContext(Dispatchers.IO){
-            database6.deleteAnItemTransDetail(s.trans_detail_id)
+            transRepo.deleteTransDetail(s.trans_detail_id)
         }
     }
 
-    private suspend fun _insertTransDetail(transactionDetail: TransactionDetail){
-       withContext(Dispatchers.IO){ database6.insert(transactionDetail)}
-    }
 
-    private suspend fun _updateTransDetail(transactionDetail: TransactionDetail){
-        withContext(Dispatchers.IO){database6.update(transactionDetail)}
-    }
+
 
     fun onShowDialog(transSelectModel: TransSelectModel){
         _showDialog.value = transSelectModel
@@ -222,14 +206,10 @@ class TransactionSelectViewModel(
     }
     fun unCheckedAllSubs(){
         viewModelScope.launch {
-            uncheckedAllSubs_()
+            stockRepo.uncheckedAllSubs()
         }
     }
-    private suspend fun uncheckedAllSubs_(){
-        withContext(Dispatchers.IO){
-            database4.unchecked_allCheckbox()
-        }
-    }
+
     ///////////////////////////////////////////////PRODUCT//////////////////////////////////////
     fun filterProduct(query: String?) {
         val list = mutableListOf<Product>()
@@ -244,34 +224,22 @@ class TransactionSelectViewModel(
 
     fun updateRv(value: String){
         viewModelScope.launch {
-            val categoryId = if (value != "ALL") { getSelectedCategoryId(value) } else { null }
-            val product = getProductByCategory(categoryId)
+            val categoryId = if (value != "ALL") { stockRepo.getCategoryIdByName(value) } else { null }
+            val product = stockRepo.getProductListByCategoryId(categoryId)
             _allProduct.value = product
             _unFilteredProduct.value = product
         }
     }
-    private suspend fun getProductByCategory(category_id:Int?):List<Product>{
-        return withContext(Dispatchers.IO){
-            database2.getProductByCategory(category_id)
-        }
-    }
 
-    private suspend fun getSelectedCategoryId(value: String):Int?{
-        return withContext(Dispatchers.IO){
-            database1.getCategoryId(value)
-        }
-    }
+
+
     fun setSelectedKategoriValue(selectedCategory:String){
         _selectedKategoriSpinner.value = selectedCategory
     }
     fun getKategoriEntries(){
         // Toast.makeText(getApplication(),value+" kategori",Toast.LENGTH_SHORT).show()
         viewModelScope.launch {
-            var newData = withContext(Dispatchers.IO) {
-                val list = database1.getAllCategoryName()
-                val modifiedList = listOf("ALL") + list // Create a new list with the added value
-                modifiedList // Return the modified list
-            }
+            var newData = stockRepo.getCategoryNameListWithAll()
             _categoryEntries.value = newData
         }
     }
@@ -308,13 +276,11 @@ class TransactionSelectViewModel(
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
                 // Create a SavedStateHandle for this ViewModel from extras
                 val savedStateHandle = extras.createSavedStateHandle()
-                val dataSource1 = VendibleDatabase.getInstance(application).categoryDao
-                val dataSource2 = VendibleDatabase.getInstance(application).productDao
-                val dataSource4 = VendibleDatabase.getInstance(application).subProductDao
-                val dataSource6 = VendibleDatabase.getInstance(application).transDetailDao
+               val stockRepo=StockRepositories(application)
+                val transRepo=TransactionsRepository(application)
 
                 return TransactionSelectViewModel(
-                    0,dataSource1, dataSource2,dataSource4, arrayOf("0","0","0"),dataSource6,application
+                    stockRepo,transRepo,0, arrayOf("0","0","0"),application
                 ) as T
             }
         }

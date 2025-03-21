@@ -10,6 +10,9 @@ import com.example.app21try6.database.daos.DiscountTransDao
 import com.example.app21try6.database.daos.ProductDao
 import com.example.app21try6.database.daos.TransDetailDao
 import com.example.app21try6.database.daos.TransSumDao
+import com.example.app21try6.database.repositories.DiscountRepository
+import com.example.app21try6.database.repositories.StockRepositories
+import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.database.tables.DiscountTransaction
 import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.tables.TransactionDetail
@@ -21,14 +24,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
-class TransactionEditViewModel(
-    application: Application,
-    val datasource1: TransSumDao,
+/*
+val datasource1: TransSumDao,
     val datasource2: TransDetailDao,
     private val discountDao: DiscountDao,
     private val discountTransDao: DiscountTransDao,
     private val customerDao: CustomerDao,
     private val productDao:ProductDao,
+ */
+class TransactionEditViewModel(
+    private val stockRepo:StockRepositories,
+    private val transRepo:TransactionsRepository,
+    private val discountRepo:DiscountRepository,
+    application: Application,
     var id:Int
 ):AndroidViewModel(application){
 
@@ -37,14 +45,14 @@ class TransactionEditViewModel(
     val isBtnBayarClicked: LiveData<Boolean> get() = _isBtnBayarClicked
     //Customer Name two way binding
     var custName  =MutableLiveData<String>("")
-    var itemTransDetail = datasource2.selectATransDetail(id)
-    val allCustomerTable = customerDao.allCustomer()
+    var itemTransDetail = transRepo.getTransactionDetails(id)
+    val allCustomerTable = discountRepo.getAllCustomers()
 
-    val transSum = datasource1.getTransSum(id)
+    val transSum = transRepo.getTransactionSummary(id)
     //Mutable transaction summary for edit purpose
     var mutableTransSum = MutableLiveData<TransactionSummary> ()
     //get total transaction
-    val totalSum = datasource2.getTotalTrans(id)
+    val totalSum = transRepo.getTotalTransaction(id)
     //format total transaction
     val trans_total: LiveData<String> = totalSum.map {   formatRupiah(it).toString() }
     //show or hide popupDialog
@@ -57,9 +65,8 @@ class TransactionEditViewModel(
     val navigateToDetail: LiveData<Int> get() = _navigateToDetail
 
 
-    val transDetailWithProduct= datasource2.getTransactionDetailsWithProduct(id)
+    val transDetailWithProduct= transRepo.getTransactionDetailsWithProductID(id)
     var discountTransactionList =  mutableListOf <DiscountTransaction>()
-
 
     //change item position on drag
     val updatePositionCallback: (List<TransactionDetail>) -> Unit = { updatedItems ->
@@ -67,7 +74,7 @@ class TransactionEditViewModel(
             for ((index, item) in updatedItems.withIndex()) {
                 item.item_position = index
                 Log.i("drag","viewModel ${item.trans_item_name} ${item.item_position}")
-                _updateTransDetail(item)
+                transRepo.updateTransDetail(item)
             }
         }
     }
@@ -92,11 +99,12 @@ class TransactionEditViewModel(
 
             val transactionSummary = mutableTransSum.value // Assume this is a valid TransactionSummary object
             val custId = mutableTransSum.value?.cust_name ?: "-1"
-            val customerDeferred = async(Dispatchers.IO) { customerDao.getCustomerByName(custId) }
-            val discountList = withContext(Dispatchers.IO){discountDao.getAllDiscountList()}
+            val customerDeferred = async(Dispatchers.IO) { discountRepo.getCustomerByName(custId) }
+            val discountList = withContext(Dispatchers.IO){discountRepo.getAllDicountNameList()}
             val customer = customerDeferred.await()
 
-            val transDetailWithProductList = withContext(Dispatchers.IO){ datasource2.getTransactionDetailsWithProductList(transactionSummary!!.sum_id) }
+            val transDetailWithProductList = transRepo.getTransactionDetailsWithProductIDList(id)
+
 
             if (transDetailWithProductList==null || transactionSummary == null) {
                // Log.i("DiscProbs", "${transDetailWithProduct.value}")
@@ -121,7 +129,9 @@ class TransactionEditViewModel(
                             .sumOf { it.transactionDetail.qty }
 
                         // Check if the total quantity meets the minimumQty condition
-                        if (totalQty >= (discount.minimumQty ?: 0.0)) {
+                        Log.i("DiscProbs", "total Qty:$totalQty, minQty=${discount.minimumQty}")
+                        if (totalQty>= (discount.minimumQty ?: 0.0)) {
+                            Log.i("DiscProbs", "min qty met")
                             val discountAppliedValue = productTransactions.sumOf { it.transactionDetail.qty * discount.discountValue }
                             DiscountTransaction(
                                 discountId = discount.discountId,
@@ -132,7 +142,7 @@ class TransactionEditViewModel(
                                 discountAppliedValue = discountAppliedValue
                             )
                         } else {
-                            //Log.i("DiscProbs", "min qty not met")
+                            Log.i("DiscProbs", "min qty not met")
                             null // No discount if minimumQty condition is not met
                         }
                     } else {
@@ -144,35 +154,32 @@ class TransactionEditViewModel(
                     null // Location does not match
                 }
             }
-            val existingDiscountList= withContext(Dispatchers.IO){discountTransDao.selectDiscTransBySumId(id)}
+            val existingDiscountList= withContext(Dispatchers.IO){discountRepo.getDiscountTransactionList(id)}
             // Log the DiscountTransaction list
             discountTransactions.forEach { discountTransaction ->
                 //Log.i("DiscProbs", "DiscountTransaction: $discountTransaction")
-                val existingDiscount= withContext(Dispatchers.IO){discountTransDao.selectDiscTransBySumIdAndDiscName(discountTransaction.sum_id ,discountTransaction.discTransName)}
+                val existingDiscount= discountRepo.selectExistingDiscount(discountTransaction.sum_id ,discountTransaction.discTransName)
                 //Log.i("DiscProbs", "ExistingDiscount: $existingDiscount")
                 if (existingDiscount==null){
-                    insertDiscountTransToDB(discountTransaction)
+                    discountRepo.insertTransactionDiscount(discountTransaction)
                 }else{
                     existingDiscount.discountAppliedValue=discountTransaction.discountAppliedValue
-                    updateDiscountTransToDB(existingDiscount)
-
+                    discountRepo.updateTransactionDiscount(existingDiscount.discTransId,existingDiscount.discountAppliedValue)
                 }
             }
-
             existingDiscountList?.let { existingList ->
                 val itemsInFirstNotInSecond = existingList.filter { item1 ->
                     discountTransactions.none { item2 -> item1.discTransName == item2.discTransName }
                 }
                 discountTransactionList = discountTransactions.toMutableList().apply {
-                    itemsInFirstNotInSecond.forEach { deleteDiscountTransToDB(it) }
+                    itemsInFirstNotInSecond.forEach { discountRepo.deleteTransactionDiscount(it.discTransId) }
                 }
             }
             val totalDiscount=discountTransactionList.sumOf { it.discountAppliedValue }
-            val transSumS: TransactionSummary = withContext(Dispatchers.IO){ datasource1.getTrans(id)}
+            val transSumS: TransactionSummary = transRepo.getTransactionSummaryById(id)
             transSumS.total_after_discount = transSumS.total_trans-totalDiscount
 
-            updateSum(transSumS)
-
+            transRepo.updateTransactionSummary(transSumS)
 
             val endTime = System.currentTimeMillis()
             val duration = endTime - startTime
@@ -181,11 +188,7 @@ class TransactionEditViewModel(
         }
     }
 
-    private suspend fun getCustomerId(name:String):Int?{
-        return withContext(Dispatchers.IO){
-            customerDao.getIdByName(name)
-        }
-    }
+
 
 
     //update transactionDetail qty and total price
@@ -201,7 +204,7 @@ class TransactionEditViewModel(
 
             transactionDetail.total_price = transactionDetail.trans_price * transactionDetail.qty * transactionDetail.unit_qty
 
-            _updateTransDetail(transactionDetail)
+            transRepo.updateTransDetail(transactionDetail)
         }
     }
 
@@ -215,16 +218,16 @@ class TransactionEditViewModel(
                 }
                 else {
                     //get product by id
-                    val product = getProduductById(transactionDetail.sub_id)
+                    val product = stockRepo.getProductBySubId(transactionDetail.sub_id?:-1)
                     if (selectedItem=="ROLL") {
-                        transactionDetail.unit_qty=product.default_net
+                        transactionDetail.unit_qty=product?.default_net?:1.0
 
                     }
-                    transactionDetail.trans_price=product.alternate_price.toInt()
+                    transactionDetail.trans_price=product?.alternate_price?.toInt()?:0
                     transactionDetail.total_price=transactionDetail.trans_price*transactionDetail.unit_qty*transactionDetail.qty
                     transactionDetail.unit = selectedItem
                 }
-                _updateTransDetail(transactionDetail)
+                transRepo.updateTransDetail(transactionDetail)
             }
         }
     }
@@ -233,7 +236,7 @@ class TransactionEditViewModel(
             if (transSum.value!=null) {
                 val transsummary = transSum.value!!
                 transsummary.trans_date = Date()
-                updateSum(transsummary)
+                transRepo.updateTransactionSummary(transsummary)
                 setMutableTransSum()
             }
         }
@@ -241,27 +244,26 @@ class TransactionEditViewModel(
 
     /////////////////////////////////Transaction Summary////////////////////////////
     //get custName value
-    fun getCustomerName(id:Int){
+    fun getCustomerName(idm:Int){
         viewModelScope.launch {
-            val customerName = withContext(Dispatchers.IO){datasource1.getCustName(id)}
+            val customerName = transRepo.getTransactionSummaryById(id).cust_name
             custName.value = customerName
         }
     }
     //get transaction summary
     fun setMutableTransSum(){
         viewModelScope.launch {
-            val transactionSummary = withContext(Dispatchers.IO){datasource1.getTrans(id)}
+            val transactionSummary = transRepo.getTransactionSummaryById(id)
             mutableTransSum.value = transactionSummary
         }
     }
-
     //set trasactionSummary customername from editText
 
     //update Transaction Detail recyclerview item name
     fun updateTransDetailItemName(transactionDetail: TransactionDetail, itemName: String){
         viewModelScope.launch {
             transactionDetail.trans_item_name = itemName
-            _updateTransDetail(transactionDetail)
+            transRepo.updateTransDetail(transactionDetail)
         }
     }
     // update Transaction Detail recyclerview price
@@ -269,7 +271,7 @@ class TransactionEditViewModel(
         viewModelScope.launch {
             transactionDetail.trans_price = itemPrice
             transactionDetail.total_price = transactionDetail.trans_price * transactionDetail.qty *transactionDetail.unit_qty
-            _updateTransDetail(transactionDetail)
+           transRepo.updateTransDetail(transactionDetail)
         }
     }
     //update Transaction Detail unitQty
@@ -277,37 +279,40 @@ class TransactionEditViewModel(
         viewModelScope.launch {
             transactionDetail.unit_qty = unit_qyt
             transactionDetail.total_price = transactionDetail.trans_price * transactionDetail.qty *transactionDetail.unit_qty
-            _updateTransDetail(transactionDetail)
+            transRepo.updateTransDetail(transactionDetail)
         }
 
     }
     //update transaction Summary totalSum
     fun updateTotalSum(){
         viewModelScope.launch {
-            val transSumS: TransactionSummary = datasource1.getTrans(id)
+            val transSumS: TransactionSummary = transRepo.getTransactionSummaryById(id)
             transSumS.total_trans = totalSum.value ?: 0.0
-            updateSum(transSumS)
+            transRepo.updateTransactionSummary(transSumS)
             setMutableTransSum()
         }
     }
     fun updateTotalAfterDiscountSum(totalDiscount:Double){
         viewModelScope.launch {
-            val transSumS: TransactionSummary = datasource1.getTrans(id)
+            val transSumS: TransactionSummary = transRepo.getTransactionSummaryById(id)
             transSumS.total_after_discount = transSumS.total_trans-totalDiscount
             Log.i("DiscProbs","total trans: ${transSumS.total_trans}")
             Log.i("DiscProbs","diskon: ${totalDiscount}")
             Log.i("DiscProbs","total after discount: ${transSumS.total_after_discount}")
 
-            updateSum(transSumS)
+            transRepo.updateTransactionSummary(transSumS)
             setMutableTransSum()
         }
     }
     //update transactionSUmmary CustomerName
     fun updateCustNameSum(){
         viewModelScope.launch {
-            val transSumS: TransactionSummary = withContext(Dispatchers.IO){ datasource1.getTrans(id)}
+            val transSumS: TransactionSummary = transRepo.getTransactionSummaryById(id)
+            val id = discountRepo.getCustomerId(custName.value?:"")
             transSumS.cust_name=custName.value?: "-"
-            updateSum(transSumS)
+            transSumS.custId=id
+            mutableTransSum.value?.custId=id
+            transRepo.updateTransactionSummary(transSumS)
             setMutableTransSum()
         }
     }
@@ -322,59 +327,20 @@ class TransactionEditViewModel(
     // delete transaction Detail item
     fun delete(idm: Long){
         viewModelScope.launch {
-            delete_(idm)
+           transRepo.deleteTransDetail(idm)
         }
     }
 
     ////suspend
-    private suspend fun _updateTransDetail(transactionDetail: TransactionDetail){
-        withContext(Dispatchers.IO){
-            datasource2.update(transactionDetail)
-        }
-    }
-    private suspend fun updateSum(transactionSummary: TransactionSummary){
-        withContext(Dispatchers.IO){
-            datasource1.update(transactionSummary)
-        }
-    }
-    private suspend fun delete_(idm: Long){
-        withContext(Dispatchers.IO){
-            datasource2.deleteAnItemTransDetail(idm)
-        }
-    }
-    private suspend fun getProduductById(idm: Int?):Product{
-        return withContext(Dispatchers.IO){
-            productDao.getProductBySubId(idm)
-        }
-    }
-    private suspend fun insertDiscountTransToDB(discList:List<DiscountTransaction>){
-        withContext(Dispatchers.IO){
-            discountTransDao.insertAll(discList)
-        }
-    }
-    private suspend fun insertDiscountTransToDB(disc: DiscountTransaction){
-        withContext(Dispatchers.IO){
-            discountTransDao.insert(disc)
-        }
-    }
-    private suspend fun updateDiscountTransToDB(disc: DiscountTransaction){
-        withContext(Dispatchers.IO){
-            discountTransDao.update(disc)
-        }
-    }
-    private suspend fun deleteDiscountTransToDB(disc: DiscountTransaction){
-        withContext(Dispatchers.IO){
-            discountTransDao.delete(disc)
-        }
-    }
+
+
+
 
 
     ////////////////////////////////Navigation//////////////////////////////////////
     fun onNavigatetoDetail(idm:Int){
         viewModelScope.launch {
-            val id = getCustomerId(custName.value?:"")
-            mutableTransSum.value?.custId=id
-            updateSum(mutableTransSum.value!!)
+            transRepo.updateTransactionSummary(mutableTransSum.value!!)
             calculateDisc()
            // _navigateToDetail.value=id
         }

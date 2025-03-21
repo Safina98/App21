@@ -68,23 +68,11 @@ class TransactionDetailFragment : Fragment() {
         Log.d("DetailFragment", "onCreateView called")
         val id = arguments?.let { TransactionDetailFragmentArgs.fromBundle(it).id }
             ?: throw IllegalArgumentException("ID argument is missing")
-        val datasource1 = VendibleDatabase.getInstance(application).transSumDao
-        val datasource2 = VendibleDatabase.getInstance(application).transDetailDao
-        val datasource3 = VendibleDatabase.getInstance(application).summaryDbDao
-        val datasource4 = VendibleDatabase.getInstance(application).paymentDao
-        val datasource5 = VendibleDatabase.getInstance(application).subProductDao
-        val datasource6 = VendibleDatabase.getInstance(application).discountDao
-        val datasource7 = VendibleDatabase.getInstance(application).customerDao
-        val datasource8 = VendibleDatabase.getInstance(application).discountTransDao
-        val dataSource9 = VendibleDatabase.getInstance(application).categoryDao
-        val dataSource10 = VendibleDatabase.getInstance(application).brandDao
-        val dataSource11 = VendibleDatabase.getInstance(application).productDao
-        val dataSource12 = VendibleDatabase.getInstance(application).detailWarnaDao
-        val dataSource13 = VendibleDatabase.getInstance(application).summaryDbDao
-        val stockRepositories=StockRepositories(dataSource9,dataSource10,dataSource11,datasource5,dataSource12)
-        val transRepositories=TransactionsRepository(datasource2,datasource1)
-        val bookRepository = BookkeepingRepository(dataSource13)
-        val discountRepository=DiscountRepository(datasource8,datasource6,datasource4)
+
+        val stockRepositories=StockRepositories(application)
+        val transRepositories=TransactionsRepository(application)
+        val bookRepository = BookkeepingRepository(application)
+        val discountRepository=DiscountRepository(application)
 
         val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         val viewModelFactory = TransactionDetailViewModelFactory(stockRepositories,bookRepository,transRepositories,discountRepository,application,id!!)
