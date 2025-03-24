@@ -98,6 +98,13 @@ class StockRepositories (
             productDao.getProductByCategory(category_id)
         }
     }
+    suspend fun getProductNameListByCategoryName(name:String):List<String>{
+        return withContext(Dispatchers.IO) {
+            val list = productDao.getProductNameByCategoryName(name)
+            val modifiedList = listOf("Off","ALL") + list // Create a new list with the added value
+            modifiedList // Return the modified list
+        }
+    }
 
     fun getAllProduct(): LiveData<List<Product>> {
         return productDao.getAllProduct()

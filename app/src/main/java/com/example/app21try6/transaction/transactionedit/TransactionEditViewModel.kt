@@ -93,101 +93,83 @@ class TransactionEditViewModel(
     }
 
     //Calculate discount
-    fun calculateDisc() {
-        viewModelScope.launch {
+    private suspend fun calculateDisc() {
+        withContext(Dispatchers.IO) {
             val startTime = System.currentTimeMillis()
-
-            val transactionSummary = mutableTransSum.value // Assume this is a valid TransactionSummary object
+            val transactionSummary = mutableTransSum.value
             val custId = mutableTransSum.value?.cust_name ?: "-1"
-            val customerDeferred = async(Dispatchers.IO) { discountRepo.getCustomerByName(custId) }
-            val discountList = withContext(Dispatchers.IO){discountRepo.getAllDicountNameList()}
-            val customer = customerDeferred.await()
-
+            val customer = discountRepo.getCustomerByName(custId)
+            val discountList = discountRepo.getAllDicountNameList()
             val transDetailWithProductList = transRepo.getTransactionDetailsWithProductIDList(id)
 
-
-            if (transDetailWithProductList==null || transactionSummary == null) {
-               // Log.i("DiscProbs", "${transDetailWithProduct.value}")
-                return@launch
+            if (transDetailWithProductList == null || transactionSummary == null) {
+                return@withContext
             }
-            // Group transactions by discountId once to avoid repeated grouping
-            val groupedByProduct = transDetailWithProductList?.groupBy { it.discountId }
-                ?: return@launch
-           // Log.i("DiscProbs", "groupbyProduct  : ${transDetailWithProduct.value}")
-            // Calculate the discount value for products that match the discount conditions
+
+            val groupedByProduct = transDetailWithProductList.groupBy { it.discountId }
+
             val discountTransactions = discountList.mapNotNull { discount ->
-                // Check location first to avoid unnecessary computations
-
-                if (discount.custLocation?.lowercase() == customer?.customerLocation?.lowercase()||discount.custLocation==null) {
-                    // Get the transaction details for the discount
+                if (discount.custLocation?.lowercase() == customer?.customerLocation?.lowercase() || discount.custLocation == null) {
                     val productTransactions = groupedByProduct[discount.discountId]
-                    // If there are matching transactions for the discount, calculate the total quantity
-                   // Log.i("DiscProbs", "groupby product $productTransactions")
-                    if (productTransactions != null) {
-                        val totalQty = productTransactions
-                            .filter { it.transactionDetail.trans_price ==it.productPrice  }
-                            .sumOf { it.transactionDetail.qty }
+                    productTransactions?.let {
+                        val totalQty = it.filter { trans -> trans.transactionDetail.trans_price == trans.productPrice }
+                            .sumOf { trans -> trans.transactionDetail.qty }
 
-                        // Check if the total quantity meets the minimumQty condition
-                        Log.i("DiscProbs", "total Qty:$totalQty, minQty=${discount.minimumQty}")
-                        if (totalQty>= (discount.minimumQty ?: 0.0)) {
-                            Log.i("DiscProbs", "min qty met")
-                            val discountAppliedValue = productTransactions.sumOf { it.transactionDetail.qty * discount.discountValue }
+                        if (totalQty >= (discount.minimumQty ?: 0.0)) {
+                            val discountAppliedValue = it.sumOf { trans -> trans.transactionDetail.qty * discount.discountValue }
                             DiscountTransaction(
                                 discountId = discount.discountId,
                                 discTransRef = UUID.randomUUID().toString(),
                                 discTransName = discount.discountName,
                                 sum_id = transactionSummary.sum_id,
-                                discTransDate = transactionSummary.trans_date?:Date(),
+                                discTransDate = transactionSummary.trans_date ?: Date(),
                                 discountAppliedValue = discountAppliedValue
                             )
-                        } else {
-                            Log.i("DiscProbs", "min qty not met")
-                            null // No discount if minimumQty condition is not met
-                        }
-                    } else {
-                       // Log.i("DiscProbs", "no matching discount for this transaction")
-                        null // No matching transactions for this discount
+                        } else null
                     }
-                } else {
-                   // Log.i("DiscProbs", "location doesnot match")
-                    null // Location does not match
-                }
+                } else null
             }
-            val existingDiscountList= withContext(Dispatchers.IO){discountRepo.getDiscountTransactionList(id)}
-            // Log the DiscountTransaction list
+
+            val existingDiscountList = discountRepo.getDiscountTransactionList(id)
             discountTransactions.forEach { discountTransaction ->
-                //Log.i("DiscProbs", "DiscountTransaction: $discountTransaction")
-                val existingDiscount= discountRepo.selectExistingDiscount(discountTransaction.sum_id ,discountTransaction.discTransName)
-                //Log.i("DiscProbs", "ExistingDiscount: $existingDiscount")
-                if (existingDiscount==null){
+                val existingDiscount = discountRepo.selectExistingDiscount(discountTransaction.sum_id, discountTransaction.discTransName)
+                if (existingDiscount == null) {
                     discountRepo.insertTransactionDiscount(discountTransaction)
-                }else{
-                    existingDiscount.discountAppliedValue=discountTransaction.discountAppliedValue
-                    discountRepo.updateTransactionDiscount(existingDiscount.discTransId,existingDiscount.discountAppliedValue)
+                } else {
+                    existingDiscount.discountAppliedValue = discountTransaction.discountAppliedValue
+                    discountRepo.updateTransactionDiscount(existingDiscount.discTransId, existingDiscount.discountAppliedValue)
                 }
             }
             existingDiscountList?.let { existingList ->
-                val itemsInFirstNotInSecond = existingList.filter { item1 ->
-                    discountTransactions.none { item2 -> item1.discTransName == item2.discTransName }
+                val itemsToDelete = existingList.filter { existing ->
+                    discountTransactions.none { new -> existing.discTransName == new.discTransName }
                 }
-                discountTransactionList = discountTransactions.toMutableList().apply {
-                    itemsInFirstNotInSecond.forEach { discountRepo.deleteTransactionDiscount(it.discTransId) }
-                }
+                itemsToDelete.forEach { discountRepo.deleteTransactionDiscount(it.discTransId) }
             }
-            val totalDiscount=discountTransactionList.sumOf { it.discountAppliedValue }
+
+            val totalDiscount = discountTransactions.sumOf { it.discountAppliedValue }
             val transSumS: TransactionSummary = transRepo.getTransactionSummaryById(id)
-            transSumS.total_after_discount = transSumS.total_trans-totalDiscount
-
+            val totalTrans:Double=transRepo.getTotalTransactionn(id)
+            transSumS.total_after_discount = totalTrans - totalDiscount
+            transSumS.total_trans=totalTrans
             transRepo.updateTransactionSummary(transSumS)
-
+            Log.i("DiscProbs", "discouont trans total ${formatRupiah(transSumS.total_trans)}")
+            Log.i("DiscProbs", "total after discount ${formatRupiah(transSumS.total_after_discount)}")
             val endTime = System.currentTimeMillis()
             val duration = endTime - startTime
             Log.i("DiscProbs", "Time taken to calculate discounts: $duration ms")
-            _navigateToDetail.value=id
         }
     }
 
+    fun calculateDiscA(){
+        viewModelScope.launch {
+            calculateDisc()
+        }
+    }
+
+    fun navigatetoDetail(){
+        _navigateToDetail.value=id
+    }
 
 
 
@@ -342,6 +324,7 @@ class TransactionEditViewModel(
         viewModelScope.launch {
             transRepo.updateTransactionSummary(mutableTransSum.value!!)
             calculateDisc()
+            navigatetoDetail()
            // _navigateToDetail.value=id
         }
     }

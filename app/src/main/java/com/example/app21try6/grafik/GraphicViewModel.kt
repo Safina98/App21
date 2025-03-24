@@ -23,8 +23,12 @@ import com.example.app21try6.database.daos.SummaryDbDao
 import com.example.app21try6.database.daos.TransDetailDao
 import com.example.app21try6.database.daos.TransSumDao
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.database.repositories.BookkeepingRepository
+import com.example.app21try6.database.repositories.StockRepositories
+import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.getMonthName
+import com.example.app21try6.stock.brandstock.CategoryModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -34,23 +38,23 @@ import java.util.Calendar
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
-class GraphicViewModel(application: Application,
-                       private val productSource1: ProductDao,
-                       private val summarySource: SummaryDbDao,
-                       private val categorySource3: CategoryDao,
-                       private val TransDetailSource4: TransDetailDao,
-                       private val transSumSource5: TransSumDao,): AndroidViewModel(application) {
+class GraphicViewModel(
+    private val stockRepo:StockRepositories,
+    private val bookRepo: BookkeepingRepository,
+    private val transRepo:TransactionsRepository,
+    application: Application
+                      ): AndroidViewModel(application) {
 
-    val summariesLiveData = summarySource.getAllSummary()
-    val productsLiveData: LiveData<List<Product>> = productSource1.getAllProduct()
-    val categoriesLiveData: LiveData<List<Category>> = categorySource3.getAll()
+    val summariesLiveData = bookRepo.getAllSummary()
+    val productsLiveData: LiveData<List<Product>> = stockRepo.getAllProduct()
+    val categoriesLiveData: LiveData<List<CategoryModel>> = stockRepo.getCategoryModelLiveData()
 
     private val _combinedStockLiveData = MediatorLiveData<List<StockModel>?>()
     val combinedStockLiveData: LiveData<List<StockModel>?> get() = _combinedStockLiveData
 
     private val _summarycombinedLiveData = MediatorLiveData<List<StockModel>?>()
 
-    val transDetailModel = TransDetailSource4.getTransactionDetails()
+    val transDetailModel = transRepo.getStockModel()
 
 
     private val _unFilteredmodelList = MutableLiveData<List<StockModel>>()
@@ -89,7 +93,7 @@ class GraphicViewModel(application: Application,
     val selectedStockMonthSpinner: LiveData<String> get() = _selectedStockMonthSpinner
 
     //Year spinner entries for profit
-    val yearProfitEntries = summarySource.getAllYear()
+    val yearProfitEntries = bookRepo.getAllYear()
     //SummaryModel
     //val summaryModel = summarySource.getSummaryWithProduct()
     //selected year on Profit year spinner
@@ -117,14 +121,10 @@ class GraphicViewModel(application: Application,
     @RequiresApi(Build.VERSION_CODES.O)
     fun getCombinedStockLiveData(){
         viewModelScope.launch {
-            val stockList = withContext(Dispatchers.IO){
-                TransDetailSource4.getTransactionDetailsList()
-            }
-
+            val stockList = transRepo.getStockModelList()
             val list=stockList.map { stock ->
                 stock.copy(month = getMonthName(stock.month.toInt())) // Replace numeric month with its name
             }
-
             _unFilteredmodelList.value=list
             _combinedStockLiveData.value = list
             _summarycombinedLiveData.value =list
@@ -135,22 +135,14 @@ class GraphicViewModel(application: Application,
     // populate category entries
     fun getKategoriEntries(){
         viewModelScope.launch {
-            val newData = withContext(Dispatchers.IO) {
-                val list = categorySource3.getAllCategoryName()
-                val modifiedList = listOf("ALL") + list // Create a new list with the added value
-                modifiedList // Return the modified list
-            }
+            val newData = stockRepo.getCategoryNameListWithAll()
             _categoryEntries.value = newData
         }
     }
     // populate product entries
     fun getProductEntriesStok(){
         viewModelScope.launch {
-            val newData = withContext(Dispatchers.IO) {
-                val list = productSource1.getProductNameByCategoryName(selectedStockCategorySpinner.value?:"")
-                val modifiedList = listOf("Off","ALL") + list // Create a new list with the added value
-                modifiedList // Return the modified list
-            }
+            val newData = stockRepo.getProductNameListByCategoryName(_selectedStockCategorySpinner.value?:"")
             _productEntries.value = newData
         }
     }
@@ -352,19 +344,15 @@ class GraphicViewModel(application: Application,
                 // Get the Application object from extras
                 val application = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
                 // Create a SavedStateHandle for this ViewModel from extras
-                val dataSource1 = VendibleDatabase.getInstance(application).productDao
-                val dataSource2 = VendibleDatabase.getInstance(application).summaryDbDao
-                val dataSource3 = VendibleDatabase.getInstance(application).categoryDao
-                val dataSource4 = VendibleDatabase.getInstance(application).transDetailDao
-                val dataSource5 = VendibleDatabase.getInstance(application).transSumDao
+                val stockRepo=StockRepositories(application)
+                val transRepo=TransactionsRepository(application)
+                val bookRepo=BookkeepingRepository(application)
                 val savedStateHandle = extras.createSavedStateHandle()
                 return GraphicViewModel(
-                    application,
-                    dataSource1,
-                    dataSource2,
-                    dataSource3,
-                    dataSource4,
-                    dataSource5
+                    stockRepo,
+                    bookRepo,
+                    transRepo,
+                    application
                 ) as T
             }
         }

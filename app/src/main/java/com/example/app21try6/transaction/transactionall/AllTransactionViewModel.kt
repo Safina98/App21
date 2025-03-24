@@ -83,6 +83,7 @@ class AllTransactionViewModel(application: Application,val transRepo: Transactio
         isTextViewVisible.value = !(isTextViewVisible.value ?: true)
     }
 
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun setSelectedSpinner(value:String){
         if(selectedSpinner.value!=value){

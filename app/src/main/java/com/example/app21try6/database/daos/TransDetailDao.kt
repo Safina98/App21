@@ -178,6 +178,8 @@ WHERE ts.trans_date >= '2024-11-01 00:00'
 
     @Query("SELECT  IFNULL(SUM(total_price),0.0)  FROM TRANS_DETAIL_TABLE WHERE sum_id =:sum_id_ ")
     fun getTotalTrans(sum_id_: Int):LiveData<Double>
+    @Query("SELECT  IFNULL(SUM(total_price),0.0)  FROM TRANS_DETAIL_TABLE WHERE sum_id =:sum_id_ ")
+    fun getTotalTransaction(sum_id_: Int):Double
 
 
     @Query("DELETE  FROM trans_detail_table WHERE sum_id =:sum_id_")

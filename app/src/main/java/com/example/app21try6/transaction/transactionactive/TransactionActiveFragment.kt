@@ -94,6 +94,8 @@ class TransactionActiveFragment : Fragment() {
         //viewModel.checkTransDetaill()
 
 
+
+
         val act = activity as AppCompatActivity?
         if (act!!.supportActionBar != null) {
             val toolbar = requireActivity().findViewById<Toolbar>(R.id.toolbar)

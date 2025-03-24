@@ -10,6 +10,7 @@ import com.example.app21try6.database.tables.Summary
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.getDate
+import com.example.app21try6.grafik.StockModel
 import com.example.app21try6.parseDate
 import com.example.app21try6.transaction.transactiondetail.TransactionDetailWithProduct
 import com.example.app21try6.transaction.transactionselect.TransSelectModel
@@ -23,7 +24,9 @@ class TransactionsRepository(
     private val transDetailDao= VendibleDatabase.getInstance(application).transDetailDao
     private val transSumDao=VendibleDatabase.getInstance(application).transSumDao
 
-
+    fun getStockModel(): LiveData<List<StockModel>> {
+        return transDetailDao.getTransactionDetails()
+    }
     fun getTransactionDetails(id:Int): LiveData<List<TransactionDetail>> {
         return transDetailDao.selectATransDetail(id)
     }
@@ -35,6 +38,9 @@ class TransactionsRepository(
     }
     fun getTotalTransaction(id:Int): LiveData<Double> {
         return transDetailDao.getTotalTrans(id)
+    }
+    suspend fun getTotalTransactionn(id: Int):Double{
+        return withContext(Dispatchers.IO){transDetailDao.getTotalTransaction(id)}
     }
     suspend fun insertTransDetail(transDetail: TransactionDetail):Long{
        return withContext(Dispatchers.IO){
@@ -61,6 +67,11 @@ class TransactionsRepository(
     suspend fun getTransSelectModel(productId:Int,sum_id: Int):List<TransSelectModel>{
        return withContext(Dispatchers.IO){
             transDetailDao.getSubProductM(productId,sum_id ?: 0)
+        }
+    }
+    suspend fun getStockModelList():List<StockModel>{
+        return withContext(Dispatchers.IO){
+            transDetailDao.getTransactionDetailsList()
         }
     }
     ///////////////////////////////////TransSum////////////////////////////////////////////////////////

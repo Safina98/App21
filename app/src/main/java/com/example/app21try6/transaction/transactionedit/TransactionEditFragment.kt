@@ -138,7 +138,6 @@ class TransactionEditFragment : Fragment() {
             }
         })
         viewModel.allCustomerTable.observe(viewLifecycleOwner, Observer { customerList ->
-
             val customerNames = customerList.map { it.customerBussinessName }
             val adapterr = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, customerNames)
             autoCompleteTextView.setAdapter(adapterr)
@@ -281,6 +280,10 @@ class TransactionEditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+    }
+    override fun onResume() {
+        super.onResume()
+        viewModel.calculateDiscA()
     }
 
     override fun onPause() {

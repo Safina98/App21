@@ -15,6 +15,10 @@ class BookkeepingRepository(
     application: Application
 ) {
     private val summaryDbDao= VendibleDatabase.getInstance(application).summaryDbDao
+
+    fun getAllYear():LiveData<List<Int>>{
+        return summaryDbDao.getAllYear()
+    }
     fun getDailySells(date: Array<String>): LiveData<List<Summary>> {
         return summaryDbDao.getToday(date[0].toInt(), date[1], date[2].toInt())
     }

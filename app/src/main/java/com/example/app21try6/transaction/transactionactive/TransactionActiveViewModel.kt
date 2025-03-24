@@ -58,7 +58,7 @@ class TransactionActiveViewModel(
     private val _navigateToAllTrans = MutableLiveData<Boolean>()
     val navigatToAllTrans: LiveData<Boolean> get() = _navigateToAllTrans
 
-   //Get active transaction from database
+    //Get active transaction from database
     fun getActiveTrans(){
         viewModelScope.launch {
             val list = transRepo.getActiveTransFromDb()
@@ -107,8 +107,6 @@ class TransactionActiveViewModel(
     }
     //Suspends
 
-
-
     //Navigations
     fun onNavigatetoTransEdit(id:Int){ _navigateToTransEdit.value=id }
     fun onNavigatedToTransEdit(){ this._navigateToTransEdit.value=null }
@@ -131,9 +129,6 @@ class TransactionActiveViewModel(
             }
         }
     }
-
-
-
 
     fun writeCSV(file: File) {
             try {
