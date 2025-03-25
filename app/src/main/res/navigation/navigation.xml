@@ -100,7 +100,8 @@
             app:destination="@id/transactionDetailFragment" />
         <action
             android:id="@+id/action_transactionActiveFragment_to_transactionEditFragment"
-            app:destination="@id/transactionEditFragment" />
+            app:destination="@id/transactionEditFragment"
+            app:enterAnim="@anim/zoom_in" />
         <action
             android:id="@+id/action_transactionActiveFragment_to_allTransactionsFragment"
             app:destination="@id/allTransactionsFragment" />
@@ -115,8 +116,13 @@
         <action
             android:id="@+id/action_transactionEditFragment_to_transactionDetailFragment"
             app:destination="@id/transactionDetailFragment"
+
             app:popUpTo="@id/transactionActiveFragment" />
         <action
+            app:enterAnim="@anim/zoom_in"
+            app:exitAnim="@anim/zoom_in_book"
+            app:popExitAnim="@anim/zoom_out"
+            app:popUpTo="@id/bookKeepeingFragment"
             android:id="@+id/action_transactionEditFragment_to_transactionProductFragment"
             app:destination="@id/transactionProductFragment" />
     </fragment>
@@ -129,7 +135,12 @@
             app:argType="integer" />
         <action
             android:id="@+id/action_transactionDetailFragment_to_transactionEditFragment"
-            app:destination="@id/transactionEditFragment" />
+            app:destination="@id/transactionEditFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in_pop_up"
+            app:popExitAnim="@anim/fade_out_pop_up"
+             />
     </fragment>
     <fragment
         android:id="@+id/transactionSelectFragment"
@@ -157,6 +168,8 @@
         <action
             android:id="@+id/action_allTransactionsFragment_to_transactionDetailFragment"
             app:destination="@id/transactionDetailFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_in"
             app:popUpTo="@id/allTransactionsFragment" />
     </fragment>
     <fragment
