@@ -1,5 +1,7 @@
 package com.example.app21try6.transaction.transactionactive
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
@@ -72,7 +74,6 @@ class TransactionActiveAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
        return MyViewHolder.from(parent)
     }
-
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bind(getItem(position),clickListener,
             checkBoxListener,
@@ -93,8 +94,6 @@ class TransActiveDiffCallBack: DiffUtil.ItemCallback<TransactionSummary>(){
 class ActiveClickListener(val clickListener: (view: View, activeTrans: TransactionSummary) -> Unit) {
     fun onClick(view: View, activeTrans: TransactionSummary) = clickListener(view, activeTrans)
 }
-
-
 
 class CheckBoxListenerTransActive(val checkBoxListener:(view: View, stok: TransactionSummary)->Unit){
     fun onCheckBoxClick(view: View, stok: TransactionSummary)= checkBoxListener(view,stok)

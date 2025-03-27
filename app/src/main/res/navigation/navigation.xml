@@ -29,7 +29,12 @@
         android:label="@string/pembukuan">
         <action
             android:id="@+id/action_bookSummaryFragment_to_bookKeepeingFragment3"
-            app:destination="@id/bookKeepeingFragment" />
+            app:destination="@id/bookKeepeingFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in_pop_up"
+            app:popExitAnim="@anim/fade_out_pop_up"
+            />
     </fragment>
     <fragment
         android:id="@+id/vendibleFragment"
@@ -45,7 +50,12 @@
             app:exitAnim="@anim/zoom_out" />
         <action
             android:id="@+id/action_vendibleFragment_to_subProductStockFragment"
-            app:destination="@id/subProductStockFragment" />
+            app:destination="@id/subProductStockFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in_pop_up"
+            app:popExitAnim="@anim/fade_out_pop_up"
+            />
     </fragment>
     <fragment
         android:id="@+id/brandStockFragment"
@@ -53,7 +63,11 @@
         android:label="Stok ">
         <action
             android:id="@+id/action_brandStockFragment_to_subProductStockFragment"
-            app:destination="@id/subProductStockFragment" />
+            app:destination="@id/subProductStockFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/productStockFragment"
@@ -97,11 +111,21 @@
         android:label="Nota">
         <action
             android:id="@+id/action_transactionActiveFragment_to_transactionDetailFragment"
-            app:destination="@id/transactionDetailFragment" />
+            app:destination="@id/transactionDetailFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in_pop_up"
+            app:popExitAnim="@anim/fade_out_pop_up"
+            />
         <action
             android:id="@+id/action_transactionActiveFragment_to_transactionEditFragment"
             app:destination="@id/transactionEditFragment"
-            app:enterAnim="@anim/zoom_in" />
+            app:popUpTo="@id/transactionActiveFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in_pop_up"
+            app:popExitAnim="@anim/fade_out_pop_up"
+            />
         <action
             android:id="@+id/action_transactionActiveFragment_to_allTransactionsFragment"
             app:destination="@id/allTransactionsFragment" />
@@ -116,15 +140,20 @@
         <action
             android:id="@+id/action_transactionEditFragment_to_transactionDetailFragment"
             app:destination="@id/transactionDetailFragment"
-
-            app:popUpTo="@id/transactionActiveFragment" />
+            app:popUpTo="@id/transactionActiveFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in_pop_up"
+            app:popExitAnim="@anim/fade_out_pop_up"
+            />
         <action
+            android:id="@+id/action_transactionEditFragment_to_transactionProductFragment"
+            app:destination="@id/transactionProductFragment"
             app:enterAnim="@anim/zoom_in"
             app:exitAnim="@anim/zoom_in_book"
             app:popExitAnim="@anim/zoom_out"
-            app:popUpTo="@id/bookKeepeingFragment"
-            android:id="@+id/action_transactionEditFragment_to_transactionProductFragment"
-            app:destination="@id/transactionProductFragment" />
+            app:popUpTo="@id/transactionEditFragment"
+            />
     </fragment>
     <fragment
         android:id="@+id/transactionDetailFragment"
@@ -136,6 +165,7 @@
         <action
             android:id="@+id/action_transactionDetailFragment_to_transactionEditFragment"
             app:destination="@id/transactionEditFragment"
+            app:popUpTo="@id/transactionDetailFragment"
             app:enterAnim="@anim/fade_in"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in_pop_up"
@@ -159,7 +189,12 @@
             app:argType="string[]" />
         <action
             android:id="@+id/action_transactionProductFragment_to_transactionSelectFragment"
-            app:destination="@id/transactionSelectFragment" />
+            app:destination="@id/transactionSelectFragment"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in_pop_up"
+            app:popExitAnim="@anim/fade_out_pop_up"
+            />
     </fragment>
     <fragment
         android:id="@+id/allTransactionsFragment"
@@ -168,8 +203,10 @@
         <action
             android:id="@+id/action_allTransactionsFragment_to_transactionDetailFragment"
             app:destination="@id/transactionDetailFragment"
-            app:enterAnim="@android:anim/fade_in"
-            app:exitAnim="@android:anim/fade_in"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in_pop_up"
+            app:popExitAnim="@anim/fade_out_pop_up"
             app:popUpTo="@id/allTransactionsFragment" />
     </fragment>
     <fragment
@@ -192,6 +229,10 @@
         <action
             android:id="@+id/action_expensesFragment_to_transactionPurchase"
             app:destination="@id/transactionPurchase"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in_pop_up"
+            app:popExitAnim="@anim/fade_out_pop_up"
             />
     </fragment>
     <fragment
@@ -205,7 +246,12 @@
             android:id="@+id/action_transactionPurchase_to_expensesFragment"
             app:destination="@id/expensesFragment"
             app:popUpTo="@id/transactionPurchase"
-            app:popUpToInclusive="true" />
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in_pop_up"
+            app:popExitAnim="@anim/fade_out_pop_up"
+            />
     </fragment>
     <fragment
         android:id="@+id/inventoryLogFragment"

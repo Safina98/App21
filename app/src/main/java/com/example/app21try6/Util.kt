@@ -6,6 +6,7 @@ import android.widget.ImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.FragmentActivity
+import com.example.app21try6.transaction.transactionselect.TransSelectModel
 import java.text.NumberFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -128,6 +129,19 @@ fun parseDate(dateString: String): Date? {
 fun getDate(dateString:String?):Date?{
     val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     return if (dateString!==null)inputFormat.parse(dateString) else null
+}
+
+fun calculatePriceByQty(qty:Double,defaultPrice:Int):Int{
+    val price=  when {
+        qty > 0.0 && qty < 0.35 -> {
+            defaultPrice + 9000
+        }
+        qty >= 0.35 && qty < 0.9 -> {
+            defaultPrice + if ((defaultPrice / 1000) % 2 == 0) 6000 else 5000
+        }
+        else -> defaultPrice
+    }
+    return price
 }
 
 object ToolbarUtil {

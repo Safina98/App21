@@ -14,6 +14,7 @@
         tools:context=".transaction.TransactionActiveFragment">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
+        
         android:layout_height="match_parent">
         <ProgressBar
             android:id="@+id/progressBar"
@@ -28,7 +29,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView_active_trans"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:elevation="2dp"
@@ -55,10 +56,8 @@
             app:fabCustomSize="56dp"
             app:maxImageSize="56dp"
             android:scaleType="center"
-
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
-
 
         <Button
             android:id="@+id/button3"
@@ -75,10 +74,11 @@
             app:layout_constraintTop_toTopOf="@+id/btn_add_new_trans_" />
 
         <ImageView
-            android:src="@drawable/ketupat2"
+            android:id="@+id/img"
+            android:src="@drawable/ketupat_nobg"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:elevation="0dp"
+            android:elevation="1dp"
             app:layout_constraintBottom_toTopOf="@id/btn_add_new_trans_"
             app:layout_constraintEnd_toEndOf="parent"
             android:scaleType="centerCrop"

@@ -199,10 +199,15 @@ WHERE ts.trans_date >= '2024-11-01 00:00'
 
     //@Query("SELECT year as year_n,month as month_n,month_number as month_nbr, month as nama,day as day_n,day_name as day_name,SUM(total_income) as total FROM SUMMARY_TABLE  WHERE year = :year_  GROUP BY month ORDER BY month_nbr ASC")
    // @Query("SELECT sub_id as sub_product_id, sub_name as item_name FROM sub_table where product_code = :productId  ")
-    @Query("SELECT s.sub_id AS sub_product_id,s.sub_name AS item_name,s.is_checked AS is_selected ,p.product_price AS item_price,t.qty as qty,t.trans_detail_id as trans_detail_id FROM sub_table s JOIN product_table p ON (S.product_code=P.product_id)  LEFT OUTER JOIN trans_detail_table t ON (S.sub_name = T.trans_item_name and T.sum_id =:sum_id_) WHERE s.product_code =:productId")
+    @Query("SELECT s.sub_id AS sub_product_id,s.sub_name AS item_name,s.is_checked AS is_selected ,p.product_price AS item_price,p.product_price AS item_default_price,t.qty as qty,t.trans_detail_id as trans_detail_id FROM sub_table s JOIN product_table p ON (S.product_code=P.product_id)  LEFT OUTER JOIN trans_detail_table t ON (S.sub_name = T.trans_item_name and T.sum_id =:sum_id_) WHERE s.product_code =:productId")
     fun getSubProduct(productId:Int,sum_id_: Int):LiveData<List<TransSelectModel>>
 
-    @Query("SELECT s.sub_id AS sub_product_id,s.sub_name AS item_name,s.is_checked AS is_selected ,p.product_price AS item_price,t.qty as qty,t.trans_detail_id as trans_detail_id FROM sub_table s JOIN product_table p ON (S.product_code=P.product_id)  LEFT OUTER JOIN trans_detail_table t ON (S.sub_name = T.trans_item_name and T.sum_id =:sum_id_) WHERE s.product_code =:productId")
+    @Query("SELECT s.sub_id AS sub_product_id," +
+            "s.sub_name AS item_name," +
+            "s.is_checked AS is_selected ," +
+            "p.product_price AS item_price," +
+            "p.product_price AS item_default_price," +
+            "t.qty as qty,t.trans_detail_id as trans_detail_id FROM sub_table s JOIN product_table p ON (S.product_code=P.product_id)  LEFT OUTER JOIN trans_detail_table t ON (S.sub_name = T.trans_item_name and T.sum_id =:sum_id_) WHERE s.product_code =:productId")
     fun getSubProductM(productId:Int,sum_id_: Int):List<TransSelectModel>
 
     @Query("SELECT COUNT(*) FROM trans_detail_table WHERE sum_id = :sumId;")

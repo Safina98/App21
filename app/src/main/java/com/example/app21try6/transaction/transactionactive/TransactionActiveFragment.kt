@@ -1,6 +1,8 @@
 package com.example.app21try6.transaction.transactionactive
 
 import android.Manifest
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -93,6 +95,25 @@ class TransactionActiveFragment : Fragment() {
         }
         //viewModel.checkTransDetaill()
 
+        binding.img.setOnClickListener { view ->
+            // Get the center of the imageView (relative to itself)
+            val pivotX = view.width / 2f
+            val pivotY = view.height / 2f
+
+            // Set the pivot point correctly
+            view.pivotX = pivotX
+            view.pivotY = pivotY
+
+            // Create scale animations
+            val scaleX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 1.5f, 1f)
+            val scaleY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 1.5f, 1f)
+
+            AnimatorSet().apply {
+                playTogether(scaleX, scaleY)
+                duration = 300
+                start()
+            }
+        }
 
 
 

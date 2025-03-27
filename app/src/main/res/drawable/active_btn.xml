@@ -4,12 +4,18 @@
     <!--center color #37B9F5-->
     <!--start color #082946-->
     <!--end color #06545C-->
+    <!--
+    brown
+     android:centerColor="#FFCF50"
+        android:endColor="#706233"
+        android:startColor="#481E14"
+    -->
     <gradient
         android:angle="45"
         android:centerX="70%"
-        android:centerColor="#FFCF50"
-        android:endColor="#706233"
-        android:startColor="#481E14"
+        android:centerColor="#9BEC00"
+        android:endColor="#3D5300"
+        android:startColor="#27391C"
         android:type="linear" />
 
 </shape>

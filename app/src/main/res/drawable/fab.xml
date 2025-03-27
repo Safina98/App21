@@ -7,12 +7,18 @@
     <!--center color #105575-->
     <!--start color #082946-->
     <!--end color #06545C-->
+
+    <!-- Brown-->
+    <!-- android:centerColor="#543A14"
+    android:startColor="#481E14"
+    android:endColor="#706233"-->
+
     <gradient
         android:angle="45"
         android:centerX="40%"
-        android:centerColor="#543A14"
-        android:startColor="#481E14"
-        android:endColor="#706233"
+        android:centerColor="#3E7B27"
+        android:startColor="#27391C"
+        android:endColor="#3D5300"
         android:type="linear" />
     <size
         android:width="72dp"

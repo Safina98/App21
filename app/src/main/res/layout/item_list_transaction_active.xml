@@ -20,7 +20,7 @@
         android:layout_width="@dimen/rv_width"
         android:layout_height="@dimen/rv_height"
         android:layout_margin="@dimen/medium_margin"
-        android:background="@color/transActiveBgColor"
+        app:cardElevation="4dp"
         android:onClick="@{(view) -> clickListener.onClick(view, item)}"
         app:cardBackgroundColor="@color/transActiveBgColor">
 

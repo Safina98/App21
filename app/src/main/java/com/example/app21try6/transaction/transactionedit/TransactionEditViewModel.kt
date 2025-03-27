@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
+import com.example.app21try6.calculatePriceByQty
 import com.example.app21try6.database.daos.CustomerDao
 import com.example.app21try6.database.daos.DiscountDao
 import com.example.app21try6.database.daos.DiscountTransDao
@@ -24,14 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
-/*
-val datasource1: TransSumDao,
-    val datasource2: TransDetailDao,
-    private val discountDao: DiscountDao,
-    private val discountTransDao: DiscountTransDao,
-    private val customerDao: CustomerDao,
-    private val productDao:ProductDao,
- */
+
 class TransactionEditViewModel(
     private val stockRepo:StockRepositories,
     private val transRepo:TransactionsRepository,
@@ -144,7 +138,9 @@ class TransactionEditViewModel(
                 val itemsToDelete = existingList.filter { existing ->
                     discountTransactions.none { new -> existing.discTransName == new.discTransName }
                 }
-                itemsToDelete.forEach { discountRepo.deleteTransactionDiscount(it.discTransId) }
+                itemsToDelete.forEach {
+                    if (it.discountId!=null) discountRepo.deleteTransactionDiscount(it.discTransId)
+                }
             }
 
             val totalDiscount = discountTransactions.sumOf { it.discountAppliedValue }
@@ -171,18 +167,13 @@ class TransactionEditViewModel(
         _navigateToDetail.value=id
     }
 
-
-
     //update transactionDetail qty and total price
     fun updateTransDetail(transactionDetail: TransactionDetail, i: Double){
         viewModelScope.launch {
             Log.i("modulo","${(transactionDetail.trans_price/1000)%2}")
             transactionDetail.qty = transactionDetail.qty + i
-            if (transactionDetail.qty < 0.35) {
-                transactionDetail.trans_price += 9000
-            } else if (transactionDetail.qty < 0.9) {
-                transactionDetail.trans_price += if ((transactionDetail.trans_price / 1000) % 2 == 0) 6000 else 5000
-            }
+            val product=stockRepo.getProductBySubId(transactionDetail.sub_id?:0)
+            transactionDetail.trans_price= calculatePriceByQty(transactionDetail.qty,product!!.product_price)
 
             transactionDetail.total_price = transactionDetail.trans_price * transactionDetail.qty * transactionDetail.unit_qty
 
@@ -314,10 +305,6 @@ class TransactionEditViewModel(
     }
 
     ////suspend
-
-
-
-
 
     ////////////////////////////////Navigation//////////////////////////////////////
     fun onNavigatetoDetail(idm:Int){

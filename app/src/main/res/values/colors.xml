@@ -1,19 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--
-    <color name="primaryColor">#000000</color>
-    <color name="primaryLightColor">#000000</color>
-    <color name="primaryDarkColor">#000000</color>
-    <color name="secondaryColor">#000000</color>
-    <color name="secondaryLightColor">#EAE7EE</color>
-    <color name="secondaryDarkColor">#FFFFFF</color>
-    <color name="primaryTextColor">#FFFFFF</color>
-    <color name="secondaryTextColor">#000000</color>
-    <color name="primaryLightTextColor">#FFFFFF</color>
-    <color name="secondaryLightTextColor">#FFFFFF</color>
-    <color name="primaryDarkTextColor">#FFFFFF</color>
-    <color name="secondaryDarkTextColor">#FFFFFF</color>
-    -->
+
     <color name="primaryColor">#706233</color>
     <color name="dialogbtncolor">#808693A5</color>
     <color name="primaryLightColor">#082946</color>
@@ -39,10 +26,9 @@
     <color name="lightModeBackgroundColor">#FFFFFF</color>
 <!--#A3EBF4F6- -->
     <!--#273A7D44- -->
-    <color name="transActiveBgColor">#5EDFD7BF</color>
+    <!--<color name="transActiveBgColor">#5EDFD7BF</color>-->
+    <color name="transActiveBgColor">#E4E8ECD7</color>
     <color name="logrvbg">#85FFFEF3</color>
-
-
 
     <color name="normal_button_color">#FF0000</color> <!-- Change to your desired normal button color -->
     <color name="disabled_button_color">#808080</color>
@@ -50,20 +36,6 @@
     <!-- res/values-night/colors.xml -->
     <color name="dialogbtncolour">#FFFFFF</color> <!-- White text for night mode -->
     <color name="colorBackground">#333333</color> <!-- Dark background color for night mode -->
-
-
-    <!--
-    <color name="primaryColor">#586648</color>
-    <color name="primaryLightColor">#576F58</color>
-    <color name="primaryDarkColor">#393C36</color>
-    <color name="secondaryColor">#afb42b</color>
-    <color name="secondaryLightColor">#e4e65e</color>
-    <color name="secondaryDarkColor">#277C8500</color>
-    <color name="primaryTextColor">#ffffff</color>
-    <color name="secondaryTextColor">#000000</color>
-
-    -->
-
 
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>

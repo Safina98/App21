@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.example.app21try6.calculatePriceByQty
 import com.example.app21try6.database.*
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
@@ -127,12 +128,9 @@ class TransactionSelectViewModel(
     //update on btn + or - click
     fun updateTransDetail(s:TransSelectModel){
         viewModelScope.launch {
-            Log.i("QTYProbs","${s.item_name}: ${s.qty}")
-            if(s.qty<0.35){
-                s.item_price=s.item_price+9000
-            }else if(s.qty<0.9){
-                s.item_price += if ((s.item_price / 1000) % 2 == 0) 6000 else 5000
-            }
+            Log.i("QTYProbs","${s.item_name}: ${s.item_price}")
+            s.item_price= calculatePriceByQty(s.qty,s.item_default_price)
+            Log.i("QTYProbs","${s.item_name}: ${s.item_price}")
             val t = converter(s)
             var id =s.trans_detail_id
             if (id==0L) id = transRepo.insertTransDetail(t) else transRepo.updateTransDetail(t)
