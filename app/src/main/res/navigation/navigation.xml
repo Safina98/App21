@@ -225,7 +225,6 @@
         android:id="@+id/expensesFragment"
         android:name="com.example.app21try6.statement.expenses.ExpensesFragment"
         android:label="Pengeluaran">
-
         <action
             android:id="@+id/action_expensesFragment_to_transactionPurchase"
             app:destination="@id/transactionPurchase"
@@ -245,8 +244,7 @@
         <action
             android:id="@+id/action_transactionPurchase_to_expensesFragment"
             app:destination="@id/expensesFragment"
-            app:popUpTo="@id/transactionPurchase"
-            app:popUpToInclusive="true"
+            app:popUpTo="@id/transactionActiveFragment"
             app:enterAnim="@anim/fade_in"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in_pop_up"

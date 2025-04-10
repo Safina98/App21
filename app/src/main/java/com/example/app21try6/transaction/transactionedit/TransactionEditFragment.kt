@@ -7,15 +7,19 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.RadioButton
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -61,20 +65,27 @@ class TransactionEditFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         var code:Code = Code.ZERO
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                viewModel.calculateDiscA().also {
+                    isEnabled = false
+                    requireActivity().onBackPressed()
+                }
+            }
+        })
 
        val adapter = TransactionEditAdapter(TransEditClickListener {
-           code = Code.TEXTITEM
-           viewModel.onShowDialog(it)
+           showDialog(it,viewModel,Code.TEXTITEM)
        }, SubsTransClickListener {
            viewModel.updateTransDetail(it, -1.0)
        }, PlusTransClickListener {
            viewModel.updateTransDetail(it, 1.0)
        }, SubsTransLongListener {
            code = Code.LONGSUBS
-           viewModel.onShowDialog(it)
+           showDialog(it,viewModel,Code.LONGSUBS)
        }, PlusTransLongListener {
            code = Code.LONGPLUS
-           viewModel.onShowDialog(it)
+           showDialog(it,viewModel,Code.LONGPLUS)
        }, TransEditDeleteListener {
            DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as TransactionEditViewModel).delete(it.trans_detail_id) })
        }, TransEditPriceClickListener {
@@ -206,14 +217,15 @@ class TransactionEditFragment : Fragment() {
            else->{
                if (transactionDetail.unit_qty!=1.0){
                    textKet.setText(transactionDetail.unit_qty.toString())
-                   textKet.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
                }
+               textKet.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
 
            }
         }
-        textKet.requestFocus()
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+        textKet.requestFocus()
+//        textKet.postDelayed({ textKet.showKeyboard() }, 100)
+
         builder.setView(view)
         builder.setPositiveButton("OK") { dialog, which ->
             val v = textKet.text.toString().uppercase().trim()
@@ -235,25 +247,28 @@ class TransactionEditFragment : Fragment() {
                     Toast.makeText(context,"Failed",Toast.LENGTH_SHORT).show()
                 }
             }
-            imm.hideSoftInputFromWindow(view?.windowToken, 0)
+          //  imm.hideSoftInputFromWindow(view?.windowToken, 0)
             viewModel.onCloseDialog()
         }
         builder.setNegativeButton("No") { dialog, which ->
-            imm.hideSoftInputFromWindow(view?.windowToken, 0)
             viewModel.onCloseDialog()
         }
         builder.setOnCancelListener {
-            imm.hideSoftInputFromWindow(view?.windowToken, 0)
+
             viewModel.onCloseDialog()
         }
 
         val alert = builder.create()
+        alert.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         alert.show()
         alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
         alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
 
     }
-
+    fun View.showKeyboard() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+    }
     fun showInputCoiceDialog(item: TransactionDetail) {
         val binding :PopUpUnitBinding = PopUpUnitBinding.inflate(LayoutInflater.from(context))
 
@@ -288,6 +303,10 @@ class TransactionEditFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
+    }
+    fun handleBackPress(): Boolean {
+       viewModel.calculateDiscA()
+        return false // Not handled, let activity navigate back
     }
 
 

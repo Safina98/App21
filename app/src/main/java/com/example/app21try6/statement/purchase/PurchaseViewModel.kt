@@ -141,14 +141,17 @@ class PurchaseViewModel(application: Application,
             }
         }
     }
+
     fun getExpense(id:Int){
         viewModelScope.launch {
             if (id!=-1){
                 val expense=getExpensesById(id)
                 expenseMutable.value=expense
+                suplierName.value = expense.expense_name.replace("Bayar ","")
             }
         }
     }
+
     fun searchProduct(query: String) {
         searchQuery.value = query
         val selectedSubProduct = allSubProductFromDb.value?.find { it.subProduct.sub_name == query }
@@ -159,6 +162,7 @@ class PurchaseViewModel(application: Application,
             productNet.value = selectedSubProduct?.default_net?:0.0
         }
     }
+
     fun setProductPriceAndNet(name:String){
         viewModelScope.launch {
             val selectedSubProduct = allSubProductFromDb.value?.find { it.subProduct.sub_name == name }
@@ -170,6 +174,7 @@ class PurchaseViewModel(application: Application,
             }
         }
     }
+
     fun onAddClick(){
         if (_isRvClick.value==true){
             updateItem()
@@ -177,6 +182,7 @@ class PurchaseViewModel(application: Application,
             addItemToList()
         }
     }
+
     fun updateItem(){
         if (inventoryPurchase.value!=null){
             val index = inventoryList.indexOfFirst { it.id == inventoryPurchase.value?.id}
@@ -249,6 +255,7 @@ class PurchaseViewModel(application: Application,
         //onClearClick()
         clearAllButName()
     }
+
     fun rvClick(item: InventoryPurchase){
         productName.value=item.subProductName
         productPrice.value=item.price.toDouble()
@@ -256,7 +263,6 @@ class PurchaseViewModel(application: Application,
         productNet.value=item.net
         totalPrice.value=item.totalPrice
         inventoryPurchase.value=item
-        _isRvClick.value=true
     }
     fun addInventoryLog(){
         viewModelScope.launch {
@@ -578,6 +584,11 @@ class PurchaseViewModel(application: Application,
     fun onTxtTransSumLongClikced(){_transSumDateLongClick.value = false}
     fun onItemAdded(){
         _isAddItemClick.value=false
+    }
+    fun onRvClick(){
+        _isRvClick.value=true
+    }
+    fun onRvClicked(){
         _isRvClick.value=false
     }
     fun onNavigatedToExpense(){

@@ -24,6 +24,7 @@ import com.example.app21try6.bookkeeping.vendiblelist.VendibleFragmentArgs
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.models.PaymentModel
+import com.example.app21try6.database.models.SubWithPriceModel
 import com.example.app21try6.database.tables.InventoryPurchase
 import com.example.app21try6.databinding.FragmentStatementHsBinding
 import com.example.app21try6.databinding.FragmentTransactionPurchaseBinding
@@ -54,11 +55,17 @@ class TransactionPurchase : Fragment() {
         val dataSource8 = VendibleDatabase.getInstance(application).inventoryLogDao
         val dataSource9 = VendibleDatabase.getInstance(application).detailWarnaDao
         val dataSource10 = VendibleDatabase.getInstance(application).suplierDao
+
         val viewModelFactory = PurchaseViewModelFactory(application,id,dataSource3,dataSource4,dataSource5,dataSource6,dataSource7,dataSource8,dataSource9,dataSource10)
         viewModel = ViewModelProvider(this,viewModelFactory).get(PurchaseViewModel::class.java)
         binding.viewModel=viewModel
+
         viewModel.getExpense(id)
         viewModel.getInventoryList(id)
+
+        val autoCompleteSuplier: AutoCompleteTextView = binding.textDiscount
+        val autoCompleteSubName: AutoCompleteTextView = binding.textSub
+
         val adapter =PurchaseAdapter(
             UpdateListener {
                 viewModel.rvClick(it)
@@ -71,16 +78,8 @@ class TransactionPurchase : Fragment() {
         binding.purchaseRv.adapter=adapter
         val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
         binding.purchaseRv.addItemDecoration(dividerItemDecoration)
-        val autoCompleteSuplier: AutoCompleteTextView = binding.textDiscount
-        val autoCompleteSubName: AutoCompleteTextView = binding.textSub
         viewModel.allSubProductFromDb.observe(viewLifecycleOwner) { subProductList ->
-            if (!subProductList.isNullOrEmpty()){
-                val subNames = subProductList.map { it.subProduct.sub_name }
-                val adapterSub = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, subNames)
-                autoCompleteSubName.setAdapter(adapterSub)
-                adapterSub.notifyDataSetChanged()
-
-            }
+            setAutoCompleteSubNameAdapter(subProductList, autoCompleteSubName)
         }
 
         viewModel.isAddItemClick.observe(viewLifecycleOwner){
@@ -111,20 +110,17 @@ class TransactionPurchase : Fragment() {
             }
         }
 
-
         autoCompleteSubName.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 val subName = s.toString().trim().uppercase()
-                //viewModel.setProductPriceAndNet(subName)
                 viewModel.searchProduct(subName)
                 autoCompleteSubName.showDropDown()
             }
         })
         autoCompleteSubName.setOnItemClickListener { _, _, position, _ ->
-           // val selectedProduct = adapter.getItem(position) ?: return@setOnItemClickListener
-           // viewModel.productName.set(selectedProduct)
+
         }
         viewModel.suplierDummy.observe(viewLifecycleOwner, Observer {list->list?.let {
             val supNames=list.map { it.suplierName }
@@ -150,6 +146,23 @@ class TransactionPurchase : Fragment() {
         return binding.root
     }
 
+    private fun setAutoCompleteSubNameAdapter(
+        subProductList: List<SubWithPriceModel>?,
+        autoCompleteSubName: AutoCompleteTextView
+    ) {
+        if (!subProductList.isNullOrEmpty()) {
+            val subNames = subProductList.map { it.subProduct.sub_name }
+            val adapterSub = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                subNames
+            )
+            autoCompleteSubName.setAdapter(adapterSub)
+            adapterSub.notifyDataSetChanged()
+
+        }
+    }
+
     private fun showDatePickerDialog(paymentModel: PaymentModel?) {
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.pop_up_date_picker, null)
         val datePickerStart = dialogView.findViewById<DatePicker>(R.id.datePickerStart)
@@ -169,8 +182,13 @@ class TransactionPurchase : Fragment() {
             .create()
 
         dialog.show()
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.savePurchase()
     }
 
 }

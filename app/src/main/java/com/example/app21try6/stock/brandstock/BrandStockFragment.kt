@@ -447,7 +447,6 @@ class BrandStockFragment : Fragment() {
             binding.txtBrand?.visibility=View.GONE
             binding.btnEditEcNew.visibility=View.VISIBLE
             binding.rvCat.visibility=View.GONE
-
             return true
         }
         return false // Not handled, let activity navigate back

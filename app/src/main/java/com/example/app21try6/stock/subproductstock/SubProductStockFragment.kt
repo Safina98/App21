@@ -2,12 +2,14 @@
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -219,6 +221,9 @@ class SubProductStockFragment : Fragment() {
         val ilNet=binding.ilHarga
         ilBatchCount.hint="Jumlah"
         ilNet.hint="Isi"
+        txtBatchCount.requestFocus()
+        txtBatchCount.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+        txtNet.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         val dialog = AlertDialog.Builder(requireContext())
             .setView(binding.root)
             .setTitle("Update Bayar")
@@ -232,6 +237,7 @@ class SubProductStockFragment : Fragment() {
                 dialogInterface.dismiss()
             }
             .create()
+        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
 
         dialog.show()
     }

@@ -110,7 +110,7 @@ class TransactionProductFragment : Fragment() {
         viewModel.allProduct.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it.sortedBy { it.product_name })
             (binding.transproductRv.layoutManager as LinearLayoutManager).scrollToPosition(viewModel.selectedItemPosition)
-            Log.i("SelectedRvPos","TransactionpPRODDUCT PRODUCT ${viewModel.selectedItemPosition}")
+
         })
 
         viewModel.navigateToTransSelect.observe(viewLifecycleOwner, Observer {
@@ -128,9 +128,6 @@ class TransactionProductFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            // Your additional code before navigating back
-            //Toast.makeText(requireContext(),"BackPressed",Toast.LENGTH_SHORT).show()
-            //viewModel.cancelUiScope()
             // Navigate up using NavController
             viewModel.resetSelectedSpinnerValue()
             findNavController().navigateUp()

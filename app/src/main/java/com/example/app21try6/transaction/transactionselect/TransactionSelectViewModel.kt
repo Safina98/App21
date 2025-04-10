@@ -21,14 +21,7 @@ import kotlinx.coroutines.*
 import java.util.Date
 import java.util.Locale
 
-/*
 
-val database1: CategoryDao,
-    val database2: ProductDao,
-    val database4: SubProductDao,
-    ,
-    val database6: TransDetailDao,
- */
 class TransactionSelectViewModel(
     private val stockRepo: StockRepositories,
     private val transRepo:TransactionsRepository,
@@ -88,7 +81,6 @@ class TransactionSelectViewModel(
                 updateTransDetailList(updatedList)
             }
         }
-
     }
 
     fun getTransModel(productId:Int){
@@ -106,14 +98,7 @@ class TransactionSelectViewModel(
     }
     fun setProductSumId(id:Int?){
         if (id != null) {
-            if (id >= 0)
-            {
-                _sumId.value = id?:0
-            }else
-            {
-                expenseId.value=id*-1
-
-            }
+            if (id >= 0) { _sumId.value = id?:0 }else { expenseId.value=id*-1 }
         }
     }
     fun saveSelectedItemId(itemId: Int) {
@@ -137,6 +122,7 @@ class TransactionSelectViewModel(
             s.trans_detail_id  = id ?: -1L
             updateTransDetaill(s)
         }
+
     }
     fun converter(s:TransSelectModel): TransactionDetail {
         val t = TransactionDetail()
@@ -169,8 +155,8 @@ class TransactionSelectViewModel(
                 }
             }
         }
-
     }
+
     fun insertDuplicateSubProduct(s:TransSelectModel){
         viewModelScope.launch {
             Log.i("DuplicateProbs","s id ${s.trans_detail_id}")
@@ -183,16 +169,11 @@ class TransactionSelectViewModel(
         }
     }
 
-
-
     fun delete(s:TransSelectModel){
         viewModelScope.launch {
             transRepo.deleteTransDetail(s.trans_detail_id)
         }
     }
-
-
-
 
     fun onShowDialog(transSelectModel: TransSelectModel){
         _showDialog.value = transSelectModel
@@ -229,8 +210,6 @@ class TransactionSelectViewModel(
         }
     }
 
-
-
     fun setSelectedKategoriValue(selectedCategory:String){
         _selectedKategoriSpinner.value = selectedCategory
     }
@@ -258,8 +237,6 @@ class TransactionSelectViewModel(
     fun resetSelectedSpinnerValue(){
         _selectedKategoriSpinner.value="ALL"
     }
-
-
 
     companion object {
 

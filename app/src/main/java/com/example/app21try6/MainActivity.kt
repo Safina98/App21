@@ -12,6 +12,7 @@ import androidx.navigation.ui.NavigationUI
 import com.example.app21try6.databinding.ActivityMainBinding
 import com.example.app21try6.stock.brandstock.BrandStockFragment
 import com.example.app21try6.stock.subproductstock.SubProductStockFragment
+import com.example.app21try6.transaction.transactionedit.TransactionEditFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
@@ -62,6 +63,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
         if (currentFragment is BrandStockFragment ) {
+            if (currentFragment.handleBackPress()) {
+                return true // Stay in fragment
+            }
+        }
+        if (currentFragment is TransactionEditFragment ) {
             if (currentFragment.handleBackPress()) {
                 return true // Stay in fragment
             }

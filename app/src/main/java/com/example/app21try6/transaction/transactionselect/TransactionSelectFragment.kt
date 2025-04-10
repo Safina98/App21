@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
 import androidx.activity.addCallback
@@ -133,7 +134,7 @@ class TransactionSelectFragment : Fragment() {
         val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
         textKet.requestFocus()
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+
         when (code) {
             Code.TEXTITEM -> {
                 textKet.setText(transSelectModel.item_name)
@@ -143,7 +144,7 @@ class TransactionSelectFragment : Fragment() {
                 textKet.inputType = InputType.TYPE_CLASS_NUMBER
             }
             else->{
-                textKet.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+//                textKet.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
             }
         }
         builder.setView(view)
@@ -168,18 +169,17 @@ class TransactionSelectFragment : Fragment() {
 
                 else -> {}
             }
-            imm.hideSoftInputFromWindow(view?.windowToken, 0)
+
             viewModel.onCloseDialog()
         }
         builder.setNegativeButton("No") { dialog, which ->
-            imm.hideSoftInputFromWindow(view?.windowToken, 0)
             viewModel.onCloseDialog()
         }
         builder.setOnCancelListener {
-            imm.hideSoftInputFromWindow(view?.windowToken, 0)
             viewModel.onCloseDialog()
         }
         val alert = builder.create()
+        alert.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         alert.show()
         alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
         alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))

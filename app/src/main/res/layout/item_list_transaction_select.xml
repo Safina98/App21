@@ -64,11 +64,11 @@
             -->
             <TextView
                 android:id="@+id/text_sells_t"
-                android:layout_width="50dp"
+                android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:layout_marginEnd="8dp"
                 android:gravity="center"
-                android:text="0"
+                android:text="0.00"
                 android:textSize="24dp"
                 app:layout_constraintBaseline_toBaselineOf="@+id/btn_subs_t"
                 app:layout_constraintEnd_toStartOf="@+id/btn_add_t" />

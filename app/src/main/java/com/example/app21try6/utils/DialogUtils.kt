@@ -2,6 +2,7 @@ package com.example.app21try6.utils
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.WindowManager
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.view.ContextThemeWrapper
@@ -47,12 +48,11 @@ object DialogUtils{
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.pop_up_update, null)
         val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
-
         // Set initial text if model is not null
         if (model != null) {
             textKet.setText(getBrandName(model))
         }
-
+        textKet.requestFocus()
         builder.setView(view)
         builder.setPositiveButton("Update") { dialog, which ->
             val newName = textKet.text.toString().uppercase().trim()
@@ -71,6 +71,7 @@ object DialogUtils{
 
         builder.setNegativeButton("No") { dialog, which -> }
         val alert = builder.create()
+        alert.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         alert.show()
         alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context, R.color.dialogbtncolor))
         alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context, R.color.dialogbtncolor))
@@ -172,6 +173,7 @@ object DialogUtils{
             dialog.dismiss()
         }
         val alert = builder.create()
+        alert.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         alert.show()
         alert.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
         alert.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
