@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.text.InputType
+import android.text.method.DigitsKeyListener
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -111,8 +112,8 @@ class TransactionSelectFragment : Fragment() {
             }
         })
         viewModel.productId.observe(viewLifecycleOwner){it?.let {
-           // viewModel.getTransModel(it)
-        }
+
+             }
         }
         viewModel.showDialog.observe(viewLifecycleOwner, Observer {
             if (it!=null){
@@ -144,7 +145,9 @@ class TransactionSelectFragment : Fragment() {
                 textKet.inputType = InputType.TYPE_CLASS_NUMBER
             }
             else->{
-//                textKet.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+
+                textKet.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+                textKet.keyListener = DigitsKeyListener.getInstance("-0123456789.")
             }
         }
         builder.setView(view)

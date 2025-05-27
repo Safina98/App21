@@ -1,6 +1,7 @@
 package com.example.app21try6.statement.purchase
 
 import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,10 +10,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.DatePicker
+import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -32,6 +36,7 @@ import com.example.app21try6.statement.StatementHSViewModel
 import com.example.app21try6.statement.StatementHSViewModelFactory
 import com.example.app21try6.stock.brandstock.BrandStockViewModel
 import com.example.app21try6.utils.DialogUtils
+import com.google.android.material.snackbar.Snackbar
 import java.util.Calendar
 
 
@@ -81,14 +86,12 @@ class TransactionPurchase : Fragment() {
         viewModel.allSubProductFromDb.observe(viewLifecycleOwner) { subProductList ->
             setAutoCompleteSubNameAdapter(subProductList, autoCompleteSubName)
         }
-
         viewModel.isAddItemClick.observe(viewLifecycleOwner){
             if (it==true){
                // adapter.notifyDataSetChanged()
                 viewModel.onItemAdded()
             }
         }
-
         viewModel.transSumDateLongClick.observe(viewLifecycleOwner){
             if (it==true){
                 showDatePickerDialog(null)
@@ -136,6 +139,13 @@ class TransactionPurchase : Fragment() {
         }
         //adapter.submitList(purchaseDummy)
         binding.btnAdd.setOnClickListener {
+            viewModel.onAddClick()
+            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(it.windowToken, 0) // "it" = button's window token
+            val snackbar = Snackbar.make(binding.root, "added", Snackbar.LENGTH_SHORT)
+            snackbar.duration = 1000 // Duration in milliseconds
+            snackbar.show()
+
         }
         viewModel.isNavigateToExpense.observe(viewLifecycleOwner){
             if (it==true){

@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
+import android.text.method.DigitsKeyListener
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -219,12 +220,12 @@ class TransactionEditFragment : Fragment() {
                    textKet.setText(transactionDetail.unit_qty.toString())
                }
                textKet.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+               textKet.keyListener = DigitsKeyListener.getInstance("-0123456789.")
 
            }
         }
-        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
         textKet.requestFocus()
-//        textKet.postDelayed({ textKet.showKeyboard() }, 100)
 
         builder.setView(view)
         builder.setPositiveButton("OK") { dialog, which ->

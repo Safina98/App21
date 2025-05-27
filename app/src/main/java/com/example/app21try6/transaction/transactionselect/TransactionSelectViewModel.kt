@@ -17,6 +17,7 @@ import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.tables.TransactionDetail
+import com.example.app21try6.utils.Levenshtein
 import kotlinx.coroutines.*
 import java.util.Date
 import java.util.Locale
@@ -33,6 +34,8 @@ class TransactionSelectViewModel(
     val trans_select_model :LiveData<List<TransSelectModel>> get() = transSelectModel
     private val _showDialog = MutableLiveData<TransSelectModel>()
     val showDialog:LiveData<TransSelectModel> get() = _showDialog
+
+    private val lev=Levenshtein()
 
     /////////////////////////////////////////Product////////////////////////////////////////////
     private var _allProduct = MutableLiveData<List<Product>>()
@@ -190,7 +193,7 @@ class TransactionSelectViewModel(
     }
 
     ///////////////////////////////////////////////PRODUCT//////////////////////////////////////
-    fun filterProduct(query: String?) {
+    fun filterProductOld(query: String?) {
         val list = mutableListOf<Product>()
         if(!query.isNullOrEmpty()) {
             list.addAll(_unFilteredProduct.value!!.filter {
@@ -200,6 +203,43 @@ class TransactionSelectViewModel(
         }
         _allProduct.value =list
     }
+    fun filterProduct(query: String?) {
+
+            val originalList = _unFilteredProduct.value ?: return
+            val filteredList = if (!query.isNullOrEmpty()) {
+                val input = query.lowercase(Locale.getDefault()).trim().replace(" ","")
+
+                originalList.filter { merk ->
+                    val name = merk.product_name.lowercase(Locale.getDefault()).trim().replace(" ","")
+                    val words = name.split(" ")
+
+                    words.any { word ->
+                        (0..word.length - input.length).any { i ->
+                            val substring = word.substring(i, i + input.length)
+                            lev.levenshtein(input, substring) <= 1  // Allow 1 typo/missing char
+                        } ||
+                                word.contains(input) ||
+                                lev.similarity(input, word) >= 0.8 ||
+                                lev.levenshtein(input, word) <= 1
+                    }
+                    /*
+                    words.any { word ->
+                        val prefix = word.take(input.length)
+                        lev.levenshtein(input, prefix) <= 1  ||  // Added
+                                word.contains(input) ||
+                                lev.similarity(input, word) >= 0.6 ||
+                                lev.levenshtein(input, word) <= 2
+                    }
+                }
+                    */
+                }
+            } else {
+                originalList
+            }
+            _allProduct.value = filteredList
+
+    }
+
 
     fun updateRv(value: String){
         viewModelScope.launch {

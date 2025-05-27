@@ -10,7 +10,6 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.example.app21try6.database.tables.TransactionDetail
 import java.text.DecimalFormat
-import java.text.SimpleDateFormat
 import java.util.Date
 
 import android.text.Editable
@@ -172,13 +171,13 @@ fun bindEndDatePickerFormatted(textView: TextView, date: Date?) {
     }
 }
 // Formatter for Rupiah
-private val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+private val rupiahFormatOld = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
 
 // Format and display an Int value as Rupiah
 @BindingAdapter("rupiahValue")
 fun setRupiahValue(editText: EditText, value: Int?) {
     val formattedValue = value?.let {
-        "${rupiahFormat.format(it.toDouble()).split(",")[0]}" // Remove decimals by splitting at comma
+        "${rupiahFormatOld.format(it.toDouble()).split(",")[0]}" // Remove decimals by splitting at comma
     } ?: "Rp 0"
     if (editText.text.toString() != formattedValue) {
         editText.setText(formattedValue)
@@ -189,12 +188,13 @@ fun setRupiahValue(editText: EditText, value: Int?) {
 @BindingAdapter("rupiahValue")
 fun setRupiahValue(editText: EditText, value: Double?) {
     val formattedValue = value?.let {
-        "${rupiahFormat.format(it.toDouble()).split(",")[0]}" // Remove decimals by splitting at comma
+        "${rupiahFormatOld.format(it.toDouble()).split(",")[0]}" // Remove decimals by splitting at comma
     } ?: "Rp 0"
     if (editText.text.toString() != formattedValue) {
         editText.setText(formattedValue)
     }
 }
+
 
 // Retrieve the raw double value from formatted text
 @InverseBindingAdapter(attribute = "rupiahValue", event = "rupiahValueAttrChanged")
@@ -209,21 +209,52 @@ fun getRupiahValue(editText: EditText): Double {
 }
 
 // Listener for data binding to notify view model on text change
+private val rupiahFormat = NumberFormat.getCurrencyInstance(Locale("in", "ID")).apply {
+    maximumFractionDigits = 0
+}
 @BindingAdapter("rupiahValueAttrChanged")
 fun setRupiahValueListener(editText: EditText, listener: InverseBindingListener?) {
-    editText.setOnFocusChangeListener { _, hasFocus ->
-        if (!hasFocus) {  // Update value only when focus leaves the EditText
+    editText.addTextChangedListener(object : TextWatcher {
+        private var current = ""
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        override fun afterTextChanged(s: Editable?) {
+            if (s.toString() != current) {
+                editText.removeTextChangedListener(this)
+
+                val cleanString = s.toString().replace("[^\\d]".toRegex(), "")
+                val parsed = cleanString.toDoubleOrNull() ?: 0.0
+
+                current = if (cleanString.isEmpty()) "" else rupiahFormat.format(parsed)
+                editText.setText(current)
+                editText.setSelection(current.length)
+
+                editText.addTextChangedListener(this)
+            }
             listener?.onChange()
         }
-    }
+    })
 }
 
 @BindingAdapter("doubleText")
 fun setDoubleText(editText: EditText, value: Double?) {
-    val displayText = if (value == 0.0 || value == null) "" else value.toString()
+    // Only update if the value is different from the current parsed value
+    val currentValue = editText.text.toString().toDoubleOrNull() ?: 0.0
+    if (value != currentValue) {
+        val displayText = if (value == 0.0 || value == null) "" else value.toString()
+        if (editText.text.toString() != displayText) {
+            // Save selection
+            val selection = editText.selectionStart
+            val textLength = editText.text.length
 
-    if (editText.text.toString() != displayText) {
-        editText.setText(displayText)
+            editText.setText(displayText)
+
+            // Restore selection (if at end, keep at end)
+            editText.setSelection(
+                if (selection == textLength) editText.text.length
+                else selection.coerceIn(0, editText.text.length)
+            )
+        }
     }
 }
 
@@ -234,11 +265,13 @@ fun getDoubleText(editText: EditText): Double {
 
 @BindingAdapter("doubleTextAttrChanged")
 fun setDoubleTextListener(editText: EditText, listener: InverseBindingListener?) {
-    editText.setOnFocusChangeListener { _, hasFocus ->
-        if (!hasFocus) {  // Update value only when focus leaves the EditText
+    editText.addTextChangedListener(object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        override fun afterTextChanged(s: Editable?) {
             listener?.onChange()
         }
-    }
+    })
 }
 
 @BindingAdapter("intText")

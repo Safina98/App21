@@ -23,7 +23,7 @@ interface InventoryPurchaseDao {
     @Insert
     fun insertPurchases(list: List<InventoryPurchase>)
     @Insert
-    fun insertPurchase(inventoryPurchase: InventoryPurchase)
+    fun insertPurchase(inventoryPurchase: InventoryPurchase):Long
     @Update
     fun updatePurchase(inventoryPurchase: InventoryPurchase)
     @Delete
@@ -38,6 +38,9 @@ interface InventoryPurchaseDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertDetailWarna(detailWarna: DetailWarnaTable): Long
+
+    @Query("SELECT * FROM inventory_purchase_table WHERE id = :id")
+    suspend fun getPurchaseById(id:Int): InventoryPurchase?
 
     @Query("UPDATE detail_warna_table SET batchCount = batchCount + :batchCount WHERE subId = :subId AND net = :net")
     suspend fun updateBatchCount(subId: Int, net: Double, batchCount: Double)
@@ -77,7 +80,7 @@ interface InventoryPurchaseDao {
         // Insert expense and get the ID
 
         try {
-            Log.i("insertPurchaseAndExpense","$expenses")
+            Log.i("SavePurchaseProbs"," insert $expenses")
             val id = insertExpense(expenses).toInt()
 
             // Ensure the ID is valid before proceeding
@@ -86,7 +89,7 @@ interface InventoryPurchaseDao {
                 purchaseList.map { it.apply { it.id=0 } }
                 purchaseList.map { it.apply { purchaseDate=expenses.expense_date?: Date() } }
                 purchaseList.forEach{
-                    Log.i("insertPurchaseAndExpense","$it")
+                    Log.i("insertPurchaseAndExpense","insert $it")
                 }
                 // Map the purchases to associate the expensesId, then insert them
                 insertPurchases(purchaseList)
@@ -106,6 +109,7 @@ interface InventoryPurchaseDao {
         purchaseList: List<InventoryPurchase>
 
     ) {
+
         updateExpense(expenses)
         val allPurchaseByExpense = selectPurchaseList(expenses.id)
         val purchasesToDelete = allPurchaseByExpense.filter { dbPurchase ->
@@ -114,14 +118,22 @@ interface InventoryPurchaseDao {
         // Delete the purchases
         deletePurchases(purchasesToDelete)
 
+        purchaseList.forEach {
+            Log.i("SavePurchaseProbs","$it")
+        }
+
         purchaseList.map { it.apply { purchaseDate=expenses.expense_date?:Date()} }
         purchaseList.forEach {
             if (it.id<0){
+                Log.i("SavePurchaseProbs","Insert $it")
                 it.expensesId=expenses.id
                 it.id=0
-                insertPurchase(it)
+                var id = insertPurchase(it)
+                var purhcaseItem=getPurchaseById(id.toInt())
+                Log.i("SavePurchaseProbs","pId $purhcaseItem")
             }else{
                 updatePurchase(it)
+                Log.i("SavePurchaseProbs","update ${it}")
             }
         }
 

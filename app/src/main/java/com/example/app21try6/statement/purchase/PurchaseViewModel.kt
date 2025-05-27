@@ -11,6 +11,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.*
 import androidx.lifecycle.viewModelScope
 import com.example.app21try6.BARANGLOGKET
+import com.example.app21try6.DETAILED_DATE_FORMATTER
 import com.example.app21try6.database.daos.ExpenseCategoryDao
 import com.example.app21try6.database.daos.ExpenseDao
 import com.example.app21try6.database.daos.ProductDao
@@ -37,6 +38,7 @@ import kotlinx.coroutines.withContext
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
+import com.example.app21try6.DETAILED_DATE_FORMATTER
 
 val tagp="PURCHASEPROBS"
 @RequiresApi(Build.VERSION_CODES.O)
@@ -135,9 +137,15 @@ class PurchaseViewModel(application: Application,
         viewModelScope.launch {
             if (id!=-1){
                 val list= withContext(Dispatchers.IO){invetoryPurchaseDao.selectPurchaseList(id)}
+                Log.i("SavePurchaseProbs","expenseId: $list")
                 inventoryList=list.toMutableList()
                 _inventoryPurchaseList.value=list
                 if (inventoryList!=null) inventoryPurchaseId= inventoryList.last().id*-1
+                Log.i("SavePurchaseProbs","getInventoryList pId: $inventoryPurchaseId")
+                Log.i("SavePurchaseProbs","expenseId: $id")
+                val inP = getPurchaseById()
+                Log.i("SavePurchaseProbs","inP: $inP")
+
             }
         }
     }
@@ -198,6 +206,7 @@ class PurchaseViewModel(application: Application,
             item.subProductId=allSubProductFromDb.value?.find { it.subProduct.sub_name ==productName.value }?.subProduct?.sub_id ?: inventoryPurchase.value!!.subProductId
             item.suplierId=suplierDummy.value?.find { it.suplierName==suplierName.value }?.id ?: inventoryPurchase.value!!.suplierId
             item.purchaseDate= Date()
+
             if (index != -1) {
                 inventoryList[index] = item
                 _inventoryPurchaseList.value=inventoryList
@@ -227,8 +236,11 @@ class PurchaseViewModel(application: Application,
                 expenses.expense_name="Bayar ${suplierName.value}"
                 updatePurchasesAndExpense(expenses,inventoryPurchaseList.value!!)
             }
-            _isNavigateToExpense.value=true
+
         }
+    }
+    fun onBtnSimppanClick(){
+        _isNavigateToExpense.value=true
     }
     fun getAutoIncrementId(){
         inventoryPurchaseId-=1
@@ -249,8 +261,11 @@ class PurchaseViewModel(application: Application,
         item.subProductId=allSubProductFromDb.value?.find { it.subProduct.sub_name ==productName.value }?.subProduct?.sub_id ?: 0
         item.suplierId=suplierDummy.value?.find { it.suplierName==suplierName.value }?.id ?: null
         item.purchaseDate= Date()
+        item.expensesId=id
         inventoryList.add(item)
         _inventoryPurchaseList.value=inventoryList
+        Log.i("SavePruchaseProbs","addItemToList pId: $inventoryPurchaseId")
+        Log.i("SavePruchaseProbs","item: $item")
         _isAddItemClick.value=true
         //onClearClick()
         clearAllButName()
@@ -309,16 +324,13 @@ class PurchaseViewModel(application: Application,
         _isAddItemClick.value=true
     }
 
-
-
     fun onClearClick(){
         productName.value=""
         clearAllButName()
     }
     fun clearAllButName(){
         productQty.value=1
-        productNet.value=0.0
-        productPrice.value=0.0
+
     }
     fun updateLongClickedDate(date:Date){
         viewModelScope.launch {
@@ -479,6 +491,11 @@ class PurchaseViewModel(application: Application,
         _allExpenseFromDb.value = filteredData
         _unfilteredExpesne.value=filteredData
 
+    }
+    private suspend fun getPurchaseById():InventoryPurchase?{
+        return withContext(Dispatchers.IO){
+            invetoryPurchaseDao.getPurchaseById(0)
+        }
     }
 
 
