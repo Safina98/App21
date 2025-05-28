@@ -1,5 +1,7 @@
 package com.example.app21try6.utils
 
+import android.util.Log
+
 class Levenshtein {
     fun levenshtein(a: String, b: String): Int {
         val dp = Array(a.length + 1) { IntArray(b.length + 1) }
@@ -26,7 +28,7 @@ class Levenshtein {
     fun filterSuggestions(input: String, list: List<String>): List<String> {
         val normalizedInput = input.lowercase().trim()
         val inputWords = normalizedInput.split(" ")
-
+       Log.d("Filter","Filtering '$input' against ${list.size} items")
 
         return list.filter { item ->
             val itemWords = item.lowercase().split(" ")
@@ -58,7 +60,11 @@ class Levenshtein {
                                 levenshtein(normalizedInput, word) <= 2
                     }
                 }
+
             }
+
         }
+        Log.d("Filter", "Filtering with: ${list.size}")
     }
+
 }

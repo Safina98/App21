@@ -36,6 +36,7 @@ import com.example.app21try6.statement.StatementHSViewModel
 import com.example.app21try6.statement.StatementHSViewModelFactory
 import com.example.app21try6.stock.brandstock.BrandStockViewModel
 import com.example.app21try6.utils.DialogUtils
+import com.example.app21try6.utils.SimilarWordAdapter
 import com.google.android.material.snackbar.Snackbar
 import java.util.Calendar
 
@@ -71,6 +72,7 @@ class TransactionPurchase : Fragment() {
         val autoCompleteSuplier: AutoCompleteTextView = binding.textDiscount
         val autoCompleteSubName: AutoCompleteTextView = binding.textSub
 
+
         val adapter =PurchaseAdapter(
             UpdateListener {
                 viewModel.rvClick(it)
@@ -81,10 +83,24 @@ class TransactionPurchase : Fragment() {
 
             })
         binding.purchaseRv.adapter=adapter
+
         val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
+
         binding.purchaseRv.addItemDecoration(dividerItemDecoration)
+
+        val subNameAdapter=SimilarWordAdapter(requireContext(), emptyList())
+        autoCompleteSubName.setAdapter(subNameAdapter)
+        autoCompleteSubName.threshold = 1
+
         viewModel.allSubProductFromDb.observe(viewLifecycleOwner) { subProductList ->
-            setAutoCompleteSubNameAdapter(subProductList, autoCompleteSubName)
+
+            if (subProductList != null) {
+                subNameAdapter.clear()
+                val subNames = subProductList.map { it.subProduct.sub_name }
+                subNameAdapter.updateData(subNames)
+            }
+
+           // setAutoCompleteSubNameAdapter(subProductList, autoCompleteSubName)
         }
         viewModel.isAddItemClick.observe(viewLifecycleOwner){
             if (it==true){
@@ -118,9 +134,21 @@ class TransactionPurchase : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 val subName = s.toString().trim().uppercase()
-                viewModel.searchProduct(subName)
-                autoCompleteSubName.showDropDown()
+                val input = s.toString().trim()
+                if (input.length >= 1) {
+                    subNameAdapter.filter.filter(s.toString())
+                    autoCompleteSubName.postDelayed({
+                        if (subNameAdapter.count > 0) {
+                            autoCompleteSubName.showDropDown()
+                        }
+                    }, 100)
+                    viewModel.searchProduct(subName)
+                }
+            //    adapterSub.filter.filter(input)
+
+
             }
+
         })
         autoCompleteSubName.setOnItemClickListener { _, _, position, _ ->
 
@@ -131,7 +159,6 @@ class TransactionPurchase : Fragment() {
             autoCompleteSuplier.setAdapter(adapterSuplier)
         }
         })
-
 
         viewModel.inventoryPurchaseList.observe(viewLifecycleOwner){
             adapter.submitList(it)
@@ -162,11 +189,7 @@ class TransactionPurchase : Fragment() {
     ) {
         if (!subProductList.isNullOrEmpty()) {
             val subNames = subProductList.map { it.subProduct.sub_name }
-            val adapterSub = ArrayAdapter(
-                requireContext(),
-                android.R.layout.simple_dropdown_item_1line,
-                subNames
-            )
+            val adapterSub = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, subNames)
             autoCompleteSubName.setAdapter(adapterSub)
             adapterSub.notifyDataSetChanged()
 

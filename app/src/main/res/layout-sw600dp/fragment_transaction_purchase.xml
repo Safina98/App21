@@ -89,6 +89,7 @@
                 android:inputType="text"
                 android:paddingStart="@dimen/big_margin"
                 android:paddingEnd="@dimen/big_margin"
+                android:completionThreshold="1"
                 android:text="@={viewModel.productName}" />
         </com.google.android.material.textfield.TextInputLayout>
 

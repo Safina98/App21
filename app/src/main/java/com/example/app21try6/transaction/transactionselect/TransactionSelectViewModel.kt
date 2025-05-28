@@ -222,16 +222,6 @@ class TransactionSelectViewModel(
                                 lev.similarity(input, word) >= 0.8 ||
                                 lev.levenshtein(input, word) <= 1
                     }
-                    /*
-                    words.any { word ->
-                        val prefix = word.take(input.length)
-                        lev.levenshtein(input, prefix) <= 1  ||  // Added
-                                word.contains(input) ||
-                                lev.similarity(input, word) >= 0.6 ||
-                                lev.levenshtein(input, word) <= 2
-                    }
-                }
-                    */
                 }
             } else {
                 originalList
