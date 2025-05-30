@@ -26,8 +26,7 @@ data class TransactionSummary (
         var cust_name:String = "",
         @ColumnInfo(name = "total_trans")
         var total_trans:Double=0.0,
-        //total_after_discount
-        @ColumnInfo(name = "total_after_discount")//new added column
+        @ColumnInfo(name = "total_after_discount")
         var total_after_discount:Double=0.0,
         @ColumnInfo(name = "paid")
         var paid:Int=0,
@@ -39,6 +38,8 @@ data class TransactionSummary (
         var is_paid_off:Boolean=false,
         @ColumnInfo(name = "is_keeped")
         var is_keeped:Boolean=false,
+        @ColumnInfo(name="is_logged")
+        var is_logged:Boolean=false, // new column to be added
         @ColumnInfo(name = "ref")
         var ref:String="",
         @ColumnInfo(name = "sum_note")

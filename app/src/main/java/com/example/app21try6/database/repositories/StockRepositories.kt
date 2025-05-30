@@ -1,6 +1,7 @@
 package com.example.app21try6.database.repositories
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.BrandProductModel
@@ -8,6 +9,7 @@ import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.tables.Category
 import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.InventoryLog
+import com.example.app21try6.database.tables.MerchandiseRetail
 import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.stock.brandstock.CategoryModel
@@ -161,11 +163,30 @@ class StockRepositories (
             detailWarnaDao.insertDetailWarnaAndLog(detailWarnaTable,inventoryLog)
         }
     }
-    suspend fun updateDetailWarna(detailWarnaTable: DetailWarnaTable, inventoryLog: InventoryLog){
+    suspend fun updateDetailWarna(detailWarnaTable: DetailWarnaTable, inventoryLog: InventoryLog,merchandiseRetail: MerchandiseRetail?){
         withContext(Dispatchers.IO){
-            detailWarnaDao.updateDetailWarnaAndInsertLog(detailWarnaTable,inventoryLog)
+            detailWarnaDao.updateDetailWarnaAndInsertLog(detailWarnaTable,inventoryLog,merchandiseRetail)
         }
     }
+    suspend fun deleteDetailWarna(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog,merchandiseRetail: MerchandiseRetail?){
+        withContext(Dispatchers.IO){
+            detailWarnaDao.deleteDetailWarnaAndInsertLog(detailWarnaTable.detailId,inventoryLog,merchandiseRetail)
+        }
+    }
+
+    suspend fun selectRetailBySumId(subId:Int):List<MerchandiseRetail>?{
+        return withContext(Dispatchers.IO){
+             detailWarnaDao.getRetaiBySubId(subId)
+        }
+    }
+    suspend fun deleteRetail(id:Int){
+        withContext(Dispatchers.IO){
+            detailWarnaDao.deleteMerchandise(id)
+        }
+    }
+
+
+
     suspend fun isDetailWarnaExist(subId:Int,net:Double):DetailWarnaTable?{
         return withContext(Dispatchers.IO){
             detailWarnaDao.getDetailBySubIdAndNet(subId,net)

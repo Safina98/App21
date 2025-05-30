@@ -142,7 +142,7 @@ interface TransSumDao {
 
     @Query("""
     SELECT DISTINCT t.sum_id, t.cust_name, t.total_trans, t.trans_date, t.paid, 
-                    t.is_taken, t.is_paid_off, t.is_keeped, t.ref, t.sum_note, t.custId ,t.total_after_discount
+                    t.is_taken, t.is_paid_off, t.is_keeped, t.is_logged,t.ref, t.sum_note, t.custId ,t.total_after_discount
     FROM trans_sum_table t 
     JOIN trans_detail_table AS td ON t.sum_id = td.sum_id 
     WHERE 
@@ -156,7 +156,7 @@ interface TransSumDao {
 
     @Query("""
     SELECT DISTINCT t.sum_id, t.cust_name, t.total_trans, t.trans_date, t.paid, 
-                    t.is_taken, t.is_paid_off, t.is_keeped, t.ref, t.sum_note, t.custId ,t.total_after_discount
+                    t.is_taken, t.is_paid_off, t.is_keeped, t.is_logged, t.ref, t.sum_note, t.custId ,t.total_after_discount
     FROM trans_sum_table t 
     JOIN trans_detail_table AS td ON t.sum_id = td.sum_id 
     WHERE 
@@ -169,7 +169,7 @@ interface TransSumDao {
 
     @Query("""
     SELECT DISTINCT t.sum_id, t.cust_name, t.total_trans, t.trans_date, t.paid, 
-                    t.is_taken, t.is_paid_off, t.is_keeped, t.ref, t.sum_note, t.custId ,t.total_after_discount
+                    t.is_taken, t.is_paid_off, t.is_keeped, t.is_logged,t.ref, t.sum_note, t.custId ,t.total_after_discount
     FROM trans_sum_table t 
     JOIN trans_detail_table AS td ON t.sum_id = td.sum_id 
     WHERE 

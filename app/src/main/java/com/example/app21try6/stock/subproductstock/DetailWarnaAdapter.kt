@@ -7,20 +7,33 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.databinding.ItemListSubDetailBinding
 import com.example.app21try6.databinding.ItemListSubproductBinding
 
 class DetailWarnaAdapter (
                   val longListener: DetailWarnaLongListener,
+    val deleteDetailWarnaListener: DeleteDetailWarnaListener,
+    val editDetailWarnaListener: EditDetailWarnaListener,
+    val trackDetailWarnaListener: TrackDetailWarnaListener
 ) :
     ListAdapter<DetailWarnaTable,
            DetailWarnaAdapter.MyViewHolder>(DetailWarnaDiffCallback()){
-    class MyViewHolder private constructor( val binding: ItemListSubDetailBinding): RecyclerView.ViewHolder(binding.root){
+    class MyViewHolder private constructor( val binding: ItemListSubDetailBinding
+
+    ): RecyclerView.ViewHolder(binding.root){
         fun bind(
-                 item: DetailWarnaTable
+                 item: DetailWarnaTable,
+                 deleteDetailWarnaListener: DeleteDetailWarnaListener,
+                 editDetailWarnaListener: EditDetailWarnaListener,
+                 trackDetailWarnaListener: TrackDetailWarnaListener
+
         ){
             binding.item = item
+            binding.deleteListener=deleteDetailWarnaListener
+            binding.editListener= editDetailWarnaListener
+            binding.trackListener=trackDetailWarnaListener
             binding.txtNet.text=item.net.toString() +"Meter"
             binding.txtBatchCount.text=item.batchCount.toString() +"Roll"
             binding.executePendingBindings()
@@ -33,7 +46,6 @@ class DetailWarnaAdapter (
             }
         }
 
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -41,7 +53,7 @@ class DetailWarnaAdapter (
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position),deleteDetailWarnaListener,editDetailWarnaListener,trackDetailWarnaListener)
     }
 
 
@@ -62,4 +74,14 @@ class DetailWarnaLongListener(val longListener:(DetailWarnaTable)->Unit){
         longListener(detailWarnaTable)
         return true
     }
+
+}
+class DeleteDetailWarnaListener(val clickListener: (detailwarnaTable1: DetailWarnaTable) -> Unit) {
+    fun onClick(detailwarnaTable: DetailWarnaTable) = clickListener(detailwarnaTable)
+}
+class EditDetailWarnaListener(val clickListener: (detailwarnaTable1: DetailWarnaTable) -> Unit) {
+    fun onClick(detailwarnaTable: DetailWarnaTable) = clickListener(detailwarnaTable)
+}
+class TrackDetailWarnaListener(val clickListener: (detailwarnaTable1: DetailWarnaTable) -> Unit) {
+    fun onClick(detailwarnaTable: DetailWarnaTable) = clickListener(detailwarnaTable)
 }

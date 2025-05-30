@@ -116,9 +116,7 @@ class TransactionSelectViewModel(
     //update on btn + or - click
     fun updateTransDetail(s:TransSelectModel){
         viewModelScope.launch {
-            Log.i("QTYProbs","${s.item_name}: ${s.item_price}")
             s.item_price= calculatePriceByQty(s.qty,s.item_default_price)
-            Log.i("QTYProbs","${s.item_name}: ${s.item_price}")
             val t = converter(s)
             var id =s.trans_detail_id
             if (id==0L) id = transRepo.insertTransDetail(t) else transRepo.updateTransDetail(t)

@@ -5,10 +5,20 @@
         <variable
             name="item"
             type="com.example.app21try6.database.tables.DetailWarnaTable" />
+        <variable
+            name="deleteListener"
+            type="com.example.app21try6.stock.subproductstock.DeleteDetailWarnaListener" />
+        <variable
+            name="editListener"
+            type="com.example.app21try6.stock.subproductstock.EditDetailWarnaListener" />
+        <variable
+            name="trackListener"
+            type="com.example.app21try6.stock.subproductstock.TrackDetailWarnaListener" />
     </data>
 
     <androidx.cardview.widget.CardView
         android:layout_margin="@dimen/small_margin"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     <LinearLayout
@@ -31,6 +41,30 @@
             android:layout_weight="0.5"
             style="@style/active_transaction_text_style"
              />
+        <Button
+            android:id="@+id/btn_track"
+            android:layout_margin="@dimen/medium_margin"
+            android:onClick="@{()->trackListener.onClick(item)}"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/baseline_discount_24"/>
+        <Button
+            android:id="@+id/btn_edit"
+            android:layout_margin="@dimen/medium_margin"
+            android:onClick="@{()->editListener.onClick(item)}"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/baseline_edit_24"/>
+
+        <Button
+            android:id="@+id/btn_delete"
+            android:layout_margin="@dimen/medium_margin"
+            android:onClick="@{()-> deleteListener.onClick(item)}"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/baseline_delete_forever_24"
+            />
+
     </LinearLayout>
     </androidx.cardview.widget.CardView>
 </layout>

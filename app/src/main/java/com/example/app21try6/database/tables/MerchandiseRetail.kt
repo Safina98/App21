@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import java.util.Date
-/*
+
 @Entity(
     tableName = "merchandise_table",
     foreignKeys = [
@@ -18,15 +18,13 @@ import java.util.Date
         )
     ]
 )
-
- */
 data class MerchandiseRetail(
     @PrimaryKey(autoGenerate = true)
-    val id:Int,
+    var id:Int=0,
     @ColumnInfo(name="sub_id")
-    val sub_id: Int,//foreignkey
+    var sub_id: Int=0,//foreignkey
     @ColumnInfo(name="subProductNet")
-    var subProductNet:Double,
+    var subProductNet:Double=0.0,
     @ColumnInfo(name="ref")
     var ref:String="",
     @ColumnInfo(name="date")

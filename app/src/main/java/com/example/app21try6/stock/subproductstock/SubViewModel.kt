@@ -10,6 +10,7 @@ import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.InventoryLog
+import com.example.app21try6.database.tables.MerchandiseRetail
 import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.database.tables.TransactionDetail
 import kotlinx.coroutines.*
@@ -41,6 +42,9 @@ class SubViewModel (
     private val _detailWarnaList=MutableLiveData<List<DetailWarnaTable>?>()
     val detailWarnaList:LiveData<List<DetailWarnaTable>?>get() = _detailWarnaList
 
+    private val _retailList=MutableLiveData<List<MerchandiseRetail>?>()
+    val retailList:LiveData<List<MerchandiseRetail>?>get() = _retailList
+
     val _selectedSubProduct=MutableLiveData<SubProduct?>()
     val selectedSubProduct:LiveData<SubProduct?>get() = _selectedSubProduct
 
@@ -49,44 +53,28 @@ class SubViewModel (
        //if id not the same change rc background
     }
 
-    fun insertDetailWarna(batchCount: Double, net: Double) {
-        uiScope.launch {
-            val subId = _selectedSubProduct.value?.sub_id ?: return@launch
-            val productId = stockRepo.getProdutId(subId) ?: return@launch
-            val brandId = stockRepo.getBrandId(productId) ?: return@launch
-            val existingDetailWarna = stockRepo.isDetailWarnaExist(subId, net)
-            if (existingDetailWarna == null) {
-                // Insert new record
-                val newDetailWarna = DetailWarnaTable(
-                    subId = subId,
-                    net = net,
-                    batchCount = batchCount,
-                    ket = "Stok Awal",
-                    ref = UUID.randomUUID().toString()
-                )
-                stockRepo.insertDetailWarna(newDetailWarna, createInventoryLog(newDetailWarna, batchCount,productId, brandId))
-            } else {
-                // Update existing record
-                existingDetailWarna.batchCount += batchCount  // Accumulate batch count
-                stockRepo.updateDetailWarna(existingDetailWarna, createInventoryLog(existingDetailWarna, batchCount,productId, brandId))
-            }
-            getDetailWarnaList(subId) // Refresh UI
-        }
-    }
 
-    fun createInventoryLog(detailWarnaTable: DetailWarnaTable,batchCount:Double,productId:Int,brandId:Int):InventoryLog{
+
+    fun createInventoryLog(detailWarnaTable: DetailWarnaTable,batchCount:Double,productId:Int,brandId:Int,ket:String):InventoryLog{
         val inventoryLog=InventoryLog()
         inventoryLog.detailWarnaRef=detailWarnaTable.ref
         inventoryLog.subProductId=detailWarnaTable.subId
         inventoryLog.isi=detailWarnaTable.net
         inventoryLog.pcs=batchCount.toInt()
-        inventoryLog.barangLogKet="Masuk"
+        inventoryLog.barangLogKet=ket
         inventoryLog.barangLogDate= Date()
         inventoryLog.barangLogRef=UUID.randomUUID().toString()
         inventoryLog.productId=productId
         inventoryLog.brandId=brandId
         return inventoryLog
-
+    }
+    fun createMerchandiseRetail(detailWarnaTable: DetailWarnaTable):MerchandiseRetail{
+        val merchandiseRetail=MerchandiseRetail()
+        merchandiseRetail.sub_id=detailWarnaTable.subId
+        merchandiseRetail.subProductNet=detailWarnaTable.net
+        merchandiseRetail.ref=UUID.randomUUID().toString()
+        merchandiseRetail.date=Date()
+        return merchandiseRetail
     }
 
     fun getDetailWarnaList(id:Int?){
@@ -128,19 +116,6 @@ class SubViewModel (
 
     fun deleteSubProduct(subProduct: SubProduct){ uiScope.launch { stockRepo.deleteSubProduct(subProduct) } }
 
-    fun insertAnItemSubProductStock(subProduct_name:String){
-        uiScope.launch {
-            if (subProduct_name!=""){
-            val subProduct= SubProduct()
-            subProduct.product_code = product_id[0]
-            subProduct.sub_name = subProduct_name
-            subProduct.brand_code = product_id[1]
-            subProduct.cath_code = product_id[2]
-            stockRepo.insertSubProduct(subProduct)
-            }
-        }
-    }
-
     fun addStockClicked(subProduct: SubProduct){
         uiScope.launch {
             subProduct.roll_u = subProduct.roll_u+1
@@ -159,7 +134,6 @@ class SubViewModel (
         uiScope.launch {
             val pList=allProductFromDb.value
             resetSupProductSuspend(pList!!)
-
         }
     }
 
@@ -175,6 +149,80 @@ class SubViewModel (
                 p.roll_u=0
                 stockRepo.updateSubProduct(p)
             }
+        }
+    }
+    fun insertAnItemSubProductStock(subProduct_name:String){
+        uiScope.launch {
+            if (subProduct_name!=""){
+                val subProduct= SubProduct()
+                subProduct.product_code = product_id[0]
+                subProduct.sub_name = subProduct_name
+                subProduct.brand_code = product_id[1]
+                subProduct.cath_code = product_id[2]
+                stockRepo.insertSubProduct(subProduct)
+            }
+        }
+    }
+
+
+    fun insertDetailWarna(batchCount: Double, net: Double) {
+        uiScope.launch {
+            val subId = _selectedSubProduct.value?.sub_id ?: return@launch
+            val productId = stockRepo.getProdutId(subId) ?: return@launch
+            val brandId = stockRepo.getBrandId(productId) ?: return@launch
+            val existingDetailWarna = stockRepo.isDetailWarnaExist(subId, net)
+            if (existingDetailWarna == null) {
+                // Insert new record
+                val newDetailWarna = DetailWarnaTable(
+                    subId = subId,
+                    net = net,
+                    batchCount = batchCount,
+                    ket = "Stok Awal",
+                    ref = UUID.randomUUID().toString()
+                )
+                stockRepo.insertDetailWarna(newDetailWarna, createInventoryLog(newDetailWarna, batchCount,productId, brandId,"Masuk"))
+            } else {
+                // Update existing record
+                existingDetailWarna.batchCount += batchCount  // Accumulate batch count
+                stockRepo.updateDetailWarna(existingDetailWarna, createInventoryLog(existingDetailWarna, batchCount,productId, brandId,"Masuk"),null)
+            }
+            getDetailWarnaList(subId) // Refresh UI
+        }
+    }
+    fun deleteDetailWarna(detailWarnaTable: DetailWarnaTable){
+        uiScope.launch {
+            val productId = stockRepo.getProdutId(detailWarnaTable.subId) ?: return@launch
+            val brandId = stockRepo.getBrandId(productId) ?: return@launch
+            stockRepo.deleteDetailWarna(detailWarnaTable,createInventoryLog(detailWarnaTable, detailWarnaTable.batchCount,productId, brandId,"Dihapus"),null)
+            getDetailWarnaList(detailWarnaTable.subId)
+        }
+
+    }
+    fun trackDetailWarna(detailWarnaTable: DetailWarnaTable){
+        uiScope.launch {
+            detailWarnaTable.batchCount -=1
+            val productId = stockRepo.getProdutId(detailWarnaTable.subId) ?: return@launch
+            val brandId = stockRepo.getBrandId(productId) ?: return@launch
+            val inventoryLog =createInventoryLog(detailWarnaTable,detailWarnaTable.batchCount,productId,brandId,"Keluar Retail")
+            val merchandiseRetail=createMerchandiseRetail(detailWarnaTable)
+            if (detailWarnaTable.batchCount>0)
+                stockRepo.updateDetailWarna(detailWarnaTable,inventoryLog,merchandiseRetail)
+            else
+                stockRepo.deleteDetailWarna(detailWarnaTable,inventoryLog,merchandiseRetail)
+
+        }
+
+    }
+
+    fun getRetailList(subId:Int?){
+        uiScope.launch {
+            val list= if (subId!=null)stockRepo.selectRetailBySumId(subId) else listOf()
+            _retailList.value=list
+        }
+    }
+    fun deleteRetail(id:Int){
+        uiScope.launch {
+            stockRepo.deleteRetail(id)
         }
     }
     /////////////////////////////////////////////////////////////////////////////////

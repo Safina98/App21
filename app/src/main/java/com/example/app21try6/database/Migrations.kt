@@ -4,6 +4,34 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 object Migrations {
+
+    //note
+    // Migration 41_41 is the same. Just forgot to add entity and dao to vendible databse hence increment the version
+    val MIGRATION_42_43 = object : Migration(42, 43) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            // Create the new merchandise_table
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS merchandise_table (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                sub_id INTEGER NOT NULL,
+                subProductNet REAL NOT NULL,
+                ref TEXT NOT NULL,
+                date TEXT NOT NULL,
+                FOREIGN KEY(sub_id) REFERENCES sub_table(sub_id) 
+                    ON UPDATE CASCADE ON DELETE CASCADE
+            )
+        """.trimIndent())
+
+            // Add is_logged column to trans_sum_table
+           /*
+            database.execSQL("""
+            ALTER TABLE trans_sum_table ADD COLUMN is_logged INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+            */
+        }
+    }
+
+
     val MIGRATION_40_41 = object : Migration(40, 41) {
         override fun migrate(database: SupportSQLiteDatabase) {
             // Add the new column with a default value of 0.0

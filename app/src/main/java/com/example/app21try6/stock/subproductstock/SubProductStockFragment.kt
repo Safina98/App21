@@ -27,6 +27,7 @@ import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
+import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.databinding.FragmentSubProductStockBinding
 import com.example.app21try6.databinding.PopUpUpdateBayarBinding
 import com.example.app21try6.utils.DialogUtils
@@ -86,8 +87,17 @@ class SubProductStockFragment : Fragment() {
             viewModel.toggleSelectedSubProductId(it)
         },requireContext())
         val detailWarnaAdapter=DetailWarnaAdapter(DetailWarnaLongListener {
+            },
+            DeleteDetailWarnaListener {
+                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as SubViewModel).deleteDetailWarna(item as DetailWarnaTable) })
 
-        })
+            }, EditDetailWarnaListener
+         {
+             Toast.makeText(context,"edited",Toast.LENGTH_SHORT).show()
+         },TrackDetailWarnaListener {
+             viewModel.trackDetailWarna(it)
+            }
+        )
         binding.rvSubProduct.adapter = adapter
         binding.rvSubDetail?.adapter=detailWarnaAdapter
         binding.searchBarSub.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -117,14 +127,21 @@ class SubProductStockFragment : Fragment() {
         viewModel.selectedSubProduct.observe(viewLifecycleOwner){
 
             viewModel.getDetailWarnaList(it?.sub_id)
+            viewModel.getRetailList(it?.sub_id)
             adapter.selectedItemId = it?.sub_id  // Pass the selected ID to the adapter
             adapter.notifyDataSetChanged()
         }
+
         viewModel.detailWarnaList.observe(viewLifecycleOwner){it?.let {
             detailWarnaAdapter.submitList(it)
            // adapter.notifyDataSetChanged()
             }
         }
+
+        viewModel.retailList.observe(viewLifecycleOwner){it?.let {
+            Log.i("RETAIL","list: $it")
+        }}
+
         viewModel.addItem.observe(viewLifecycleOwner, Observer {
             if (it==true){
                 if (viewModel.selectedSubProduct.value==null){

@@ -2,10 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/brandStockFragment"
-        android:title="@string/menu_stok" />
+        android:title="@string/menu_stok"
+        android:icon="@drawable/baseline_delete_forever_24"
+        />
 
     <item
         android:id="@+id/bookSummaryFragment"
+android:icon="@drawable/logo_income"
         android:title="@string/pembukuan" />
     <item
         android:id="@+id/transactionActiveFragment"

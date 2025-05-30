@@ -1,12 +1,17 @@
 package com.example.app21try6.database.daos
 
+import android.util.Log
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.InventoryLog
+import com.example.app21try6.database.tables.MerchandiseRetail
+import com.example.app21try6.database.tables.Product
+import com.example.app21try6.database.tables.SubProduct
 
 @Dao
 interface DetailWarnaDao {
@@ -17,8 +22,18 @@ interface DetailWarnaDao {
     @Update
     fun update(detailWarnaTable: DetailWarnaTable)
 
+    @Insert
+    fun insert(merchandiseRetail: MerchandiseRetail)
+
     @Query("DELETE FROM detail_warna_table WHERE detailId=:id")
     fun delete(id:Int)
+
+    @Query("DELETE FROM merchandise_table WHERE id =:id")
+    fun deleteMerchandise(id:Int)
+
+    @Query("SELECT * FROM merchandise_table WHERE sub_id=:subId")
+    fun getRetaiBySubId(subId:Int):List<MerchandiseRetail>
+
     @Query("SELECT * FROM detail_warna_table WHERE subId=:subId")
     fun getDetailWarnaBySubId(subId:Int):List<DetailWarnaTable>
     //if the combination of net and sub_id exist update, if not insert
@@ -27,6 +42,18 @@ interface DetailWarnaDao {
     @Query("UPDATE detail_warna_table SET batchCount = batchCount + :newBatchCount WHERE detailId = :detailId")
     fun updateBatchCount(detailId: Int, newBatchCount: Double)
 
+    @Query("SELECT * FROM brand_table WHERE brand_id = :brandId")
+    suspend fun getBrandById(brandId: Int): Brand?
+
+    @Query("SELECT * FROM product_table WHERE product_id = :productId")
+    suspend fun getProductById(productId: Int): Product?
+
+    @Query("SELECT * FROM sub_table WHERE sub_id = :subProductId")
+    suspend fun getSubProductById(subProductId: Int): SubProduct?
+
+    @Query("SELECT * FROM detail_warna_table WHERE ref = :ref")
+    suspend fun getDetailWarnaByRef(ref: String): DetailWarnaTable?
+
 
     @Transaction
     fun insertDetailWarnaAndLog(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog) {
@@ -34,8 +61,19 @@ interface DetailWarnaDao {
         insertLog(inventoryLog)
     }
     @Transaction
-    fun updateDetailWarnaAndInsertLog(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog) {
+    fun updateDetailWarnaAndInsertLog(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog,merchandiseRetail: MerchandiseRetail?) {
         update(detailWarnaTable)
         insertLog(inventoryLog)
+        if (merchandiseRetail!=null) {
+            insert(merchandiseRetail)
+        }//TODO insert merchandise retail
+    }
+    @Transaction
+    fun deleteDetailWarnaAndInsertLog(detailWarnaId:Int,inventoryLog: InventoryLog,merchandiseRetail: MerchandiseRetail?){
+        insertLog(inventoryLog)
+        delete(detailWarnaId)
+        if (merchandiseRetail!=null) {
+            insert(merchandiseRetail)
+        }//TODO insert merchandise retail
     }
 }

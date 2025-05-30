@@ -8,8 +8,8 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.example.app21try6.bookkeeping.summary.MonthlyProfit
+import com.example.app21try6.database.tables.MerchandiseRetail
 import com.example.app21try6.database.tables.TransactionDetail
-import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.grafik.StockModel
 import com.example.app21try6.transaction.transactionactive.TransExportModel
 import com.example.app21try6.transaction.transactiondetail.TransactionDetailWithProduct
@@ -183,7 +183,7 @@ WHERE ts.trans_date >= '2024-11-01 00:00'
 
 
     @Query("DELETE  FROM trans_detail_table WHERE sum_id =:sum_id_")
-    fun deleteATransDetail(sum_id_:Int)
+    fun deleteTransSummary(sum_id_:Int)
 
     @Query("DELETE FROM trans_detail_table WHERE trans_detail_id=:trans_detail_id ")
     fun deleteAnItemTransDetail(trans_detail_id:Long)
@@ -267,8 +267,6 @@ WHERE ts.trans_date >= '2024-11-01 00:00'
     fun getAllTransDetail():List<TransactionDetail>
     @Update
     suspend fun updateTransactions(transactions: List<TransactionDetail>)
-
-
 
 
 

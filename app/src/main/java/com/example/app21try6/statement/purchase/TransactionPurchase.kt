@@ -92,6 +92,10 @@ class TransactionPurchase : Fragment() {
         autoCompleteSubName.setAdapter(subNameAdapter)
         autoCompleteSubName.threshold = 1
 
+        val suplierList= listOf<String>("Mitra Jaya","Mbtech","Simnu","Busa Yerry","Lancar","Cahaya Indah","Vision","Owl Crown","Bali Jaya","Toko Utama","Sentral Logam","Toko ada","Trijaya","Maliang")
+        val suplierNameAdapter=SimilarWordAdapter(requireContext(), suplierList)
+        autoCompleteSuplier.setAdapter(suplierNameAdapter)
+
         viewModel.allSubProductFromDb.observe(viewLifecycleOwner) { subProductList ->
 
             if (subProductList != null) {
@@ -100,7 +104,6 @@ class TransactionPurchase : Fragment() {
                 subNameAdapter.updateData(subNames)
             }
 
-           // setAutoCompleteSubNameAdapter(subProductList, autoCompleteSubName)
         }
         viewModel.isAddItemClick.observe(viewLifecycleOwner){
             if (it==true){

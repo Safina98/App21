@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 <style name="base_button">
-    <!--
-    <item name="backgroundColor">@color/secondaryColor</item>
-    <item name="background">@color/secondaryColor</item>
-    <item name="tint">@color/secondaryColor</item>
-    -->
+
 </style>
 
 
@@ -74,7 +70,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:fontFamily">@font/metrophobic</item>
-        <item name="android:textColor">@color/mainTextColor</item>
+        <item name="android:textColor">@color/dark_green2</item>
         <!--<item name="android:textColor">@color/dark_green3</item>-->
         <item name="android:textSize">18sp</item>
     </style>
