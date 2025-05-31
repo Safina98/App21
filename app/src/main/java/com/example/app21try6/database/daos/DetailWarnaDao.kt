@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.example.app21try6.database.models.DetailMerchandiseModel
 import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.InventoryLog
@@ -25,21 +26,37 @@ interface DetailWarnaDao {
     @Insert
     fun insert(merchandiseRetail: MerchandiseRetail)
 
-    @Query("DELETE FROM detail_warna_table WHERE detailId=:id")
+    @Query("DELETE FROM detail_warna_table WHERE id=:id")
     fun delete(id:Int)
 
     @Query("DELETE FROM merchandise_table WHERE id =:id")
     fun deleteMerchandise(id:Int)
 
-    @Query("SELECT * FROM merchandise_table WHERE sub_id=:subId")
-    fun getRetaiBySubId(subId:Int):List<MerchandiseRetail>
+    @Query("SELECT \n" +
+            "    id, \n" +
+            "    sub_id AS sub_id, \n" +
+            "    ref, \n" +
+            "    net, \n" +
+            "    NULL AS batchCount, \n" +
+            "    NULL AS ket, \n" +
+            "    date AS date \n" +
+            "FROM merchandise_table \n WHERE sub_id=:subId")
+    fun getRetaiBySubId(subId:Int):List<DetailMerchandiseModel>
 
-    @Query("SELECT * FROM detail_warna_table WHERE subId=:subId")
-    fun getDetailWarnaBySubId(subId:Int):List<DetailWarnaTable>
+    @Query("SELECT \n" +
+            "    id, \n" +
+            "    subId AS sub_id, \n" +
+            "    ref, \n" +
+            "    net, \n" +
+            "    batchCount, \n" +
+            "    ket, \n" +
+            "    NULL AS date \n" +
+            "FROM detail_warna_table\n WHERE subId=:subId")
+    fun getDetailWarnaBySubId(subId:Int):List<DetailMerchandiseModel>
     //if the combination of net and sub_id exist update, if not insert
     @Query("SELECT * FROM detail_warna_table WHERE subId = :subId AND net = :net LIMIT 1")
     fun getDetailBySubIdAndNet(subId: Int, net: Double): DetailWarnaTable?
-    @Query("UPDATE detail_warna_table SET batchCount = batchCount + :newBatchCount WHERE detailId = :detailId")
+    @Query("UPDATE detail_warna_table SET batchCount = batchCount + :newBatchCount WHERE id = :detailId")
     fun updateBatchCount(detailId: Int, newBatchCount: Double)
 
     @Query("SELECT * FROM brand_table WHERE brand_id = :brandId")

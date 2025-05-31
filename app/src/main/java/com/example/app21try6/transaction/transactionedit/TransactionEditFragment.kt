@@ -29,6 +29,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.example.app21try6.Code
 import com.example.app21try6.R
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.VendibleDatabase
@@ -42,7 +43,7 @@ import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 
 
-enum class Code(val text: String) {ZERO(""),LONGPLUS("Tambah"),LONGSUBS("Kurang"),TEXTITEM("Update Nama Barang"),TEXTPRICE("Update Harga barang"),UNITQTY("ISI")}
+
 class TransactionEditFragment : Fragment() {
     private lateinit var binding:FragmentTransactionEditBinding
     private lateinit var adapter:TransactionEditAdapter

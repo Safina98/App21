@@ -25,6 +25,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
 import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.database.models.DetailMerchandiseModel
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.database.tables.DetailWarnaTable
@@ -86,20 +87,30 @@ class SubProductStockFragment : Fragment() {
             }
             viewModel.toggleSelectedSubProductId(it)
         },requireContext())
-        val detailWarnaAdapter=DetailWarnaAdapter(DetailWarnaLongListener {
-            },
-            DeleteDetailWarnaListener {
-                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as SubViewModel).deleteDetailWarna(item as DetailWarnaTable) })
 
-            }, EditDetailWarnaListener
-         {
-             Toast.makeText(context,"edited",Toast.LENGTH_SHORT).show()
-         },TrackDetailWarnaListener {
-             viewModel.trackDetailWarna(it)
+        val detailWarnaAdapter=DetailWarnaAdapter(DetailWarnaLongListener {
+            }, DeleteDetailWarnaListener {
+                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as SubViewModel).deleteDetailWarna(item as DetailMerchandiseModel) })
+
+            }, EditDetailWarnaListener {
+                Toast.makeText(context,"edited",Toast.LENGTH_SHORT).show()
+            },TrackDetailWarnaListener {
+                 viewModel.trackDetailWarna(it)
             }
         )
+        val retailAdapter=DetailWarnaAdapter(DetailWarnaLongListener {
+
+        }, DeleteDetailWarnaListener {
+            //delete, show pop up delete
+        }, EditDetailWarnaListener {
+            //add show pop up
+        }, TrackDetailWarnaListener {
+            //substract, show pop up
+        })
+
         binding.rvSubProduct.adapter = adapter
         binding.rvSubDetail?.adapter=detailWarnaAdapter
+        binding.rvRetail?.adapter=retailAdapter
         binding.searchBarSub.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true
@@ -139,7 +150,7 @@ class SubProductStockFragment : Fragment() {
         }
 
         viewModel.retailList.observe(viewLifecycleOwner){it?.let {
-            Log.i("RETAIL","list: $it")
+            retailAdapter.submitList(it)
         }}
 
         viewModel.addItem.observe(viewLifecycleOwner, Observer {
@@ -262,17 +273,23 @@ class SubProductStockFragment : Fragment() {
         if (isVisible){
             binding.rvSubProduct.visibility=View.GONE
             binding.rvSubDetail.visibility=View.VISIBLE
+            binding.rvRetail.visibility=View.VISIBLE
             binding.txtSubProduct?.visibility=View.VISIBLE
+            binding.line1.visibility=View.VISIBLE
         }else{
             binding.rvSubProduct.visibility=View.VISIBLE
             binding.rvSubDetail.visibility=View.GONE
+            binding.rvRetail.visibility=View.GONE
             binding.txtSubProduct?.visibility=View.GONE
+            binding.line1.visibility=View.GONE
         }
     }
     fun handleBackPress(): Boolean {
         if (binding.rvSubDetail.visibility == View.VISIBLE) {
             // Toggle RecyclerViews visibility
             binding.rvSubDetail.visibility = View.GONE
+            binding.rvRetail.visibility=View.GONE
+            binding.line1.visibility=View.GONE
             binding.rvSubProduct.visibility = View.VISIBLE
             viewModel.toggleSelectedSubProductId(null)
             return true // Handled, so don't exit fragment

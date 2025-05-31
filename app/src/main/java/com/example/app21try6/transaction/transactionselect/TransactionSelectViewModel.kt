@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.app21try6.calculatePriceByQty
 import com.example.app21try6.database.*
 import com.example.app21try6.database.repositories.StockRepositories
@@ -114,6 +115,18 @@ class TransactionSelectViewModel(
         Log.i("SelectedRvPos","selected position: ${_selectedItemPosition}")
     }
     //update on btn + or - click
+    fun addTransDetailQty(s:TransSelectModel,qty:Double){
+        viewModelScope.launch {
+            s.qty +=qty
+            updateTransDetail(s)
+        }
+    }
+    fun subtractTransDetailQty(s:TransSelectModel,qty:Double){
+        viewModelScope.launch {
+            s.qty -=qty
+            updateTransDetail(s)
+        }
+    }
     fun updateTransDetail(s:TransSelectModel){
         viewModelScope.launch {
             s.item_price= calculatePriceByQty(s.qty,s.item_default_price)

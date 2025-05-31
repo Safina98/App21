@@ -19,13 +19,15 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.app21try6.Code
 import com.example.app21try6.R
 import com.example.app21try6.bookkeeping.vendiblelist.VendibleFragmentArgs
-import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentTransactionSelectBinding
-import com.example.app21try6.transaction.transactionedit.Code
+import com.example.app21try6.stock.brandstock.BrandStockViewModel
+import com.example.app21try6.stock.brandstock.CategoryModel
+import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 
 
@@ -71,18 +73,22 @@ class TransactionSelectFragment : Fragment() {
             },
             PlusSelectLongListener {
                 code = Code.LONGPLUS
-                viewModel.onShowDialog(it)
+                onLongSubsOrPlusClick(it,code.text,code)
+                //viewModel.onShowDialog(it)
                 clearSearchQuery()
             },
             SubsSelectLongListener {
                 code = Code.LONGSUBS
-                viewModel.onShowDialog(it)
+                onLongSubsOrPlusClick(it,code.text,code)
+                //viewModel.onShowDialog(it)
                 clearSearchQuery()
             },
             SelectLongListener {
                 it.trans_detail_id = 0L
-                showDialog(it,viewModel,Code.ZERO)
-                //viewModel.insertDuplicateSubProduct(it)
+                //showDialog(it,viewModel,Code.DUPLICATE)
+                code = Code.DUPLICATE
+                onLongSubsOrPlusClick(it,it.item_name,code)
+                viewModel.insertDuplicateSubProduct(it)
             }
         )
         binding.transselectRv.adapter = adapter
@@ -126,7 +132,6 @@ class TransactionSelectFragment : Fragment() {
         return binding.root
     }
 
-
     private fun showDialog(transSelectModel: TransSelectModel, viewModel: TransactionSelectViewModel, code: Code) {
         val builder = AlertDialog.Builder(context)
         if (code==Code.ZERO) builder.setTitle(transSelectModel.item_name) else builder.setTitle(code.text)
@@ -134,18 +139,11 @@ class TransactionSelectFragment : Fragment() {
         val view = inflater.inflate(R.layout.pop_up_update, null)
         val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
         textKet.requestFocus()
-        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-
         when (code) {
             Code.TEXTITEM -> {
                 textKet.setText(transSelectModel.item_name)
             }
-            Code.TEXTPRICE -> {
-                textKet.setText(transSelectModel.item_price.toString())
-                textKet.inputType = InputType.TYPE_CLASS_NUMBER
-            }
             else->{
-
                 textKet.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
                 textKet.keyListener = DigitsKeyListener.getInstance("-0123456789.")
             }
@@ -156,20 +154,16 @@ class TransactionSelectFragment : Fragment() {
             when (code) {
                 Code.LONGSUBS -> {
                     transSelectModel.qty = transSelectModel.qty -v.toDouble()
-
                     viewModel.updateTransDetail(transSelectModel)
                 }
                 Code.LONGPLUS -> {
                     transSelectModel.qty = transSelectModel.qty +v.toDouble()
                     viewModel.updateTransDetail(transSelectModel)
                 }
-                Code.ZERO -> {
+                Code.DUPLICATE -> {
                     transSelectModel.qty  = v.toDouble()
                     viewModel.insertDuplicateSubProduct(transSelectModel)
                 }
-                Code.TEXTPRICE -> {
-                }
-
                 else -> {}
             }
 
@@ -186,7 +180,34 @@ class TransactionSelectFragment : Fragment() {
         alert.show()
         alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
         alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+    }
 
+    fun onLongSubsOrPlusClick(model:TransSelectModel,title:String,code: Code)
+    {
+        DialogUtils.updateDialogQty<TransactionSelectViewModel, TransSelectModel>(
+            context = requireContext(),
+            viewModel = viewModel,
+            item=model,
+            title = title,
+            setBrandName = { it, number ->
+                val model = it as TransSelectModel
+                 if (code == Code.LONGPLUS) {
+                    model.qty=  model.qty + number.toDouble()
+                 } else if (code == Code.LONGSUBS){
+                     model.qty= model.qty - number.toDouble()
+                }else
+                     model.qty  = number.toDouble()
+
+            },
+            onUpdate = { vm, item ->
+                if (code==Code.DUPLICATE){
+                    (vm as TransactionSelectViewModel).updateTransDetail(item as TransSelectModel)
+                }else{
+
+                    viewModel.insertDuplicateSubProduct(item)
+                }
+                 },
+        )
     }
     fun clearSearchQuery() {
        // binding.searchBarSub.setQuery("", false)

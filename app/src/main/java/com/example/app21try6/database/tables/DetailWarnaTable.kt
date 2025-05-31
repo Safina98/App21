@@ -22,7 +22,7 @@ import androidx.room.PrimaryKey
 )
 data class DetailWarnaTable(
     @PrimaryKey(autoGenerate = true)
-    var detailId:Int=0,
+    var id:Int=0,
     @ColumnInfo(name="subId")
     var subId:Int=0,
     @ColumnInfo(name="batchCount")

@@ -6,6 +6,7 @@ import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.app21try6.database.models.DetailMerchandiseModel
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.database.tables.DetailWarnaTable
@@ -39,11 +40,11 @@ class SubViewModel (
 
     private var checkedItemList = mutableListOf<SubProduct>()
 
-    private val _detailWarnaList=MutableLiveData<List<DetailWarnaTable>?>()
-    val detailWarnaList:LiveData<List<DetailWarnaTable>?>get() = _detailWarnaList
+    private val _detailWarnaList=MutableLiveData<List<DetailMerchandiseModel>?>()
+    val detailWarnaList:LiveData<List<DetailMerchandiseModel>?>get() = _detailWarnaList
 
-    private val _retailList=MutableLiveData<List<MerchandiseRetail>?>()
-    val retailList:LiveData<List<MerchandiseRetail>?>get() = _retailList
+    private val _retailList=MutableLiveData<List<DetailMerchandiseModel>?>()
+    val retailList:LiveData<List<DetailMerchandiseModel>?>get() = _retailList
 
     val _selectedSubProduct=MutableLiveData<SubProduct?>()
     val selectedSubProduct:LiveData<SubProduct?>get() = _selectedSubProduct
@@ -71,7 +72,7 @@ class SubViewModel (
     fun createMerchandiseRetail(detailWarnaTable: DetailWarnaTable):MerchandiseRetail{
         val merchandiseRetail=MerchandiseRetail()
         merchandiseRetail.sub_id=detailWarnaTable.subId
-        merchandiseRetail.subProductNet=detailWarnaTable.net
+        merchandiseRetail.net=detailWarnaTable.net
         merchandiseRetail.ref=UUID.randomUUID().toString()
         merchandiseRetail.date=Date()
         return merchandiseRetail
@@ -189,8 +190,9 @@ class SubViewModel (
             getDetailWarnaList(subId) // Refresh UI
         }
     }
-    fun deleteDetailWarna(detailWarnaTable: DetailWarnaTable){
+    fun deleteDetailWarna(detailWarnaModel: DetailMerchandiseModel){
         uiScope.launch {
+            var detailWarnaTable=detailWarnaModel.toDetailWarnaTable()
             val productId = stockRepo.getProdutId(detailWarnaTable.subId) ?: return@launch
             val brandId = stockRepo.getBrandId(productId) ?: return@launch
             stockRepo.deleteDetailWarna(detailWarnaTable,createInventoryLog(detailWarnaTable, detailWarnaTable.batchCount,productId, brandId,"Dihapus"),null)
@@ -198,8 +200,9 @@ class SubViewModel (
         }
 
     }
-    fun trackDetailWarna(detailWarnaTable: DetailWarnaTable){
+    fun trackDetailWarna(detailWarnaModel: DetailMerchandiseModel){
         uiScope.launch {
+            var detailWarnaTable=detailWarnaModel.toDetailWarnaTable()
             detailWarnaTable.batchCount -=1
             val productId = stockRepo.getProdutId(detailWarnaTable.subId) ?: return@launch
             val brandId = stockRepo.getBrandId(productId) ?: return@launch
@@ -224,6 +227,17 @@ class SubViewModel (
         uiScope.launch {
             stockRepo.deleteRetail(id)
         }
+    }
+    fun DetailMerchandiseModel.toDetailWarnaTable(): DetailWarnaTable {
+        return DetailWarnaTable(
+            id = this.id,
+            subId = this.sub_id,
+            ref = this.ref,
+            net = this.net,
+            batchCount = this.batchCount ?: 0.0, // Handle null with default value
+            ket = this.ket ?: "", // Handle null with empty string
+            // Note: date is not part of DetailWarnaTable so it's omitted
+        )
     }
     /////////////////////////////////////////////////////////////////////////////////
 

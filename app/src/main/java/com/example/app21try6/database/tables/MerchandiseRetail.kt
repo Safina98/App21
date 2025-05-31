@@ -23,8 +23,8 @@ data class MerchandiseRetail(
     var id:Int=0,
     @ColumnInfo(name="sub_id")
     var sub_id: Int=0,//foreignkey
-    @ColumnInfo(name="subProductNet")
-    var subProductNet:Double=0.0,
+    @ColumnInfo(name="net")
+    var net:Double=0.0,
     @ColumnInfo(name="ref")
     var ref:String="",
     @ColumnInfo(name="date")

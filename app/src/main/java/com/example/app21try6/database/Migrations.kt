@@ -5,6 +5,58 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 object Migrations {
 
+
+    val MIGRATION_43_44 = object : Migration(43, 44) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            // Step 1: Migrate `merchandise_table` (rename subProductNet to net)
+            database.execSQL("""
+            CREATE TABLE merchandise_table_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                sub_id INTEGER NOT NULL,
+                net REAL NOT NULL,
+                ref TEXT NOT NULL,
+                date TEXT NOT NULL,
+                FOREIGN KEY(sub_id) REFERENCES sub_table(sub_id) ON DELETE CASCADE ON UPDATE CASCADE
+            )
+        """.trimIndent())
+
+            database.execSQL("""
+            INSERT INTO merchandise_table_new (id, sub_id, net, ref, date)
+            SELECT id, sub_id, subProductNet, ref, date FROM merchandise_table
+        """.trimIndent())
+
+            database.execSQL("DROP TABLE merchandise_table")
+            database.execSQL("ALTER TABLE merchandise_table_new RENAME TO merchandise_table")
+
+            // Step 2: Migrate `detail_warna_table` (rename detailId to id)
+            database.execSQL("""
+            CREATE TABLE detail_warna_table_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                subId INTEGER NOT NULL,
+                batchCount REAL NOT NULL,
+                net REAL NOT NULL,
+                ket TEXT NOT NULL,
+                ref TEXT NOT NULL,
+                FOREIGN KEY(subId) REFERENCES sub_table(sub_id) ON DELETE CASCADE ON UPDATE CASCADE
+            )
+        """.trimIndent())
+
+            database.execSQL("""
+            INSERT INTO detail_warna_table_new (id, subId, batchCount, net, ket, ref)
+            SELECT detailId, subId, batchCount, net, ket, ref FROM detail_warna_table
+        """.trimIndent())
+
+            database.execSQL("DROP TABLE detail_warna_table")
+            database.execSQL("ALTER TABLE detail_warna_table_new RENAME TO detail_warna_table")
+
+            // Recreate the unique index on `ref`
+            database.execSQL("""
+            CREATE UNIQUE INDEX index_detail_warna_table_ref ON detail_warna_table(ref)
+        """.trimIndent())
+        }
+    }
+
+
     //note
     // Migration 41_41 is the same. Just forgot to add entity and dao to vendible databse hence increment the version
     val MIGRATION_42_43 = object : Migration(42, 43) {

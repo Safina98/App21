@@ -36,6 +36,7 @@ object MODELTYPE {
     const val Product = "Product"
     const val subProduct ="Sub Product"
 }
+enum class Code(val text: String) {ZERO(""),LONGPLUS("Tambah"),LONGSUBS("Kurang"),TEXTITEM("Update Nama Barang"),TEXTPRICE("Update Harga barang"),UNITQTY("ISI"),DUPLICATE("ISI")}
 fun formatRupiah(number: Double?): String? {
     val localeID = Locale("in", "ID")
     val formatRupiah: NumberFormat = NumberFormat.getCurrencyInstance(localeID)

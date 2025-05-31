@@ -1,10 +1,10 @@
 package com.example.app21try6.database.repositories
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.LiveData
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.BrandProductModel
+import com.example.app21try6.database.models.DetailMerchandiseModel
 import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.tables.Category
 import com.example.app21try6.database.tables.DetailWarnaTable
@@ -153,7 +153,7 @@ class StockRepositories (
     }
     //////////////////////////////////////Detail Warna////////////////////////////////////////////////
 
-    suspend fun getDetailWarnaList(id:Int):List<DetailWarnaTable>{
+    suspend fun getDetailWarnaList(id:Int):List<DetailMerchandiseModel>{
         return withContext(Dispatchers.IO){
             detailWarnaDao.getDetailWarnaBySubId(id)
         }
@@ -170,11 +170,11 @@ class StockRepositories (
     }
     suspend fun deleteDetailWarna(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog,merchandiseRetail: MerchandiseRetail?){
         withContext(Dispatchers.IO){
-            detailWarnaDao.deleteDetailWarnaAndInsertLog(detailWarnaTable.detailId,inventoryLog,merchandiseRetail)
+            detailWarnaDao.deleteDetailWarnaAndInsertLog(detailWarnaTable.id,inventoryLog,merchandiseRetail)
         }
     }
 
-    suspend fun selectRetailBySumId(subId:Int):List<MerchandiseRetail>?{
+    suspend fun selectRetailBySumId(subId:Int):List<DetailMerchandiseModel>?{
         return withContext(Dispatchers.IO){
              detailWarnaDao.getRetaiBySubId(subId)
         }
