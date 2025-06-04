@@ -1,16 +1,15 @@
 package com.example.app21try6.transaction.transactionselect
 
 import android.app.AlertDialog
-import android.content.Context
 import android.os.Bundle
 import android.text.InputType
 import android.text.method.DigitsKeyListener
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
 import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
@@ -25,8 +24,6 @@ import com.example.app21try6.bookkeeping.vendiblelist.VendibleFragmentArgs
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentTransactionSelectBinding
-import com.example.app21try6.stock.brandstock.BrandStockViewModel
-import com.example.app21try6.stock.brandstock.CategoryModel
 import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 
@@ -34,6 +31,7 @@ import com.google.android.material.textfield.TextInputEditText
 class TransactionSelectFragment : Fragment() {
     private lateinit var binding:FragmentTransactionSelectBinding
     private lateinit var viewModel: TransactionSelectViewModel
+    private lateinit var adapter: TransactionSelectAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -58,14 +56,18 @@ class TransactionSelectFragment : Fragment() {
         var code: Code = Code.ZERO
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        val adapter = TransactionSelectAdapter(
+         adapter = TransactionSelectAdapter(
             PlusSelectListener {
                 it.qty = it.qty+1
                 viewModel.updateTransDetail(it)
 
         }, SubsSelectListener {
                 it.qty = it.qty-1
-                viewModel.updateTransDetail(it)
+                if(it.qty>=0){
+                    viewModel.updateTransDetail(it)
+                }else{
+                    DialogUtils.showFailedWarning(requireContext(),it.item_name)
+                }
         },
             CheckBoxSelectListener{view:View, trans:TransSelectModel ->
                 val cb = view as CheckBox
@@ -88,14 +90,13 @@ class TransactionSelectFragment : Fragment() {
                 //showDialog(it,viewModel,Code.DUPLICATE)
                 code = Code.DUPLICATE
                 onLongSubsOrPlusClick(it,it.item_name,code)
-                viewModel.insertDuplicateSubProduct(it)
+               // viewModel.insertDuplicateSubProduct(it)
             }
         )
+        Log.i("LiveDataProbs","TransProductFragment SumId ${viewModel.sum_id}")
         binding.transselectRv.adapter = adapter
-        viewModel.trans_select_model.observe(viewLifecycleOwner, Observer {it?.let {
-            adapter.submitList(it.sortedBy { it.item_name })
-          //  Log.i("DataProb","fragment observe trans $it")
-            adapter.notifyDataSetChanged()
+        viewModel.trans_select_model?.observe(viewLifecycleOwner, Observer {it?.let {
+
         }
         })
         binding.searchBarSub.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -105,7 +106,7 @@ class TransactionSelectFragment : Fragment() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 newText?.let { query ->
-                    viewModel.trans_select_model.observe(viewLifecycleOwner, Observer { list ->
+                    viewModel.trans_select_modelNew.observe(viewLifecycleOwner, Observer { list ->
                         list?.let { items ->
                             val filteredList = items.filter { item ->
                                 item.item_name.contains(query, ignoreCase = true)
@@ -119,7 +120,14 @@ class TransactionSelectFragment : Fragment() {
         })
         viewModel.productId.observe(viewLifecycleOwner){it?.let {
 
+            val sumId=viewModel.sum_id
+            //Log.i("LiveDataProbs","sum Id: $sumId")
              }
+        }
+        viewModel.trans_select_modelNew.observe(viewLifecycleOwner){list-> if(list!=null){
+
+            adapter.submitList(list)
+            }
         }
         viewModel.showDialog.observe(viewLifecycleOwner, Observer {
             if (it!=null){
@@ -200,18 +208,27 @@ class TransactionSelectFragment : Fragment() {
 
             },
             onUpdate = { vm, item ->
-                if (code==Code.DUPLICATE){
-                    (vm as TransactionSelectViewModel).updateTransDetail(item as TransSelectModel)
-                }else{
-
-                    viewModel.insertDuplicateSubProduct(item)
+                if (item.qty>=0){
+                    if (code!=Code.DUPLICATE){
+                        (vm as TransactionSelectViewModel).updateTransDetail(item as TransSelectModel)
+                    }else{
+                    //    (vm as TransactionSelectViewModel).updateTransDetail  (item as TransSelectModel)
+                        (vm as TransactionSelectViewModel).insertDuplicateSubProduct(item  as TransSelectModel)
+                    }
+                }else {
+                    DialogUtils.showFailedWarning(requireContext(),item.item_name)
                 }
+
                  },
         )
     }
     fun clearSearchQuery() {
        // binding.searchBarSub.setQuery("", false)
         binding.searchBarSub.clearFocus()
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        adapter.submitList(emptyList()) // Clear existing data
     }
 
 

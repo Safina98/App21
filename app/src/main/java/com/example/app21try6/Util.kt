@@ -133,6 +133,7 @@ fun getDate(dateString:String?):Date?{
 }
 
 fun calculatePriceByQty(qty:Double,defaultPrice:Int):Int{
+    Log.i("DialogUtilProblems","calculatePriceByQtyCalled")
     val price=  when {
         qty > 0.0 && qty < 0.35 -> {
             defaultPrice + 9000
@@ -142,6 +143,7 @@ fun calculatePriceByQty(qty:Double,defaultPrice:Int):Int{
         }
         else -> defaultPrice
     }
+    Log.i("DialogUtilProblems","Qty ${qty} Price ${formatRupiah(price.toDouble())}")
     return price
 }
 

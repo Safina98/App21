@@ -44,7 +44,7 @@ class TransactionProductFragment : Fragment() {
         val transRepo= TransactionsRepository(application)
         val sumAndProductId= arguments?.let { VendibleFragmentArgs.fromBundle(it).date }
         var datee  = sumAndProductId!!.toMutableList()
-        Log.i("SUMIDPROB","TransactionProductFragment arguments $sumAndProductId[0]")
+        Log.i("SUMIDPROB","TransactionProductFragment arguments ${sumAndProductId[0]}")
 
         viewModel = ViewModelProvider(requireActivity(), TransactionSelectViewModelFactory(stockRepo,transRepo,sumAndProductId[0].toInt()!!,sumAndProductId,application))
             .get(TransactionSelectViewModel::class.java)
@@ -54,7 +54,6 @@ class TransactionProductFragment : Fragment() {
         viewModel.setProductSumId(sumAndProductId[0]?.toInt())
 
         val adapter = TransactionProductAdapter(ProductTransListener {
-            Log.i("SelectedRvPos","id: ${it.product_id}")
             viewModel.getTransModel(it.product_id)
             viewModel.setProductId(it.product_id)
             viewModel.saveSelectedItemId(it.product_id)
@@ -105,7 +104,9 @@ class TransactionProductFragment : Fragment() {
 
         viewModel.productId.observe(viewLifecycleOwner){
            // viewModel.getTransModel(it)
+            Log.i("LiveDataProbs","Trans product Product Id $it")
         }
+        Log.i("LiveDataProbs","TransProductFragment SumId ${viewModel.sum_id}")
 
         viewModel.allProduct.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it.sortedBy { it.product_name })

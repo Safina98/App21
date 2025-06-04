@@ -7,17 +7,13 @@ import android.view.LayoutInflater
 import android.view.WindowManager
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
-import com.example.app21try6.Code
 import com.example.app21try6.R
 import com.example.app21try6.databinding.PopUpUpdateProductDialogBinding
 import com.example.app21try6.stock.brandstock.BrandStockViewModel
-import com.example.app21try6.transaction.transactionselect.TransSelectModel
-import com.example.app21try6.transaction.transactionselect.TransactionSelectViewModel
 
 import com.google.android.material.textfield.TextInputEditText
 
@@ -35,6 +31,21 @@ object DialogUtils{
                 onDelete(viewModel, item)
             }
             .setNegativeButton("No") { dialog, id -> dialog.dismiss() }
+            .setOnCancelListener { dialog -> dialog.dismiss() }
+        val alert = builder.create()
+        alert.show()
+        alert.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+    }
+    fun showFailedWarning(context:Context,
+                          itemName: String,
+    ) {
+        val builder = AlertDialog.Builder(context)
+        builder.setMessage("Update Gagal ${itemName}.  Quantitas minimal 0")
+            .setCancelable(true)
+            .setPositiveButton("Ok") { dialog, id ->
+                dialog.dismiss()
+            }
             .setOnCancelListener { dialog -> dialog.dismiss() }
         val alert = builder.create()
         alert.show()
@@ -71,6 +82,8 @@ object DialogUtils{
             .setNegativeButton("No") { dialog, id -> dialog.dismiss() }
             .setOnCancelListener { dialog -> dialog.dismiss() }
         val alert = builder.create()
+
+        alert.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         alert.show()
         alert.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
         alert.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
@@ -91,8 +104,7 @@ object DialogUtils{
         val view = inflater.inflate(R.layout.pop_up_update, null)
         val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
         // Set initial text if model is not null
-        textKet.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-        textKet.keyListener = DigitsKeyListener.getInstance("-0123456789.")
+
         if (model != null) {
             textKet.setText(getBrandName(model))
         }

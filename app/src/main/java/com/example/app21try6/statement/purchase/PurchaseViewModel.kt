@@ -63,6 +63,8 @@ class PurchaseViewModel(application: Application,
     val _allExpenseFromDb = MutableLiveData<List<DiscountAdapterModel>>()
     val allExpensesFromDB :LiveData<List<DiscountAdapterModel>> get() = _allExpenseFromDb
     val _unfilteredExpesne=MutableLiveData<List<DiscountAdapterModel>>()
+
+    val allExpenses =  expenseDao.getAllExpenseLiveData()
     private val _selectedECSpinner = MutableLiveData<String>()
     val selectedECSpinner: LiveData<String> get() = _selectedECSpinner
     private val _selectedYearSpinner=MutableLiveData<String>()

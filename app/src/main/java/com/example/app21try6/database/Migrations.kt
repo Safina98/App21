@@ -73,13 +73,28 @@ object Migrations {
                     ON UPDATE CASCADE ON DELETE CASCADE
             )
         """.trimIndent())
-
-            // Add is_logged column to trans_sum_table
-           /*
+        }
+    }
+    val MIGRATION_41_42 = object : Migration(41, 42) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            // Create the new merchandise_table
             database.execSQL("""
-            ALTER TABLE trans_sum_table ADD COLUMN is_logged INTEGER NOT NULL DEFAULT 0
+            CREATE TABLE IF NOT EXISTS merchandise_table (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                sub_id INTEGER NOT NULL,
+                subProductNet REAL NOT NULL,
+                ref TEXT NOT NULL,
+                date TEXT NOT NULL,
+                FOREIGN KEY(sub_id) REFERENCES sub_table(sub_id) 
+                    ON UPDATE CASCADE ON DELETE CASCADE
+            )
         """.trimIndent())
-            */
+
+
+             database.execSQL("""
+             ALTER TABLE trans_sum_table ADD COLUMN is_logged INTEGER NOT NULL DEFAULT 0
+         """.trimIndent())
+
         }
     }
 

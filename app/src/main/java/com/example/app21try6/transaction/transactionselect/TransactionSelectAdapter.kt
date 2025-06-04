@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.bookkeeping.vendiblelist.*
 import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.databinding.ItemListTransactionSelectBinding
@@ -22,6 +21,11 @@ class TransactionSelectAdapter (
     val selectLongListener: SelectLongListener
 ): ListAdapter<TransSelectModel,
         TransactionSelectAdapter.MyViewHolder>(SelectDiffCallback()){
+    var lastPosition = -1
+    init {
+        setHasStableIds(true)
+    }
+
     class MyViewHolder private constructor(val binding: ItemListTransactionSelectBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(
                  item:TransSelectModel,
@@ -42,7 +46,7 @@ class TransactionSelectAdapter (
             binding.txtProductT.text = item.item_name
             binding.textSellsT.text = String.format(Locale.US,"%.2f", item.qty)
 
-            binding.checkBox3.isChecked = item.is_selected or if (item.qty>0){true}else { false }
+            binding.checkBox3.isChecked = item.selected or if (item.qty>0){true}else { false }
             // Set OnClickListener for the checkbox
 
         }
@@ -70,11 +74,14 @@ class TransactionSelectAdapter (
             selectLongListener
           )
     }
+
+
+
 }
 
 class SelectDiffCallback : DiffUtil.ItemCallback<TransSelectModel>() {
     override fun areItemsTheSame(oldItem: TransSelectModel, newItem:TransSelectModel): Boolean {
-        return oldItem.qty == newItem.qty
+        return oldItem.uniqueId== newItem.uniqueId
     }
 
     @SuppressLint("DiffUtilEquals")

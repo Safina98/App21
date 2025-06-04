@@ -91,4 +91,9 @@ interface ExpenseDao {
 
     @Query("DELETE FROM expenses_table WHERE id=:id")
     fun delete(id:Int)
+
+
+    // debug purposes
+    @Query("SELECT * FROM expenses_table")
+    fun getAllExpenseLiveData():LiveData<List<Expenses>>
 }

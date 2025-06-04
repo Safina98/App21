@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.app21try6.database.Migrations.MIGRATION_41_42
 import com.example.app21try6.database.Migrations.MIGRATION_42_43
 import com.example.app21try6.database.Migrations.MIGRATION_43_44
 import com.example.app21try6.database.daos.BrandDao
@@ -165,7 +166,7 @@ abstract class VendibleDatabase:RoomDatabase(){
                             VendibleDatabase::class.java,
                             "vendible_table"
                     )
-                        .addMigrations(MIGRATION_43_44)
+
 
                         // .fallbackToDestructiveMigration()
                     .build()
@@ -177,6 +178,8 @@ abstract class VendibleDatabase:RoomDatabase(){
         }
     }
 }
+//28/5 bayar lancar 2.341.500 dark bruno 10.5
+// 10/01 bayar cahaya indah 4.950.000  karpet a 2 roll bisa 1 roll
 
 //kalau cahsback bagaimana?
 //harga yang masuk di pembukuan harga setelah dikurangi cahsback?

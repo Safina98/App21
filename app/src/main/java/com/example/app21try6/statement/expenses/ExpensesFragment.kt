@@ -24,10 +24,13 @@ import com.example.app21try6.DETAILED_DATE_FORMATTER
 import com.example.app21try6.R
 import com.example.app21try6.DETAILED_DATE_FORMAT
 import com.example.app21try6.MODELTYPE
+import com.example.app21try6.SIMPLE_DATE_FORMAT
+import com.example.app21try6.SIMPLE_DATE_FORMATTER
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.databinding.FragmentExpensesBinding
 import com.example.app21try6.databinding.PopUpUpdateProductDialogBinding
+import com.example.app21try6.formatRupiah
 import com.example.app21try6.statement.DiscountAdapter
 import com.example.app21try6.statement.DiscountAdapterModel
 import com.example.app21try6.statement.DiscountDelListener
@@ -52,6 +55,7 @@ import java.time.format.TextStyle
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.math.exp
 
 
 val tagg = "expenseprobs"
@@ -181,6 +185,11 @@ class ExpensesFragment : Fragment() {
                 showsAddExpenseCategoryDialog(null)
             }
         }
+        viewModel.allExpenses.observe(viewLifecycleOwner){
+                expenses->
+            expenses.forEach { Log.i("PurchaseBug","${it.expense_name}  : ${formatRupiah(it.expense_ammount?.toDouble())} ${SIMPLE_DATE_FORMATTER.format(it.expense_date)}")
+            }
+        }
         binding.searchAllExpense.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true
@@ -275,6 +284,7 @@ class ExpensesFragment : Fragment() {
                 merkAdapter.notifyDataSetChanged()
             }
         }
+
 
 
         // Load data if available

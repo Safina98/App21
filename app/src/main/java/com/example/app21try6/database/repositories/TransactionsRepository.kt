@@ -3,6 +3,7 @@ package com.example.app21try6.database.repositories
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
@@ -24,6 +25,11 @@ class TransactionsRepository(
     fun getStockModel(): LiveData<List<StockModel>> {
         return transDetailDao.getTransactionDetails()
     }
+    fun getTransSelectModelLive(productId: Int, sum_id: Int): LiveData<List<TransSelectModel>> {
+        Log.i("LiveDataProbs","getTransSelectModelLive sumId: $sum_id")
+        return transDetailDao.getSubProductMLive(productId, sum_id)
+    }
+
     fun getTransactionDetails(id:Int): LiveData<List<TransactionDetail>> {
         return transDetailDao.selectATransDetail(id)
     }
@@ -39,6 +45,7 @@ class TransactionsRepository(
     suspend fun getTotalTransactionn(id: Int):Double{
         return withContext(Dispatchers.IO){transDetailDao.getTotalTransaction(id)}
     }
+
     suspend fun insertTransDetail(transDetail: TransactionDetail):Long{
        return withContext(Dispatchers.IO){
             transDetailDao.insert(transDetail)
