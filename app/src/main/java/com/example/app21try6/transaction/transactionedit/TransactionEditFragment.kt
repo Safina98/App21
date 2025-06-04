@@ -39,6 +39,8 @@ import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentTransactionEditBinding
 import com.example.app21try6.databinding.PopUpUnitBinding
+import com.example.app21try6.transaction.transactionselect.TransSelectModel
+import com.example.app21try6.transaction.transactionselect.TransactionSelectViewModel
 import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 
@@ -78,8 +80,14 @@ class TransactionEditFragment : Fragment() {
 
        val adapter = TransactionEditAdapter(TransEditClickListener {
            showDialog(it,viewModel,Code.TEXTITEM)
-       }, SubsTransClickListener {
-           viewModel.updateTransDetail(it, -1.0)
+       }, SubsTransClickListener {item->
+           var qty=item.qty-1
+           if (qty>=0){
+               viewModel.updateTransDetail(item, -1.0)
+           }else{
+               DialogUtils.showFailedWarning(requireContext(),item.trans_item_name)
+           }
+
        }, PlusTransClickListener {
            viewModel.updateTransDetail(it, 1.0)
        }, SubsTransLongListener {
@@ -202,6 +210,7 @@ class TransactionEditFragment : Fragment() {
     }
 
 
+
     private fun showDialog(transactionDetail: TransactionDetail, viewModel: TransactionEditViewModel, code: Code) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle(code.text)
@@ -233,6 +242,12 @@ class TransactionEditFragment : Fragment() {
             val v = textKet.text.toString().uppercase().trim()
             when (code) {
                 Code.LONGSUBS -> {
+                    if ((transactionDetail.qty-v.toDouble())>=0){
+                        viewModel.updateTransDetail(transactionDetail, -1.0)
+                    }else{
+                        DialogUtils.showFailedWarning(requireContext(),transactionDetail.trans_item_name)
+                    }
+
                     viewModel.updateTransDetail(transactionDetail, (v.toDouble() * -1))
                 }
                 Code.LONGPLUS -> {
@@ -267,10 +282,7 @@ class TransactionEditFragment : Fragment() {
         alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
 
     }
-    fun View.showKeyboard() {
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
-    }
+
     fun showInputCoiceDialog(item: TransactionDetail) {
         val binding :PopUpUnitBinding = PopUpUnitBinding.inflate(LayoutInflater.from(context))
 

@@ -170,11 +170,9 @@ class TransactionEditViewModel(
     //update transactionDetail qty and total price
     fun updateTransDetail(transactionDetail: TransactionDetail, i: Double){
         viewModelScope.launch {
-            Log.i("modulo","${(transactionDetail.trans_price/1000)%2}")
             transactionDetail.qty = transactionDetail.qty + i
             val product=stockRepo.getProductBySubId(transactionDetail.sub_id?:0)
             transactionDetail.trans_price= calculatePriceByQty(transactionDetail.qty,product!!.product_price)
-
             transactionDetail.total_price = transactionDetail.trans_price * transactionDetail.qty * transactionDetail.unit_qty
 
             transRepo.updateTransDetail(transactionDetail)

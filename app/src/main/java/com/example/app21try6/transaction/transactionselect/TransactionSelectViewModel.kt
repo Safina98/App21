@@ -249,13 +249,8 @@ class TransactionSelectViewModel(
                     val words = name.split(" ")
 
                     words.any { word ->
-                        (0..word.length - input.length).any { i ->
-                            val substring = word.substring(i, i + input.length)
-                            lev.levenshtein(input, substring) <= 1  // Allow 1 typo/missing char
-                        } ||
-                                word.contains(input) ||
-                                lev.similarity(input, word) >= 0.8 ||
-                                lev.levenshtein(input, word) <= 1
+                                word.contains(input)
+
                     }
                 }
             } else {

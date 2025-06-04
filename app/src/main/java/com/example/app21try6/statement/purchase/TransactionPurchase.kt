@@ -89,7 +89,7 @@ class TransactionPurchase : Fragment() {
         binding.purchaseRv.addItemDecoration(dividerItemDecoration)
 
         val subNameAdapter=SimilarWordAdapter(requireContext(), emptyList())
-        autoCompleteSubName.setAdapter(subNameAdapter)
+        //autoCompleteSubName.setAdapter(subNameAdapter)
         autoCompleteSubName.threshold = 1
 
         val suplierList= listOf<String>("Mitra Jaya","Mbtech","Simnu","Busa Yerry","Lancar","Cahaya Indah","Vision","Owl Crown","Bali Jaya","Toko Utama","Sentral Logam","Toko ada","Trijaya","Maliang")
@@ -99,9 +99,11 @@ class TransactionPurchase : Fragment() {
         viewModel.allSubProductFromDb.observe(viewLifecycleOwner) { subProductList ->
 
             if (subProductList != null) {
-                subNameAdapter.clear()
                 val subNames = subProductList.map { it.subProduct.sub_name }
-                subNameAdapter.updateData(subNames)
+                setAutoCompleteSubNameAdapter(subProductList,autoCompleteSubName)
+                //subNameAdapter.clear()
+                //val subNames = subProductList.map { it.subProduct.sub_name }
+               // subNameAdapter.updateData(subNames)
             }
 
         }
