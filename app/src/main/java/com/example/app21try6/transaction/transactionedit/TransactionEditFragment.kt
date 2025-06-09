@@ -2,29 +2,25 @@ package com.example.app21try6.transaction.transactionedit
 
 
 import android.app.AlertDialog
-import android.content.Context
+
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
 import android.text.method.DigitsKeyListener
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -32,27 +28,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.Code
 import com.example.app21try6.R
 import com.example.app21try6.database.tables.TransactionDetail
-import com.example.app21try6.database.VendibleDatabase
-import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.DiscountRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentTransactionEditBinding
 import com.example.app21try6.databinding.PopUpUnitBinding
-import com.example.app21try6.transaction.transactionselect.TransSelectModel
-import com.example.app21try6.transaction.transactionselect.TransactionSelectViewModel
 import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 
 
-
 class TransactionEditFragment : Fragment() {
     private lateinit var binding:FragmentTransactionEditBinding
-    private lateinit var adapter:TransactionEditAdapter
     val viewModel:TransactionEditViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transaction_edit, container, false)
 
         val application = requireNotNull(this.activity).application
@@ -73,7 +63,7 @@ class TransactionEditFragment : Fragment() {
             override fun handleOnBackPressed() {
                 viewModel.calculateDiscA().also {
                     isEnabled = false
-                    requireActivity().onBackPressed()
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
                 }
             }
         })
@@ -81,7 +71,7 @@ class TransactionEditFragment : Fragment() {
        val adapter = TransactionEditAdapter(TransEditClickListener {
            showDialog(it,viewModel,Code.TEXTITEM)
        }, SubsTransClickListener {item->
-           var qty=item.qty-1
+           val qty=item.qty-1
            if (qty>=0){
                viewModel.updateTransDetail(item, -1.0)
            }else{
@@ -106,7 +96,6 @@ class TransactionEditFragment : Fragment() {
                showDialog(it,viewModel,Code.UNITQTY)
        }, viewModel.updatePositionCallback
           )
-
 
        // drag recyclerview item
        val itemTouchHelperCallback = object : ItemTouchHelper.Callback() {
@@ -148,21 +137,25 @@ class TransactionEditFragment : Fragment() {
         //val adapterr: ArrayAdapter<String> = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, suggestions)
         //autoCompleteTextView.setAdapter(adapterr)
 
-       viewModel.itemTransDetail.observe(viewLifecycleOwner, Observer {
+       viewModel.itemTransDetail.observe(viewLifecycleOwner) {
            it?.let {
                adapter.submitList(it)
                adapter.setItemsValue(it)
            }
-       })
-        viewModel.transDetailWithProduct.observe(viewLifecycleOwner, Observer {
+       }
+        viewModel.transDetailWithProduct.observe(viewLifecycleOwner) {
             it?.let {
             }
-        })
-        viewModel.allCustomerTable.observe(viewLifecycleOwner, Observer { customerList ->
+        }
+        viewModel.allCustomerTable.observe(viewLifecycleOwner) { customerList ->
             val customerNames = customerList.map { it.customerBussinessName }
-            val adapterr = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, customerNames)
+            val adapterr = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                customerNames
+            )
             autoCompleteTextView.setAdapter(adapterr)
-        })
+        }
 
         autoCompleteTextView.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -173,50 +166,55 @@ class TransactionEditFragment : Fragment() {
         })
 
 
-       viewModel.showDialog.observe(viewLifecycleOwner, Observer {
+       viewModel.showDialog.observe(viewLifecycleOwner) {
            if (it != null) {
                showDialog(it, viewModel, code)
            } else {
                // Hide the keyboard.
            }
-       })
-       viewModel.totalSum.observe(viewLifecycleOwner, Observer {
-           it?.let {
-               viewModel.updateTotalSum()
-           }
-       })
-       viewModel.custName.observe(viewLifecycleOwner, Observer {
-           it?.let{
+       }
+        viewModel.totalSum.observe(viewLifecycleOwner) {
+            it?.let {
+                viewModel.updateTotalSum()
+            }
+        }
+        viewModel.custName.observe(viewLifecycleOwner) {
+            it?.let {
 
-           }
-       })
-       viewModel.navigateToDetail.observe(viewLifecycleOwner, Observer {
-           it?.let {
-               this.findNavController().navigate(TransactionEditFragmentDirections.actionTransactionEditFragmentToTransactionDetailFragment(it))
-               viewModel.onNavigatedtoDetail()
-           }
-       })
+            }
+        }
+        viewModel.navigateToDetail.observe(viewLifecycleOwner) {
+            it?.let {
+                this.findNavController().navigate(
+                    TransactionEditFragmentDirections.actionTransactionEditFragmentToTransactionDetailFragment(
+                        it
+                    )
+                )
+                viewModel.onNavigatedtoDetail()
+            }
+        }
 
-       viewModel.navigateToVendible.observe(viewLifecycleOwner, Observer {
-           if (it != null) {
-               this.findNavController().navigate(TransactionEditFragmentDirections.actionTransactionEditFragmentToTransactionProductFragment(it))
-               viewModel.onNavigatedtoVendible()
-
-           }
-       })
-
-       // Inflate the layout for this fragment
+        viewModel.navigateToVendible.observe(viewLifecycleOwner) {
+            if (it != null) {
+                this.findNavController().navigate(
+                    TransactionEditFragmentDirections.actionTransactionEditFragmentToTransactionProductFragment(
+                        it
+                    )
+                )
+                viewModel.onNavigatedtoVendible()
+            }
+        }
+        // Inflate the layout for this fragment
        return binding.root
     }
-
 
 
     private fun showDialog(transactionDetail: TransactionDetail, viewModel: TransactionEditViewModel, code: Code) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle(code.text)
         val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(com.example.app21try6.R.layout.pop_up_update, null)
-        val textKet = view.findViewById<TextInputEditText>(com.example.app21try6.R.id.textUpdateKet)
+        val view = inflater.inflate(R.layout.pop_up_update, null)
+        val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
         when (code) {
             Code.TEXTITEM -> {
                 textKet.setText(transactionDetail.trans_item_name)
@@ -234,7 +232,6 @@ class TransactionEditFragment : Fragment() {
 
            }
         }
-
         textKet.requestFocus()
 
         builder.setView(view)

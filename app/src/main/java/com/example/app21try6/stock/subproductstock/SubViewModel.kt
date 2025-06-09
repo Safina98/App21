@@ -2,6 +2,7 @@ package com.example.app21try6.stock.subproductstock
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -52,37 +53,6 @@ class SubViewModel (
     fun toggleSelectedSubProductId(subProduct: SubProduct?) {
         _selectedSubProduct.value = if (_selectedSubProduct.value?.sub_id ==subProduct?.sub_id) null else subProduct
        //if id not the same change rc background
-    }
-
-
-
-    fun createInventoryLog(detailWarnaTable: DetailWarnaTable,batchCount:Double,productId:Int,brandId:Int,ket:String):InventoryLog{
-        val inventoryLog=InventoryLog()
-        inventoryLog.detailWarnaRef=detailWarnaTable.ref
-        inventoryLog.subProductId=detailWarnaTable.subId
-        inventoryLog.isi=detailWarnaTable.net
-        inventoryLog.pcs=batchCount.toInt()
-        inventoryLog.barangLogKet=ket
-        inventoryLog.barangLogDate= Date()
-        inventoryLog.barangLogRef=UUID.randomUUID().toString()
-        inventoryLog.productId=productId
-        inventoryLog.brandId=brandId
-        return inventoryLog
-    }
-    fun createMerchandiseRetail(detailWarnaTable: DetailWarnaTable):MerchandiseRetail{
-        val merchandiseRetail=MerchandiseRetail()
-        merchandiseRetail.sub_id=detailWarnaTable.subId
-        merchandiseRetail.net=detailWarnaTable.net
-        merchandiseRetail.ref=UUID.randomUUID().toString()
-        merchandiseRetail.date=Date()
-        return merchandiseRetail
-    }
-
-    fun getDetailWarnaList(id:Int?){
-        uiScope.launch {
-            val list= if (id!=null)stockRepo.getDetailWarnaList(id) else listOf()
-            _detailWarnaList.value=list
-        }
     }
 
     fun onCheckBoxClicked(subProduct: SubProduct, bool:Boolean){
@@ -165,7 +135,12 @@ class SubViewModel (
         }
     }
 
-
+    fun getDetailWarnaList(id:Int?){
+        uiScope.launch {
+            val list= if (id!=null)stockRepo.getDetailWarnaList(id) else listOf()
+            _detailWarnaList.value=list
+        }
+    }
     fun insertDetailWarna(batchCount: Double, net: Double) {
         uiScope.launch {
             val subId = _selectedSubProduct.value?.sub_id ?: return@launch
@@ -202,16 +177,19 @@ class SubViewModel (
     }
     fun trackDetailWarna(detailWarnaModel: DetailMerchandiseModel){
         uiScope.launch {
-            var detailWarnaTable=detailWarnaModel.toDetailWarnaTable()
+            val detailWarnaTable=detailWarnaModel.toDetailWarnaTable()
             detailWarnaTable.batchCount -=1
             val productId = stockRepo.getProdutId(detailWarnaTable.subId) ?: return@launch
             val brandId = stockRepo.getBrandId(productId) ?: return@launch
             val inventoryLog =createInventoryLog(detailWarnaTable,detailWarnaTable.batchCount,productId,brandId,"Keluar Retail")
-            val merchandiseRetail=createMerchandiseRetail(detailWarnaTable)
+            val merchandiseRetail=createMerchandiseRetail(detailWarnaModel)
             if (detailWarnaTable.batchCount>0)
                 stockRepo.updateDetailWarna(detailWarnaTable,inventoryLog,merchandiseRetail)
             else
                 stockRepo.deleteDetailWarna(detailWarnaTable,inventoryLog,merchandiseRetail)
+            getDetailWarnaList(detailWarnaTable.subId)
+            getRetailList(detailWarnaTable.subId)
+
 
         }
 
@@ -223,9 +201,19 @@ class SubViewModel (
             _retailList.value=list
         }
     }
-    fun deleteRetail(id:Int){
+    fun deleteRetail(model: DetailMerchandiseModel){
         uiScope.launch {
-            stockRepo.deleteRetail(id)
+            stockRepo.deleteRetail(model.id)
+            getRetailList(model.sub_id)
+        }
+    }
+    fun updateRetail( detailWarnaModel: DetailMerchandiseModel){
+        uiScope.launch {
+            val merchandiseRetail = createMerchandiseRetail(detailWarnaModel)
+            merchandiseRetail.id = detailWarnaModel.id
+            stockRepo.updateDetailRetail(merchandiseRetail)
+            getRetailList(detailWarnaModel.sub_id)
+
         }
     }
     fun DetailMerchandiseModel.toDetailWarnaTable(): DetailWarnaTable {
@@ -238,6 +226,28 @@ class SubViewModel (
             ket = this.ket ?: "", // Handle null with empty string
             // Note: date is not part of DetailWarnaTable so it's omitted
         )
+    }
+    fun createInventoryLog(detailWarnaTable: DetailWarnaTable,batchCount:Double,productId:Int,brandId:Int,ket:String):InventoryLog{
+        val inventoryLog=InventoryLog()
+        inventoryLog.detailWarnaRef=detailWarnaTable.ref
+        inventoryLog.subProductId=detailWarnaTable.subId
+        inventoryLog.isi=detailWarnaTable.net
+        inventoryLog.pcs=batchCount.toInt()
+        inventoryLog.barangLogKet=ket
+        inventoryLog.barangLogDate= Date()
+        inventoryLog.barangLogRef=UUID.randomUUID().toString()
+        inventoryLog.productId=productId
+        inventoryLog.brandId=brandId
+        return inventoryLog
+    }
+    fun createMerchandiseRetail(detailWarnaTable: DetailMerchandiseModel):MerchandiseRetail{
+        Log.i("Check","${detailWarnaTable.id}")
+        val merchandiseRetail=MerchandiseRetail()
+        merchandiseRetail.sub_id=detailWarnaTable.sub_id
+        merchandiseRetail.net=detailWarnaTable.net
+        merchandiseRetail.ref=UUID.randomUUID().toString()
+        merchandiseRetail.date=Date()
+        return merchandiseRetail
     }
     /////////////////////////////////////////////////////////////////////////////////
 

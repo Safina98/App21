@@ -1,14 +1,12 @@
 package com.example.app21try6.transaction.transactionselect
 
-import android.annotation.SuppressLint
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.database.tables.Product
-import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.databinding.ItemListTransactionSelectBinding
 import java.util.Locale
 
@@ -75,7 +73,7 @@ class TransactionSelectAdapter (
 
 class SelectDiffCallback : DiffUtil.ItemCallback<TransSelectModel>() {
     override fun areItemsTheSame(oldItem: TransSelectModel, newItem:TransSelectModel): Boolean {
-       //I have change the areItemsTheSame to your code, but the glitch remains
+
         return oldItem.trans_detail_id == newItem.trans_detail_id
                 && oldItem.sub_product_id == newItem.sub_product_id
     }
@@ -84,24 +82,9 @@ class SelectDiffCallback : DiffUtil.ItemCallback<TransSelectModel>() {
         return oldItem == newItem
     }
 }
-class SubStokLongListener(val longListener:(SubProduct)->Unit){
-    fun onLongClick(v: View, subProduct: SubProduct):Boolean{
-        longListener(subProduct)
-        return true
-    }
-}
 
 class CheckBoxSelectListener(val checkBoxListener:(view: View, transSelectModel: TransSelectModel)->Unit){
     fun onCheckBoxClick(view: View, transSelectModel: TransSelectModel)= checkBoxListener(view,transSelectModel)
-}
-class TextListener(val textListener:(view: View, product: Product)->Unit){
-    fun onTextClick(view: View, product: Product)= textListener(view,product)
-}
-class DelLongListenerV(val delLongListenerV:(product: Product)->Unit){
-    fun onLongClick(v: View, product: Product):Boolean{
-        delLongListenerV(product)
-        return true
-    }
 }
 class PlusSelectListener(val plusListener:(selectModel:TransSelectModel)->Unit){
     fun onPlusButtonClick(selectModel:TransSelectModel)= plusListener(selectModel)

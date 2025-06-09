@@ -25,6 +25,8 @@ interface DetailWarnaDao {
 
     @Insert
     fun insert(merchandiseRetail: MerchandiseRetail)
+    @Update
+    fun updateRetail(merchandiseRetail: MerchandiseRetail)
 
     @Query("DELETE FROM detail_warna_table WHERE id=:id")
     fun delete(id:Int)

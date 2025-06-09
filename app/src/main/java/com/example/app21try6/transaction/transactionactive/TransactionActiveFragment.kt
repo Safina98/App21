@@ -30,7 +30,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -38,7 +37,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.R
 import com.example.app21try6.ToolbarUtil
 import com.example.app21try6.database.tables.TransactionSummary
-import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentTransactionActiveBinding
 import com.example.app21try6.utils.DialogUtils
@@ -49,7 +47,7 @@ class TransactionActiveFragment : Fragment() {
     private lateinit var binding: FragmentTransactionActiveBinding
     private val viewModel:TransactionActiveViewModel by viewModels()
     private val PERMISSION_REQUEST_CODE = 200
-    val requestcode = 1
+
     //insert csv
     var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         Log.i("Insert Csv", "result Launcher")
@@ -78,7 +76,7 @@ class TransactionActiveFragment : Fragment() {
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_transaction_active,container,false)
         val application = requireNotNull(this.activity).application
 
@@ -167,26 +165,26 @@ class TransactionActiveFragment : Fragment() {
         binding.recyclerViewActiveTrans.layoutManager = GridLayoutManager(context, spanCount, RecyclerView.VERTICAL, false)
 
         //show or hide loading image and recyclerview from fragmetn
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
-            if(isLoading==true){
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading == true) {
                 binding.recyclerViewActiveTrans.visibility = View.GONE
                 binding.progressBar.visibility = View.VISIBLE
-            }else{
-                binding.recyclerViewActiveTrans.visibility  = View.VISIBLE
+            } else {
+                binding.recyclerViewActiveTrans.visibility = View.VISIBLE
                 binding.progressBar.visibility = View.GONE
             }
-        })
+        }
 
         //observe recyclerview data
-        viewModel.active_trans.observe(viewLifecycleOwner, Observer {
+        viewModel.active_trans.observe(viewLifecycleOwner) {
             it?.let {
                 adapter.submitList(it.sortedByDescending { it.sum_id })
                 adapter.notifyDataSetChanged()
             }
-        })
+        }
 
         //hide or chow checbox on rv
-        viewModel.is_image_clicked.observe(this.viewLifecycleOwner, Observer {
+        viewModel.is_image_clicked.observe(this.viewLifecycleOwner) {
             if (it == true) {
                 (binding.recyclerViewActiveTrans.adapter as TransactionActiveAdapter).isActive(it)
                 binding.btnAddNewTrans.visibility = View.GONE
@@ -196,30 +194,39 @@ class TransactionActiveFragment : Fragment() {
             }
             adapter.notifyDataSetChanged()
             viewModel.getActiveTrans()
-        })
+        }
 
         //Navigate to TransactinEdit
-        viewModel.navigateToTransEdit.observe(viewLifecycleOwner, Observer {
+        viewModel.navigateToTransEdit.observe(viewLifecycleOwner) {
             it?.let {
                 ToolbarUtil.hideToolbarButtons(requireActivity())
-                this.findNavController().navigate(TransactionActiveFragmentDirections.actionTransactionActiveFragmentToTransactionEditFragment(it))
-            viewModel.onNavigatedToTransEdit()
-          }
-        })
+                this.findNavController().navigate(
+                    TransactionActiveFragmentDirections.actionTransactionActiveFragmentToTransactionEditFragment(
+                        it
+                    )
+                )
+                viewModel.onNavigatedToTransEdit()
+            }
+        }
         //Navigate to TransactionAll
-        viewModel.navigatToAllTrans.observe(viewLifecycleOwner, Observer {
-           if(it==true) {
-                this.findNavController().navigate(TransactionActiveFragmentDirections.actionTransactionActiveFragmentToAllTransactionsFragment())
+        viewModel.navigatToAllTrans.observe(viewLifecycleOwner) {
+            if (it == true) {
+                this.findNavController()
+                    .navigate(TransactionActiveFragmentDirections.actionTransactionActiveFragmentToAllTransactionsFragment())
                 viewModel.onNavigatedToAllTrans()
             }
-        })
+        }
         //Navigate to TransactinDetail
-        viewModel.navigateToTransDetail.observe(viewLifecycleOwner, Observer {
+        viewModel.navigateToTransDetail.observe(viewLifecycleOwner) {
             it?.let {
-                this.findNavController().navigate(TransactionActiveFragmentDirections.actionTransactionActiveFragmentToTransactionDetailFragment(it))
+                this.findNavController().navigate(
+                    TransactionActiveFragmentDirections.actionTransactionActiveFragmentToTransactionDetailFragment(
+                        it
+                    )
+                )
                 viewModel.onNavigatedToTransDetail()
             }
-        })
+        }
         setHasOptionsMenu(true)
         return binding.root
     }
@@ -259,13 +266,13 @@ class TransactionActiveFragment : Fragment() {
 
 
     private fun importCSVTrans() {
-        var fileIntent = Intent(Intent.ACTION_GET_CONTENT)
+        val fileIntent = Intent(Intent.ACTION_GET_CONTENT)
         fileIntent.type = "text/*"
         try { resultLauncher.launch(fileIntent) }
         catch (e: FileNotFoundException) {
             Log.i("INSERTCSVPROB","fragment $e.toString()")
         }
-            //Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show() }
+
     }
     private fun exportTransCSV() {
         val fileName = "Transaction 21"

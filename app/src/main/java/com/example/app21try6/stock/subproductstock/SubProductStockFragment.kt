@@ -3,10 +3,8 @@
 import android.app.AlertDialog
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -14,23 +12,22 @@ import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.app21try6.Code
 import com.example.app21try6.R
 import com.example.app21try6.database.tables.SubProduct
-import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.DetailMerchandiseModel
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
-import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.databinding.FragmentSubProductStockBinding
 import com.example.app21try6.databinding.PopUpUpdateBayarBinding
+import com.example.app21try6.transaction.transactionselect.TransSelectModel
+import com.example.app21try6.transaction.transactionselect.TransactionSelectViewModel
 import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 
@@ -38,7 +35,7 @@ class SubProductStockFragment : Fragment() {
     private lateinit var binding: FragmentSubProductStockBinding
     private lateinit var viewModel: SubViewModel
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_sub_product_stock,container,false)
         val application = requireNotNull(this.activity).application
 
@@ -55,7 +52,6 @@ class SubProductStockFragment : Fragment() {
         binding.reset.setOnClickListener {
             DialogUtils.showDeleteDialog(requireContext(),this, viewModel, SubProduct(), { vm, item -> (vm as SubViewModel).resetAllSubProductStock() })
         }
-        // Handle back button press
 
         val adapter = SubAdapter(id_[3],
             null,
@@ -70,11 +66,11 @@ class SubProductStockFragment : Fragment() {
         }, PlusStokListener {
             subProduct ->
             viewModel.addStockClicked(subProduct)
-            Toast.makeText(context,subProduct.sub_name.toString()+"tambah 1",Toast.LENGTH_SHORT).show()
+            Toast.makeText(context,subProduct.sub_name+"tambah 1",Toast.LENGTH_SHORT).show()
         }, SubsStokListener {
             subProduct ->
             viewModel.subsStockClicked(subProduct)
-            Toast.makeText(context,subProduct.sub_name.toString()+"kurang 1",Toast.LENGTH_SHORT).show()
+            Toast.makeText(context,subProduct.sub_name+"kurang 1",Toast.LENGTH_SHORT).show()
         }, WarnaStokListener {
             subProduct ->
             updateDialog(subProduct,2, viewModel)
@@ -102,41 +98,43 @@ class SubProductStockFragment : Fragment() {
 
         }, DeleteDetailWarnaListener {
             //delete, show pop up delete
+            DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as SubViewModel).deleteRetail(item as DetailMerchandiseModel) })
         }, EditDetailWarnaListener {
             //add show pop up
+            showUpdateQtyDialog(it,Code.LONGPLUS.text,Code.LONGPLUS)
         }, TrackDetailWarnaListener {
             //substract, show pop up
+            showUpdateQtyDialog(it,Code.LONGSUBS.text,Code.LONGSUBS)
         })
 
         binding.rvSubProduct.adapter = adapter
-        binding.rvSubDetail?.adapter=detailWarnaAdapter
-        binding.rvRetail?.adapter=retailAdapter
+        binding.rvSubDetail.adapter=detailWarnaAdapter
+        binding.rvRetail.adapter=retailAdapter
         binding.searchBarSub.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true
             }
             override fun onQueryTextChange(newText: String?): Boolean {
                 newText?.let { query ->
-                    viewModel.allProductFromDb.observe(viewLifecycleOwner, Observer { list ->
+                    viewModel.allProductFromDb.observe(viewLifecycleOwner) { list ->
                         list?.let { items ->
                             val filteredList = items.filter { item ->
                                 item.sub_name.contains(query, ignoreCase = true)
                             }
                             adapter.submitList(filteredList)
                         }
-                    })
+                    }
                 }
                 return true
             }
         })
-        viewModel.allProductFromDb.observe(viewLifecycleOwner, Observer {
+        viewModel.allProductFromDb.observe(viewLifecycleOwner) {
             it?.let {
                 adapter.submitList(it.sortedBy { it.sub_name })
                 adapter.notifyDataSetChanged()
             }
-        })
+        }
         viewModel.selectedSubProduct.observe(viewLifecycleOwner){
-
             viewModel.getDetailWarnaList(it?.sub_id)
             viewModel.getRetailList(it?.sub_id)
             adapter.selectedItemId = it?.sub_id  // Pass the selected ID to the adapter
@@ -145,17 +143,18 @@ class SubProductStockFragment : Fragment() {
 
         viewModel.detailWarnaList.observe(viewLifecycleOwner){it?.let {
             detailWarnaAdapter.submitList(it)
-           // adapter.notifyDataSetChanged()
+
             }
         }
 
         viewModel.retailList.observe(viewLifecycleOwner){it?.let {
             retailAdapter.submitList(it)
+
         }}
 
-        viewModel.addItem.observe(viewLifecycleOwner, Observer {
-            if (it==true){
-                if (viewModel.selectedSubProduct.value==null){
+        viewModel.addItem.observe(viewLifecycleOwner) {
+            if (it == true) {
+                if (viewModel.selectedSubProduct.value == null) {
                     DialogUtils.updateDialog(
                         context = requireContext(),
                         viewModel = viewModel, // Replace with your ViewModel instance
@@ -163,21 +162,35 @@ class SubProductStockFragment : Fragment() {
                         title = "Update Brand",
                         getBrandName = { (it as SubProduct).sub_name },
                         setBrandName = { it, name -> (it as SubProduct).sub_name = name },
-                        updateFunction = { vm, item -> (vm as SubViewModel).updateSubProduct(item as SubProduct,"",1) },
-                        insertFunction = { vm, name -> (vm as SubViewModel).insertAnItemSubProductStock(name as String) }
+                        updateFunction = { vm, item ->
+                            (vm as SubViewModel).updateSubProduct(
+                                item as SubProduct,
+                                "",
+                                1
+                            )
+                        },
+                        insertFunction = { vm, name ->
+                            (vm as SubViewModel).insertAnItemSubProductStock(
+                                name as String
+                            )
+                        }
                     )
-                }else{
+                } else {
                     showAddDetailWarnaDialog()
                 }
                 viewModel.onItemAdded()
             }
-        })
-        viewModel.navigateProduct.observe(viewLifecycleOwner, Observer {id->
+        }
+        viewModel.navigateProduct.observe(viewLifecycleOwner) { id ->
             id?.let {
-                this.findNavController().navigate(SubProductStockFragmentDirections.actionSubProductStockFragmentToDetailFragment(id))
+                this.findNavController().navigate(
+                    SubProductStockFragmentDirections.actionSubProductStockFragmentToDetailFragment(
+                        id
+                    )
+                )
                 viewModel.onBrandNavigated()
             }
-        })
+        }
         binding.txtSubProduct?.setOnClickListener {
             if (binding.rvSubProduct.visibility==View.GONE) {
                 viewModel.toggleSelectedSubProductId(null)
@@ -224,8 +237,8 @@ class SubProductStockFragment : Fragment() {
             text = subProduct.sub_name.toString()
             lv.visibility=View.VISIBLE
             tVId.setText(subProduct.sub_id.toString())
-        }else if(i==2){text = subProduct.warna.toString()
-        }else{text = subProduct.ket.toString()}
+        }else if(i==2){text = subProduct.warna
+        }else{text = subProduct.ket}
         if (text!="click to add"){ textKet.setText(text) }
         builder.setView(view)
         builder.setPositiveButton("Update") { dialog, which ->
@@ -296,5 +309,31 @@ class SubProductStockFragment : Fragment() {
         }
         return false // Not handled, let activity navigate back
     }
+    fun showUpdateQtyDialog(model:DetailMerchandiseModel,title:String,code: Code){
+        DialogUtils.updateDialogQty<SubViewModel, DetailMerchandiseModel>(
+            context = requireContext(),
+            viewModel = viewModel,
+            item=model,
+            title = title,
+            setBrandName = { it, number ->
+                val model = it as DetailMerchandiseModel
+                if (code == Code.LONGPLUS) {
+                    model.net=  model.net + number.toDouble()
+                } else if (code == Code.LONGSUBS){
+                    val newQty=model.net-number
+                    if (newQty>=0){
+                        model.net= model.net - number.toDouble()
+                    }else{
+                        DialogUtils.showFailedWarning(requireContext(),model.net.toString())
+                    }
+                }
+            },
+            onUpdate = { vm, item ->
+                (vm as SubViewModel).updateRetail(item as DetailMerchandiseModel)
+            },
+        )
+
+    }
+
 
 }

@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
@@ -19,7 +18,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.app21try6.R
 import com.example.app21try6.bookkeeping.vendiblelist.VendibleFragmentArgs
-import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentTransactionProductBinding
@@ -34,7 +32,7 @@ class TransactionProductFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_transaction_product,container,false)
 

@@ -184,6 +184,11 @@ class StockRepositories (
             detailWarnaDao.deleteMerchandise(id)
         }
     }
+    suspend fun updateDetailRetail(merchandiseRetail: MerchandiseRetail){
+        withContext(Dispatchers.IO){
+            detailWarnaDao.updateRetail(merchandiseRetail)
+        }
+    }
 
 
 

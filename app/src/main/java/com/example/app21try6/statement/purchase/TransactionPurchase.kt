@@ -5,7 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
+
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,10 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.DatePicker
-import android.widget.Filter
-import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -25,17 +22,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.app21try6.R
-import com.example.app21try6.bookkeeping.vendiblelist.VendibleFragmentArgs
 import com.example.app21try6.database.VendibleDatabase
-import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.models.PaymentModel
 import com.example.app21try6.database.models.SubWithPriceModel
 import com.example.app21try6.database.tables.InventoryPurchase
-import com.example.app21try6.databinding.FragmentStatementHsBinding
 import com.example.app21try6.databinding.FragmentTransactionPurchaseBinding
-import com.example.app21try6.statement.StatementHSViewModel
-import com.example.app21try6.statement.StatementHSViewModelFactory
-import com.example.app21try6.stock.brandstock.BrandStockViewModel
 import com.example.app21try6.utils.DialogUtils
 import com.example.app21try6.utils.SimilarWordAdapter
 import com.example.app21try6.utils.SpaceInsensitiveArrayAdapter
@@ -49,7 +40,7 @@ class TransactionPurchase : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding=DataBindingUtil.inflate(inflater,R.layout.fragment_transaction_purchase,container,false)
         val application= requireNotNull(this.activity).application
@@ -90,7 +81,7 @@ class TransactionPurchase : Fragment() {
 
         binding.purchaseRv.addItemDecoration(dividerItemDecoration)
 
-        val subNameAdapter=SimilarWordAdapter(requireContext(), emptyList())
+        //val subNameAdapter=SimilarWordAdapter(requireContext(), emptyList())
         //autoCompleteSubName.setAdapter(subNameAdapter)
         autoCompleteSubName.threshold = 1
 
@@ -101,7 +92,6 @@ class TransactionPurchase : Fragment() {
         viewModel.allSubProductFromDb.observe(viewLifecycleOwner) { subProductList ->
 
             if (subProductList != null) {
-                val subNames = subProductList.map { it.subProduct.sub_name }
                 setAutoCompleteSubNameAdapter(subProductList,autoCompleteSubName)
                 //subNameAdapter.clear()
                 //val subNames = subProductList.map { it.subProduct.sub_name }
@@ -149,12 +139,17 @@ class TransactionPurchase : Fragment() {
         autoCompleteSubName.setOnItemClickListener { _, _, position, _ ->
 
         }
-        viewModel.suplierDummy.observe(viewLifecycleOwner, Observer {list->list?.let {
-            val supNames=list.map { it.suplierName }
-            val adapterSuplier = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, supNames)
-            autoCompleteSuplier.setAdapter(adapterSuplier)
+        viewModel.suplierDummy.observe(viewLifecycleOwner) { list ->
+            list?.let {
+                val supNames = list.map { it.suplierName }
+                val adapterSuplier = ArrayAdapter(
+                    requireContext(),
+                    android.R.layout.simple_dropdown_item_1line,
+                    supNames
+                )
+                autoCompleteSuplier.setAdapter(adapterSuplier)
+            }
         }
-        })
 
         viewModel.inventoryPurchaseList.observe(viewLifecycleOwner){
             adapter.submitList(it)
