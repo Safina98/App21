@@ -2,6 +2,7 @@ package com.example.app21try6.transaction.transactionselect
 
 import androidx.room.Ignore
 import java.util.UUID
+import kotlin.random.Random
 
 /*
 data  class TransSelectModel(
@@ -21,8 +22,8 @@ data class TransSelectModel(
     var trans_detail_id: Long = 0,
     var qty: Double = 0.0, // backing field
     var selected: Boolean = false,
-    @Ignore
-    var uniqueId: String = UUID.randomUUID().toString()
+    //@Ignore
+   // var uniqueId:Long=System.currentTimeMillis() + Random.nextInt(1000)
 )
 
 

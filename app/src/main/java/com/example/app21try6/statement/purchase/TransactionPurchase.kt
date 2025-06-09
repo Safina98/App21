@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.DatePicker
+import android.widget.Filter
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
@@ -37,6 +38,7 @@ import com.example.app21try6.statement.StatementHSViewModelFactory
 import com.example.app21try6.stock.brandstock.BrandStockViewModel
 import com.example.app21try6.utils.DialogUtils
 import com.example.app21try6.utils.SimilarWordAdapter
+import com.example.app21try6.utils.SpaceInsensitiveArrayAdapter
 import com.google.android.material.snackbar.Snackbar
 import java.util.Calendar
 
@@ -139,21 +141,10 @@ class TransactionPurchase : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 val subName = s.toString().trim().uppercase()
-                val input = s.toString().trim()
-                if (input.length >= 1) {
-                    subNameAdapter.filter.filter(s.toString())
-                    autoCompleteSubName.postDelayed({
-                        if (subNameAdapter.count > 0) {
-                            autoCompleteSubName.showDropDown()
-                        }
-                    }, 100)
+                if (subName.length >= 1) {
                     viewModel.searchProduct(subName)
                 }
-            //    adapterSub.filter.filter(input)
-
-
             }
-
         })
         autoCompleteSubName.setOnItemClickListener { _, _, position, _ ->
 
@@ -193,8 +184,15 @@ class TransactionPurchase : Fragment() {
         autoCompleteSubName: AutoCompleteTextView
     ) {
         if (!subProductList.isNullOrEmpty()) {
-            val subNames = subProductList.map { it.subProduct.sub_name }
-            val adapterSub = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, subNames)
+            val subNames = subProductList.map { it.subProduct.sub_name.trim()
+            }
+
+
+            val adapterSub = SpaceInsensitiveArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                subNames
+            )
             autoCompleteSubName.setAdapter(adapterSub)
             adapterSub.notifyDataSetChanged()
 

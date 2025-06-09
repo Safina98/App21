@@ -18,6 +18,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.example.app21try6.Code
 import com.example.app21try6.R
 import com.example.app21try6.bookkeeping.vendiblelist.VendibleFragmentArgs
@@ -26,6 +27,7 @@ import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentTransactionSelectBinding
 import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
+import java.util.Locale
 
 
 class TransactionSelectFragment : Fragment() {
@@ -62,8 +64,9 @@ class TransactionSelectFragment : Fragment() {
                 viewModel.updateTransDetail(it)
 
         }, SubsSelectListener {
-                it.qty = it.qty-1
-                if(it.qty>=0){
+                val number = it.qty-1
+                if(number>=0){
+                    it.qty =number
                     viewModel.updateTransDetail(it)
                 }else{
                     DialogUtils.showFailedWarning(requireContext(),it.item_name)
@@ -93,8 +96,10 @@ class TransactionSelectFragment : Fragment() {
                // viewModel.insertDuplicateSubProduct(it)
             }
         )
-        Log.i("LiveDataProbs","TransProductFragment SumId ${viewModel.sum_id}")
+
         binding.transselectRv.adapter = adapter
+        (binding.transselectRv.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
+
         viewModel.trans_select_model?.observe(viewLifecycleOwner, Observer {it?.let {
 
         }
@@ -106,10 +111,12 @@ class TransactionSelectFragment : Fragment() {
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 newText?.let { query ->
+                    val input = query.lowercase(Locale.getDefault()).trim().replace(" ","")
                     viewModel.trans_select_modelNew.observe(viewLifecycleOwner, Observer { list ->
                         list?.let { items ->
                             val filteredList = items.filter { item ->
-                                item.item_name.contains(query, ignoreCase = true)
+                                val name = item.item_name.lowercase(Locale.getDefault()).trim().replace(" ","")
+                                name.contains(input, ignoreCase = true)
                             }
                             adapter.submitList(filteredList)
                         }
@@ -120,78 +127,22 @@ class TransactionSelectFragment : Fragment() {
         })
         viewModel.productId.observe(viewLifecycleOwner){it?.let {
 
-            val sumId=viewModel.sum_id
-            //Log.i("LiveDataProbs","sum Id: $sumId")
              }
         }
         viewModel.trans_select_modelNew.observe(viewLifecycleOwner){list-> if(list!=null){
-
             adapter.submitList(list)
+            adapter.notifyDataSetChanged()
+
             }
         }
         viewModel.showDialog.observe(viewLifecycleOwner, Observer {
-            if (it!=null){
-                showDialog(it,viewModel,code)
-            }
-            else{
-               // adapter.notifyDataSetChanged()
-            }
+
         })
         return binding.root
     }
 
-    private fun showDialog(transSelectModel: TransSelectModel, viewModel: TransactionSelectViewModel, code: Code) {
-        val builder = AlertDialog.Builder(context)
-        if (code==Code.ZERO) builder.setTitle(transSelectModel.item_name) else builder.setTitle(code.text)
-        val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.pop_up_update, null)
-        val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
-        textKet.requestFocus()
-        when (code) {
-            Code.TEXTITEM -> {
-                textKet.setText(transSelectModel.item_name)
-            }
-            else->{
-                textKet.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-                textKet.keyListener = DigitsKeyListener.getInstance("-0123456789.")
-            }
-        }
-        builder.setView(view)
-        builder.setPositiveButton("OK") { dialog, which ->
-            val v = textKet.text.toString().uppercase().trim()
-            when (code) {
-                Code.LONGSUBS -> {
-                    transSelectModel.qty = transSelectModel.qty -v.toDouble()
-                    viewModel.updateTransDetail(transSelectModel)
-                }
-                Code.LONGPLUS -> {
-                    transSelectModel.qty = transSelectModel.qty +v.toDouble()
-                    viewModel.updateTransDetail(transSelectModel)
-                }
-                Code.DUPLICATE -> {
-                    transSelectModel.qty  = v.toDouble()
-                    viewModel.insertDuplicateSubProduct(transSelectModel)
-                }
-                else -> {}
-            }
 
-            viewModel.onCloseDialog()
-        }
-        builder.setNegativeButton("No") { dialog, which ->
-            viewModel.onCloseDialog()
-        }
-        builder.setOnCancelListener {
-            viewModel.onCloseDialog()
-        }
-        val alert = builder.create()
-        alert.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
-        alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
-    }
-
-    fun onLongSubsOrPlusClick(model:TransSelectModel,title:String,code: Code)
-    {
+    fun onLongSubsOrPlusClick(model:TransSelectModel,title:String,code: Code) {
         DialogUtils.updateDialogQty<TransactionSelectViewModel, TransSelectModel>(
             context = requireContext(),
             viewModel = viewModel,
@@ -199,31 +150,24 @@ class TransactionSelectFragment : Fragment() {
             title = title,
             setBrandName = { it, number ->
                 val model = it as TransSelectModel
-                 if (code == Code.LONGPLUS) {
+                if (code == Code.LONGPLUS) {
                     model.qty=  model.qty + number.toDouble()
                  } else if (code == Code.LONGSUBS){
-                     model.qty= model.qty - number.toDouble()
+                     val newQty=model.qty-number
+                    if (newQty>=0){
+                        model.qty= model.qty - number.toDouble()
+                    }else{
+                        DialogUtils.showFailedWarning(requireContext(),model.item_name)
+                    }
                 }else
                      model.qty  = number.toDouble()
-
             },
             onUpdate = { vm, item ->
-                if (item.qty>=0){
-                    if (code!=Code.DUPLICATE){
-                        (vm as TransactionSelectViewModel).updateTransDetail(item as TransSelectModel)
-                    }else{
-                    //    (vm as TransactionSelectViewModel).updateTransDetail  (item as TransSelectModel)
-                        (vm as TransactionSelectViewModel).insertDuplicateSubProduct(item  as TransSelectModel)
-                    }
-                }else {
-                    DialogUtils.showFailedWarning(requireContext(),item.item_name)
-                }
-
-                 },
+                (vm as TransactionSelectViewModel).updateTransDetail(item as TransSelectModel)
+                       },
         )
     }
     fun clearSearchQuery() {
-       // binding.searchBarSub.setQuery("", false)
         binding.searchBarSub.clearFocus()
     }
     override fun onDestroyView() {
@@ -231,6 +175,57 @@ class TransactionSelectFragment : Fragment() {
         adapter.submitList(emptyList()) // Clear existing data
     }
 
+    /*
+        private fun showDialog(transSelectModel: TransSelectModel, viewModel: TransactionSelectViewModel, code: Code) {
+            val builder = AlertDialog.Builder(context)
+            if (code==Code.ZERO) builder.setTitle(transSelectModel.item_name) else builder.setTitle(code.text)
+            val inflater = LayoutInflater.from(context)
+            val view = inflater.inflate(R.layout.pop_up_update, null)
+            val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
+            textKet.requestFocus()
+            when (code) {
+                Code.TEXTITEM -> {
+                    textKet.setText(transSelectModel.item_name)
+                }
+                else->{
+                    textKet.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+                    textKet.keyListener = DigitsKeyListener.getInstance("-0123456789.")
+                }
+            }
+            builder.setView(view)
+            builder.setPositiveButton("OK") { dialog, which ->
+                val v = textKet.text.toString().uppercase().trim()
+                when (code) {
+                    Code.LONGSUBS -> {
+                        transSelectModel.qty = transSelectModel.qty -v.toDouble()
+                        viewModel.updateTransDetail(transSelectModel)
+                    }
+                    Code.LONGPLUS -> {
+                        transSelectModel.qty = transSelectModel.qty +v.toDouble()
+                        viewModel.updateTransDetail(transSelectModel)
+                    }
+                    Code.DUPLICATE -> {
+                        transSelectModel.qty  = v.toDouble()
+                        viewModel.insertDuplicateSubProduct(transSelectModel)
+                    }
+                    else -> {}
+                }
 
+                viewModel.onCloseDialog()
+            }
+            builder.setNegativeButton("No") { dialog, which ->
+                viewModel.onCloseDialog()
+            }
+            builder.setOnCancelListener {
+                viewModel.onCloseDialog()
+            }
+            val alert = builder.create()
+            alert.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+            alert.show()
+            alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+            alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        }
+
+     */
 
 }

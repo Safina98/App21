@@ -54,9 +54,9 @@ class TransactionProductFragment : Fragment() {
         viewModel.setProductSumId(sumAndProductId[0]?.toInt())
 
         val adapter = TransactionProductAdapter(ProductTransListener {
-            viewModel.getTransModel(it.product_id)
+            //viewModel.getTransModel(it.product_id)
             viewModel.setProductId(it.product_id)
-            viewModel.saveSelectedItemId(it.product_id)
+            //viewModel.saveSelectedItemId(it.product_id)
             viewModel.saveSelectedItemPosition(it.product_id)
             viewModel.onNavigatetoTransSelect(it.product_id.toString())
 
@@ -104,9 +104,7 @@ class TransactionProductFragment : Fragment() {
 
         viewModel.productId.observe(viewLifecycleOwner){
            // viewModel.getTransModel(it)
-            Log.i("LiveDataProbs","Trans product Product Id $it")
         }
-        Log.i("LiveDataProbs","TransProductFragment SumId ${viewModel.sum_id}")
 
         viewModel.allProduct.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it.sortedBy { it.product_name })

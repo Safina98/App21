@@ -157,11 +157,7 @@ class TransactionSelectViewModel(
             //updateItemInTransDetailList(s)
         }
     }
-    private suspend fun processTransDetailUpdate(s:TransSelectModel) {
-        withContext(Dispatchers.IO){
 
-        }
-    }
     fun converter(s:TransSelectModel): TransactionDetail {
         val t = TransactionDetail()
         t.sum_id = _sumId.value ?: -1
@@ -202,7 +198,7 @@ class TransactionSelectViewModel(
             val id =transRepo.insertTransDetail(t)
             Log.i("DuplicateProbs","inserted id $id")
             s.trans_detail_id  = id ?: -1L
-            getTransModel(_productId.value!!)
+            //getTransModel(_productId.value!!)
             //updateItemInTransDetailList(s)
         }
     }
@@ -211,10 +207,6 @@ class TransactionSelectViewModel(
         viewModelScope.launch {
             transRepo.deleteTransDetail(s.trans_detail_id)
         }
-    }
-
-    fun onShowDialog(transSelectModel: TransSelectModel){
-        _showDialog.value = transSelectModel
     }
 
     @SuppressLint("NullSafeMutableLiveData")
@@ -239,27 +231,21 @@ class TransactionSelectViewModel(
         _allProduct.value =list
     }
     fun filterProduct(query: String?) {
-
             val originalList = _unFilteredProduct.value ?: return
             val filteredList = if (!query.isNullOrEmpty()) {
                 val input = query.lowercase(Locale.getDefault()).trim().replace(" ","")
-
                 originalList.filter { merk ->
                     val name = merk.product_name.lowercase(Locale.getDefault()).trim().replace(" ","")
                     val words = name.split(" ")
-
                     words.any { word ->
                                 word.contains(input)
-
                     }
                 }
             } else {
                 originalList
             }
             _allProduct.value = filteredList
-
     }
-
 
     fun updateRv(value: String){
         viewModelScope.launch {
@@ -269,12 +255,10 @@ class TransactionSelectViewModel(
             _unFilteredProduct.value = product
         }
     }
-
     fun setSelectedKategoriValue(selectedCategory:String){
         _selectedKategoriSpinner.value = selectedCategory
     }
     fun getKategoriEntries(){
-        // Toast.makeText(getApplication(),value+" kategori",Toast.LENGTH_SHORT).show()
         viewModelScope.launch {
             var newData = stockRepo.getCategoryNameListWithAll()
             _categoryEntries.value = newData
@@ -290,16 +274,13 @@ class TransactionSelectViewModel(
 
     @SuppressLint("NullSafeMutableLiveData")
     override fun onCleared() {
-      //  unCheckedAllSubs()
         super.onCleared()
-
     }
     fun resetSelectedSpinnerValue(){
         _selectedKategoriSpinner.value="ALL"
     }
 
     companion object {
-
         @JvmStatic
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")

@@ -21,10 +21,6 @@ class TransactionSelectAdapter (
     val selectLongListener: SelectLongListener
 ): ListAdapter<TransSelectModel,
         TransactionSelectAdapter.MyViewHolder>(SelectDiffCallback()){
-    var lastPosition = -1
-    init {
-        setHasStableIds(true)
-    }
 
     class MyViewHolder private constructor(val binding: ItemListTransactionSelectBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(
@@ -75,16 +71,15 @@ class TransactionSelectAdapter (
           )
     }
 
-
-
 }
 
 class SelectDiffCallback : DiffUtil.ItemCallback<TransSelectModel>() {
     override fun areItemsTheSame(oldItem: TransSelectModel, newItem:TransSelectModel): Boolean {
-        return oldItem.uniqueId== newItem.uniqueId
+       //I have change the areItemsTheSame to your code, but the glitch remains
+        return oldItem.trans_detail_id == newItem.trans_detail_id
+                && oldItem.sub_product_id == newItem.sub_product_id
     }
 
-    @SuppressLint("DiffUtilEquals")
     override fun areContentsTheSame(oldItem: TransSelectModel, newItem: TransSelectModel): Boolean {
         return oldItem == newItem
     }
