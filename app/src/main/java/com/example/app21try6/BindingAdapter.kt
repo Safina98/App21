@@ -64,6 +64,16 @@ fun setNoteColor(imageView: ImageView, isActive: Boolean) {
     imageView.setImageResource(drawableRes)
 }
 
+@BindingAdapter("app:logColor")
+fun setLogColor(imageView: ImageView, isLogged: Boolean) {
+    val drawableRes = if (isLogged) {
+        R.drawable.baseline_scissor_active
+    } else {
+        R.drawable.baseline_scissor_inactive
+    }
+    imageView.setImageResource(drawableRes)
+}
+
 @BindingAdapter("textVisibilityDetail")
 fun setTextVisibilityDetail(textView: TextView,item: TransactionDetail) {
     val decimalFormat = DecimalFormat("#.##")

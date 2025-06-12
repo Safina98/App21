@@ -19,11 +19,15 @@ import com.example.app21try6.database.repositories.DiscountRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.database.tables.DiscountTransaction
+import com.example.app21try6.database.tables.MerchandiseRetail
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.formatRupiah
 import com.example.app21try6.utils.TextGenerator
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.lang.Math.abs
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -65,6 +69,14 @@ class TransactionDetailViewModel (
 
     private var _isDiskClicked=MutableLiveData<Boolean>()
     val isDiscClicked:LiveData<Boolean> get() = _isDiskClicked
+
+    private var _multipleMerch=MutableLiveData<Double?>()
+    val multipleMerch:LiveData<Double?> get() = _multipleMerch
+
+    private var _retailMerchList=MutableLiveData<List<MerchandiseRetail>?>()
+    val retailMerchList:LiveData<List<MerchandiseRetail>?> get() = _retailMerchList
+
+    private var merchSelectionDeferred: CompletableDeferred<List<MerchandiseRetail?>?>? = null
 
     // Get the total discount from the database
     // Get the total discount from the database
@@ -144,12 +156,18 @@ class TransactionDetailViewModel (
     var isn: LiveData<Boolean> = transSum.map{ item ->
         if(item?.sum_note.isNullOrEmpty()) false else true
     }
+
+
     //Navigations
     private val _navigateToEdit = MutableLiveData<Int>()
     val navigateToEdit: LiveData<Int> get() = _navigateToEdit
 
     val discountTransBySumId=discountRepo.getTransactionDiscounts(id)
     //Set ui to change icons color when night mode or day mode on
+    init {
+        _multipleMerch.value=null
+        _retailMerchList.value=null
+    }
     fun setUiMode(mode:Int){
         _uiMode.value = mode
     }
@@ -184,6 +202,15 @@ class TransactionDetailViewModel (
        }
     }
 
+    fun updateLogBooleanValue() {
+        viewModelScope.launch {
+            val transSum = transSum.value
+            transSum?.is_logged = transSum?.is_logged?.not() ?: true
+            transSum?.let { transRepo.updateTransactionSummary(it) }
+            updateRetail(transSum?.is_logged?:true)
+        }
+    }
+
     //Set mutable txt Note value after trans_sum.value updated
     fun setTxtNoteValue(note:String?){
         txtNote.value = note
@@ -206,6 +233,8 @@ class TransactionDetailViewModel (
             transRepo.updateTransactionSummary(transum!!)
         }
     }
+
+
 
     //Hide and show card view on click
     fun onBtnNoteClick(){
@@ -322,6 +351,95 @@ class TransactionDetailViewModel (
         }
     }
     //Insert transdetail list to Summary
+    fun updateRetailOld(bool: Boolean){
+       viewModelScope.launch{
+            val transDetails=transDetail.value
+            transDetails?.forEach {trans->
+                //get the sub product id
+                val subId=trans.sub_id
+                //get the retail by sub product id
+                val retailList = stockRepo.selectRetailBySumIdS(subId?:-1)
+                var value:Double=trans.qty
+                if(retailList?.size?:0>1){
+                    //Show dialog to choose which merch to pick
+                    _multipleMerch.value=trans.qty
+                    Log.i("MERCHPROBS","viewmodel $retailList")
+                    _retailMerchList.value=retailList!!.toList()
+                }else{
+                    val merch =retailList?.get(0)
+                    if(merch!=null){
+                        merch.net =if (bool==true) merch.net-trans.qty else merch.net+trans.qty
+                        stockRepo.updateDetailRetail(merch)
+                    }
+                }
+
+
+            }
+        }
+    }
+    fun updateRetail(bool: Boolean) {
+        viewModelScope.launch {
+            val transDetails = transDetail.value
+            transDetails?.let {
+                for (trans in it) {
+                    val subId = trans.sub_id
+                    val retailList = stockRepo.selectRetailBySumIdS(subId ?: -1)
+                    var value: Double = trans.qty
+
+                    if ((retailList?.size ?: 0) > 1) {
+                        // Set up LiveData to trigger popup
+                        _multipleMerch.value = trans.qty
+                        _retailMerchList.value = retailList!!.toList()
+
+                        // Wait for user to pick a merch from the popup
+                        val selectedMerch = waitForMerchSelection()  // suspending function
+                       updateMerchValue(selectedMerch,trans.qty)
+                    } else {
+                        val merch = retailList?.getOrNull(0)
+                        if (merch != null) {
+                            merch.net = if (bool) merch.net - trans.qty else merch.net + trans.qty
+                            stockRepo.updateDetailRetail(merch)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    suspend fun waitForMerchSelection(): List<MerchandiseRetail?>? {
+        merchSelectionDeferred = CompletableDeferred()
+        return merchSelectionDeferred?.await()
+    }
+
+    fun onMerchSelected(merch: List<MerchandiseRetail?>?) {
+        merchSelectionDeferred?.complete(merch)
+        merchSelectionDeferred = null
+    }
+
+    fun updateMerchValue(merchList:List<MerchandiseRetail?>?,qty:Double){
+        viewModelScope.launch {
+            var remainingQty=qty
+            if (merchList!=null){
+                merchList.sortedBy { it!!.net }.forEach { merch->
+                    if ((remainingQty-merch!!.net)>=0){
+                        remainingQty=remainingQty + 0.20 - merch.net
+                        merch.net=0.0
+                    }else{
+                        merch.net=merch.net-remainingQty
+                        remainingQty=-1.0
+                    }
+                    stockRepo.updateDetailRetail(merch)
+                    Log.i("MERCHPROBS","id: ${merch.id} net ${merch.net}, remainingqty: $remainingQty")
+                }
+            }
+
+        }
+    }
+
+    fun setValuesToNull(){
+        _retailMerchList.value=null
+        _multipleMerch.value=null
+    }
+
     private fun insertToSummary(){
         viewModelScope.launch {
             val calendar = Calendar.getInstance()
@@ -401,12 +519,6 @@ class TransactionDetailViewModel (
         }
     }
     /******************************************** Suspend **************************************/
-
-
-
-
-
-
 
     fun generateReceiptTextWa(): String {
         textGenerator = TextGenerator(transDetail.value,transSum.value,paymentModel.value,discountTransBySumId.value?.filter { it.discountType!=DISCTYPE.CashbackNotPrinted })

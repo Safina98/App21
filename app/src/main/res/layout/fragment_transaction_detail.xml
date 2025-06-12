@@ -64,6 +64,17 @@
             app:layout_constraintTop_toBottomOf="@id/txt_cust_name"
             />
         <ImageView
+            android:id="@+id/btn_log"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="@dimen/big_margin"
+            app:logColor="@{viewModel.transSum._logged}"
+            android:elevation="@dimen/medium_margin"
+            android:onClick="@{()->viewModel.updateLogBooleanValue()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/btn_disc" />
+
+        <ImageView
             android:id="@+id/btn_disc"
             android:layout_width="36dp"
             android:layout_height="36dp"

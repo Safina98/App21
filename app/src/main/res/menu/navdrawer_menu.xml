@@ -8,7 +8,7 @@
 
     <item
         android:id="@+id/bookSummaryFragment"
-android:icon="@drawable/logo_income"
+android:icon="@drawable/report"
         android:title="@string/pembukuan" />
     <item
         android:id="@+id/transactionActiveFragment"

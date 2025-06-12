@@ -45,6 +45,9 @@ interface DetailWarnaDao {
             "FROM merchandise_table \n WHERE sub_id=:subId")
     fun getRetaiBySubId(subId:Int):List<DetailMerchandiseModel>
 
+    @Query("SELECT * FROM merchandise_table WHERE sub_id=:subId")
+    fun selectRetailBySubId(subId:Int):List<MerchandiseRetail>
+
     @Query("SELECT \n" +
             "    id, \n" +
             "    subId AS sub_id, \n" +

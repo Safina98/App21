@@ -213,7 +213,6 @@ class SubViewModel (
             merchandiseRetail.id = detailWarnaModel.id
             stockRepo.updateDetailRetail(merchandiseRetail)
             getRetailList(detailWarnaModel.sub_id)
-
         }
     }
     fun DetailMerchandiseModel.toDetailWarnaTable(): DetailWarnaTable {
