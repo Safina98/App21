@@ -55,7 +55,7 @@ class TransactionDetailViewModel (
 
     //transaction detail for recyclerview
     val transDetail = transRepo.getTransactionDetails(id)
-    val transDetailWithProduct= transRepo.getTransactionDetailsWithProductID(id)
+    //val transDetailWithProduct= transRepo.getTransactionDetailsWithProductID(id)
     //Transaction Summary
     val transSum = transRepo.getTransactionSummary(id)
     //Total Trans
@@ -70,8 +70,8 @@ class TransactionDetailViewModel (
     private var _isDiskClicked=MutableLiveData<Boolean>()
     val isDiscClicked:LiveData<Boolean> get() = _isDiskClicked
 
-    private var _multipleMerch=MutableLiveData<Double?>()
-    val multipleMerch:LiveData<Double?> get() = _multipleMerch
+    private var _multipleMerch=MutableLiveData<TransactionDetail?>()
+    val multipleMerch:LiveData<TransactionDetail?> get() = _multipleMerch
 
     private var _retailMerchList=MutableLiveData<List<MerchandiseRetail>?>()
     val retailMerchList:LiveData<List<MerchandiseRetail>?> get() = _retailMerchList
@@ -205,9 +205,12 @@ class TransactionDetailViewModel (
     fun updateLogBooleanValue() {
         viewModelScope.launch {
             val transSum = transSum.value
-            transSum?.is_logged = transSum?.is_logged?.not() ?: true
-            transSum?.let { transRepo.updateTransactionSummary(it) }
-            updateRetail(transSum?.is_logged?:true)
+            if (transSum?.is_logged !=true){
+                transSum?.is_logged =  true
+                transSum?.let { transRepo.updateTransactionSummary(it) }
+                updateRetail(transSum?.is_logged?:true)
+            }
+
         }
     }
 
@@ -351,32 +354,7 @@ class TransactionDetailViewModel (
         }
     }
     //Insert transdetail list to Summary
-    fun updateRetailOld(bool: Boolean){
-       viewModelScope.launch{
-            val transDetails=transDetail.value
-            transDetails?.forEach {trans->
-                //get the sub product id
-                val subId=trans.sub_id
-                //get the retail by sub product id
-                val retailList = stockRepo.selectRetailBySumIdS(subId?:-1)
-                var value:Double=trans.qty
-                if(retailList?.size?:0>1){
-                    //Show dialog to choose which merch to pick
-                    _multipleMerch.value=trans.qty
-                    Log.i("MERCHPROBS","viewmodel $retailList")
-                    _retailMerchList.value=retailList!!.toList()
-                }else{
-                    val merch =retailList?.get(0)
-                    if(merch!=null){
-                        merch.net =if (bool==true) merch.net-trans.qty else merch.net+trans.qty
-                        stockRepo.updateDetailRetail(merch)
-                    }
-                }
 
-
-            }
-        }
-    }
     fun updateRetail(bool: Boolean) {
         viewModelScope.launch {
             val transDetails = transDetail.value
@@ -385,12 +363,10 @@ class TransactionDetailViewModel (
                     val subId = trans.sub_id
                     val retailList = stockRepo.selectRetailBySumIdS(subId ?: -1)
                     var value: Double = trans.qty
-
                     if ((retailList?.size ?: 0) > 1) {
                         // Set up LiveData to trigger popup
-                        _multipleMerch.value = trans.qty
+                        _multipleMerch.value = trans
                         _retailMerchList.value = retailList!!.toList()
-
                         // Wait for user to pick a merch from the popup
                         val selectedMerch = waitForMerchSelection()  // suspending function
                        updateMerchValue(selectedMerch,trans.qty)

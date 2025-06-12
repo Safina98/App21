@@ -12,17 +12,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="300dp"
-            android:layout_height="80dp">
+            android:layout_height="60dp">
 
             <TextView
                 android:id="@+id/txt_net"
-                android:layout_width="wrap_content"
                 style="@style/active_transaction_text_style"
+                android:layout_width="wrap_content"
                 android:layout_marginStart="4dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:layout_marginTop="8dp"
-                android:text="@{String.format(`ID: %d, Net: %.1f`, item.id, item.net)}"
+                android:text="@{String.format(`ID: %d, Net: %.2f`, item.id, item.net)}"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

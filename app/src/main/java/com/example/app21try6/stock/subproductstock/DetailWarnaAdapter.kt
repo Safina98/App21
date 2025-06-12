@@ -38,7 +38,7 @@ class DetailWarnaAdapter (
                 binding.btnTrack.background = ContextCompat.getDrawable(itemView.context, R.drawable.baseline_subtract_24)
                 binding.btnEdit.background = ContextCompat.getDrawable(itemView.context, R.drawable.baseline_add_24)
                 binding.txtNet.text= SIMPLE_DATE_FORMATTER.format(item.date)
-                binding.txtBatchCount.text=item.net.toString()  +"m"
+                binding.txtBatchCount.text= String.format("Net: %.2f", item.net)//item.net.toString()  +"m"
             }
             else{
                 binding.txtNet.text=item.net.toString() +"Meter"

@@ -6,6 +6,7 @@ import android.app.TimePickerDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothClass
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -22,38 +23,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
-import android.widget.CheckBox
 import android.widget.DatePicker
 import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.R
-import com.example.app21try6.SIMPLE_DATE_FORMATTER
-import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.PaymentModel
 import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.DiscountRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
-import com.example.app21try6.database.tables.MerchandiseRetail
+import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.databinding.FragmentTransactionDetailBinding
 import com.example.app21try6.databinding.PopUpListDialogBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import java.util.*
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 class TransactionDetailFragment : Fragment() {
     private lateinit var binding:FragmentTransactionDetailBinding
     private val PERMISSION_REQUEST_CODE = 201
@@ -68,7 +60,7 @@ class TransactionDetailFragment : Fragment() {
         const val Discount = "Discount"
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater,
            R.layout.fragment_transaction_detail,container,false)
         val application= requireNotNull(this.activity).application
@@ -82,7 +74,7 @@ class TransactionDetailFragment : Fragment() {
         val discountRepository=DiscountRepository(application)
 
         val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        val viewModelFactory = TransactionDetailViewModelFactory(stockRepositories,bookRepository,transRepositories,discountRepository,application,id!!)
+        val viewModelFactory = TransactionDetailViewModelFactory(stockRepositories,bookRepository,transRepositories,discountRepository,application,id)
         viewModel =ViewModelProvider(this,viewModelFactory).get(TransactionDetailViewModel::class.java)
         binding.lifecycleOwner = viewLifecycleOwner
         val img =  requireActivity().findViewById<ImageView>(R.id.delete_image)
@@ -90,7 +82,10 @@ class TransactionDetailFragment : Fragment() {
 
         binding.viewModel = viewModel
         viewModel.getSummaryWithNullProductId()
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        //bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        val bluetoothManager = requireContext().getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
+        if (bluetoothManager!=null)
+        bluetoothAdapter = bluetoothManager.adapter
         val paymentAdapter = PaymentAdapter(viewModel.transSum.value?.is_paid_off ?: false,
             TransPaymentClickListener {
               showBayarDialog(it,type.Payment)
@@ -136,28 +131,22 @@ class TransactionDetailFragment : Fragment() {
             }
         }
 
-        viewModel.transDetail.observe(viewLifecycleOwner, Observer {
+        viewModel.transDetail.observe(viewLifecycleOwner) {
             it?.let {
                 adapter.submitList(it)
                 adapter.notifyDataSetChanged()
             }
-        })
+        }
 
-        viewModel.discSum.observe(viewLifecycleOwner,Observer{
+        viewModel.discSum.observe(viewLifecycleOwner) {}
 
-        })
-        viewModel.transDetailWithProduct.observe(viewLifecycleOwner, Observer {
-            it?.let {
-
-            }
-        })
-        viewModel.discountTransBySumId.observe(viewLifecycleOwner, Observer {
+        //viewModel.transDetailWithProduct.observe(viewLifecycleOwner) { it?.let {} }
+        viewModel.discountTransBySumId.observe(viewLifecycleOwner) {
             it?.let {
                 discAdapter.submitList(it)
                 adapter.notifyDataSetChanged()
-                Log.i("DiscProbs","Observer ${it.sumOf { it.payment_ammount!! }}")
             }
-        })
+        }
         binding.recyclerViewBayar.adapter = paymentAdapter
 
         viewModel.setUiMode(nightModeFlags)
@@ -166,14 +155,14 @@ class TransactionDetailFragment : Fragment() {
             viewModel.setTxtNoteValue(it.sum_note)
         } }
 
-        viewModel.isn.observe(viewLifecycleOwner, Observer { isNoteActive -> })
+        viewModel.isn.observe(viewLifecycleOwner) { isNoteActive -> }
 
-        viewModel.paymentModel.observe(viewLifecycleOwner, Observer {
-            it?.let{
+        viewModel.paymentModel.observe(viewLifecycleOwner) {
+            it?.let {
                 paymentAdapter.submitList(it)
                 adapter.notifyDataSetChanged()
             }
-        })
+        }
         viewModel.transSumDateLongClick.observe(viewLifecycleOwner){
             if (it==true){
                 showDatePickerDialog(null)
@@ -186,7 +175,7 @@ class TransactionDetailFragment : Fragment() {
                 viewModel.onKirimBtnClicked()
             }
         }
-        viewModel.isBtnpaidOff.observe(this.viewLifecycleOwner, Observer {
+        viewModel.isBtnpaidOff.observe(this.viewLifecycleOwner) {
             if (it == true) {
                 (binding.recyclerViewDetailTrans.adapter as TransactionDetailAdapter).isActive(it)
             } else {
@@ -194,31 +183,41 @@ class TransactionDetailFragment : Fragment() {
             }
             adapter.notifyDataSetChanged()
 
-        })
+        }
 
-        viewModel.isCardViewShow.observe(viewLifecycleOwner, Observer {})
-        viewModel.isTxtNoteClick.observe(viewLifecycleOwner, Observer {})
-        viewModel.isBtnBayarCLicked.observe(viewLifecycleOwner, Observer {
-            if (it==true){
-                showBayarDialog(PaymentModel(null,null,null,null,null,null,"Bayar:",null),type.Payment)
+        viewModel.isCardViewShow.observe(viewLifecycleOwner) {}
+        viewModel.isTxtNoteClick.observe(viewLifecycleOwner) {}
+        viewModel.isBtnBayarCLicked.observe(viewLifecycleOwner) {
+            if (it == true) {
+                showBayarDialog(
+                    PaymentModel(null, null, null, null, null, null, "Bayar:", null),
+                    type.Payment
+                )
                 viewModel.onBtnBayarClicked()
             }
-        })
-        viewModel.isDiscClicked.observe(viewLifecycleOwner, Observer {
-            if (it==true){
-                showBayarDialog(PaymentModel(null,null,null,null,null,null,null,null),type.Discount)
+        }
+        viewModel.isDiscClicked.observe(viewLifecycleOwner) {
+            if (it == true) {
+                showBayarDialog(
+                    PaymentModel(null, null, null, null, null, null, null, null),
+                    type.Discount
+                )
                 viewModel.onBtnDiscClicked()
             }
-        })
+        }
 
         viewModel.uiMode.observe(viewLifecycleOwner) {}
 
-        viewModel.navigateToEdit.observe(viewLifecycleOwner, Observer {
+        viewModel.navigateToEdit.observe(viewLifecycleOwner) {
             it?.let {
-                this.findNavController().navigate(TransactionDetailFragmentDirections.actionTransactionDetailFragmentToTransactionEditFragment(id))
+                this.findNavController().navigate(
+                    TransactionDetailFragmentDirections.actionTransactionDetailFragmentToTransactionEditFragment(
+                        id
+                    )
+                )
                 viewModel.onNavigatedToEdit()
             }
-        })
+        }
 
 
 
@@ -419,25 +418,23 @@ class TransactionDetailFragment : Fragment() {
         toneGenerator.startTone(ToneGenerator.TONE_CDMA_CONFIRM, 300)
     }
 
-    private fun showMerchandiseRetailDialog(qty:Double) {
+    private fun showMerchandiseRetailDialog(trans:TransactionDetail) {
         val binding = PopUpListDialogBinding.inflate(layoutInflater)
         val recyclerView = binding.recyclerViewVendibleDialog
         val resultText = binding.txtTotal
-        resultText.text = "Remaining $qty"
-
-
+        resultText.text = String.format(Locale.getDefault(), "Remaining : %.2f", trans.qty)//"Remaining ${trans.qty}"
 
         lateinit var adapter: MerchandiseAdapter
 
         adapter = MerchandiseAdapter () {
             val selectedSum = adapter.getCheckedItems().sumOf { it.net }
-            var remaining=qty
-            if((qty-selectedSum)>=0)
-                remaining = qty + 0.20 - selectedSum
+            var remaining=trans.qty
+            if((remaining-selectedSum)>=0)
+                remaining = trans.qty + 0.20 - selectedSum
             else{
                 remaining=0.0
             }
-            resultText.text = "Remaining: $remaining"
+            resultText.text = String.format(Locale.getDefault(), "Remaining : %.2f", remaining)//"Remaining: $remaining"
         }
 
 
@@ -452,7 +449,7 @@ class TransactionDetailFragment : Fragment() {
 
         val dialog = AlertDialog.Builder(requireContext())
             .setView(binding.root)
-            .setTitle("Select Merchandise")
+            .setTitle(trans.trans_item_name)
             .setPositiveButton("OK", null)
             .setNegativeButton("Cancel", null)
             .create()
@@ -462,9 +459,6 @@ class TransactionDetailFragment : Fragment() {
             positiveButton.setOnClickListener {
                 val selectedItems = adapter.getCheckedItems()
                viewModel.onMerchSelected(selectedItems)
-                // viewModel.updateMerchValue(selectedItems,qty)
-                //Toast.makeText(requireContext(), "Selected: ${selectedItems.size}", Toast.LENGTH_SHORT).show()
-               // viewModel.setValuesToNull()
                 dialog.dismiss()
             }
         }
@@ -474,30 +468,8 @@ class TransactionDetailFragment : Fragment() {
         }
 
         dialog.show()
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }
-
-    /*if there is more than one retail
-         1. show pop up dialog
-            in the pop up dialog there are:
-            a. list of avaliable retail
-            b. qty => the goal qty, which are how much more net needed to reach the qty,
-            when a check box in the recyclerview are clicked,
-            it calculate the sum like this
-            it's substract qty with the minimum net first, then substract the rest with other like this
-
-            list.sortBySmallestNet for each
-                if(qty-smallestNet)>=0
-                    qty = qty-smallestNet
-                    smallest net = 0
-                else
-                    smallestNet=smallestNet-qty
-
-             add on checkbox click listener, and observe the livedata from the dialog
-             change multipleMerch value to qty
-
-
-     */
-
-
 
 }
