@@ -118,8 +118,8 @@ class StockRepositories (
     suspend fun deleteProduct(id:Int){ withContext(Dispatchers.IO){ productDao.delete(id) } }
     suspend fun insertProduct(product: Product){ withContext(Dispatchers.IO){ productDao.insert(product) } }
 ////////////////////////////////////////////////SubProduct//////////////////////////////////////////
-    fun getSubProductLiveData(id:Int): LiveData<List<SubProduct>> {
-        return  subProductDao.getAll(id)
+    fun getSubProductLiveData(id:Int?,brandId:Int?): LiveData<List<SubProduct>> {
+        return  subProductDao.getAll(id,brandId)
     }
     suspend fun updateSubProduct(subProduct: SubProduct){
         withContext(Dispatchers.IO){

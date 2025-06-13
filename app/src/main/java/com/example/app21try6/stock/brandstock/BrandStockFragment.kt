@@ -135,6 +135,7 @@ class BrandStockFragment : Fragment() {
         val adapter = BrandStockAdapter(
             BrandStockListener {
                 viewModel.getBrandIdByName(it)
+
             },BrandStockLongListener {
                 showDialogBox(viewModel,it,MODELTYPE.brand)
             },null,requireContext())

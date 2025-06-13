@@ -22,10 +22,12 @@ interface SubProductDao {
     fun update_checkbox(name:String,bool:Int):Int
     @Query("UPDATE sub_table SET is_checked =0")
     fun unchecked_allCheckbox()
-    @Query("SELECT * FROM sub_table WHERE product_code = :product_id_")
-    fun getAll(product_id_:Int):LiveData<List<SubProduct>>
+    @Query("SELECT * FROM sub_table WHERE  (:product_id_ IS NULL OR product_code = :product_id_) AND (:brandId IS NULL OR brand_code=:brandId)")
+    fun getAll(product_id_:Int?,brandId: Int?):LiveData<List<SubProduct>>
     @Query("SELECT * FROM sub_table WHERE product_code =:product_id")
     fun getSubListByProductId(product_id: Int):List<SubProduct>
+
+
     @Query("SELECT * FROM sub_table")
     fun getAllSub():LiveData<List<SubProduct>>
     @Query("SELECT * FROM sub_table WHERE sub_id = :sub_id_")

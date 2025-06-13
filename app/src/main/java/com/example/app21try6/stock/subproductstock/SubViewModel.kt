@@ -7,6 +7,7 @@ import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import com.example.app21try6.database.models.DetailMerchandiseModel
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
@@ -15,6 +16,8 @@ import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.database.tables.MerchandiseRetail
 import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.database.tables.TransactionDetail
+import com.example.app21try6.transaction.transactionselect.TransSelectModel
+import com.example.app21try6.utils.AbsentLiveData
 import kotlinx.coroutines.*
 import java.util.Date
 import java.util.UUID
@@ -31,7 +34,18 @@ class SubViewModel (
     //ui scope for coroutines
     private val uiScope = CoroutineScope(Dispatchers.Main +  viewModelJob)
 
-    val allProductFromDb = stockRepo.getSubProductLiveData(product_id[0])
+    val allProductFromDb = stockRepo.getSubProductLiveData(product_id[0],null)
+    private val _brandId=MutableLiveData<Int?>(null)
+    val brandId:LiveData<Int?>get() = _brandId
+
+    val subProductFromDb :LiveData<List<SubProduct>> = _brandId.switchMap { brandId ->
+        if (brandId==null){
+            stockRepo.getSubProductLiveData(product_id[0],null)
+        }else{
+            stockRepo.getSubProductLiveData(null,brandId)
+        }
+
+    }
 
     private val _addItem = MutableLiveData<Boolean>()
     val addItem: LiveData<Boolean> get() = _addItem
@@ -49,6 +63,7 @@ class SubViewModel (
 
     val _selectedSubProduct=MutableLiveData<SubProduct?>()
     val selectedSubProduct:LiveData<SubProduct?>get() = _selectedSubProduct
+
 
     fun toggleSelectedSubProductId(subProduct: SubProduct?) {
         _selectedSubProduct.value = if (_selectedSubProduct.value?.sub_id ==subProduct?.sub_id) null else subProduct
@@ -105,6 +120,11 @@ class SubViewModel (
         uiScope.launch {
             val pList=allProductFromDb.value
             resetSupProductSuspend(pList!!)
+        }
+    }
+    fun showallSubProductbyBrandId(){
+        uiScope.launch {
+
         }
     }
 
@@ -255,6 +275,14 @@ class SubViewModel (
     fun onItemAdded(){ _addItem.value = false}
 
     fun onLongClick(v: View): Boolean { return true}
+
+    fun onShowByBrandId(){
+        if (brandId.value==null){
+            _brandId.value=product_id[1]
+        }else{
+            _brandId.value=null
+        }
+    }
 
     fun onBrandCLick(id: Array<String>){ _navigateProduct.value = id }
     @SuppressLint("NullSafeMutableLiveData")
