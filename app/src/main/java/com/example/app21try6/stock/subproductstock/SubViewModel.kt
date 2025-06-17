@@ -44,7 +44,6 @@ class SubViewModel (
         }else{
             stockRepo.getSubProductLiveData(null,brandId)
         }
-
     }
 
     private val _addItem = MutableLiveData<Boolean>()
@@ -67,7 +66,6 @@ class SubViewModel (
 
     fun toggleSelectedSubProductId(subProduct: SubProduct?) {
         _selectedSubProduct.value = if (_selectedSubProduct.value?.sub_id ==subProduct?.sub_id) null else subProduct
-       //if id not the same change rc background
     }
 
     fun onCheckBoxClicked(subProduct: SubProduct, bool:Boolean){
@@ -122,11 +120,6 @@ class SubViewModel (
             resetSupProductSuspend(pList!!)
         }
     }
-    fun showallSubProductbyBrandId(){
-        uiScope.launch {
-
-        }
-    }
 
     private suspend fun resetSupProductSuspend(pList:List<SubProduct>){
         withContext(Dispatchers.IO){
@@ -138,7 +131,9 @@ class SubViewModel (
                 p.roll_sg=0
                 p.roll_st=0
                 p.roll_u=0
+
                 stockRepo.updateSubProduct(p)
+                stockRepo.deleteDetailWarnaBySubId(p.sub_id)
             }
         }
     }

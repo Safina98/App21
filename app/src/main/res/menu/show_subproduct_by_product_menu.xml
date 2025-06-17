@@ -5,5 +5,5 @@
         android:id="@+id/my_toolbar_icon"
         android:icon="@drawable/baseline_arrow_down"
         android:title="My Icon"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 </menu>

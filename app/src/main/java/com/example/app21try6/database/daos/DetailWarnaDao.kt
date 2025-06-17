@@ -1,6 +1,5 @@
 package com.example.app21try6.database.daos
 
-import android.util.Log
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -30,6 +29,9 @@ interface DetailWarnaDao {
 
     @Query("DELETE FROM detail_warna_table WHERE id=:id")
     fun delete(id:Int)
+
+    @Query("DELETE FROM detail_warna_table WHERE subId=:subId")
+    fun deleteDetailWarnaBySubId(subId:Int)
 
     @Query("DELETE FROM merchandise_table WHERE id =:id")
     fun deleteMerchandise(id:Int)

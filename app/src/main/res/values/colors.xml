@@ -24,10 +24,13 @@
 
     <color name="nightModeBackgroundColor">#121212</color>
     <color name="lightModeBackgroundColor">#FFFFFF</color>
-<!--#A3EBF4F6- -->
+            <!--#A3EBF4F6- -->
     <!--#273A7D44- -->
     <!--<color name="transActiveBgColor">#5EDFD7BF</color>-->
-    <color name="transActiveBgColor">#E4E8ECD7</color>
+    <!--#FFFDF6 off white not bad   -->
+    <!--#F1F0E8 Winner similar to original   -->
+    <!--Original #E4E8ECD7 -->
+    <color name="transActiveBgColor">#F1F0E8</color>
     <color name="logrvbg">#85FFFEF3</color>
 
     <color name="normal_button_color">#FF0000</color> <!-- Change to your desired normal button color -->

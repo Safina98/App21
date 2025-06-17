@@ -85,7 +85,7 @@ class TransactionDetailFragment : Fragment() {
         //bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         val bluetoothManager = requireContext().getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
         if (bluetoothManager!=null)
-        bluetoothAdapter = bluetoothManager.adapter
+            bluetoothAdapter = bluetoothManager.adapter
         val paymentAdapter = PaymentAdapter(viewModel.transSum.value?.is_paid_off ?: false,
             TransPaymentClickListener {
               showBayarDialog(it,type.Payment)

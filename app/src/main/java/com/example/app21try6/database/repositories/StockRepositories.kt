@@ -173,6 +173,11 @@ class StockRepositories (
             detailWarnaDao.deleteDetailWarnaAndInsertLog(detailWarnaTable.id,inventoryLog,merchandiseRetail)
         }
     }
+    suspend fun deleteDetailWarnaBySubId(subId:Int){
+        withContext(Dispatchers.IO){
+            detailWarnaDao.deleteDetailWarnaBySubId(subId)
+        }
+    }
 
     suspend fun selectRetailBySumId(subId:Int):List<DetailMerchandiseModel>?{
         return withContext(Dispatchers.IO){
