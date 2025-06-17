@@ -12,6 +12,7 @@ import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.database.tables.MerchandiseRetail
 import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.tables.SubProduct
+import com.example.app21try6.database.tables.TransactionDetail
 
 @Dao
 interface DetailWarnaDao {
@@ -21,6 +22,8 @@ interface DetailWarnaDao {
     fun insertLog(inventoryLog: InventoryLog)
     @Update
     fun update(detailWarnaTable: DetailWarnaTable)
+    @Update
+    fun updateTransDetail(transactionDetail: TransactionDetail)
 
     @Insert
     fun insert(merchandiseRetail: MerchandiseRetail)
@@ -99,5 +102,10 @@ interface DetailWarnaDao {
         if (merchandiseRetail!=null) {
             insert(merchandiseRetail)
         }//TODO insert merchandise retail
+    }
+    @Transaction
+    fun updateTransDetailAndRetail(merchandiseRetail: MerchandiseRetail,transactionDetail: TransactionDetail){
+        updateRetail(merchandiseRetail)
+        updateTransDetail(transactionDetail)
     }
 }

@@ -3,6 +3,7 @@ package com.example.app21try6.transaction.transactiondetail
 import android.app.Application
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -77,6 +78,8 @@ class TransactionDetailViewModel (
     val retailMerchList:LiveData<List<MerchandiseRetail>?> get() = _retailMerchList
 
     private var merchSelectionDeferred: CompletableDeferred<List<MerchandiseRetail?>?>? = null
+
+    private var longMerchSelectionDeferred: CompletableDeferred<MerchandiseRetail?>? = null
 
     // Get the total discount from the database
     // Get the total discount from the database
@@ -409,6 +412,63 @@ class TransactionDetailViewModel (
             }
 
         }
+    }
+
+    fun updateRetailOnClick(item:TransactionDetail){
+        viewModelScope.launch {
+            Log.i("MERCHPROBS","Update Retail on Click called")
+            val subId=item.sub_id
+            val retailList = stockRepo.selectRetailBySumIdS(subId ?: -1)
+            val totalNet = retailList?.sumOf { it.net }
+            val trans=item
+            if (item.is_cutted==false){
+                if (trans.qty <= (totalNet?:0.0)){
+                    trans.is_cutted=true
+                    if ((retailList?.size ?:0)>1){
+                        _multipleMerch.value = item
+                        _retailMerchList.value = retailList!!.toList()
+                        val merch = waitForMerchSelection()
+                        updateMerchValue(merch,trans.qty,trans)
+                    }else{
+                        val merch = retailList?.getOrNull(0)
+                        if (merch != null) {
+                            merch.net = if (trans.is_cutted) merch.net - trans.qty else merch.net + trans.qty
+                            stockRepo.updateDetaiAndlRetail(merch,trans)
+                        }
+                    }
+                }else{
+                    Toast.makeText(getApplication(),"Net tidak cukup",Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+    fun updateMerchValue(merchList:List<MerchandiseRetail?>?,qty:Double, trans: TransactionDetail){
+        viewModelScope.launch {
+            var remainingQty=qty
+            if (merchList!=null){
+                merchList.sortedBy { it!!.net }.forEach { merch->
+                    if ((remainingQty-merch!!.net)>=0){
+                        remainingQty=remainingQty + 0.20 - merch.net
+                        merch.net=0.0
+                    }else{
+                        merch.net=merch.net-remainingQty
+                        remainingQty=-1.0
+                    }
+                    stockRepo.updateDetaiAndlRetail(merch,trans)
+                    Log.i("MERCHPROBS","id: ${merch.id} net ${merch.net}, remainingqty: $remainingQty")
+                }
+            }
+
+        }
+    }
+
+    suspend fun waitForLongMerchSelection(): MerchandiseRetail? {
+        longMerchSelectionDeferred = CompletableDeferred()
+        return longMerchSelectionDeferred?.await()
+    }
+    fun onLongMerchSelected(merch: MerchandiseRetail?) {
+        longMerchSelectionDeferred?.complete(merch)
+        longMerchSelectionDeferred = null
     }
 
     fun setValuesToNull(){

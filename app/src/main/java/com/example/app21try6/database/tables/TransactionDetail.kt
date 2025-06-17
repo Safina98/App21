@@ -35,6 +35,8 @@ data class TransactionDetail(
         var total_price:Double = 0.0,
         @ColumnInfo(name = "is_prepared")
         var is_prepared:Boolean = false,
+        @ColumnInfo(name = "is_cutted") //newly added colum
+        var is_cutted:Boolean = false,//newly added column
         @ColumnInfo(name = "trans_detail_date")
         var trans_detail_date:Date? = null,
         @ColumnInfo(name = "unit")

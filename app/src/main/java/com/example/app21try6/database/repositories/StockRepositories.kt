@@ -12,6 +12,7 @@ import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.database.tables.MerchandiseRetail
 import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.tables.SubProduct
+import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.stock.brandstock.CategoryModel
 import com.example.app21try6.stock.brandstock.ExportModel
 import kotlinx.coroutines.Dispatchers
@@ -197,6 +198,11 @@ class StockRepositories (
     suspend fun updateDetailRetail(merchandiseRetail: MerchandiseRetail){
         withContext(Dispatchers.IO){
             detailWarnaDao.updateRetail(merchandiseRetail)
+        }
+    }
+    suspend fun updateDetaiAndlRetail(merchandiseRetail: MerchandiseRetail,transactionDetail: TransactionDetail){
+        withContext(Dispatchers.IO){
+            detailWarnaDao.updateTransDetailAndRetail(merchandiseRetail,transactionDetail)
         }
     }
 

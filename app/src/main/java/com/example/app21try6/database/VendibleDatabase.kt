@@ -10,6 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.app21try6.database.Migrations.MIGRATION_41_42
 import com.example.app21try6.database.Migrations.MIGRATION_42_43
 import com.example.app21try6.database.Migrations.MIGRATION_43_44
+import com.example.app21try6.database.Migrations.MIGRATION_44_45
 import com.example.app21try6.database.daos.BrandDao
 import com.example.app21try6.database.tables.Category
 import com.example.app21try6.database.daos.CategoryDao
@@ -52,7 +53,7 @@ import com.example.app21try6.database.tables.TransactionSummary
     ExpenseCategory::class, Summary::class, DiscountTable::class, DiscountTransaction::class,
     CustomerTable::class,DetailWarnaTable::class,InventoryLog::class,
     SuplierTable::class,InventoryPurchase::class, MerchandiseRetail::class
-                     ],version=44, exportSchema = true)
+                     ],version=45, exportSchema = true)
 @TypeConverters(DateTypeConverter::class)
 abstract class VendibleDatabase:RoomDatabase(){
     abstract val brandDao : BrandDao
@@ -79,85 +80,6 @@ abstract class VendibleDatabase:RoomDatabase(){
         fun getInstance(context: Context):VendibleDatabase{
             synchronized(this) {
 
-                val MIGRATION_37_38 = object : Migration(37, 38) { // Replace X with the old version and Y with the new version.
-                    override fun migrate(database: SupportSQLiteDatabase) {
-                        // Add the new column `is_keeped` with a default value of 0 (false)
-                        database.execSQL("ALTER TABLE expenses_table ADD COLUMN is_keeped INTEGER NOT NULL DEFAULT 0")
-
-                        database.execSQL(
-                            """
-                            CREATE TABLE IF NOT EXISTS detail_warna_table (
-                                detailId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                                subId INTEGER NOT NULL,
-                                batchCount REAL NOT NULL DEFAULT 0.0,
-                                net REAL NOT NULL DEFAULT 0.0,
-                                ket TEXT NOT NULL DEFAULT '',
-                                ref TEXT NOT NULL DEFAULT '',
-                                FOREIGN KEY(subId) REFERENCES sub_table(sub_id) ON DELETE CASCADE ON UPDATE CASCADE
-                            )
-                            """.trimIndent()
-                                        )
-                        database.execSQL("CREATE UNIQUE INDEX index_detail_warna_table_ref ON detail_warna_table(ref)")
-                        database.execSQL(
-                            """
-                            CREATE TABLE IF NOT EXISTS inventory_log_table (
-                                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                                brandId INTEGER,
-                                productId INTEGER,
-                                subProductId INTEGER,
-                                detailWarnaRef TEXT,
-                                isi REAL NOT NULL DEFAULT 0.0,
-                                pcs INTEGER NOT NULL DEFAULT 0,
-                                barangLogDate TEXT NOT NULL DEFAULT '1970-01-01 00:00',
-                                barangLogRef TEXT NOT NULL DEFAULT '',
-                                barangLogKet TEXT NOT NULL DEFAULT '',
-                                FOREIGN KEY(brandId) REFERENCES brand_table(brand_id) ON DELETE SET NULL ON UPDATE SET NULL,
-                                FOREIGN KEY(productId) REFERENCES product_table(product_id) ON DELETE SET NULL ON UPDATE SET NULL,
-                                FOREIGN KEY(subProductId) REFERENCES sub_table(sub_id) ON DELETE SET NULL ON UPDATE SET NULL,
-                                FOREIGN KEY(detailWarnaRef) REFERENCES detail_warna_table(ref) ON DELETE SET NULL ON UPDATE SET NULL
-                            )
-                            """.trimIndent()
-                        )
-                        database.execSQL("CREATE UNIQUE INDEX index_inventory_log_table_barangLogRef ON inventory_log_table(barangLogRef)")
-                        database.execSQL(
-                            """
-                            CREATE TABLE IF NOT EXISTS suplier_table (
-                                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                                suplierName TEXT NOT NULL DEFAULT '',
-                                suplierLocation TEXT NOT NULL DEFAULT ''
-                            )
-                            """.trimIndent()
-                        )
-                        database.execSQL(
-                            """
-                            CREATE TABLE IF NOT EXISTS inventory_purchase_table (
-                                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                                subProductId INTEGER,
-                                expensesId INTEGER,
-                                suplierId INTEGER,
-                                suplierName TEXT NOT NULL DEFAULT '',
-                                subProductName TEXT NOT NULL DEFAULT '',
-                                purchaseDate TEXT NOT NULL DEFAULT '1970-01-01 00:00',
-                                batchCount REAL NOT NULL DEFAULT 0.0,
-                                net REAL NOT NULL DEFAULT 0.0,
-                                price INTEGER NOT NULL DEFAULT 0,
-                                totalPrice REAL NOT NULL DEFAULT 0.0,
-                                status TEXT NOT NULL DEFAULT '',
-                                ref TEXT NOT NULL DEFAULT '',
-                                FOREIGN KEY(subProductId) REFERENCES sub_table(sub_id) ON DELETE SET NULL ON UPDATE SET NULL,
-                                FOREIGN KEY(expensesId) REFERENCES expenses_table(id) ON DELETE SET NULL ON UPDATE SET NULL,
-                                FOREIGN KEY(suplierId) REFERENCES suplier_table(id) ON DELETE SET NULL ON UPDATE SET NULL
-                            )
-                            """.trimIndent()
-                        )
-                        database.execSQL(
-                            """
-            CREATE UNIQUE INDEX index_inventory_purchase_table_ref ON inventory_purchase_table(ref)
-            """.trimIndent()
-                        )
-
-                    }
-                }
 
                 var instance = INSTANCE
                 if (instance == null) {
@@ -165,9 +87,7 @@ abstract class VendibleDatabase:RoomDatabase(){
                             context.applicationContext,
                             VendibleDatabase::class.java,
                             "vendible_table"
-                    )
-
-
+                    ).addMigrations(MIGRATION_44_45)
                         // .fallbackToDestructiveMigration()
                     .build()
                     INSTANCE = instance

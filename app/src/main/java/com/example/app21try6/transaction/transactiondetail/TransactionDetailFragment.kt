@@ -106,7 +106,10 @@ class TransactionDetailFragment : Fragment() {
             })
         //Transaction Detail Adapter
         val adapter = TransactionDetailAdapter(
-            TransDetailClickListener {},
+            TransDetailClickListener {item->
+                Log.i("MERCHPROBS","clicked")
+                viewModel.updateRetailOnClick(item)
+            },
             TransDetailLongListener {it->
                 it.is_prepared = it.is_prepared.not()
                 viewModel.updateTransDetail(it)

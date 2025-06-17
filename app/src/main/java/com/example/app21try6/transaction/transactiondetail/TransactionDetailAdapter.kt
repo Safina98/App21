@@ -32,6 +32,7 @@ class TransactionDetailAdapter(
         ) {
             binding.item = item
             binding.longClickListener = longListener
+            binding.clickListener=clickListener
             binding.txtItemTDetail.setBackgroundColor(Color.WHITE)
             binding.txtItemTDetail.text = item.trans_item_name
             binding.txtQtyTDetail.text = String.format(Locale.US,"%.2f", item.qty)
