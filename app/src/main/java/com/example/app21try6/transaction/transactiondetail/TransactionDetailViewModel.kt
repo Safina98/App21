@@ -20,7 +20,9 @@ import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.DiscountRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
+import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.DiscountTransaction
+import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.database.tables.MerchandiseRetail
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
@@ -75,8 +77,8 @@ class TransactionDetailViewModel (
     private var _multipleMerch=MutableLiveData<TransactionDetail?>()
     val multipleMerch:LiveData<TransactionDetail?> get() = _multipleMerch
 
-    private var _pickNewItem=MutableLiveData<Boolean>()
-    val pickNewItem:LiveData<Boolean> get() = _pickNewItem
+    private var _pickNewItem=MutableLiveData<String?>()
+    val pickNewItem:LiveData<String?> get() = _pickNewItem
 
     private var _detailWarnaList=MutableLiveData<List<DetailMerchandiseModel>>()
     val detailWarnaList:LiveData<List<DetailMerchandiseModel>> get() = _detailWarnaList
@@ -383,8 +385,11 @@ class TransactionDetailViewModel (
                 }else{
                 //pop up dialog
                     val detailWarnaList = stockRepo.getDetailWarnaList(subId?:-1)
+                    _pickNewItem.value=trans.trans_item_name
                     _retailMerchList.value = detailWarnaList!!.toList()
-
+                    val detailAndExtra=waitForMerchSelection()
+                    val (detail,exta) = detailAndExtra ?: Pair(null,null)
+                    trackDetailWarna(detail?.get(0),trans)
                 Toast.makeText(getApplication(),"Net tidak cukup",Toast.LENGTH_SHORT).show()
                 }
             }
@@ -423,9 +428,66 @@ class TransactionDetailViewModel (
         }
     }
 
+    fun trackDetailWarna(detailWarnaModel: DetailMerchandiseModel?,trans: TransactionDetail){
+        viewModelScope.launch {
+            if (detailWarnaModel!=null){
+                val detailWarnaTable=detailWarnaModel.toDetailWarnaTable()
+                detailWarnaTable.batchCount -=1
+                val productId = stockRepo.getProdutId(detailWarnaTable.subId) ?: return@launch
+                val brandId = stockRepo.getBrandId(productId) ?: return@launch
+                val inventoryLog =createInventoryLog(detailWarnaTable,detailWarnaTable.batchCount,productId,brandId,"Keluar Retail")
+                val merchandiseRetail= detailWarnaModel?.let { createMerchandiseRetail(it) }
+                if (detailWarnaTable.batchCount>0)
+                    stockRepo.updateDetailWarna(detailWarnaTable,inventoryLog,merchandiseRetail)
+                else
+                    stockRepo.deleteDetailWarna(detailWarnaTable,inventoryLog,merchandiseRetail)
+                }
+            updateRetailOnClick(trans)
+            }
+
+
+    }
+    fun DetailMerchandiseModel.toDetailWarnaTable(): DetailWarnaTable {
+        return DetailWarnaTable(
+            id = this.id,
+            subId = this.sub_id,
+            ref = this.ref,
+            net = this.net,
+            batchCount = this.batchCount ?: 0.0, // Handle null with default value
+            ket = this.ket ?: "", // Handle null with empty string
+            // Note: date is not part of DetailWarnaTable so it's omitted
+        )
+    }
+    fun createInventoryLog(detailWarnaTable: DetailWarnaTable,batchCount:Double,productId:Int,brandId:Int,ket:String): InventoryLog {
+        val inventoryLog= InventoryLog()
+        inventoryLog.detailWarnaRef=detailWarnaTable.ref
+        inventoryLog.subProductId=detailWarnaTable.subId
+        inventoryLog.isi=detailWarnaTable.net
+        inventoryLog.pcs=batchCount.toInt()
+        inventoryLog.barangLogKet=ket
+        inventoryLog.barangLogDate= Date()
+        inventoryLog.barangLogRef=UUID.randomUUID().toString()
+        inventoryLog.productId=productId
+        inventoryLog.brandId=brandId
+        return inventoryLog
+    }
+
+    fun createMerchandiseRetail(detailWarnaTable: DetailMerchandiseModel):MerchandiseRetail{
+        Log.i("Check","${detailWarnaTable.id}")
+        val merchandiseRetail=MerchandiseRetail()
+        merchandiseRetail.sub_id=detailWarnaTable.sub_id
+        merchandiseRetail.net=detailWarnaTable.net
+        merchandiseRetail.ref=UUID.randomUUID().toString()
+        merchandiseRetail.date=detailWarnaTable.date?:Date()
+        return merchandiseRetail
+    }
     fun setValuesToNull(){
         _retailMerchList.value=null
         _multipleMerch.value=null
+        _pickNewItem.value=null
+    }
+    fun setPickNewItemToNull(){
+        _pickNewItem.value=null
     }
 
     private fun insertToSummary(){

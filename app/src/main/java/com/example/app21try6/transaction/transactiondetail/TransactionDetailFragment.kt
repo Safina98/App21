@@ -133,6 +133,11 @@ class TransactionDetailFragment : Fragment() {
                 showMerchandiseRetailDialog(it)
             }
         }
+        viewModel.pickNewItem.observe(viewLifecycleOwner){
+            if (it!=null){
+                showDetailWarnaDialog(it)
+            }
+        }
 
         viewModel.transDetail.observe(viewLifecycleOwner) {
             it?.let {
@@ -484,34 +489,20 @@ class TransactionDetailFragment : Fragment() {
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }
 
-    private fun showDetailWarnaDialog(trans:TransactionDetail) {
+    private fun showDetailWarnaDialog(itemName:String) {
         val binding = PopUpListDialogBinding.inflate(layoutInflater)
         val recyclerView = binding.recyclerViewVendibleDialog
-        val resultText = binding.txtTotal
-        resultText.text = String.format(Locale.getDefault(), "Remaining : %.2f", trans.qty)//"Remaining ${trans.qty}"
+        binding.txtTotal.visibility=View.INVISIBLE
+
 
         lateinit var adapter: MerchandiseAdapter
-        var remaining=trans.qty
-        var extra=0.0
+
+
         adapter = MerchandiseAdapter () {
             val selectedSum = adapter.getCheckedItems().sumOf { it.net }
-            if((remaining-selectedSum)>=0)
-                remaining = trans.qty +extra - selectedSum
-            else{
-                remaining=0.0
-            }
-            resultText.text = String.format(Locale.getDefault(), "Remaining : %.2f", remaining)//"Remaining: $remaining"
         }
 
-        binding.radioGroup.setOnCheckedChangeListener { group, checkedId ->
-            extra= when (checkedId) {
-                R.id.rd_kain->   0.2
-                R.id.rd_busa ->  0.1
-                else -> 0.0
-            }
-            resultText.text = "Current value: %.2f".format((remaining+extra))
-            Log.i("RDP","extra :${extra}")
-        }
+        binding.radioGroup.visibility=View.INVISIBLE
         //recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
         viewModel.retailMerchList.observe(viewLifecycleOwner){
@@ -521,21 +512,16 @@ class TransactionDetailFragment : Fragment() {
         }
         val dialog = AlertDialog.Builder(requireContext())
             .setView(binding.root)
-            .setTitle(trans.trans_item_name)
+            .setTitle("Stok Utuh $itemName")
             .setPositiveButton("OK", null)
             .setNegativeButton("Cancel", null)
             .create()
         dialog.setOnShowListener {
             val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             positiveButton.setOnClickListener {
-                if (remaining==0.0){
-                    val selectedItems = adapter.getCheckedItems()
-                    viewModel.onMerchSelected(selectedItems,extra)
-                    dialog.dismiss()
-                }else{
-
-                    Toast.makeText(context,"net tidak cukup",Toast.LENGTH_SHORT).show()
-                }
+                val selectedItems = adapter.getCheckedItems()
+                viewModel.onMerchSelected(selectedItems,0.0)
+                dialog.dismiss()
             }
         }
         dialog.setOnDismissListener {

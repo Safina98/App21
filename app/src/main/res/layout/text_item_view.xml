@@ -21,7 +21,6 @@
                 android:layout_marginStart="4dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="@{String.format(`ID: %d, Net: %.2f`, item.id, item.net)}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

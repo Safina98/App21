@@ -2,18 +2,11 @@ package com.example.app21try6.transaction.transactiondetail
 
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
-import android.widget.TextView
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.R
 import com.example.app21try6.database.models.DetailMerchandiseModel
-import com.example.app21try6.database.tables.MerchandiseRetail
-import com.example.app21try6.databinding.ItemListVendibleBinding
 import com.example.app21try6.databinding.TextItemViewBinding
 
 /*
@@ -82,13 +75,6 @@ class MerchCheckBoxListener(val checkBoxListener:(view: View, merch:MerchandiseR
 
  */
 
-
-
-
-
-
-
-
 class MerchandiseAdapter(
     private val onCheckChanged: (() -> Unit)? = null
 ) : ListAdapter<DetailMerchandiseModel, MerchandiseAdapter.ViewHolder>(MerchandiseDiffCallback()) {
@@ -99,15 +85,17 @@ class MerchandiseAdapter(
         fun bind(item: DetailMerchandiseModel, isChecked: Boolean) {
             // Safe manual binding
             binding.item=item
-            Log.d("BIND_CHECK", "Binding item: $item")
+            if (item.batchCount==null){
+                binding.txtNet.text= String.format("Id: %d, Net: %.2f", item.id, item.net)
+            }else{
+                binding.txtNet.text= String.format(" %.0f Roll, Net: %.2f", item.batchCount, item.net)
+            }
             binding.checkboxNet.setOnCheckedChangeListener(null)
             binding.checkboxNet.isChecked = isChecked
-
             binding.checkboxNet.setOnCheckedChangeListener { _, checked ->
                 checkedMap[item.id] = checked
                 onCheckChanged?.invoke()
             }
-
             binding.executePendingBindings()
         }
     }

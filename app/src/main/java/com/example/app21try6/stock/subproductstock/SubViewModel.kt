@@ -204,8 +204,6 @@ class SubViewModel (
                 stockRepo.deleteDetailWarna(detailWarnaTable,inventoryLog,merchandiseRetail)
             getDetailWarnaList(detailWarnaTable.subId)
             getRetailList(detailWarnaTable.subId)
-
-
         }
 
     }
