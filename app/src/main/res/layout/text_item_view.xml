@@ -5,7 +5,7 @@
     <data>
         <variable
             name="item"
-            type="com.example.app21try6.database.tables.MerchandiseRetail"/>
+            type="com.example.app21try6.database.models.DetailMerchandiseModel"/>
 
     </data>
 

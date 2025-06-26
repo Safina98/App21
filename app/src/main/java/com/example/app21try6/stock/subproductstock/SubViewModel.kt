@@ -254,13 +254,14 @@ class SubViewModel (
         inventoryLog.brandId=brandId
         return inventoryLog
     }
+
     fun createMerchandiseRetail(detailWarnaTable: DetailMerchandiseModel):MerchandiseRetail{
         Log.i("Check","${detailWarnaTable.id}")
         val merchandiseRetail=MerchandiseRetail()
         merchandiseRetail.sub_id=detailWarnaTable.sub_id
         merchandiseRetail.net=detailWarnaTable.net
         merchandiseRetail.ref=UUID.randomUUID().toString()
-        merchandiseRetail.date=Date()
+        merchandiseRetail.date=detailWarnaTable.date?:Date()
         return merchandiseRetail
     }
     /////////////////////////////////////////////////////////////////////////////////

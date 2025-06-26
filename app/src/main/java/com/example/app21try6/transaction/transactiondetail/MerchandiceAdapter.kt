@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.R
+import com.example.app21try6.database.models.DetailMerchandiseModel
 import com.example.app21try6.database.tables.MerchandiseRetail
 import com.example.app21try6.databinding.ItemListVendibleBinding
 import com.example.app21try6.databinding.TextItemViewBinding
@@ -90,12 +91,12 @@ class MerchCheckBoxListener(val checkBoxListener:(view: View, merch:MerchandiseR
 
 class MerchandiseAdapter(
     private val onCheckChanged: (() -> Unit)? = null
-) : ListAdapter<MerchandiseRetail, MerchandiseAdapter.ViewHolder>(MerchandiseDiffCallback()) {
+) : ListAdapter<DetailMerchandiseModel, MerchandiseAdapter.ViewHolder>(MerchandiseDiffCallback()) {
 
     private val checkedMap: MutableMap<Int, Boolean> = mutableMapOf()
 
     inner class ViewHolder(private val binding: TextItemViewBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: MerchandiseRetail, isChecked: Boolean) {
+        fun bind(item: DetailMerchandiseModel, isChecked: Boolean) {
             // Safe manual binding
             binding.item=item
             Log.d("BIND_CHECK", "Binding item: $item")
@@ -124,17 +125,17 @@ class MerchandiseAdapter(
         holder.bind(item, isChecked)
     }
 
-    fun getCheckedItems(): List<MerchandiseRetail> {
+    fun getCheckedItems(): List<DetailMerchandiseModel> {
         return currentList.filter { checkedMap[it.id] == true }
     }
 }
 
-class MerchandiseDiffCallback : DiffUtil.ItemCallback<MerchandiseRetail>() {
-    override fun areItemsTheSame(oldItem: MerchandiseRetail, newItem: MerchandiseRetail): Boolean {
+class MerchandiseDiffCallback : DiffUtil.ItemCallback<DetailMerchandiseModel>() {
+    override fun areItemsTheSame(oldItem: DetailMerchandiseModel, newItem: DetailMerchandiseModel): Boolean {
         return oldItem.id == newItem.id
     }
 
-    override fun areContentsTheSame(oldItem: MerchandiseRetail, newItem: MerchandiseRetail): Boolean {
+    override fun areContentsTheSame(oldItem: DetailMerchandiseModel, newItem: DetailMerchandiseModel): Boolean {
         return oldItem.id == newItem.id &&
                 oldItem.net == newItem.net &&  // Ensure `net` is compared
                 oldItem.ref == newItem.ref &&

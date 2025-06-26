@@ -428,51 +428,122 @@ class TransactionDetailFragment : Fragment() {
         resultText.text = String.format(Locale.getDefault(), "Remaining : %.2f", trans.qty)//"Remaining ${trans.qty}"
 
         lateinit var adapter: MerchandiseAdapter
-
+        var remaining=trans.qty
+        var extra=0.0
         adapter = MerchandiseAdapter () {
             val selectedSum = adapter.getCheckedItems().sumOf { it.net }
-            var remaining=trans.qty
             if((remaining-selectedSum)>=0)
-                remaining = trans.qty + 0.20 - selectedSum
+                remaining = trans.qty +extra - selectedSum
             else{
                 remaining=0.0
             }
             resultText.text = String.format(Locale.getDefault(), "Remaining : %.2f", remaining)//"Remaining: $remaining"
         }
 
-
+       binding.radioGroup.setOnCheckedChangeListener { group, checkedId ->
+           extra= when (checkedId) {
+                R.id.rd_kain->   0.2
+                R.id.rd_busa ->  0.1
+                else -> 0.0
+            }
+           resultText.text = "Current value: %.2f".format((remaining+extra))
+           Log.i("RDP","extra :${extra}")
+        }
         //recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
-
         viewModel.retailMerchList.observe(viewLifecycleOwner){
             if (it!=null){
                 adapter.submitList(it.toList())
             }
         }
-
         val dialog = AlertDialog.Builder(requireContext())
             .setView(binding.root)
             .setTitle(trans.trans_item_name)
             .setPositiveButton("OK", null)
             .setNegativeButton("Cancel", null)
             .create()
-
         dialog.setOnShowListener {
             val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             positiveButton.setOnClickListener {
-                val selectedItems = adapter.getCheckedItems()
-               viewModel.onMerchSelected(selectedItems)
-                dialog.dismiss()
+                if (remaining==0.0){
+                    val selectedItems = adapter.getCheckedItems()
+                    viewModel.onMerchSelected(selectedItems,extra)
+                    dialog.dismiss()
+                }else{
+
+                    Toast.makeText(context,"net tidak cukup",Toast.LENGTH_SHORT).show()
+                }
             }
         }
         dialog.setOnDismissListener {
             viewModel.setValuesToNull()
             dialog.dismiss()
         }
-
         dialog.show()
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }
 
+    private fun showDetailWarnaDialog(trans:TransactionDetail) {
+        val binding = PopUpListDialogBinding.inflate(layoutInflater)
+        val recyclerView = binding.recyclerViewVendibleDialog
+        val resultText = binding.txtTotal
+        resultText.text = String.format(Locale.getDefault(), "Remaining : %.2f", trans.qty)//"Remaining ${trans.qty}"
+
+        lateinit var adapter: MerchandiseAdapter
+        var remaining=trans.qty
+        var extra=0.0
+        adapter = MerchandiseAdapter () {
+            val selectedSum = adapter.getCheckedItems().sumOf { it.net }
+            if((remaining-selectedSum)>=0)
+                remaining = trans.qty +extra - selectedSum
+            else{
+                remaining=0.0
+            }
+            resultText.text = String.format(Locale.getDefault(), "Remaining : %.2f", remaining)//"Remaining: $remaining"
+        }
+
+        binding.radioGroup.setOnCheckedChangeListener { group, checkedId ->
+            extra= when (checkedId) {
+                R.id.rd_kain->   0.2
+                R.id.rd_busa ->  0.1
+                else -> 0.0
+            }
+            resultText.text = "Current value: %.2f".format((remaining+extra))
+            Log.i("RDP","extra :${extra}")
+        }
+        //recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = adapter
+        viewModel.retailMerchList.observe(viewLifecycleOwner){
+            if (it!=null){
+                adapter.submitList(it.toList())
+            }
+        }
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(binding.root)
+            .setTitle(trans.trans_item_name)
+            .setPositiveButton("OK", null)
+            .setNegativeButton("Cancel", null)
+            .create()
+        dialog.setOnShowListener {
+            val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            positiveButton.setOnClickListener {
+                if (remaining==0.0){
+                    val selectedItems = adapter.getCheckedItems()
+                    viewModel.onMerchSelected(selectedItems,extra)
+                    dialog.dismiss()
+                }else{
+
+                    Toast.makeText(context,"net tidak cukup",Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        dialog.setOnDismissListener {
+            viewModel.setValuesToNull()
+            dialog.dismiss()
+        }
+        dialog.show()
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+    }
 }
