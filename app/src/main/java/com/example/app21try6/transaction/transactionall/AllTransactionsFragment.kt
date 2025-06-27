@@ -105,7 +105,6 @@ class AllTransactionsFragment : Fragment() {
 
             }
         }
-
         //limit selected data on recylerview
         binding.recyclerViewAllTrans.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             private var isLoading = false
@@ -217,14 +216,11 @@ class AllTransactionsFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
         super.onResume()
-
         val startDate = viewModel.selectedStartDate.value
         val endDate = viewModel.selectedEndDate.value
         if (startDate==null){
             viewModel.setSelectedSpinner("Bulan Ini")
         }
-
-
     }
     override fun onPause() {
        // viewModel.cancelJob()

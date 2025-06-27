@@ -87,6 +87,11 @@ class TransactionsRepository(
             transSumDao.getTransactionSummariesByItemName(query,startDate,endDate,limit,offset)
         }
     }
+    suspend fun getSubProductTrans(query: String, startDate:Date?, endDate:Date?):List<TransactionDetail>{
+        return withContext(Dispatchers.IO){
+            transDetailDao.getTransactionDetailBySubId(query,startDate,endDate)
+        }
+    }
     suspend fun getTransactionSummaryById(id:Int):TransactionSummary{
         return withContext(Dispatchers.IO){
             transSumDao.getTrans(id)

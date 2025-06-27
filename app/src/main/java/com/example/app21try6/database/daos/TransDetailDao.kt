@@ -182,6 +182,13 @@ WHERE ts.trans_date >= '2024-11-01 00:00'
     fun getTotalTransaction(sum_id_: Int):Double
 
 
+    @Query("SELECT * FROM trans_detail_table WHERE trans_item_name LIKE '%' || :query || '%'  " +
+            "AND (:startDate IS NULL OR trans_detail_date >= :startDate)\n" +
+            "    AND (:endDate IS NULL OR trans_detail_date <= :endDate)")
+    fun getTransactionDetailBySubId(query:String, startDate:Date?,endDate:Date?):List<TransactionDetail>
+
+
+
     @Query("DELETE  FROM trans_detail_table WHERE sum_id =:sum_id_")
     fun deleteTransSummary(sum_id_:Int)
 
@@ -279,6 +286,9 @@ WHERE ts.trans_date >= '2024-11-01 00:00'
 
     @Query("SELECT * FROM trans_detail_table")
     fun getAllTransDetail():List<TransactionDetail>
+
+
+
     @Update
     suspend fun updateTransactions(transactions: List<TransactionDetail>)
 

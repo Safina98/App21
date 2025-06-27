@@ -21,7 +21,6 @@ class TransactionDetailAdapter(
 
     private var is_active = MutableLiveData<Boolean>(false)
 
-
     class MyViewHolder private constructor(val binding: ItemListTransactionDetailBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(
@@ -47,7 +46,6 @@ class TransactionDetailAdapter(
             binding.txtTotalTDetail.text = formatRupiah(item.total_price).toString()
 
             binding.executePendingBindings()
-
         }
 
         companion object {
@@ -92,9 +90,6 @@ class TransDetailDiffCallBack:DiffUtil.ItemCallback<TransactionDetail>(){
 class TransDetailClickListener(val clickListener:(detail_trans: TransactionDetail)->Unit){
     fun onClick(detail_trans: TransactionDetail)=clickListener(detail_trans)
 }
-
-
-
 
 class TransDetailLongListener(val longListener:(trans_detail: TransactionDetail)->Unit){
     fun onLongClick(v: View, trans_detail: TransactionDetail):Boolean{

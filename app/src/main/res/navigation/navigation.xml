@@ -255,5 +255,10 @@
         android:id="@+id/inventoryLogFragment"
         android:name="com.example.app21try6.stock.inventorylog.InventoryLogFragment"
         android:label="InventoryLogFragment" />
+    <fragment
+        android:id="@+id/trackFragment"
+        android:name="com.example.app21try6.stock.trackInventory.TrackFragment"
+        android:label="fragment_track"
+        tools:layout="@layout/fragment_track" />
 
 </navigation>

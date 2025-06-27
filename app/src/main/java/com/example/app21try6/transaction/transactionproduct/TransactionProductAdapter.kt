@@ -31,22 +31,20 @@ class TransactionProductAdapter (
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         return MyViewHolder.from(parent)
     }
-
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bind(getItem(position),clickListener)
     }
 }
+
 class ProductTransDiffCallBack: DiffUtil.ItemCallback<Product>(){
     override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
         return oldItem.product_id==oldItem.product_id
     }
-
     override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
         return oldItem==newItem
     }
-
 }
+
 class ProductTransListener(val clickListener: (product_id: Product) -> Unit) {
     fun onClick(product: Product) = clickListener(product)
-
 }

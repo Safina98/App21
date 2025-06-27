@@ -5,6 +5,11 @@
         android:title="@string/menu_stok"
         android:icon="@drawable/stock_icon"
         />
+    <item
+        android:id="@+id/trackFragment"
+        android:title="Track Inventory"
+        android:icon="@drawable/icon_track"
+        />
 
     <item
         android:id="@+id/bookSummaryFragment"

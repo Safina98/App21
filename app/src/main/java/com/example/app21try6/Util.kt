@@ -152,3 +152,13 @@ object ToolbarUtil {
         btnLinear.visibility = View.GONE
     }
 }
+fun formatDateRange(startDate: Date?, endDate: Date?): String {
+    return if (startDate != null && endDate != null) {
+        val dateFormat = SimpleDateFormat("EEEE, d MMMM yyyy", Locale("in", "ID"))
+        val startDateString = dateFormat.format(startDate)
+        val endDateString = dateFormat.format(endDate)
+        "$startDateString - $endDateString"
+    } else {
+        "Pilih Tanggal"
+    }
+}

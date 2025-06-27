@@ -14,6 +14,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.repositories.TransactionsRepository
+import com.example.app21try6.formatDateRange
 import com.example.app21try6.formatRupiah
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -118,16 +119,7 @@ class AllTransactionViewModel(application: Application,val transRepo: Transactio
         }else {_selectedTransSum.value=id}
     }
 
-    private fun formatDateRange(startDate: Date?, endDate: Date?): String {
-        return if (startDate != null && endDate != null) {
-            val dateFormat = SimpleDateFormat("EEEE, d MMMM yyyy", Locale("in", "ID"))
-            val startDateString = dateFormat.format(startDate)
-            val endDateString = dateFormat.format(endDate)
-            "$startDateString - $endDateString"
-        } else {
-            "Pilih Tanggal"
-        }
-    }
+
     fun setStartAndEndDateRange(startDate: Date?,endDate: Date?){
         viewModelScope.launch {
             _selectedStartDate.value = startDate

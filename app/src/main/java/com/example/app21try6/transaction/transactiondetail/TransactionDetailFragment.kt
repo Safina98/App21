@@ -362,13 +362,11 @@ class TransactionDetailFragment : Fragment() {
                 val calendar = Calendar.getInstance().apply {
                     set(datePickerStart.year, datePickerStart.month, datePickerStart.dayOfMonth)
                 }
-
                 // Show Time Picker Dialog
                 TimePickerDialog(requireContext(), { _, hour, minute ->
                     // Set selected time
                     calendar.set(Calendar.HOUR_OF_DAY, hour)
                     calendar.set(Calendar.MINUTE, minute)
-
                     val selectedDateTime = calendar.time // Convert to Date object
 
                     // Update PaymentModel or ViewModel
