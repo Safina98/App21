@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.database.models.TracketailWarnaModel
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.getDate
@@ -87,9 +88,9 @@ class TransactionsRepository(
             transSumDao.getTransactionSummariesByItemName(query,startDate,endDate,limit,offset)
         }
     }
-    suspend fun getSubProductTrans(query: String, startDate:Date?, endDate:Date?):List<TransactionDetail>{
+    suspend fun getSubProductTrans(query: String, startDate:Date?, endDate:Date?):List<TracketailWarnaModel>{
         return withContext(Dispatchers.IO){
-            transDetailDao.getTransactionDetailBySubId(query,startDate,endDate)
+            transDetailDao.getTracketailWarnaModels(query,startDate,endDate)
         }
     }
     suspend fun getTransactionSummaryById(id:Int):TransactionSummary{

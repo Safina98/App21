@@ -15,7 +15,6 @@ import androidx.fragment.app.activityViewModels
 import com.example.app21try6.R
 import com.example.app21try6.SIMPLE_DATE_FORMATTER
 import com.example.app21try6.databinding.FragmentTrackBinding
-import com.example.app21try6.grafik.GraphicViewModel
 import java.util.Calendar
 
 
@@ -30,13 +29,19 @@ class TrackFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_track,container,false)
         binding.viewModel= viewModel
         binding.lifecycleOwner=this
+        val adapter = TrackWarnaAdapter(requireContext())
         viewModel.selectedStartDate.observe(viewLifecycleOwner) {}
         viewModel.selectedEndDate.observe(viewLifecycleOwner) {}
 
-        viewModel.allSubTrans.observe(viewLifecycleOwner){
+        binding.trackRv.adapter=adapter
+
+        viewModel.trackWarnaList.observe(viewLifecycleOwner){
             it?.let {
+                adapter.submitList(it)
+                adapter.notifyDataSetChanged()
                 it.forEach {
-                    Log.i("SubTrans","itemName: ${it.trans_item_name}, net:${it.qty} ,date:${SIMPLE_DATE_FORMATTER.format(it.trans_detail_date)}")
+                    Log.i("SubTrans","itemName: ${it.trans_item_name}, net:${it.qty}, date:${SIMPLE_DATE_FORMATTER.format(it.tans_detail_date)}")
+                    Log.i("SubTrans","note: ${it.sum_note},")
                 }
             }
         }

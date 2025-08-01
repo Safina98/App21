@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.example.app21try6.bookkeeping.summary.MonthlyProfit
+import com.example.app21try6.database.models.TracketailWarnaModel
 import com.example.app21try6.database.tables.MerchandiseRetail
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.grafik.StockModel
@@ -182,11 +183,6 @@ WHERE ts.trans_date >= '2024-11-01 00:00'
     fun getTotalTransaction(sum_id_: Int):Double
 
 
-    @Query("SELECT * FROM trans_detail_table WHERE trans_item_name LIKE '%' || :query || '%'  " +
-            "AND (:startDate IS NULL OR trans_detail_date >= :startDate)\n" +
-            "    AND (:endDate IS NULL OR trans_detail_date <= :endDate)")
-    fun getTransactionDetailBySubId(query:String, startDate:Date?,endDate:Date?):List<TransactionDetail>
-
 
 
     @Query("DELETE  FROM trans_detail_table WHERE sum_id =:sum_id_")
@@ -292,8 +288,30 @@ WHERE ts.trans_date >= '2024-11-01 00:00'
     @Update
     suspend fun updateTransactions(transactions: List<TransactionDetail>)
 
+    @Query("SELECT * FROM trans_detail_table WHERE trans_item_name LIKE '%' || :query || '%'  " +
+            "AND (:startDate IS NULL OR trans_detail_date >= :startDate)\n" +
+            "    AND (:endDate IS NULL OR trans_detail_date <= :endDate)")
+    fun getTransactionDetailBySubId(query:String, startDate:Date?,endDate:Date?):List<TransactionDetail>
 
 
-
+    @Query("""
+    SELECT 
+        d.trans_detail_id,
+        d.sum_id,
+        d.trans_item_name,
+        d.qty,
+        d.trans_detail_date AS tans_detail_date,
+        d.sub_id,
+        d.unit_qty,
+        s.cust_name,
+        s.sum_note
+    FROM trans_detail_table AS d
+    INNER JOIN trans_sum_table AS s ON d.sum_id = s.sum_id
+    WHERE
+     trans_item_name LIKE '%' || :query || '%' 
+    AND (:startDate IS NULL OR d.trans_detail_date >= :startDate)
+             AND (:endDate IS NULL OR d.trans_detail_date <= :endDate)
+    """)
+    fun getTracketailWarnaModels(query: String,startDate:Date?,endDate:Date?): List<TracketailWarnaModel>
 
 }

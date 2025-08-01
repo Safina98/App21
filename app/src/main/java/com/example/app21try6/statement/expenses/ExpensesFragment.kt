@@ -94,6 +94,7 @@ class ExpensesFragment : Fragment() {
         val viewModelFactory = PurchaseViewModelFactory(application,id,dataSource3,dataSource4,dataSource5,dataSource6,dataSource7,dataSource8,dataSource9,dataSource10)
         viewModel = ViewModelProvider(this,viewModelFactory).get(PurchaseViewModel::class.java)
         binding.viewModel=viewModel
+        viewModel.debugExpense()
         adapter = DiscountAdapter(
             DiscountListener {
                 if(it.expense_category_name=="BELI BARANG"){
@@ -187,8 +188,7 @@ class ExpensesFragment : Fragment() {
         }
         viewModel.allExpenses.observe(viewLifecycleOwner){
                 expenses->
-            expenses.forEach { Log.i("PurchaseBug","${it.expense_name}  : ${formatRupiah(it.expense_ammount?.toDouble())} ${SIMPLE_DATE_FORMATTER.format(it.expense_date)}")
-            }
+
         }
         binding.searchAllExpense.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -199,13 +199,13 @@ class ExpensesFragment : Fragment() {
                 return true
             }
         })
+
         viewModel.allExpenseCategory.observe(viewLifecycleOwner, Observer {
             categoryAdapter.submitList(it)
         })
+
         viewModel.allExpenseCategoryName.observe(viewLifecycleOwner){ entries->
             val adapter1 = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, entries)
-
-
             binding.spinnerC.adapter = adapter1
         }
 
@@ -339,8 +339,8 @@ class ExpensesFragment : Fragment() {
         }
         val alert = builder.create()
         alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }
 
 

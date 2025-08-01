@@ -40,6 +40,12 @@ interface ExpenseDao {
     """)
     fun getExpenseSum( startDate: String?, endDate: String?,ceId:Int?):Int
 
+    @Query("""SELECT IFNULL(SUM(expense_ammount), 0) as total 
+            FROM expenses_table 
+            WHERE expense_ammount < 0
+    """)
+    fun getNegativeExpenseSum( ):Int
+
     @Query("""
    SELECT 
             expenses_table.id as id,  

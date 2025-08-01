@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.example.app21try6.database.models.TracketailWarnaModel
 import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
@@ -24,10 +25,10 @@ class TrackViewModel(
     application: Application,
     val transRepo: TransactionsRepository):AndroidViewModel(application) {
 
-    private val _allSubTrans = MutableLiveData<List<TransactionDetail>>()
-    val allSubTrans:LiveData<List<TransactionDetail>> get() = _allSubTrans
+    private val _trackWarnaList = MutableLiveData<List<TracketailWarnaModel>>()
+    val trackWarnaList:LiveData<List<TracketailWarnaModel>> get() = _trackWarnaList
 
-    val _unFilteredrecyclerViewData=MutableLiveData<List<TransactionSummary>>()
+    val _unFilteredrecyclerViewData=MutableLiveData<List<TracketailWarnaModel>>()
 
     val _dateRangeString = MutableLiveData<String>()
     private val _selectedStartDate = MutableLiveData<Date?>()
@@ -62,7 +63,7 @@ class TrackViewModel(
                 //getTransactionCount(selectedStartDate.value,selectedEndDate.value,query)
                 //getTotalTransactionAfterDiscount(selectedStartDate.value,selectedEndDate.value,query)
                 //val distinctList =  listFilterByTransName.distinctBy { it.sum_id }
-                _allSubTrans.value =filteredList
+                _trackWarnaList.value =filteredList
             } else {
 
                 resetLogs()
@@ -83,7 +84,7 @@ class TrackViewModel(
     }
     fun resetLogs() {
 
-        _allSubTrans.value = emptyList()
+        _trackWarnaList.value = emptyList()
         _unFilteredrecyclerViewData.value= emptyList()
 
     }

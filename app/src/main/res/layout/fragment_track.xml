@@ -48,13 +48,17 @@
             app:queryHint="Enter sub product" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="0dp"
+            android:id="@+id/track_rv"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginEnd="1dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:backgroundColor="@color/pastel_green_dark"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/search_allTrans" />
+            app:layout_constraintStart_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/search_allTrans"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

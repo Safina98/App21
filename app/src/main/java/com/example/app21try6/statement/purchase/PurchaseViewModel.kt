@@ -39,6 +39,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.UUID
 import com.example.app21try6.DETAILED_DATE_FORMATTER
+import com.example.app21try6.SIMPLE_DATE_FORMATTER
 
 val tagp="PURCHASEPROBS"
 @RequiresApi(Build.VERSION_CODES.O)
@@ -74,9 +75,9 @@ class PurchaseViewModel(application: Application,
     private val _isNavigateToPurchase=MutableLiveData<Int?>(null)
     val isNavigateToPurchase:LiveData<Int?> get()=_isNavigateToPurchase
     val expenseSum = allExpensesFromDB.map{items->
-        val total = items.sumOf { it.expense_ammount?:0 }
+        //val total = items.sumOf { it.expense_ammount?:0 }
+        val total = items.sumOf { it.expense_ammount?.toLong() ?: 0L }
         formatRupiah(total.toDouble())
-
     }
     //purchase
     val suplierDummy= suplierDao.getAllSuplier()
@@ -135,19 +136,24 @@ class PurchaseViewModel(application: Application,
         totalPrice.value = price * net * qty
     }
 
+    fun debugExpense(){
+        viewModelScope.launch {
+            val negativeSum = withContext(Dispatchers.IO){
+                expenseDao.getNegativeExpenseSum()
+            }
+
+
+        }
+    }
+
     fun getInventoryList(id:Int){
         viewModelScope.launch {
             if (id!=-1){
                 val list= withContext(Dispatchers.IO){invetoryPurchaseDao.selectPurchaseList(id)}
-                Log.i("SavePurchaseProbs","expenseId: $list")
                 inventoryList=list.toMutableList()
                 _inventoryPurchaseList.value=list
                 if (inventoryList!=null) inventoryPurchaseId= inventoryList.last().id*-1
-                Log.i("SavePurchaseProbs","getInventoryList pId: $inventoryPurchaseId")
-                Log.i("SavePurchaseProbs","expenseId: $id")
                 val inP = getPurchaseById()
-                Log.i("SavePurchaseProbs","inP: $inP")
-
             }
         }
     }
@@ -229,7 +235,9 @@ class PurchaseViewModel(application: Application,
                 expenses.expense_category_id=getCategoryIdByName("BELI BARANG")?:0
                 expenses.expense_name="Bayar ${suplierName.value}"
                 expenses.expense_date=Date()
-                insertPurchase(expenses,inventoryPurchaseList.value!!)
+                if (inventoryPurchaseList.value!=null){
+                    insertPurchase(expenses,inventoryPurchaseList.value!!)
+                }
             }
             else{
                 val expenses=getExpensesById(id)
@@ -489,7 +497,6 @@ class PurchaseViewModel(application: Application,
     }
     private suspend fun performDataFiltering(startDate: String?, endDate: String?) {
         val filteredData = withContext(Dispatchers.IO) { expenseDao.getAllExpense(startDate,endDate,ecId.value)}
-
         _allExpenseFromDb.value = filteredData
         _unfilteredExpesne.value=filteredData
 
