@@ -227,8 +227,6 @@ class TransactionDetailFragment : Fragment() {
             }
         }
 
-
-
         return binding.root
     }
 

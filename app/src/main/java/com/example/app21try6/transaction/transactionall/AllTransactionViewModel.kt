@@ -134,7 +134,8 @@ class AllTransactionViewModel(application: Application,val transRepo: Transactio
             queryM.value=query
             val list = mutableListOf<TransactionSummary>()
             if(!query.isNullOrEmpty()) {
-                val listFilterByTransName= transRepo.filterTransSum(query, limit, offset,_selectedStartDate.value,_selectedEndDate.value)
+                val sumId=query.toIntOrNull()
+                val listFilterByTransName= transRepo.filterTransSum(query,sumId, limit, offset,_selectedStartDate.value,_selectedEndDate.value)
                 getTransactionCount(selectedStartDate.value,selectedEndDate.value,query)
                 getTotalTransactionAfterDiscount(selectedStartDate.value,selectedEndDate.value,query)
                 val distinctList =  listFilterByTransName.distinctBy { it.sum_id }
@@ -264,8 +265,7 @@ class AllTransactionViewModel(application: Application,val transRepo: Transactio
     private fun performDataFiltering(startDate: Date?, endDate: Date?) {
         viewModelScope.launch {
             try {
-
-                val newLogs= transRepo.filterTransSum(queryM.value,limit,offset,startDate,endDate)
+                val newLogs= transRepo.filterTransSum(queryM.value,queryM.value?.toIntOrNull(),limit,offset,startDate,endDate)
                 if (newLogs.isNotEmpty()) {
                     offset += limit
                 }

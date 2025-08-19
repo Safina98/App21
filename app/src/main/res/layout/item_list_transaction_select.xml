@@ -58,10 +58,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/text_sells_t"
                 app:layout_constraintTop_toBottomOf="@id/txt_product_t" />
-            <!--
-            android:onLongClick="@{(view) -> subsLongListener.onLongClick(view,item)}"
-                android:onClick="@{()->subsListener.onClick(item)}"
-            -->
+
             <TextView
                 android:id="@+id/text_sells_t"
                 android:layout_width="wrap_content"

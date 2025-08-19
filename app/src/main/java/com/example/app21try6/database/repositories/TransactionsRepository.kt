@@ -83,9 +83,10 @@ class TransactionsRepository(
     fun getTransactionSummary(id:Int): LiveData<TransactionSummary> {
         return transSumDao.getTransSum(id)
     }
-    suspend fun filterTransSum(query: String?, limit:Int, offset:Int, startDate:Date?, endDate:Date?):List<TransactionSummary>{
+    suspend fun filterTransSum(query: String?,sumId:Int?, limit:Int, offset:Int, startDate:Date?, endDate:Date?):List<TransactionSummary>{
         return withContext(Dispatchers.IO){
-            transSumDao.getTransactionSummariesByItemName(query,startDate,endDate,limit,offset)
+
+            transSumDao.getTransactionSummariesByItemName(query,sumId,startDate,endDate,limit,offset)
         }
     }
     suspend fun getSubProductTrans(query: String, startDate:Date?, endDate:Date?):List<TracketailWarnaModel>{

@@ -11,6 +11,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.example.app21try6.DISCTYPE
+import com.example.app21try6.ITEMUNIT
 import com.example.app21try6.database.models.DetailMerchandiseModel
 import com.example.app21try6.database.tables.Payment
 
@@ -375,12 +376,27 @@ class TransactionDetailViewModel (
             val trans=item
             if (item.is_cutted==false){
                 if (trans.qty <= (totalNet?:0.0)){
-                    _multipleMerch.value = item
-                    _retailMerchList.value = retailList!!.toList()
-                    val merchAndExtra=waitForMerchSelection()
-                    val (merch,extra) = merchAndExtra?: Pair(null, null)
-                    val merchandiseRetailList = merch.toMerchandiseRetailList()
-                    updateMerchValue(merchandiseRetailList,trans.qty,trans,extra)
+                    var newItem:TransactionDetail
+                    newItem=item
+                    if (trans.unit== null){
+                        _multipleMerch.value = newItem
+                        _retailMerchList.value = retailList!!.toList()
+                        val merchAndExtra=waitForMerchSelection()
+                        val (merch,extra) = merchAndExtra?: Pair(null, null)
+                        val merchandiseRetailList = merch.toMerchandiseRetailList()
+                        updateMerchValue(merchandiseRetailList,trans.qty,trans,extra)
+                    }else if(trans.unit==ITEMUNIT.lsn) {
+                      newItem.qty=item.qty*12
+                    }else {
+                        //get default qty from db
+                        //trans detail pop up, with remaining
+                        val detailWarnaList = stockRepo.getDetailWarnaList(subId?:-1)
+                        _pickNewItem.value=trans.trans_item_name
+                        _retailMerchList.value = detailWarnaList!!.toList()
+
+
+                    }
+
 
                 }else{
                 //pop up dialog
@@ -573,7 +589,6 @@ class TransactionDetailViewModel (
     }
 
     fun generateReceiptTextNew(): String {
-
         textGenerator = TextGenerator(transDetail.value,transSum.value,paymentModel.value,discountTransBySumId.value?.filter { it.discountType!=DISCTYPE.CashbackNotPrinted })
         return textGenerator.generateReceiptTextNew()
     }

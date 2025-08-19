@@ -20,6 +20,14 @@ object BARANGLOGKET {
     const val masuk = "MASUK"
     const val keluar = "KELUAR"
 }
+object ITEMUNIT {
+    const val none = "NONE"
+    const val lsn = "LSN"
+    const val roll ="ROLL"
+    const val bks ="BKS"
+    const val dos ="DOS"
+    const val karung ="KARUNG"
+}
 
 object DISCTYPE {
     const val CashbackPrinted = "Printed"

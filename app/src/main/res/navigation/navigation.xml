@@ -171,6 +171,9 @@
             app:popEnterAnim="@anim/fade_in_pop_up"
             app:popExitAnim="@anim/fade_out_pop_up"
              />
+        <action
+            android:id="@+id/action_transactionDetailFragment_to_subProductStockFragment"
+            app:destination="@id/subProductStockFragment" />
     </fragment>
     <fragment
         android:id="@+id/transactionSelectFragment"
