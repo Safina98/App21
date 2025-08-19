@@ -51,9 +51,5 @@ class MyApplication: Application()  {
             workRequest
         )
     }
-    private fun runUpdateTotalAfterDiscountWorker() {
-        val updateWorkRequest = OneTimeWorkRequest.from(UpdateTotalAfterDiscountWorker::class.java)
-        WorkManager.getInstance(this).enqueue(updateWorkRequest)
-    }
 
 }

@@ -83,11 +83,7 @@ class StockRepositories (
     suspend fun getProductById(id:Int):Product{
         return withContext(Dispatchers.IO){productDao.getProductById(id)}
     }
-    suspend fun getProductName(subName:String):String?{
-        return withContext(Dispatchers.IO){
-            subProductDao.getProductName(subName)
-        }
-    }
+
     suspend fun getProductBySubId(subId:Int): Product?{
         return withContext(Dispatchers.IO){
             subProductDao.getProduct(subId)
@@ -185,11 +181,7 @@ class StockRepositories (
              detailWarnaDao.getRetaiBySubId(subId)
         }
     }
-    suspend fun selectRetailBySumIdS(subId:Int):List<MerchandiseRetail>?{
-        return withContext(Dispatchers.IO){
-            detailWarnaDao.selectRetailBySubId(subId)
-        }
-    }
+
     suspend fun deleteRetail(id:Int){
         withContext(Dispatchers.IO){
             detailWarnaDao.deleteMerchandise(id)

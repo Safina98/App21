@@ -20,8 +20,7 @@ interface ExpenseCategoryDao {
     fun getAllExpenseCategoryName():List<String>
     @Query("SELECT id AS id, expense_category_name AS categoryName FROM expense_category_table")
     fun getAllExpenseCategoryModel():LiveData<List<CategoryModel>>
-    @Query("SELECT expense_category_name FROM expense_category_table WHERE id =:id")
-    fun getExpenseCategoryNameById(id:Int?):String?
+
     @Query("SELECT id FROM expense_category_table WHERE expense_category_name=:name")
     fun getECIdByName(name:String):Int?
 }

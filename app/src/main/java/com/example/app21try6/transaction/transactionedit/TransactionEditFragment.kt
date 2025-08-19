@@ -143,10 +143,7 @@ class TransactionEditFragment : Fragment() {
                adapter.setItemsValue(it)
            }
        }
-        viewModel.transDetailWithProduct.observe(viewLifecycleOwner) {
-            it?.let {
-            }
-        }
+
         viewModel.allCustomerTable.observe(viewLifecycleOwner) { customerList ->
             val customerNames = customerList.map { it.customerBussinessName }
             val adapterr = ArrayAdapter(

@@ -59,7 +59,7 @@ class TransactionEditViewModel(
     val navigateToDetail: LiveData<Int> get() = _navigateToDetail
 
 
-    val transDetailWithProduct= transRepo.getTransactionDetailsWithProductID(id)
+
     var discountTransactionList =  mutableListOf <DiscountTransaction>()
 
     //change item position on drag

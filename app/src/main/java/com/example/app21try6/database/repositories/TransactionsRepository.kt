@@ -34,9 +34,7 @@ class TransactionsRepository(
     fun getTransactionDetails(id:Int): LiveData<List<TransactionDetail>> {
         return transDetailDao.selectATransDetail(id)
     }
-    fun getTransactionDetailsWithProductID(id:Int): LiveData<List<TransactionDetailWithProduct>> {
-        return transDetailDao.getTransactionDetailsWithProduct(id)
-    }
+
     suspend fun getTransactionDetailsWithProductIDList(id:Int): List<TransactionDetailWithProduct>? {
         return withContext(Dispatchers.IO){ transDetailDao.getTransactionDetailsWithProductList(id)}
     }
@@ -69,11 +67,7 @@ class TransactionsRepository(
             transDetailDao.update(transdetail)
         }
     }
-    suspend fun getTransSelectModel(productId:Int,sum_id: Int):List<TransSelectModel>{
-       return withContext(Dispatchers.IO){
-            transDetailDao.getSubProductM(productId,sum_id ?: 0)
-        }
-    }
+
     suspend fun getStockModelList():List<StockModel>{
         return withContext(Dispatchers.IO){
             transDetailDao.getTransactionDetailsList()

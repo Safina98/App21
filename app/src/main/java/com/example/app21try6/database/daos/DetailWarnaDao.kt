@@ -50,9 +50,6 @@ interface DetailWarnaDao {
             "FROM merchandise_table \n WHERE sub_id=:subId")
     fun getRetaiBySubId(subId:Int):List<DetailMerchandiseModel>
 
-    @Query("SELECT * FROM merchandise_table WHERE sub_id=:subId")
-    fun selectRetailBySubId(subId:Int):List<MerchandiseRetail>
-
     @Query("SELECT \n" +
             "    id, \n" +
             "    subId AS sub_id, \n" +
@@ -66,21 +63,6 @@ interface DetailWarnaDao {
     //if the combination of net and sub_id exist update, if not insert
     @Query("SELECT * FROM detail_warna_table WHERE subId = :subId AND net = :net LIMIT 1")
     fun getDetailBySubIdAndNet(subId: Int, net: Double): DetailWarnaTable?
-    @Query("UPDATE detail_warna_table SET batchCount = batchCount + :newBatchCount WHERE id = :detailId")
-    fun updateBatchCount(detailId: Int, newBatchCount: Double)
-
-    @Query("SELECT * FROM brand_table WHERE brand_id = :brandId")
-    suspend fun getBrandById(brandId: Int): Brand?
-
-    @Query("SELECT * FROM product_table WHERE product_id = :productId")
-    suspend fun getProductById(productId: Int): Product?
-
-    @Query("SELECT * FROM sub_table WHERE sub_id = :subProductId")
-    suspend fun getSubProductById(subProductId: Int): SubProduct?
-
-    @Query("SELECT * FROM detail_warna_table WHERE ref = :ref")
-    suspend fun getDetailWarnaByRef(ref: String): DetailWarnaTable?
-
 
     @Transaction
     fun insertDetailWarnaAndLog(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog) {

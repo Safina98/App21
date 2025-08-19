@@ -94,7 +94,7 @@ class ExpensesFragment : Fragment() {
         val viewModelFactory = PurchaseViewModelFactory(application,id,dataSource3,dataSource4,dataSource5,dataSource6,dataSource7,dataSource8,dataSource9,dataSource10)
         viewModel = ViewModelProvider(this,viewModelFactory).get(PurchaseViewModel::class.java)
         binding.viewModel=viewModel
-        viewModel.debugExpense()
+
         adapter = DiscountAdapter(
             DiscountListener {
                 if(it.expense_category_name=="BELI BARANG"){
@@ -186,10 +186,7 @@ class ExpensesFragment : Fragment() {
                 showsAddExpenseCategoryDialog(null)
             }
         }
-        viewModel.allExpenses.observe(viewLifecycleOwner){
-                expenses->
 
-        }
         binding.searchAllExpense.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true

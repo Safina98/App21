@@ -65,7 +65,6 @@ class PurchaseViewModel(application: Application,
     val allExpensesFromDB :LiveData<List<DiscountAdapterModel>> get() = _allExpenseFromDb
     val _unfilteredExpesne=MutableLiveData<List<DiscountAdapterModel>>()
 
-    val allExpenses =  expenseDao.getAllExpenseLiveData()
     private val _selectedECSpinner = MutableLiveData<String>()
     val selectedECSpinner: LiveData<String> get() = _selectedECSpinner
     private val _selectedYearSpinner=MutableLiveData<String>()
@@ -136,15 +135,6 @@ class PurchaseViewModel(application: Application,
         totalPrice.value = price * net * qty
     }
 
-    fun debugExpense(){
-        viewModelScope.launch {
-            val negativeSum = withContext(Dispatchers.IO){
-                expenseDao.getNegativeExpenseSum()
-            }
-
-
-        }
-    }
 
     fun getInventoryList(id:Int){
         viewModelScope.launch {

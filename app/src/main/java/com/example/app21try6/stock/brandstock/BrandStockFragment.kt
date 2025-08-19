@@ -206,8 +206,6 @@ class BrandStockFragment : Fragment() {
         //write csv
         //viewModel.all_brand.observe(viewLifecycleOwner, Observer {})
         viewModel.all_item.observe(viewLifecycleOwner, Observer {})
-       // viewModel.all_product.observe(viewLifecycleOwner, Observer {})
-        //viewModel.all_sub.observe(viewLifecycleOwner, Observer {})
 
         //Spinner
         viewModel.cathList_.observe(viewLifecycleOwner){entries->

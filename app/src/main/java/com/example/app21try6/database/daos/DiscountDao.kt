@@ -30,8 +30,6 @@ interface DiscountDao {
     fun getAllDiscountList():List<DiscountTable>
     @Query("SELECT discountName FROM discount_table")
     fun getAllDiscountName():LiveData<List<String>>
-    @Query("SELECT * FROM discount_table WHERE discountId =:id")
-    fun getDiscountById(id:Int): DiscountTable
     @Query("SELECT discountName FROM discount_table WHERE discountId =:id")
     fun getDiscountNameById(id:Int?):String?
     @Query("SELECT discountId FROM discount_table WHERE discountName =:name")

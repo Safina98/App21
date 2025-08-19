@@ -117,12 +117,6 @@ class TransactionSelectViewModel(
         }
     }
 
-    fun getTransModel(productId:Int){
-        viewModelScope.launch {
-           val list = transRepo.getTransSelectModel(productId,_sumId.value?:0)
-            transSelectModel.value = list
-        }
-    }
     fun resetTransModel(){
         transSelectModel.value =  emptyList()
     }

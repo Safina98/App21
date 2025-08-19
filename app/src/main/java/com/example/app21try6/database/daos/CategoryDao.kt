@@ -17,8 +17,6 @@ interface CategoryDao {
     fun update(category: Category)
     @Query("DELETE FROM category_table WHERE category_id=:id")
     fun delete(id:Int)
-    @Query("SELECT * FROM category_table")
-    fun getAll():LiveData<List<Category>>
     @Query("SELECT category_id AS id, category_name AS categoryName FROM category_table")
     fun getCategoryModelList():LiveData<List<CategoryModel>>
     @Query("SELECT category_name FROM category_table")
@@ -26,15 +24,7 @@ interface CategoryDao {
     @Query("SELECT category_name FROM category_table")
     fun getAllCategoryName():List<String>
     @Query("SELECT category_id FROM category_table WHERE category_name = :name")
-    fun getCode(name:String):LiveData<Int>
-    @Query("SELECT category_id FROM category_table WHERE category_name = :name")
     fun getCategoryId(name:String):Int
-    @Query("SELECT * FROM category_table")
-    fun getAllItem():List<Category>
-    @Query("DELETE FROM category_table WHERE category_name = :category_name_")
-    fun clear(category_name_:String)
-    @Query("INSERT INTO category_table (category_name) VALUES (:cath_name_)")
-    fun insert_try(cath_name_:String)
     @Query("INSERT INTO category_table(category_name) SELECT :cath_name_ WHERE NOT EXISTS (SELECT 1 FROM category_table WHERE category_name = :cath_name_)")
     fun insertIfNotExist(cath_name_:String)
     @Transaction

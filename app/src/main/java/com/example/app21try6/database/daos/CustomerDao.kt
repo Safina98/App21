@@ -19,14 +19,6 @@ interface CustomerDao {
 
     @Delete
     fun delete(customerTable: CustomerTable)
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(customers: List<CustomerTable>)
-
-    @Query("SELECT * FROM customer_table")
-    fun selectAll():List<CustomerTable>
-
-    @Query("SELECT * FROM customer_table WHERE custId=:id")
-    fun getCustomerById(id:Int): CustomerTable?
 
     @Query("SELECT custId FROM customer_table WHERE customerBussinessName=:name")
     fun getIdByName(name:String):Int?
