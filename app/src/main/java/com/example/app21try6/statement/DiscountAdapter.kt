@@ -6,9 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.DETAILED_DATE_FORMATTER
-import com.example.app21try6.SIMPLE_DATE_FORMATTER
-
+import com.example.app21try6.Constants
 import com.example.app21try6.databinding.ItemListSDiscountBinding
 import com.example.app21try6.formatRupiah
 import java.util.Date
@@ -26,13 +24,13 @@ class DiscountAdapter(
             if (item.discountName==null){
                 binding.txtDiscountName.text=item.expense_category_name
                 binding.txtMinQty.text=item.expense_name
-                binding.txtCustLocation.text= item.date?.let { DETAILED_DATE_FORMATTER.format(it) }
+                binding.txtCustLocation.text= item.date?.let { Constants.DETAILED_DATE_FORMATTER.format(it) }
                 binding.txtDiscValue.text = formatRupiah(item.expense_ammount?.toDouble())
                 binding.lblCustLocation.text="Tanggal:"
                 binding.lblMinQty.text="Pengeluaran: "
                 binding.lblDiscType.visibility=View.GONE
                 binding.lblDiscValue.text="Jumlah: "
-                val date= SIMPLE_DATE_FORMATTER.format(item.date?: Date())
+                val date= Constants.SIMPLE_DATE_FORMATTER.format(item.date?: Date())
                 binding.txtCustLocation.text=date
             }else{
                 binding.txtDiscountName.text=item.discountName

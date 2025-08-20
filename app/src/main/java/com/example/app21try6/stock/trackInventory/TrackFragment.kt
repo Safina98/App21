@@ -13,7 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import com.example.app21try6.R
-import com.example.app21try6.SIMPLE_DATE_FORMATTER
+import com.example.app21try6.Constants
 import com.example.app21try6.databinding.FragmentTrackBinding
 import java.util.Calendar
 
@@ -40,7 +40,7 @@ class TrackFragment : Fragment() {
                 adapter.submitList(it)
                 adapter.notifyDataSetChanged()
                 it.forEach {
-                    Log.i("SubTrans","itemName: ${it.trans_item_name}, net:${it.qty}, date:${SIMPLE_DATE_FORMATTER.format(it.tans_detail_date)}")
+                    Log.i("SubTrans","itemName: ${it.trans_item_name}, net:${it.qty}, date:${Constants.SIMPLE_DATE_FORMATTER.format(it.tans_detail_date)}")
                     Log.i("SubTrans","note: ${it.sum_note},")
                 }
             }

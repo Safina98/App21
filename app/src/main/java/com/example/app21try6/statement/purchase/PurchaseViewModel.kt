@@ -10,8 +10,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.*
 import androidx.lifecycle.viewModelScope
-import com.example.app21try6.BARANGLOGKET
-import com.example.app21try6.DETAILED_DATE_FORMATTER
+import com.example.app21try6.Constants
 import com.example.app21try6.database.daos.ExpenseCategoryDao
 import com.example.app21try6.database.daos.ExpenseDao
 import com.example.app21try6.database.daos.ProductDao
@@ -38,8 +37,6 @@ import kotlinx.coroutines.withContext
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
-import com.example.app21try6.DETAILED_DATE_FORMATTER
-import com.example.app21try6.SIMPLE_DATE_FORMATTER
 
 val tagp="PURCHASEPROBS"
 @RequiresApi(Build.VERSION_CODES.O)
@@ -200,21 +197,18 @@ class PurchaseViewModel(application: Application,
             item.price=productPrice.value?.toInt() ?: 0
             item.totalPrice=totalPrice.value?.toDouble() ?: 0.0
             item.ref=inventoryPurchase.value!!.ref
-            item.status=BARANGLOGKET.masuk
+            item.status=Constants.BARANGLOGKET.masuk
             item.subProductId=allSubProductFromDb.value?.find { it.subProduct.sub_name ==productName.value }?.subProduct?.sub_id ?: inventoryPurchase.value!!.subProductId
             item.suplierId=suplierDummy.value?.find { it.suplierName==suplierName.value }?.id ?: inventoryPurchase.value!!.suplierId
             item.purchaseDate= Date()
-
             if (index != -1) {
                 inventoryList[index] = item
                 _inventoryPurchaseList.value=inventoryList
             }
             onClearClick()
-
             _isAddItemClick.value=true
         }
     }
-
     fun savePurchase(){
         viewModelScope.launch {
             if (id==-1){

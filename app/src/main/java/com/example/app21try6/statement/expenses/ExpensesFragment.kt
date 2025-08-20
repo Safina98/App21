@@ -20,12 +20,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.app21try6.DETAILED_DATE_FORMATTER
+import com.example.app21try6.Constants
 import com.example.app21try6.R
-import com.example.app21try6.DETAILED_DATE_FORMAT
-import com.example.app21try6.MODELTYPE
-import com.example.app21try6.SIMPLE_DATE_FORMAT
-import com.example.app21try6.SIMPLE_DATE_FORMATTER
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.databinding.FragmentExpensesBinding
@@ -288,10 +284,10 @@ class ExpensesFragment : Fragment() {
         if (expenses != null) {
             textExpenseName.setText(expenses.expense_name.toString())
             textExpenseAmmount.setText(expenses.expense_ammount.toString())
-            textExpensesDate.setText(DETAILED_DATE_FORMATTER.format(expenses.date))
+            textExpensesDate.setText(Constants.DETAILED_DATE_FORMATTER.format(expenses.date))
             textExpensesCategory.setText(expenses.expense_category_name)
             textExpenseName.requestFocus()
-        }else textExpensesDate.setText(DETAILED_DATE_FORMATTER.format(Date()))
+        }else textExpensesDate.setText(Constants.DETAILED_DATE_FORMATTER.format(Date()))
 
         // Set OnClickListener for the date field to open DatePickerDialog
         textExpensesDate.setOnClickListener {
@@ -309,7 +305,7 @@ class ExpensesFragment : Fragment() {
                 calendar.set(Calendar.MINUTE, currentMinute)
 
                 // Format the date and time and set it in textExpensesDate
-                textExpensesDate.setText(DETAILED_DATE_FORMATTER.format(calendar.time))
+                textExpensesDate.setText(Constants.DETAILED_DATE_FORMATTER.format(calendar.time))
             }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
         }
 
@@ -321,11 +317,11 @@ class ExpensesFragment : Fragment() {
             val expenseName = textExpenseName.text.toString().uppercase().trim()
             expenses?.expense_name = expenseName
             expenses?.expense_ammount = expenseAmmount
-            expenses?.date = SimpleDateFormat(DETAILED_DATE_FORMAT, Locale.getDefault()).parse(expensesDate) ?: Date()
+            expenses?.date = SimpleDateFormat(Constants.DETAILED_DATE_FORMAT, Locale.getDefault()).parse(expensesDate) ?: Date()
             val expenseCatName = textExpensesCategory.text.toString().uppercase().trim()
             if (expenses == null) {
                 viewModel.insertExpense(expenseName, expenseAmmount, SimpleDateFormat(
-                    DETAILED_DATE_FORMAT, Locale.getDefault()).parse(expensesDate)?: Date(), expenseCatName)
+                    Constants.DETAILED_DATE_FORMAT, Locale.getDefault()).parse(expensesDate)?: Date(), expenseCatName)
             } else {
                 viewModel.updateExpenses(expenses)
             }
@@ -361,15 +357,13 @@ class ExpensesFragment : Fragment() {
             if (expenseCategory==null) viewModel.insertExpenseCategory(catName)
             else viewModel.updateExpenseCategory(expenseCategory)
             }
-
         builder.setNegativeButton("No") { dialog, which ->
-
         }
 
         val alert = builder.create()
         alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

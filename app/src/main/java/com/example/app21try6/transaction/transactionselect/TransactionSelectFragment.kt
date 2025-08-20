@@ -19,7 +19,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.SimpleItemAnimator
-import com.example.app21try6.Code
+import com.example.app21try6.Constants
 import com.example.app21try6.R
 import com.example.app21try6.bookkeeping.vendiblelist.VendibleFragmentArgs
 import com.example.app21try6.database.repositories.StockRepositories
@@ -55,7 +55,7 @@ class TransactionSelectFragment : Fragment() {
             findNavController().popBackStack()
         }
         //viewModel.setProductId(i)
-        var code: Code = Code.ZERO
+        var code: Constants.Code = Constants.Code.ZERO
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
          adapter = TransactionSelectAdapter(
@@ -77,13 +77,13 @@ class TransactionSelectFragment : Fragment() {
                 viewModel.onCheckBoxClicked(trans,cb.isChecked)
             },
             PlusSelectLongListener {
-                code = Code.LONGPLUS
+                code = Constants.Code.LONGPLUS
                 onLongSubsOrPlusClick(it,code.text,code)
                 //viewModel.onShowDialog(it)
                 clearSearchQuery()
             },
             SubsSelectLongListener {
-                code = Code.LONGSUBS
+                code = Constants.Code.LONGSUBS
                 onLongSubsOrPlusClick(it,code.text,code)
                 //viewModel.onShowDialog(it)
                 clearSearchQuery()
@@ -91,7 +91,7 @@ class TransactionSelectFragment : Fragment() {
             SelectLongListener {
                 it.trans_detail_id = 0L
                 //showDialog(it,viewModel,Code.DUPLICATE)
-                code = Code.DUPLICATE
+                code = Constants.Code.DUPLICATE
                 onLongSubsOrPlusClick(it,it.item_name,code)
                // viewModel.insertDuplicateSubProduct(it)
             }
@@ -142,7 +142,7 @@ class TransactionSelectFragment : Fragment() {
     }
 
 
-    fun onLongSubsOrPlusClick(model:TransSelectModel,title:String,code: Code) {
+    fun onLongSubsOrPlusClick(model:TransSelectModel,title:String,code: Constants.Code) {
         DialogUtils.updateDialogQty<TransactionSelectViewModel, TransSelectModel>(
             context = requireContext(),
             viewModel = viewModel,
@@ -150,9 +150,9 @@ class TransactionSelectFragment : Fragment() {
             title = title,
             setBrandName = { it, number ->
                 val model = it as TransSelectModel
-                if (code == Code.LONGPLUS) {
+                if (code == Constants.Code.LONGPLUS) {
                     model.qty=  model.qty + number.toDouble()
-                 } else if (code == Code.LONGSUBS){
+                 } else if (code == Constants.Code.LONGSUBS){
                      val newQty=model.qty-number
                     if (newQty>=0){
                         model.qty= model.qty - number.toDouble()

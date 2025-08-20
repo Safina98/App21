@@ -25,7 +25,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.example.app21try6.Code
+import com.example.app21try6.Constants
 import com.example.app21try6.R
 import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.database.models.DetailMerchandiseModel
@@ -109,10 +109,10 @@ class SubProductStockFragment : Fragment() {
             DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as SubViewModel).deleteRetail(item as DetailMerchandiseModel) })
         }, EditDetailWarnaListener {
             //add show pop up
-            showUpdateQtyDialog(it,Code.LONGPLUS.text,Code.LONGPLUS)
+            showUpdateQtyDialog(it,Constants.Code.LONGPLUS.text,Constants.Code.LONGPLUS)
         }, TrackDetailWarnaListener {
             //substract, show pop up
-            showUpdateQtyDialog(it,Code.LONGSUBS.text,Code.LONGSUBS)
+            showUpdateQtyDialog(it,Constants.Code.LONGSUBS.text,Constants.Code.LONGSUBS)
         })
 
         binding.rvSubProduct.adapter = adapter
@@ -328,7 +328,7 @@ class SubProductStockFragment : Fragment() {
         }
         return false // Not handled, let activity navigate back
     }
-    fun showUpdateQtyDialog(model:DetailMerchandiseModel,title:String,code: Code){
+    fun showUpdateQtyDialog(model:DetailMerchandiseModel,title:String,code: Constants.Code){
         DialogUtils.updateDialogQty<SubViewModel, DetailMerchandiseModel>(
             context = requireContext(),
             viewModel = viewModel,
@@ -336,9 +336,9 @@ class SubProductStockFragment : Fragment() {
             title = title,
             setBrandName = { it, number ->
                 val model = it as DetailMerchandiseModel
-                if (code == Code.LONGPLUS) {
+                if (code == Constants.Code.LONGPLUS) {
                     model.net=  model.net + number.toDouble()
-                } else if (code == Code.LONGSUBS){
+                } else if (code == Constants.Code.LONGSUBS){
                     val newQty=model.net-number
                     if (newQty>=0){
                         model.net= model.net - number.toDouble()

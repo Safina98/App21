@@ -10,7 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.DETAILED_DATE_FORMATTER
+import com.example.app21try6.Constants
 import com.example.app21try6.R
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.databinding.ItemListTransactionAllBinding
@@ -58,7 +58,7 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
                 binding.txtTotalTrans.visibility=View.GONE
             }else{
                 binding.txtTotalTrans.text = formatRupiah(item.total_after_discount.toDouble()).toString()
-                val formattedDate = DETAILED_DATE_FORMATTER.format(item.trans_date)
+                val formattedDate = Constants.DETAILED_DATE_FORMATTER.format(item.trans_date)
                 binding.txtTglTrans.text = formattedDate
             }
 

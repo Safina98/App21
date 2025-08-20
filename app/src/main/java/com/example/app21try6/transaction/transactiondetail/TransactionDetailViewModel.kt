@@ -10,8 +10,6 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import com.example.app21try6.DISCTYPE
-import com.example.app21try6.ITEMUNIT
 import com.example.app21try6.database.models.DetailMerchandiseModel
 import com.example.app21try6.database.tables.Payment
 
@@ -39,7 +37,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
-
+import com.example.app21try6.Constants
 /*
  private val datasource1: TransSumDao,
                                   private val datasource2: TransDetailDao,
@@ -385,7 +383,7 @@ class TransactionDetailViewModel (
                         val (merch,extra) = merchAndExtra?: Pair(null, null)
                         val merchandiseRetailList = merch.toMerchandiseRetailList()
                         updateMerchValue(merchandiseRetailList,trans.qty,trans,extra)
-                    }else if(trans.unit==ITEMUNIT.lsn) {
+                    }else if(trans.unit== Constants.ITEMUNIT.LSN) {
                       newItem.qty=item.qty*12
                     }else {
                         //get default qty from db
@@ -584,12 +582,12 @@ class TransactionDetailViewModel (
     /******************************************** Suspend **************************************/
 
     fun generateReceiptTextWa(): String {
-        textGenerator = TextGenerator(transDetail.value,transSum.value,paymentModel.value,discountTransBySumId.value?.filter { it.discountType!=DISCTYPE.CashbackNotPrinted })
+        textGenerator = TextGenerator(transDetail.value,transSum.value,paymentModel.value,discountTransBySumId.value?.filter { it.discountType!=Constants.DISCTYPE.CASHBACK_NOT_PRINTED })
         return textGenerator.generateReceiptTextWa()
     }
 
     fun generateReceiptTextNew(): String {
-        textGenerator = TextGenerator(transDetail.value,transSum.value,paymentModel.value,discountTransBySumId.value?.filter { it.discountType!=DISCTYPE.CashbackNotPrinted })
+        textGenerator = TextGenerator(transDetail.value,transSum.value,paymentModel.value,discountTransBySumId.value?.filter { it.discountType!=Constants.DISCTYPE.CASHBACK_NOT_PRINTED })
         return textGenerator.generateReceiptTextNew()
     }
 

@@ -8,7 +8,8 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.example.app21try6.BARANGLOGKET
+import com.example.app21try6.Constants
+
 import com.example.app21try6.database.models.InventoryLogWithSubProduct
 import com.example.app21try6.database.models.SubWithPriceModel
 import com.example.app21try6.database.tables.DetailWarnaTable
@@ -124,7 +125,7 @@ interface InventoryLogDao {
            update detailwarna
          */
         val detailWarna=getDetailByNetAndSubId(log.inventoryLog.isi,log.inventoryLog.subProductId!!)!!
-        if (log.inventoryLog.barangLogKet==BARANGLOGKET.keluar) {
+        if (log.inventoryLog.barangLogKet== Constants.BARANGLOGKET.keluar) {
             detailWarna.batchCount=detailWarna.batchCount + log.inventoryLog.pcs
         }else {
             detailWarna.batchCount=detailWarna.batchCount - log.inventoryLog.pcs

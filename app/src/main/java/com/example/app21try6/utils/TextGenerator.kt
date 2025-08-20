@@ -1,10 +1,7 @@
 package com.example.app21try6.utils
 
 import android.util.Log
-import com.example.app21try6.DETAILED_DATE_FORMATTER
-import com.example.app21try6.DISCTYPE
-import com.example.app21try6.SIMPLE_DATE_FORMAT
-import com.example.app21try6.SIMPLE_DATE_FORMATTER
+import com.example.app21try6.Constants
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.formatRupiah
@@ -43,7 +40,7 @@ class TextGenerator(
         val paddingStoreName = "-".repeat(getPadding(storeName,"Middle",50))
         // Get current date
 
-        val currentDate = SIMPLE_DATE_FORMATTER.format(transsum?.trans_date)
+        val currentDate = Constants.SIMPLE_DATE_FORMATTER.format(transsum?.trans_date)
 
 
         var totalTransaction= transsum!!.total_trans
@@ -88,7 +85,7 @@ class TextGenerator(
         builder.append("-".repeat(getPadding("","Left",50))+"\n")
         if (!discountTransaction.isNullOrEmpty()){
             for (d in discountTransaction!!){
-                if (d.discountType?.replace(" ", "") != DISCTYPE.CashbackNotPrinted.replace(" ", ""))  {
+                if (d.discountType?.replace(" ", "") != Constants.DISCTYPE.CASHBACK_NOT_PRINTED.replace(" ", ""))  {
                    val a = getPadding("${d.name} ${d.payment_ammount}","left",50)-10
                     Log.i("DiscProbs","get padding $a")
                     builder.append(String.format("%-${a}s%4s\n", d.name, formatRupiah(d.payment_ammount?.toDouble())))
@@ -135,7 +132,7 @@ class TextGenerator(
         val storePhone = "Phone: 081343713281"
         val paddingStoreName = "-".repeat(getPadding(storeName,"Middle",c))
         // Get current date
-        val currentDate = SIMPLE_DATE_FORMATTER.format(transsum?.trans_date)
+        val currentDate = Constants.SIMPLE_DATE_FORMATTER.format(transsum?.trans_date)
         var totalTransaction= transsum!!.total_trans
         // Receipt header
 
@@ -176,7 +173,7 @@ class TextGenerator(
         builder.append(String.format("%-10s%19s\n", "Total:", formatRupiah(transsum.total_trans)))
         if (!discountTransaction.isNullOrEmpty()){
             for (d in discountTransaction!!){
-                if (d.discountType?.replace(" ", "") != DISCTYPE.CashbackNotPrinted.replace(" ", ""))  {
+                if (d.discountType?.replace(" ", "") != Constants.DISCTYPE.CASHBACK_NOT_PRINTED.replace(" ", ""))  {
                     val a = getPadding("${d.name} ${d.payment_ammount}","left",c)+3
                     Log.i("DiscProbs","get padding ${c-a}")
                     val padding = " ".repeat(((c - d.name!!.length - formatRupiah(d.payment_ammount?.toDouble())!!.length)-1).coerceAtLeast(0))

@@ -27,7 +27,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.app21try6.MODELTYPE
+import com.example.app21try6.Constants
 import com.example.app21try6.R
 import com.example.app21try6.ToolbarUtil
 import com.example.app21try6.database.tables.Brand
@@ -137,7 +137,7 @@ class BrandStockFragment : Fragment() {
                 viewModel.getBrandIdByName(it)
 
             },BrandStockLongListener {
-                showDialogBox(viewModel,it,MODELTYPE.brand)
+                showDialogBox(viewModel,it,Constants.MODELTYPE.BRAND)
             },null,requireContext())
 
         //Kategori adapter
@@ -163,7 +163,7 @@ class BrandStockFragment : Fragment() {
                 viewModel.onProductCLick(arrayOf(it.id.toString(),it.parentId.toString(),viewModel.selectedBrand.value?.parentId.toString(),"0",it.name))
             }, BrandStockLongListener {
                 viewModel.getLongClickedProduct(it.id)
-                showDialogBox(viewModel,it,MODELTYPE.Product)
+                showDialogBox(viewModel,it,Constants.MODELTYPE.PRODUCT)
             },null,requireContext())
 
 
@@ -316,7 +316,7 @@ class BrandStockFragment : Fragment() {
         builder.setMessage("Chosoe Action")
             .setCancelable(true)
             .setPositiveButton("Update") { dialog, id ->
-                if(modelType==MODELTYPE.brand){
+                if(modelType==Constants.MODELTYPE.BRAND){
                     DialogUtils.updateDialog(
                         context = requireContext(),
                         viewModel = viewModel, // Replace with your ViewModel instance
@@ -338,7 +338,7 @@ class BrandStockFragment : Fragment() {
                     this,
                     viewModel,
                     vendible, { vm, item ->
-                        if(modelType==MODELTYPE.brand)
+                        if(modelType==Constants.MODELTYPE.BRAND)
                         (vm as BrandStockViewModel).deleteBrand(item as BrandProductModel)
                         else
                             (vm as BrandStockViewModel).deleteProduct(item as BrandProductModel)

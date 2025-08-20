@@ -25,7 +25,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.Code
+import com.example.app21try6.Constants
 import com.example.app21try6.R
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.repositories.DiscountRepository
@@ -58,7 +58,7 @@ class TransactionEditFragment : Fragment() {
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        var code:Code = Code.ZERO
+        var code:Constants.Code = Constants.Code.ZERO
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 viewModel.calculateDiscA().also {
@@ -69,7 +69,7 @@ class TransactionEditFragment : Fragment() {
         })
 
        val adapter = TransactionEditAdapter(TransEditClickListener {
-           showDialog(it,viewModel,Code.TEXTITEM)
+           showDialog(it,viewModel,Constants.Code.TEXTITEM)
        }, SubsTransClickListener {item->
            val qty=item.qty-1
            if (qty>=0){
@@ -81,19 +81,19 @@ class TransactionEditFragment : Fragment() {
        }, PlusTransClickListener {
            viewModel.updateTransDetail(it, 1.0)
        }, SubsTransLongListener {
-           code = Code.LONGSUBS
-           showDialog(it,viewModel,Code.LONGSUBS)
+           code = Constants.Code.LONGSUBS
+           showDialog(it,viewModel,Constants.Code.LONGSUBS)
        }, PlusTransLongListener {
-           code = Code.LONGPLUS
-           showDialog(it,viewModel,Code.LONGPLUS)
+           code = Constants.Code.LONGPLUS
+           showDialog(it,viewModel,Constants.Code.LONGPLUS)
        }, TransEditDeleteListener {
            DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as TransactionEditViewModel).delete(it.trans_detail_id) })
        }, TransEditPriceClickListener {
-           showDialog(it,viewModel,Code.TEXTPRICE)
+           showDialog(it,viewModel,Constants.Code.TEXTPRICE)
        }, UnitTransTextCliked{ edit_trans ->
                showInputCoiceDialog(edit_trans)
        }, TransEditUnitQtyClickListener {
-               showDialog(it,viewModel,Code.UNITQTY)
+               showDialog(it,viewModel,Constants.Code.UNITQTY)
        }, viewModel.updatePositionCallback
           )
 
@@ -206,17 +206,17 @@ class TransactionEditFragment : Fragment() {
     }
 
 
-    private fun showDialog(transactionDetail: TransactionDetail, viewModel: TransactionEditViewModel, code: Code) {
+    private fun showDialog(transactionDetail: TransactionDetail, viewModel: TransactionEditViewModel, code: Constants.Code) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle(code.text)
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.pop_up_update, null)
         val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
         when (code) {
-            Code.TEXTITEM -> {
+            Constants.Code.TEXTITEM -> {
                 textKet.setText(transactionDetail.trans_item_name)
             }
-            Code.TEXTPRICE -> {
+            Constants.Code.TEXTPRICE -> {
                 textKet.setText(transactionDetail.trans_price.toString())
                 textKet.inputType = InputType.TYPE_CLASS_NUMBER
             }
@@ -235,7 +235,7 @@ class TransactionEditFragment : Fragment() {
         builder.setPositiveButton("OK") { dialog, which ->
             val v = textKet.text.toString().uppercase().trim()
             when (code) {
-                Code.LONGSUBS -> {
+                Constants.Code.LONGSUBS -> {
                     if ((transactionDetail.qty-v.toDouble())>=0){
                         viewModel.updateTransDetail(transactionDetail, -1.0)
                     }else{
@@ -244,15 +244,15 @@ class TransactionEditFragment : Fragment() {
 
                     viewModel.updateTransDetail(transactionDetail, (v.toDouble() * -1))
                 }
-                Code.LONGPLUS -> {
+                Constants.Code.LONGPLUS -> {
                     viewModel.updateTransDetail(transactionDetail, v.toDouble())
                 }
-                Code.TEXTITEM -> {
+                Constants.Code.TEXTITEM -> {
                     viewModel.updateTransDetailItemName(transactionDetail, v)
                 }
-                Code.TEXTPRICE -> {
+                Constants.Code.TEXTPRICE -> {
                     viewModel.updateTransDetailItemPrice(transactionDetail, v.toInt())
-                }Code.UNITQTY->{
+                }Constants.Code.UNITQTY->{
                     viewModel.updateUitQty(transactionDetail,v.toDouble())
                 }else->{
                     Toast.makeText(context,"Failed",Toast.LENGTH_SHORT).show()

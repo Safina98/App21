@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.DETAILED_DATE_FORMATTER
+import com.example.app21try6.Constants
 import com.example.app21try6.database.models.InventoryLogWithSubProduct
 import com.example.app21try6.databinding.ItemListLogBinding
 import java.util.Locale
@@ -21,7 +21,7 @@ class InventoryLogAdapter (
             binding.item = item
             binding.updateLisener=updateListener
             binding.deleteLisener=deleteListener
-            binding.txtLogDate.text= DETAILED_DATE_FORMATTER.format(item.inventoryLog.barangLogDate)
+            binding.txtLogDate.text= Constants.DETAILED_DATE_FORMATTER.format(item.inventoryLog.barangLogDate)
             binding.txtIsi.text=String.format(Locale.US,"%.2f", item.inventoryLog.isi)
             binding.txtInventoryName.text=item.sub_name
             binding.txtBatchCount.text=item.inventoryLog.pcs.toString()

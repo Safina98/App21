@@ -4,12 +4,10 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.app21try6.DETAILED_DATE_FORMATTER
-import com.example.app21try6.SIMPLE_DATE_FORMATTER
-import com.example.app21try6.database.DateTypeConverter
+
 import com.example.app21try6.database.tables.SuplierTable
 import com.example.app21try6.database.VendibleDatabase
-import com.example.app21try6.formatRupiah
+
 
 class UpdateSummaryProductIdWorker(
     context: Context,
@@ -27,7 +25,6 @@ class UpdateSummaryProductIdWorker(
             Result.retry()
         }
     }
-
     private suspend fun performUpdate() {
         val database = VendibleDatabase.getInstance(applicationContext) // Get Room database instance
         val suplierDao=database.suplierDao

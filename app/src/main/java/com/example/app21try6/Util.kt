@@ -12,34 +12,7 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
-val DETAILED_DATE_FORMAT ="dd-MM-yyyy HH:mm"
-val DETAILED_DATE_FORMATTER = SimpleDateFormat(DETAILED_DATE_FORMAT, Locale.getDefault())
-val SIMPLE_DATE_FORMAT ="dd-MM-yyyy"
-val SIMPLE_DATE_FORMATTER = SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault())
-object BARANGLOGKET {
-    const val masuk = "MASUK"
-    const val keluar = "KELUAR"
-}
-object ITEMUNIT {
-    const val none = "NONE"
-    const val lsn = "LSN"
-    const val roll ="ROLL"
-    const val bks ="BKS"
-    const val dos ="DOS"
-    const val karung ="KARUNG"
-}
 
-object DISCTYPE {
-    const val CashbackPrinted = "Printed"
-    const val CashbackNotPrinted = "Not Printed"
-    const val UbahHarga ="Ubah Harga"
-}
-object MODELTYPE {
-    const val brand = "Brand"
-    const val Product = "Product"
-    const val subProduct ="Sub Product"
-}
-enum class Code(val text: String) {ZERO(""),LONGPLUS("Tambah"),LONGSUBS("Kurang"),TEXTITEM("Update Nama Barang"),TEXTPRICE("Update Harga barang"),UNITQTY("ISI"),DUPLICATE("ISI")}
 fun formatRupiah(number: Double?): String? {
     val localeID = Locale("in", "ID")
     val formatRupiah: NumberFormat = NumberFormat.getCurrencyInstance(localeID)

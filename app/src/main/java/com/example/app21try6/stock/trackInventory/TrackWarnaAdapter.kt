@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.app21try6.DETAILED_DATE_FORMATTER
+import com.example.app21try6.Constants
 import com.example.app21try6.database.models.TracketailWarnaModel
 import com.example.app21try6.databinding.ItemListTrackDetailWarnaBinding
 
@@ -22,7 +22,7 @@ class TrackWarnaAdapter(
             }else{
                 binding.txtItemQty.text=String.format("Qty: %.2f",item.qty)
             }
-            binding.txtDate.text= DETAILED_DATE_FORMATTER.format(item.tans_detail_date)
+            binding.txtDate.text= Constants.DETAILED_DATE_FORMATTER.format(item.tans_detail_date)
             binding.txtKet.text=if(item.sum_note==null)"-" else item.sum_note
             binding.executePendingBindings()
         }

@@ -21,6 +21,9 @@ import android.widget.ImageView
 import androidx.cardview.widget.CardView
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
+import com.example.app21try6.Constants
+
+
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -137,17 +140,17 @@ fun Button.applyGradientBackground(isGradient: Boolean) {
 @BindingAdapter("dateFormattedNullable")
 fun bindDateFormattedNullale(textView: TextView, date: Date?) {
     if (date != null) {
-        val dateString = SIMPLE_DATE_FORMATTER.format(date)
+        val dateString = Constants.SIMPLE_DATE_FORMATTER.format(date)
         textView.text = dateString
     } else {
-        textView.text = SIMPLE_DATE_FORMATTER.format(Date())
+        textView.text = Constants.SIMPLE_DATE_FORMATTER.format(Date())
     }
 }
 
 @BindingAdapter("dateFormatted")
 fun bindDateFormatted(textView: TextView, date: Date?) {
     if (date != null) {
-        val dateString = SIMPLE_DATE_FORMATTER.format(date)
+        val dateString = Constants.SIMPLE_DATE_FORMATTER.format(date)
         textView.text = dateString
     } else {
         textView.text = "Pick a Date"
@@ -156,7 +159,7 @@ fun bindDateFormatted(textView: TextView, date: Date?) {
 @BindingAdapter("detailedDateFormatted")
 fun bindDetailedDateFormatted(textView: TextView, date: Date?) {
     if (date != null) {
-        val dateString = DETAILED_DATE_FORMATTER.format(date)
+        val dateString = Constants.DETAILED_DATE_FORMATTER.format(date)
         textView.text = dateString
     } else {
         textView.text = "Pick a Date"
@@ -165,7 +168,7 @@ fun bindDetailedDateFormatted(textView: TextView, date: Date?) {
 @BindingAdapter("startDatePickerFormat")
 fun bindStartDatePickerFormatted(textView: TextView, date: Date?) {
     if (date != null) {
-        val dateString = SIMPLE_DATE_FORMATTER.format(date)
+        val dateString = Constants.SIMPLE_DATE_FORMATTER.format(date)
         textView.text = "from $dateString"
     } else {
         textView.text = "Pick Start Date"
@@ -174,7 +177,7 @@ fun bindStartDatePickerFormatted(textView: TextView, date: Date?) {
 @BindingAdapter("endDatePickerFormat")
 fun bindEndDatePickerFormatted(textView: TextView, date: Date?) {
     if (date != null) {
-        val dateString = SIMPLE_DATE_FORMAT.format(date)
+        val dateString = Constants.SIMPLE_DATE_FORMAT.format(date)
         textView.text = "to  $dateString"
     } else {
         textView.text = "Pick End Date"

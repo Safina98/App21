@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.R
-import com.example.app21try6.SIMPLE_DATE_FORMATTER
+import com.example.app21try6.Constants
 import com.example.app21try6.database.models.DetailMerchandiseModel
 import com.example.app21try6.databinding.ItemListSubDetailBinding
 
@@ -37,7 +37,7 @@ class DetailWarnaAdapter (
             if(item.batchCount==null){
                 binding.btnTrack.background = ContextCompat.getDrawable(itemView.context, R.drawable.baseline_subtract_24)
                 binding.btnEdit.background = ContextCompat.getDrawable(itemView.context, R.drawable.baseline_add_24)
-                binding.txtNet.text= SIMPLE_DATE_FORMATTER.format(item.date)
+                binding.txtNet.text= Constants.SIMPLE_DATE_FORMATTER.format(item.date)
                 binding.txtBatchCount.text= String.format("Net: %.2f", item.net)//item.net.toString()  +"m"
             }
             else{
