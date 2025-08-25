@@ -2,52 +2,34 @@ package com.example.app21try6.stock.brandstock
 
 
 import android.Manifest
-import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.Constants
 import com.example.app21try6.R
 import com.example.app21try6.ToolbarUtil
 import com.example.app21try6.database.tables.Brand
-import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.repositories.DiscountRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.databinding.FragmentBrandStockBinding
-import com.example.app21try6.stock.productstock.ProductStockFragmentDirections
 import com.example.app21try6.utils.CsvHandler
 import com.example.app21try6.utils.DatabaseBackupHelper
 import com.example.app21try6.utils.DialogUtils
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.*
-import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
-import java.util.zip.ZipOutputStream
 
 
 class BrandStockFragment : Fragment() {
@@ -94,9 +76,7 @@ class BrandStockFragment : Fragment() {
                     binding.spinnerM,
                     binding.rvBrandStock,
                 )
-                Log.i("CustomBackProbs","if condition met")
                 if (layoutOneViews[0].visibility == View.GONE && binding.rvProductStock.visibility==View.VISIBLE && binding.rvCat.visibility==View.GONE) {
-                    Log.i("CustomBackProbs","if condition met")
                     viewModel.getBrandIdByName(null)
                     layoutOneViews.forEach { it.visibility = View.VISIBLE }
                     binding.rvProductStock.visibility = View.GONE
@@ -105,11 +85,8 @@ class BrandStockFragment : Fragment() {
                     binding.cardView.visibility = View.GONE
                     return
                 }else if(layoutOneViews[0].visibility == View.VISIBLE && binding.rvProductStock.visibility==View.VISIBLE&&viewModel.selectedBrand.value!=null){
-                    Log.i("CustomBackProbs"," first if else condition met")
                     viewModel.getBrandIdByName(null)
-                   // binding.rvProductStock.visibility = View.INVISIBLE
                 }else if(layoutOneViews[0].visibility == View.GONE && binding.rvCat.visibility==View.VISIBLE){
-                   // binding.btnEditEcNew.visibility = View.VISIBLE
                     Log.i("CustomBackProbs"," second if else condition met")
                     binding.cardView.visibility = View.GONE
                     if(binding.txtBrand==null){

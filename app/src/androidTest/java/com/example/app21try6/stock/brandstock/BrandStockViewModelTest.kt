@@ -1,42 +1,43 @@
 package com.example.app21try6.stock.brandstock
 
+import org.junit.Test
 import org.junit.jupiter.api.Assertions.*
 
 class BrandStockViewModelTest {
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun getNavigateProduct() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun getAddItem() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun getCathList() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun getCathList_() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun get_all_brand_from_db() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun set_all_brand_from_db() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun getAll_brand_from_db() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun getKategori_id() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun setKategori_id() {
     }
 
@@ -44,163 +45,163 @@ class BrandStockViewModelTest {
     fun getSelectedBrand() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun setSelectedBrand() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun getAll_item() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun getSelectedKategoriSpinner() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun getCatId() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun setCatId() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun getInsertionCompleted() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun isLoading() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun get_all_product_from_db() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun getAll_product_from_db() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun getAddProduct() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun getAllDiscountFromDB() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun getDiscountName() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun get_product() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun setSelectedKategoriValue() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun updateRv() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun getBrandIdByName() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun deleteCategory() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun onCheckBoxClicked() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun insertAnItemBrandStock() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun insertItemCath() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun writeCSV() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun insertCSVBatch() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun updateCath() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun updateBrand() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun deleteBrand() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun clearCheckedItemList() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun onAddItem() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun onItemAdded() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun onLongClick() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun onBrandCLick() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun onBrandNavigated() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun onProductCLick() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun updateProductRv() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun getLongClickedProduct() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun updateProduct() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun insertAnItemProductStock() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun getDiscNameById() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun onProductAdded() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun deleteProduct() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     fun onCleared() {
     }
 }

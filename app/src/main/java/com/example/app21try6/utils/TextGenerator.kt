@@ -141,7 +141,7 @@ class TextGenerator(
         builder.append("$storeAddress\n")
         builder.append("$storePhone\n")
         builder.append("Date: $currentDate\n")
-        builder.append("Receipt: ${transsum.sum_id}")
+        builder.append("Receipt: ${transsum.sum_id}\n")
         builder.append("-".repeat(getPadding("","Left",c))+"\n")
         builder.append("TOKO/BPK/IBU: ${transsum?.cust_name}\n")
         builder.append("Barang  Jumlah  Harga  Total\n")

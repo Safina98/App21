@@ -30,13 +30,6 @@ import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 
-/*
-val database1: CategoryDao,
-    val database2: BrandDao,
-    val database3: ProductDao,
-    val database4: SubProductDao,
-    val discountDao: DiscountDao,
- */
 class BrandStockViewModel(
     private val repository: StockRepositories,
     private val discountRepository:DiscountRepository,
@@ -65,14 +58,11 @@ class BrandStockViewModel(
     var selectedBrand = MutableLiveData<BrandProductModel?>()
 
     private var checkedItemList = mutableListOf<Category>()
-    //val all_brand = database2.getAllBrand()
+
     val all_item = repository.getExportedStockData()
-    //val all_product = database3.getAllProduct()
-    //val all_sub = database4.getAllSub()
+
     private val _selectedKategoriSpinner = MutableLiveData<String>()
     val selectedKategoriSpinner: LiveData<String> get() = _selectedKategoriSpinner
-
-    var catId=0
 
     //Insert batch
     private val _insertionCompleted = MutableLiveData<Boolean>()
@@ -124,10 +114,6 @@ class BrandStockViewModel(
             repository.deleteCategory(category.id)
         }
     }
-
-
-
-    fun onCheckBoxClicked(category: Category, bool:Boolean){ if(bool){ checkedItemList.add(category)} else{ checkedItemList.remove(category) } }
 
    // private suspend fun deleteC(categoryName: String){ withContext(Dispatchers.IO){ database1.clear(categoryName) }}
     fun insertAnItemBrandStock(brand_name:String){

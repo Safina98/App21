@@ -71,3 +71,14 @@ data class InventoryLog(
     //added column
     var barangLogKet: String = ""
 )
+/*
+* var id long
+* var sub_id int
+* var detail_warna_id/ref Int/string
+* var merch retail id/ref Int/string
+* var detail net double
+* var potonganke Int
+* net sebelum di potong: double
+* net dipotong berapa
+*
+* */

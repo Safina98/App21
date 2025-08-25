@@ -55,30 +55,34 @@ interface TransSumDao {
 
 
     @Query("""
-    SELECT DISTINCT ts.* FROM trans_sum_table AS ts
+    SELECT DISTINCT ts.* 
+    FROM trans_sum_table AS ts
+    LEFT JOIN trans_detail_table td ON ts.sum_id = td.sum_id
     WHERE 
-    (
+        -- Case 1: Search by sumId (ignore date)
+        (:sumId IS NOT NULL AND ts.sum_id = :sumId)
+        
+        OR 
+        
+        -- Case 2: Search by name (with date filter)
         (:name IS NOT NULL AND (
-            ts.cust_name LIKE '%' || :name || '%' 
-            OR ts.sum_id IN (
-                SELECT td.sum_id FROM trans_detail_table td 
-                WHERE td.trans_item_name LIKE '%' || :name || '%'
-            )
-        ))
-        OR (:name IS NULL)
-    )
-    OR
-    (
-        (:sumId IS NOT NULL AND (
-            ts.sum_id = :sumId
-        ))
-        OR (:sumId IS NULL)
-    )
-    AND (:startDate IS NULL OR ts.trans_date >= :startDate)
-    AND (:endDate IS NULL OR ts.trans_date <= :endDate)
+            ts.cust_name LIKE '%' || :name || '%'
+            OR td.trans_item_name LIKE '%' || :name || '%'
+        )
+        AND (:startDate IS NULL OR ts.trans_date >= :startDate)
+        AND (:endDate IS NULL OR ts.trans_date <= :endDate))
+        
+        OR 
+        
+        -- Case 3: No name and no sumId → return all within date range
+        (:name IS NULL AND :sumId IS NULL
+        AND (:startDate IS NULL OR ts.trans_date >= :startDate)
+        AND (:endDate IS NULL OR ts.trans_date <= :endDate))
+        
     ORDER BY ts.trans_date DESC
     LIMIT :limit OFFSET :offset
 """)
+
     fun getTransactionSummariesByItemName(name: String?, sumId: Int?,startDate: Date?,endDate: Date?,limit:Int,offset: Int): List<TransactionSummary>
 
     @Query("SELECT * from trans_sum_table WHERE sum_id = :sum_id_")
