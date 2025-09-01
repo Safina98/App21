@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.util.Date
 
 
 @Entity(
@@ -32,7 +33,7 @@ data class DetailWarnaTable(
     @ColumnInfo(name="ket")
     var ket:String="",
     @ColumnInfo(name="ref")
-    var ref: String=""
+    var ref: String="",
 )
 
 /*

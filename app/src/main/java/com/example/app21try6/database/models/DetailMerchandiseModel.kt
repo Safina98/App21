@@ -9,5 +9,6 @@ data class DetailMerchandiseModel(
     var net:Double=0.0,
     var batchCount:Double?,
     var ket:String?,
-    var date: Date?
+    var date: Date?,
+    var selectedQty:Int=0
 )

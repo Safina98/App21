@@ -130,7 +130,9 @@ class TransactionDetailFragment : Fragment() {
         }
         viewModel.multipleMerch.observe(viewLifecycleOwner){
             if (it!=null){
-                showMerchandiseRetailDialog(it)
+                val (a, b) = it
+                if(a!=null && b!=null)
+                showMerchandiseRetailDialog(a,b)
             }
         }
         viewModel.pickNewItem.observe(viewLifecycleOwner){
@@ -422,19 +424,23 @@ class TransactionDetailFragment : Fragment() {
         toneGenerator.startTone(ToneGenerator.TONE_CDMA_CONFIRM, 300)
     }
 
-    private fun showMerchandiseRetailDialog(trans:TransactionDetail) {
+    private fun showMerchandiseRetailDialog(item:TransactionDetail,totalQty:Double) {
         val binding = PopUpListDialogBinding.inflate(layoutInflater)
         val recyclerView = binding.recyclerViewVendibleDialog
         val resultText = binding.txtTotal
-        resultText.text = String.format(Locale.getDefault(), "Remaining : %.2f", trans.qty)//"Remaining ${trans.qty}"
+        val newTrans=item.copy()
+        var remaining=totalQty
+        Log.i("Unit","Fragment item: qty ${item.qty} unit_qty ${item.unit_qty} newTrans: qty${newTrans.qty} unit_qty ${newTrans.unit_qty}")
+        resultText.text = String.format(Locale.getDefault(), "Remaining : %.2f",remaining)//"Remaining ${trans.qty}"
 
         lateinit var adapter: MerchandiseAdapter
-        var remaining=trans.qty
+
+
         var extra=0.0
         adapter = MerchandiseAdapter () {
             val selectedSum = adapter.getCheckedItems().sumOf { it.net }
             if((remaining-selectedSum)>=0)
-                remaining = trans.qty +extra - selectedSum
+                remaining = totalQty +extra - selectedSum
             else{
                 remaining=0.0
             }
@@ -459,7 +465,7 @@ class TransactionDetailFragment : Fragment() {
         }
         val dialog = AlertDialog.Builder(requireContext())
             .setView(binding.root)
-            .setTitle(trans.trans_item_name)
+            .setTitle(newTrans.trans_item_name)
             .setPositiveButton("OK", null)
             .setNegativeButton("Cancel", null)
             .create()
@@ -491,13 +497,20 @@ class TransactionDetailFragment : Fragment() {
         binding.txtTotal.visibility=View.INVISIBLE
 
 
-        lateinit var adapter: MerchandiseAdapter
+        lateinit var adapter: DetailWarnaAdapter
 
-
-        adapter = MerchandiseAdapter () {
-            val selectedSum = adapter.getCheckedItems().sumOf { it.net }
-        }
-
+        adapter = DetailWarnaAdapter(
+            PlusDetailListener { item ->
+                item.selectedQty++
+                val pos = adapter.currentList.indexOf(item)
+                if (pos != -1) adapter.notifyItemChanged(pos)   // ✅ refresh only that row
+            },
+            SubsDetailListener { item ->
+                if (item.selectedQty > 0) item.selectedQty--
+                val pos = adapter.currentList.indexOf(item)
+                if (pos != -1) adapter.notifyItemChanged(pos)
+            }
+        )
         binding.radioGroup.visibility=View.INVISIBLE
         //recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
@@ -515,8 +528,10 @@ class TransactionDetailFragment : Fragment() {
         dialog.setOnShowListener {
             val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             positiveButton.setOnClickListener {
-                val selectedItems = adapter.getCheckedItems()
-                viewModel.onMerchSelected(selectedItems,0.0)
+                val filteredList = adapter.currentList.filter { it.selectedQty > 0 }
+
+
+                viewModel.onMerchSelected(filteredList,0.0)
                 dialog.dismiss()
             }
         }
@@ -525,6 +540,10 @@ class TransactionDetailFragment : Fragment() {
             dialog.dismiss()
         }
         dialog.show()
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }

@@ -3,6 +3,7 @@ package com.example.app21try6.database.tables
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import java.util.Date
 
@@ -28,5 +29,10 @@ data class MerchandiseRetail(
     @ColumnInfo(name="ref")
     var ref:String="",
     @ColumnInfo(name="date")
-    var date: Date = Date()
+    var date: Date = Date(),
+    //@ColumnInfo(name = "initial_net")
+   @Ignore
+    var initialNet:Double=0.0 ,//new column
+    @Ignore
+    var cutCount:Int=0
 )

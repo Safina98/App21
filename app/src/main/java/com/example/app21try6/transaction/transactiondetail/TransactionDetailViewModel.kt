@@ -38,6 +38,8 @@ import java.util.Date
 import java.util.Locale
 import java.util.UUID
 import com.example.app21try6.Constants
+import com.example.app21try6.database.tables.MerchandiseRetailLog
+
 /*
  private val datasource1: TransSumDao,
                                   private val datasource2: TransDetailDao,
@@ -73,8 +75,11 @@ class TransactionDetailViewModel (
     private var _isDiskClicked=MutableLiveData<Boolean>()
     val isDiscClicked:LiveData<Boolean> get() = _isDiskClicked
 
-    private var _multipleMerch=MutableLiveData<TransactionDetail?>()
-    val multipleMerch:LiveData<TransactionDetail?> get() = _multipleMerch
+   // private var _multipleMerch=MutableLiveData<TransactionDetail?>()
+    //val multipleMerch:LiveData<TransactionDetail?> get() = _multipleMerch
+   private val _multipleMerch = MutableLiveData<Pair<TransactionDetail?, Double?>>()
+    val multipleMerch: LiveData<Pair<TransactionDetail?, Double?>> = _multipleMerch
+
 
     private var _pickNewItem=MutableLiveData<String?>()
     val pickNewItem:LiveData<String?> get() = _pickNewItem
@@ -176,7 +181,7 @@ class TransactionDetailViewModel (
     val discountTransBySumId=discountRepo.getTransactionDiscounts(id)
     //Set ui to change icons color when night mode or day mode on
     init {
-        _multipleMerch.value=null
+        _multipleMerch.value=Pair(null,null)
         _retailMerchList.value=null
     }
     fun setUiMode(mode:Int){
@@ -297,9 +302,6 @@ class TransactionDetailViewModel (
             val totalDiscount = discountList.sumOf { it.discountAppliedValue}
             val transSumS: TransactionSummary = transRepo.getTransactionSummaryById(id)
             transSumS.total_after_discount = transSumS.total_trans-totalDiscount
-            Log.i("DiscProbs","total trans: ${transSumS.total_trans}")
-            Log.i("DiscProbs","diskon: ${totalDiscount}")
-            Log.i("DiscProbs","total after discount: ${transSumS.total_after_discount}")
             transRepo.updateTransactionSummary(transSumS)
         }
     }
@@ -365,8 +367,52 @@ class TransactionDetailViewModel (
         merchSelectionDeferred?.complete(Pair(merch, extra))
         merchSelectionDeferred = null
     }
-
     fun updateRetailOnClick(item:TransactionDetail){
+        viewModelScope.launch {
+            val subId=item.sub_id
+            val retailList = stockRepo.selectRetailBySumId(subId ?: -1)
+            val totalNet = retailList?.sumOf { it.net }
+            var trans=item.copy()
+            var unitQty:Double=0.0
+            if (trans.unit==Constants.ITEMUNIT.LSN) {
+                trans = trans.copy(unit_qty = trans.unit_qty*12)
+            }
+
+
+            val totalQty= trans.qty*trans.unit_qty
+            if (item.is_cutted==false){
+                if (totalQty <= (totalNet?:0.0)){
+                    var newItem:TransactionDetail
+                    newItem=item.copy()
+                    if (trans.unit== null || trans.unit==Constants.ITEMUNIT.LSN || trans.unit==Constants.ITEMUNIT.ROLL){
+                        _multipleMerch.value = Pair(
+                            item.copy(),
+                            if (item.unit == Constants.ITEMUNIT.LSN) item.qty * 12
+                            else if( item.unit==Constants.ITEMUNIT.ROLL) item.qty*item.unit_qty
+                            else item.qty
+                        )
+                        _retailMerchList.value = retailList!!.toList()
+                        val merchAndExtra=waitForMerchSelection()
+                        val (merch,extra) = merchAndExtra?: Pair(null, null)
+                        val merchandiseRetailList = merch.toMerchandiseRetailList()
+                        //Log.i("Unit","item: ${item.qty} unit_qty ${item.unit_qty} _multipleMerch: qty${_multipleMerch.value?..qty} unit_qty ${_multipleMerch.value?.unit_qty}")
+                        updateMerchValue(merchandiseRetailList,totalQty,item.copy(),extra)
+                    }
+                }else{
+                    //pop up dialog
+                    val detailWarnaList = stockRepo.getDetailWarnaList(subId?:-1)
+                    _pickNewItem.value=trans.trans_item_name
+                    _retailMerchList.value = detailWarnaList!!.toList()
+                    val detailAndExtra=waitForMerchSelection()
+                    val (detail,exta) = detailAndExtra ?: Pair(null,null)
+                    trackDetailWarna(detail,item)
+                    Toast.makeText(getApplication(),"Net tidak cukup",Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+/*
+    fun updateRetailOnClickOld(item:TransactionDetail){
         viewModelScope.launch {
             val subId=item.sub_id
             val retailList = stockRepo.selectRetailBySumId(subId ?: -1)
@@ -409,6 +455,8 @@ class TransactionDetailViewModel (
             }
         }
     }
+
+ */
     fun List<DetailMerchandiseModel?>?.toMerchandiseRetailList(): List<MerchandiseRetail?>? {
         return this?.map { detail ->
             detail?.id?.let {
@@ -425,6 +473,7 @@ class TransactionDetailViewModel (
     fun updateMerchValue(merchList:List<MerchandiseRetail?>?,qty:Double, trans: TransactionDetail,extra:Double?){
         viewModelScope.launch {
             var remainingQty=qty+ (extra?:0.0)
+           // Log.i("Unit","updateMerchValue  ${trans.qty} unit_qty ${trans.unit_qty} _multipleMerch: qty${_multipleMerch.value?.qty} unit_qty ${_multipleMerch.value?.unit_qty}")
             if (merchList!=null){
                 trans.is_cutted=true
                 merchList.sortedBy { it!!.net }.forEach { merch->
@@ -442,7 +491,53 @@ class TransactionDetailViewModel (
         }
     }
 
-    fun trackDetailWarna(detailWarnaModel: DetailMerchandiseModel?,trans: TransactionDetail){
+    fun createRetailLog(merchandiseRetail: MerchandiseRetail, remainingQty: Double, trans: TransactionDetail):MerchandiseRetailLog{
+
+            val retailLog=MerchandiseRetailLog()
+            retailLog.retailId=merchandiseRetail.id
+            retailLog.transDetailId=trans.trans_detail_id
+            retailLog.ket="Pembelian"
+            retailLog.date=Date()
+            retailLog.subId=trans.sub_id!!
+            retailLog.customer=transSum.value?.cust_name ?: ""
+            retailLog.cutCount = merchandiseRetail.cutCount+1
+            retailLog.detailWarnaNet=merchandiseRetail.initialNet
+            retailLog.previousNet=merchandiseRetail.net
+            retailLog.transDetailQty=trans.qty
+            retailLog.substractedWith=if(remainingQty>=merchandiseRetail.net) merchandiseRetail.net else remainingQty
+        return retailLog
+    }
+
+    fun trackDetailWarna(detailWarnaModelList: List<DetailMerchandiseModel?>?,trans: TransactionDetail){
+        viewModelScope.launch {
+            detailWarnaModelList?.forEach {detailWarnaModel->
+                if (detailWarnaModel!=null){
+                    val detailWarnaTable=detailWarnaModel.toDetailWarnaTable()
+                    detailWarnaTable.batchCount -=detailWarnaModel.selectedQty
+                    val productId = stockRepo.getProdutId(detailWarnaTable.subId) ?: return@launch
+                    val brandId = stockRepo.getBrandId(productId) ?: return@launch
+                    val inventoryLog =createInventoryLog(detailWarnaTable,detailWarnaTable.batchCount,productId,brandId,"Keluar Retail")
+                    val merchandiseRetailList= mutableListOf<MerchandiseRetail?>()
+                    for (i in 0 until detailWarnaModel!!.selectedQty) {
+                        // i goes from 0 until selectedQty - 1
+                        Log.i("DWP","$i")
+                        val merchandiseRetail = detailWarnaModel?.let { createMerchandiseRetail(it) }
+                        merchandiseRetailList.add(merchandiseRetail)
+                    }
+                    //val merchandiseRetail = detailWarnaModel?.let { createMerchandiseRetail(it) }
+                    if (detailWarnaTable.batchCount>0)
+                        stockRepo.updateDetailWarna(detailWarnaTable,inventoryLog,merchandiseRetailList)
+                    else
+                        stockRepo.deleteDetailWarna(detailWarnaTable,inventoryLog,merchandiseRetailList)
+                }
+                updateRetailOnClick(trans)
+            }
+
+        }
+
+
+    }
+    fun trackDetailWarnaOld(detailWarnaModel: DetailMerchandiseModel?,trans: TransactionDetail){
         viewModelScope.launch {
             if (detailWarnaModel!=null){
                 val detailWarnaTable=detailWarnaModel.toDetailWarnaTable()
@@ -497,7 +592,7 @@ class TransactionDetailViewModel (
     }
     fun setValuesToNull(){
         _retailMerchList.value=null
-        _multipleMerch.value=null
+        _multipleMerch.value=Pair(null,null)
         _pickNewItem.value=null
     }
     fun setPickNewItemToNull(){

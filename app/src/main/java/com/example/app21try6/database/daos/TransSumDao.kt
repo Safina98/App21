@@ -73,7 +73,7 @@ interface TransSumDao {
         AND (:endDate IS NULL OR ts.trans_date <= :endDate))
         
         OR 
-        
+       
         -- Case 3: No name and no sumId → return all within date range
         (:name IS NULL AND :sumId IS NULL
         AND (:startDate IS NULL OR ts.trans_date >= :startDate)
@@ -82,7 +82,6 @@ interface TransSumDao {
     ORDER BY ts.trans_date DESC
     LIMIT :limit OFFSET :offset
 """)
-
     fun getTransactionSummariesByItemName(name: String?, sumId: Int?,startDate: Date?,endDate: Date?,limit:Int,offset: Int): List<TransactionSummary>
 
     @Query("SELECT * from trans_sum_table WHERE sum_id = :sum_id_")

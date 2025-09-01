@@ -46,6 +46,7 @@ interface DetailWarnaDao {
             "    net, \n" +
             "    NULL AS batchCount, \n" +
             "    NULL AS ket, \n" +
+            "    0 AS selectedQty, \n" +
             "    date AS date \n" +
             "FROM merchandise_table \n WHERE sub_id=:subId")
     fun getRetaiBySubId(subId:Int):List<DetailMerchandiseModel>
@@ -57,6 +58,7 @@ interface DetailWarnaDao {
             "    net, \n" +
             "    batchCount, \n" +
             "    ket, \n" +
+            "    0 AS selectedQty, \n" +
             "    NULL AS date \n" +
             "FROM detail_warna_table\n WHERE subId=:subId")
     fun getDetailWarnaBySubId(subId:Int):List<DetailMerchandiseModel>
@@ -78,12 +80,32 @@ interface DetailWarnaDao {
         }//TODO insert merchandise retail
     }
     @Transaction
+    fun updateDetailWarnaAndInsertLog(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog,merchandiseRetail: List<MerchandiseRetail?>) {
+        update(detailWarnaTable)
+        insertLog(inventoryLog)
+        merchandiseRetail.forEach {
+            if (it!=null)
+                insert(it)
+            }
+    }
+    @Transaction
     fun deleteDetailWarnaAndInsertLog(detailWarnaId:Int,inventoryLog: InventoryLog,merchandiseRetail: MerchandiseRetail?){
         insertLog(inventoryLog)
         delete(detailWarnaId)
         if (merchandiseRetail!=null) {
             insert(merchandiseRetail)
         }//TODO insert merchandise retail
+    }
+    @Transaction
+    fun deleteDetailWarnaAndInsertLog(detailWarnaId:Int,inventoryLog: InventoryLog,merchandiseRetail: List<MerchandiseRetail?>){
+        insertLog(inventoryLog)
+        delete(detailWarnaId)
+        merchandiseRetail.forEach {
+            if (it!=null) {
+                insert(it)
+            }
+        }
+
     }
     @Transaction
     fun updateTransDetailAndRetail(merchandiseRetail: MerchandiseRetail,transactionDetail: TransactionDetail){

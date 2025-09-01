@@ -50,7 +50,7 @@ data class InventoryLog(
     // merk_table refMerk
     @ColumnInfo(name="brandId")
     var brandId: Int? =null,
-    // warna_table warnaRef
+    // product table
     @ColumnInfo(name="productId")
     var productId: Int? = null,
     @ColumnInfo(name="subProductId")
@@ -71,14 +71,3 @@ data class InventoryLog(
     //added column
     var barangLogKet: String = ""
 )
-/*
-* var id long
-* var sub_id int
-* var detail_warna_id/ref Int/string
-* var merch retail id/ref Int/string
-* var detail net double
-* var potonganke Int
-* net sebelum di potong: double
-* net dipotong berapa
-*
-* */

@@ -165,11 +165,22 @@ class StockRepositories (
             detailWarnaDao.updateDetailWarnaAndInsertLog(detailWarnaTable,inventoryLog,merchandiseRetail)
         }
     }
+    suspend fun updateDetailWarna(detailWarnaTable: DetailWarnaTable, inventoryLog: InventoryLog,merchandiseRetail: List<MerchandiseRetail?>){
+        withContext(Dispatchers.IO){
+            detailWarnaDao.updateDetailWarnaAndInsertLog(detailWarnaTable,inventoryLog,merchandiseRetail)
+        }
+    }
     suspend fun deleteDetailWarna(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog,merchandiseRetail: MerchandiseRetail?){
         withContext(Dispatchers.IO){
             detailWarnaDao.deleteDetailWarnaAndInsertLog(detailWarnaTable.id,inventoryLog,merchandiseRetail)
         }
     }
+    suspend fun deleteDetailWarna(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog,merchandiseRetail: List<MerchandiseRetail?>){
+        withContext(Dispatchers.IO){
+            detailWarnaDao.deleteDetailWarnaAndInsertLog(detailWarnaTable.id,inventoryLog,merchandiseRetail)
+        }
+    }
+
     suspend fun deleteDetailWarnaBySubId(subId:Int){
         withContext(Dispatchers.IO){
             detailWarnaDao.deleteDetailWarnaBySubId(subId)
