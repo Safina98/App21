@@ -134,12 +134,12 @@ class BrandStockViewModel(
     }
 
    // private suspend fun deleteC(categoryName: String){ withContext(Dispatchers.IO){ database1.clear(categoryName) }}
-    fun insertAnItemBrandStock(brand_name:String){
+    fun insertAnItemBrandStock(brand_name:String,categoryName: String){
         uiScope.launch {
             if (brand_name!="") {
                 val brand = Brand()
                 brand.brand_name = brand_name
-                brand.cath_code = repository.getCategoryIdByName(selectedKategoriSpinner.value ?: "")
+                brand.cath_code = repository.getCategoryIdByName(categoryName)
                 repository.insertBrand(brand)
                 updateRv()
             }
@@ -205,11 +205,11 @@ class BrandStockViewModel(
         repository.updateCategory(category)
         }
     }
-    fun updateBrand(brandPm: BrandProductModel){ uiScope.launch {
+    fun updateBrand(brandPm: BrandProductModel,categoryName:String){ uiScope.launch {
         val brand=Brand()
         brand.brand_name=brandPm.name
         brand.brand_id=brandPm.id
-        brand.cath_code=brandPm.parentId!!
+        brand.cath_code=repository.getCategoryIdByName(categoryName)
         repository.updateBrand(brand)
         updateRv()
     } }

@@ -234,22 +234,18 @@ class BrandStockFragment : Fragment() {
                 if (layoutOneViews[0].visibility==View.VISIBLE){
                     if (viewModel.selectedBrand.value==null){
                         if (layoutOneViews[0].visibility == View.VISIBLE) {
-                            DialogUtils.updateDialog(
+                            DialogUtils.updateBrandDialog(
                                 context = requireContext(),
                                 viewModel = viewModel, // Replace with your ViewModel instance
                                 model = null,         // Replace with your model instance
                                 title = "Brand Baru",
-                                getBrandName = { (it as Brand).brand_name },
-                                setBrandName = { it, name -> (it as Brand).brand_name = name },
-                                updateFunction = { vm, item -> (vm as BrandStockViewModel).updateBrand(item as BrandProductModel) },
-                                insertFunction = { vm, name -> (vm as BrandStockViewModel).insertAnItemBrandStock(name as String) }
+                                categoryName = viewModel.selectedKategoriSpinner.value?:"",
+                                categoryList = viewModel.cathList_.value,
                             )
                         }
-
                     }else{
                         this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct())
                        // DialogUtils.updateDialog(requireContext(),viewModel,list)
-
                     }
                 }else{
                     DialogUtils.updateDialog(
@@ -262,7 +258,6 @@ class BrandStockFragment : Fragment() {
                         updateFunction = { vm, item -> (vm as BrandStockViewModel).updateCath(item as CategoryModel) },
                         insertFunction = { vm, name -> (vm as BrandStockViewModel).insertItemCath(name as String) }
                     )
-
                 }
                 viewModel.onItemAdded()
             }
@@ -297,26 +292,22 @@ class BrandStockFragment : Fragment() {
 
     private fun showDialogBox(viewModel: BrandStockViewModel, vendible: BrandProductModel,modelType:String) {
         val builder = AlertDialog.Builder(context)
-
         builder.setMessage("Chosoe Action")
             .setCancelable(true)
             .setPositiveButton("Update") { dialog, id ->
                 if(modelType==Constants.MODELTYPE.BRAND){
-                    DialogUtils.updateDialog(
+                    DialogUtils.updateBrandDialog(
                         context = requireContext(),
                         viewModel = viewModel, // Replace with your ViewModel instance
                         model = vendible,         // Replace with your model instance
                         title = "Update Brand",
-                        getBrandName = { (it as BrandProductModel).name },
-                        setBrandName = { it, name -> (it as BrandProductModel).name = name },
-                        updateFunction = { vm, item -> (vm as BrandStockViewModel).updateBrand(item as BrandProductModel)},
-                        insertFunction = { vm, name -> (vm as BrandStockViewModel).insertAnItemBrandStock(name as String) }
+                        categoryName=viewModel.selectedKategoriSpinner.value?:"",
+                        categoryList = viewModel.cathList_.value
                     )
                 }else{
                     this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct())
                 //DialogUtils.updateDialog(requireContext(),viewModel,list)
                 }
-
             }
             .setNegativeButton("Delete") { dialog, id ->
                 DialogUtils.showDeleteDialog(
@@ -329,7 +320,6 @@ class BrandStockFragment : Fragment() {
                         else
                             (vm as BrandStockViewModel).deleteProduct(item as BrandProductModel)
                     })
-
             }
         val alert = builder.create()
         alert.show()
