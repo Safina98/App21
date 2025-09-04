@@ -1,5 +1,6 @@
 package com.example.app21try6.database.daos
 
+import android.hardware.camera2.CameraExtensionSession.StillCaptureLatency
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
@@ -25,6 +26,8 @@ interface CategoryDao {
     fun getAllCategoryName():List<String>
     @Query("SELECT category_id FROM category_table WHERE category_name = :name")
     fun getCategoryId(name:String):Int
+    @Query("SELECT category_name FROM category_table WHERE category_id=:id")
+    fun getCategoryNameById(id:Int):String
     @Query("INSERT INTO category_table(category_name) SELECT :cath_name_ WHERE NOT EXISTS (SELECT 1 FROM category_table WHERE category_name = :cath_name_)")
     fun insertIfNotExist(cath_name_:String)
     @Transaction

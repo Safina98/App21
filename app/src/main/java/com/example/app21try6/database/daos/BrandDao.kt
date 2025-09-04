@@ -19,6 +19,13 @@ interface BrandDao {
 
     @Query("SELECT brand_id as id, brand_name as name,cath_code as parentId from brand_table WHERE cath_code IS null OR cath_code=:catId")
     fun getBrandModelByCatId(catId:Int?):List<BrandProductModel>
+    @Query("SELECT  brand_name  from brand_table WHERE  cath_code=:catId")
+    fun getBrandNameListByCatName(catId:Int):List<String>
+
+    @Query("SELECT brand_id FROM brand_table WHERE brand_name =:name AND cath_code=:cath_code")
+    fun getBrandIdbyName(name:String,cath_code:Int):Int?
+    @Query("SELECT brand_name FROM brand_table WHERE brand_id=:id")
+    fun getBrandNameById(id:Int):String
 
     @Query("SELECT sub_name as subProduct, " +
             "warna as warna, " +

@@ -35,6 +35,11 @@ class StockRepositories (
     fun getCategoryNameLiveData(): LiveData<List<String>> {
         return categoryDao.getName()
     }
+    suspend fun getCategoryNameById(id:Int):String{
+        return withContext(Dispatchers.IO){
+            categoryDao.getCategoryNameById(id)
+        }
+    }
     //get exported data
     fun getExportedStockData(): LiveData<List<ExportModel>> {
         return brandDao.getExportedData()
@@ -51,7 +56,6 @@ class StockRepositories (
         return withContext(Dispatchers.IO){
             categoryDao.getCategoryId(id)
         }
-
     }
     suspend fun insertCategory(category: Category){ withContext(Dispatchers.IO){ categoryDao.insert(category) } }
     suspend fun updateCategory(category: Category){withContext(Dispatchers.IO){ categoryDao.update(category) } }
@@ -66,12 +70,15 @@ class StockRepositories (
     suspend fun insertBrand(brand: Brand){ withContext(Dispatchers.IO){ brandDao.insert(brand) } }
     // get brand recycler view data by categoryId
     suspend fun getBrandByCategoryId(id:Int):List<BrandProductModel>{ return withContext(Dispatchers.IO){ brandDao.getBrandModelByCatId(id) } }
+    suspend fun getBrandNameListByCategoryName(cat:Int):List<String>{ return withContext(Dispatchers.IO){ brandDao.getBrandNameListByCatName(cat) } }
     //update brand
     suspend fun updateBrand(brand: Brand){ withContext(Dispatchers.IO){ brandDao.update(brand) } }
     //delete brand
     suspend fun deleteBrand(id:Int){ withContext(Dispatchers.IO){ brandDao.deleteBrand(id) } }
     //get brand id by product id
     suspend fun getBrandId(subId:Int?):Int?{ return withContext(Dispatchers.IO){ productDao.getBrandIdByProductId(subId) } }
+    suspend fun getBrandIdByName(name:String,catCode:Int):Int?{return withContext(Dispatchers.IO){brandDao.getBrandIdbyName(name,catCode)} }
+    suspend fun getBrandNameyId(id:Int):String{return withContext(Dispatchers.IO){brandDao.getBrandNameById(id)} }
 
     //////////////////////////////////////Product///////////////////////////////////////
     //get product recyclerview data

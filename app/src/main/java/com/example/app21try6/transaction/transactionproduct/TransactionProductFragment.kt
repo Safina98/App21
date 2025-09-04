@@ -42,7 +42,6 @@ class TransactionProductFragment : Fragment() {
         val transRepo= TransactionsRepository(application)
         val sumAndProductId= arguments?.let { VendibleFragmentArgs.fromBundle(it).date }
         var datee  = sumAndProductId!!.toMutableList()
-        Log.i("SUMIDPROB","TransactionProductFragment arguments ${sumAndProductId[0]}")
 
         viewModel = ViewModelProvider(requireActivity(), TransactionSelectViewModelFactory(stockRepo,transRepo,sumAndProductId[0].toInt()!!,sumAndProductId,application))
             .get(TransactionSelectViewModel::class.java)

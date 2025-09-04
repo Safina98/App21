@@ -27,6 +27,8 @@ import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.repositories.DiscountRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.databinding.FragmentBrandStockBinding
+import com.example.app21try6.transaction.transactionselect.TransactionSelectViewModel
+import com.example.app21try6.transaction.transactionselect.TransactionSelectViewModelFactory
 import com.example.app21try6.utils.CsvHandler
 import com.example.app21try6.utils.DatabaseBackupHelper
 import com.example.app21try6.utils.DialogUtils
@@ -37,7 +39,7 @@ class BrandStockFragment : Fragment() {
     private val PERMISSION_REQUEST_CODE = 200
     private lateinit var csvHandler: CsvHandler
     val requestcode = 1
-    private val viewModel:BrandStockViewModel by viewModels()
+    private lateinit var viewModel: BrandStockViewModel
     private var list= mutableListOf<String>()
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -52,14 +54,18 @@ class BrandStockFragment : Fragment() {
         val application = requireNotNull(this.activity).application
         val repository = StockRepositories(application)
         val discountRepository=DiscountRepository(application)
-        val viewModelFactory = BrandStockViewModelFactory(repository,discountRepository,application)
+       // val viewModelFactory = BrandStockViewModelFactory(repository,discountRepository,application)
+        // val viewModel = ViewModelProvider(this,viewModelFactory).get(BrandStockViewModel::class.java)
+        // val viewModel = ViewModelProvider(this,viewModelFactory).get(BrandStockViewModel::class.java)
+        viewModel = ViewModelProvider(requireActivity(), BrandStockViewModelFactory(repository,discountRepository,application))
+            .get(BrandStockViewModel::class.java)
         binding.lifecycleOwner =this
         val layoutOneViews = listOf(
             binding.spinnerM,
             binding.rvBrandStock,
         )
         csvHandler = CsvHandler(requireContext())
-        val viewModel = ViewModelProvider(this,viewModelFactory).get(BrandStockViewModel::class.java)
+
         binding.brandStockViewModel = viewModel
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -241,7 +247,8 @@ class BrandStockFragment : Fragment() {
                         }
 
                     }else{
-                        DialogUtils.updateDialog(requireContext(),viewModel,list)
+                        this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct())
+                       // DialogUtils.updateDialog(requireContext(),viewModel,list)
 
                     }
                 }else{
@@ -270,7 +277,8 @@ class BrandStockFragment : Fragment() {
         viewModel.addProduct.observe(viewLifecycleOwner, Observer {
             if (it==true){
                 val list=viewModel.allDiscountFromDB.value
-                DialogUtils.updateDialog(requireContext(),viewModel,list)
+                this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct())
+                //DialogUtils.updateDialog(requireContext(),viewModel,list)
                 viewModel.onProductAdded()
             }
         })
@@ -305,7 +313,8 @@ class BrandStockFragment : Fragment() {
                         insertFunction = { vm, name -> (vm as BrandStockViewModel).insertAnItemBrandStock(name as String) }
                     )
                 }else{
-                    DialogUtils.updateDialog(requireContext(),viewModel,list)
+                    this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct())
+                //DialogUtils.updateDialog(requireContext(),viewModel,list)
                 }
 
             }

@@ -68,6 +68,9 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@android:anim/slide_in_left"
             app:popExitAnim="@android:anim/slide_out_right"/>
+        <action
+            android:id="@+id/action_brandStockFragment_to_inputUpdateProduct"
+            app:destination="@id/inputUpdateProduct" />
     </fragment>
     <fragment
         android:id="@+id/productStockFragment"
@@ -263,5 +266,9 @@
         android:name="com.example.app21try6.stock.trackInventory.TrackFragment"
         android:label="fragment_track"
         tools:layout="@layout/fragment_track" />
+    <fragment
+        android:id="@+id/inputUpdateProduct"
+        android:name="com.example.app21try6.stock.InputUpdateProduct"
+        android:label="InputUpdateProduct" />
 
 </navigation>

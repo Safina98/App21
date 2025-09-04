@@ -10,6 +10,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.room.ColumnInfo
 import com.example.app21try6.database.*
 import com.example.app21try6.database.daos.BrandDao
 import com.example.app21try6.database.tables.Category
@@ -82,6 +83,23 @@ class BrandStockViewModel(
     val discountName=MutableLiveData<String?>("")
     val _product=MutableLiveData<Product?>()
 
+    /////////////////////////// Produk variables///////////////////////////////////////////////////////////
+    var productName = MutableLiveData<String>()
+    var productPice=MutableLiveData<Int>()
+    var productCapital=MutableLiveData<Int>()
+    var checkBoxBoolean=MutableLiveData<Boolean>()
+    var bestSelling=MutableLiveData<Boolean>()
+    var defaultNet=MutableLiveData<Double>()
+    var alternatePrice=MutableLiveData<Double>()
+    var branName=MutableLiveData<String>()
+    var categoryName=MutableLiveData<String>()
+    var discountId=MutableLiveData<Int?>(null)
+    var purchasePrice=MutableLiveData<Int?>(null)
+    var puchaseUnit=MutableLiveData<String?>()
+    var alternateCapital=MutableLiveData<Double>()
+
+    private var _navigateBackToBrandStok=MutableLiveData<Boolean>()
+    val navigateBackToBrandStok:LiveData<Boolean> get()=_navigateBackToBrandStok
 
     fun setSelectedKategoriValue(value: String) {
         viewModelScope.launch {
@@ -225,15 +243,74 @@ class BrandStockViewModel(
         viewModelScope.launch {
             val product= repository.getProductById(id)
             _product.value=product
+            productName.value=product.product_name
+            productPice.value=product.product_price
+            productCapital.value=product.product_capital
+            checkBoxBoolean.value=product.checkBoxBoolean
+            bestSelling.value=product.bestSelling
+            defaultNet.value=product.default_net
+            alternatePrice.value=product.alternate_price
+            branName.value= repository.getCategoryNameById(product.brand_code)//selectedBrand.value?.name?: ""
+            categoryName.value= repository.getCategoryNameById(product.cath_code)//_selectedKategoriSpinner.value ?: ""
+            discountId=MutableLiveData<Int?>(null)
+            purchasePrice.value=product.purchasePrice
+            puchaseUnit.value=product.puchaseUnit
+            alternateCapital=MutableLiveData<Double>()
             getDiscNameById(product.discountId)
+        }
+    }
+    private val _brandList = MutableLiveData<List<String>>()
+    val brandList: LiveData<List<String>> get() = _brandList
+
+    fun onCategorySelected(category: String) {
+        viewModelScope.launch {
+            Log.i("SelectedCategory","$category")
+            val catId=repository.getCategoryIdByName(category)
+            val brands = repository.getBrandNameListByCategoryName(catId) // query from DB
+            brands.forEach {
+                Log.i("SelectedCategory","$it")
+            }
+            _brandList.postValue(brands)
+        }
+    }
+    fun onBtnSimpanClick(){
+        viewModelScope.launch {
+            val product=Product()
+            product.product_name=(productName.value?:"").uppercase().trim()
+            product.brand_code = selectedBrand.value!!.id
+            product.product_price = productPice.value?:0
+            product.cath_code = kategori_id.value?:0
+            product.product_capital = productCapital.value?:0
+            product.discountId=discountRepository.getDiscountIdByName((discountName.value?:"").uppercase().trim())
+            product.alternate_capital=alternateCapital.value ?: 0.0
+            product.default_net=defaultNet.value ?: 0.0
+            product.purchasePrice=purchasePrice.value ?: 0
+            product.puchaseUnit=(puchaseUnit.value)?.uppercase()?.trim()
+            product.alternate_price=alternatePrice.value ?: 0.0
+            product.cath_code=repository.getCategoryIdByName(categoryName.value ?: "")
+            product.brand_code=repository.getBrandIdByName(branName.value?:"",product.cath_code)?:0
+            if (product.brand_code!=0 && product.cath_code!=0) {
+                if (_product.value!=null){
+                     repository.insertProduct(product)
+                }
+                else{
+                    product.product_id=_product.value!!.product_id
+                    updateProduct(product,"")
+                }
+                updateProductRv(selectedBrand.value?.id)
+                onNavigateBackToBrandStock()
+            }else{
+                Toast.makeText(getApplication(),"kategori atau brand tidak valid",Toast.LENGTH_SHORT).show()
+            }
+
         }
     }
     fun updateProduct(product: Product, discName:String){
         uiScope.launch{
-            product.discountId=discountRepository.getDiscountIdByName(discName)
+           // product.discountId=discountRepository.getDiscountIdByName(discName)
             repository.updateProduct(product)
             _product.value=null
-            updateProductRv(product.brand_code)
+            //updateProductRv(product.brand_code)
         }
     }
     fun insertAnItemProductStock(product_name:String,price:Int,capital:Int,capital2:Double,modusNet:Double,discName: String,purchasePrice:Int?,purcaseUnit:String?){
@@ -270,7 +347,12 @@ class BrandStockViewModel(
             updateProductRv(product.parentId)
 
         } }
-
+    fun onNavigateBackToBrandStock(){
+        _navigateBackToBrandStok.value=true
+    }
+    fun onNavigatedBackToBrandStock(){
+        _navigateBackToBrandStok.value=false
+    }
 
     override fun onCleared() {
         super.onCleared()

@@ -104,7 +104,6 @@ object DialogUtils{
         val view = inflater.inflate(R.layout.pop_up_update, null)
         val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
         // Set initial text if model is not null
-
         if (model != null) {
             textKet.setText(getBrandName(model))
         }
@@ -133,6 +132,9 @@ object DialogUtils{
         alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context, R.color.dialogbtncolor))
     }
 
+
+
+    /*
     fun updateDialog(context: Context,viewModel: BrandStockViewModel,discList:List<String>?) {
         val vendible=viewModel._product.value
 
@@ -172,8 +174,8 @@ object DialogUtils{
         textDisc.setAdapter(merkAdapter)
         // Observe the ViewModel LiveData and update the adapter
 
-                merkAdapter.clear() // Clear the adapter's data
-                merkAdapter.addAll(discList?: emptyList()) // Add the sorted data to the adapter
+        merkAdapter.clear() // Clear the adapter's data
+        merkAdapter.addAll(discList?: emptyList()) // Add the sorted data to the adapter
 
         // Set the data for the dialog fields
         if (vendible!=null){
@@ -234,4 +236,6 @@ object DialogUtils{
         alert.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
         alert.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
     }
+
+     */
 }
