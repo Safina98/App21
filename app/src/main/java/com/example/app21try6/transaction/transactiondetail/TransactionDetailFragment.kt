@@ -33,6 +33,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
+import com.example.app21try6.database.models.DetailMerchandiseModel
 import com.example.app21try6.database.models.PaymentModel
 import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.DiscountRepository
@@ -41,6 +42,7 @@ import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.databinding.FragmentTransactionDetailBinding
 import com.example.app21try6.databinding.PopUpListDialogBinding
+import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import java.util.*
@@ -129,6 +131,7 @@ class TransactionDetailFragment : Fragment() {
             printReceipt()
         }
         viewModel.multipleMerch.observe(viewLifecycleOwner){
+            Log.i("multipleMerch","fragment Obserbver ${it?.first}")
             if (it!=null){
                 val (a, b) = it
                 if(a!=null && b!=null)
@@ -368,7 +371,6 @@ class TransactionDetailFragment : Fragment() {
                     calendar.set(Calendar.HOUR_OF_DAY, hour)
                     calendar.set(Calendar.MINUTE, minute)
                     val selectedDateTime = calendar.time // Convert to Date object
-
                     // Update PaymentModel or ViewModel
                     if (paymentModel != null) {
                         paymentModel.payment_date = selectedDateTime
@@ -380,9 +382,7 @@ class TransactionDetailFragment : Fragment() {
             }
             .setNegativeButton("Cancel", null)
             .create()
-
         dialog.show()
-
         // Customize button colors
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
@@ -424,46 +424,50 @@ class TransactionDetailFragment : Fragment() {
         toneGenerator.startTone(ToneGenerator.TONE_CDMA_CONFIRM, 300)
     }
 
-    private fun showMerchandiseRetailDialog(item:TransactionDetail,totalQty:Double) {
+    private fun showMerchandiseRetailDialog(item: TransactionDetail, totalQty: Double) {
         val binding = PopUpListDialogBinding.inflate(layoutInflater)
         val recyclerView = binding.recyclerViewVendibleDialog
         val resultText = binding.txtTotal
-        val newTrans=item.copy()
-        var remaining=totalQty
+        val newTrans = item.copy()
+        var remaining = totalQty
         Log.i("Unit","Fragment item: qty ${item.qty} unit_qty ${item.unit_qty} newTrans: qty${newTrans.qty} unit_qty ${newTrans.unit_qty}")
-        resultText.text = String.format(Locale.getDefault(), "Remaining : %.2f",remaining)//"Remaining ${trans.qty}"
+        resultText.text = String.format(Locale.getDefault(), "Remaining : %.2f",remaining)
 
+        var extra = 0.0
         lateinit var adapter: MerchandiseAdapter
+        lateinit var dialog: AlertDialog   // 🔹 declare first
 
-
-        var extra=0.0
-        adapter = MerchandiseAdapter () {
-            val selectedSum = adapter.getCheckedItems().sumOf { it.net }
-            if((remaining-selectedSum)>=0)
-                remaining = totalQty +extra - selectedSum
-            else{
-                remaining=0.0
+        adapter = MerchandiseAdapter(
+            {
+                val selectedSum = adapter.getCheckedItems().sumOf { it.net }
+                remaining = if ((remaining - selectedSum) >= 0) {
+                    totalQty + extra - selectedSum
+                } else {
+                    0.0
+                }
+                resultText.text = String.format(Locale.getDefault(), "Remaining : %.2f", remaining)
+            },
+            ClickMerchListener {
+                showUMerchNetDialog(it, "Update Retail Net")
+                dialog.dismiss() // 🔹 close here
             }
-            resultText.text = String.format(Locale.getDefault(), "Remaining : %.2f", remaining)//"Remaining: $remaining"
-        }
-
-       binding.radioGroup.setOnCheckedChangeListener { group, checkedId ->
-           extra= when (checkedId) {
-                R.id.rd_kain->   0.2
-                R.id.rd_busa ->  0.1
+        )
+        binding.radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            extra = when (checkedId) {
+                R.id.rd_kain -> 0.2
+                R.id.rd_busa -> 0.1
                 else -> 0.0
             }
-           resultText.text = "Current value: %.2f".format((remaining+extra))
-           Log.i("RDP","extra :${extra}")
+            resultText.text = "Current value: %.2f".format((remaining + extra))
+            Log.i("RDP","extra :${extra}")
         }
-        //recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
-        viewModel.retailMerchList.observe(viewLifecycleOwner){
-            if (it!=null){
+        viewModel.retailMerchList.observe(viewLifecycleOwner) {
+            if (it != null) {
                 adapter.submitList(it.toList())
             }
         }
-        val dialog = AlertDialog.Builder(requireContext())
+        dialog = AlertDialog.Builder(requireContext()) // 🔹 assign after declaration
             .setView(binding.root)
             .setTitle(newTrans.trans_item_name)
             .setPositiveButton("OK", null)
@@ -472,30 +476,30 @@ class TransactionDetailFragment : Fragment() {
         dialog.setOnShowListener {
             val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             positiveButton.setOnClickListener {
-                if (remaining==0.0){
+                if (remaining == 0.0) {
                     val selectedItems = adapter.getCheckedItems()
-                    viewModel.onMerchSelected(selectedItems,extra)
+                    viewModel.onMerchSelected(selectedItems, extra)
                     dialog.dismiss()
-                }else{
-
-                    Toast.makeText(context,"net tidak cukup",Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(context, "net tidak cukup", Toast.LENGTH_SHORT).show()
                 }
             }
         }
+
         dialog.setOnDismissListener {
             viewModel.setValuesToNull()
-            dialog.dismiss()
         }
+
         dialog.show()
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }
 
+
     private fun showDetailWarnaDialog(itemName:String) {
         val binding = PopUpListDialogBinding.inflate(layoutInflater)
         val recyclerView = binding.recyclerViewVendibleDialog
         binding.txtTotal.visibility=View.INVISIBLE
-
 
         lateinit var adapter: DetailWarnaAdapter
 
@@ -529,15 +533,13 @@ class TransactionDetailFragment : Fragment() {
             val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             positiveButton.setOnClickListener {
                 val filteredList = adapter.currentList.filter { it.selectedQty > 0 }
-
-
                 viewModel.onMerchSelected(filteredList,0.0)
                 dialog.dismiss()
             }
         }
         dialog.setOnDismissListener {
-            viewModel.setValuesToNull()
             dialog.dismiss()
+            viewModel.setValuesToNull()
         }
         dialog.show()
         dialog.window?.setLayout(
@@ -546,5 +548,21 @@ class TransactionDetailFragment : Fragment() {
         )
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+    }
+    fun showUMerchNetDialog(model: DetailMerchandiseModel, title:String){
+        Log.i("multipleMerch","showUpdateNet ${viewModel.multipleMerch.value?.first}")
+        DialogUtils.updateDialogQty<TransactionDetailViewModel, DetailMerchandiseModel>(
+            context = requireContext(),
+            viewModel = viewModel,
+            item=model,
+            title = title,
+            setBrandName = { it, number ->
+                val model = it
+                    model.net=  number.toDouble()
+            },
+            onUpdate = { vm, item ->
+                (vm as TransactionDetailViewModel).updateMerchNet(item as DetailMerchandiseModel)
+            },
+        )
     }
 }

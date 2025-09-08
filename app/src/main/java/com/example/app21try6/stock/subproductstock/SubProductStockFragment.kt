@@ -351,7 +351,6 @@ class SubProductStockFragment : Fragment() {
                 (vm as SubViewModel).updateRetail(item as DetailMerchandiseModel)
             },
         )
-
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

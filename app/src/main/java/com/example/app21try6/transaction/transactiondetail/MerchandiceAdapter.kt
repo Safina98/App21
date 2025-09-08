@@ -76,15 +76,17 @@ class MerchCheckBoxListener(val checkBoxListener:(view: View, merch:MerchandiseR
  */
 
 class MerchandiseAdapter(
-    private val onCheckChanged: (() -> Unit)? = null
+    private val onCheckChanged: (() -> Unit)? = null,
+    val clickMerchListener: ClickMerchListener
 ) : ListAdapter<DetailMerchandiseModel, MerchandiseAdapter.ViewHolder>(MerchandiseDiffCallback()) {
 
     private val checkedMap: MutableMap<Int, Boolean> = mutableMapOf()
 
     inner class ViewHolder(private val binding: TextItemViewBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: DetailMerchandiseModel, isChecked: Boolean) {
+        fun bind(item: DetailMerchandiseModel, isChecked: Boolean,clickMerchListener: ClickMerchListener) {
             // Safe manual binding
             binding.item=item
+            binding.clickListener=clickMerchListener
             if (item.batchCount==null){
                 binding.txtNet.text= String.format("Id: %d, Net: %.2f", item.id, item.net)
             }else{
@@ -110,7 +112,7 @@ class MerchandiseAdapter(
         val item = getItem(position)
         Log.d("ADAPTER_ITEM", "Item at $position: $item")
         val isChecked = checkedMap[item.id] ?: false
-        holder.bind(item, isChecked)
+        holder.bind(item, isChecked,clickMerchListener)
     }
 
     fun getCheckedItems(): List<DetailMerchandiseModel> {
@@ -131,3 +133,6 @@ class MerchandiseDiffCallback : DiffUtil.ItemCallback<DetailMerchandiseModel>() 
     }
 }
 
+class ClickMerchListener(val clickListener:(dmModel:DetailMerchandiseModel)->Unit){
+    fun onPlusButtonClick(dmModel:DetailMerchandiseModel)= clickListener(dmModel)
+}

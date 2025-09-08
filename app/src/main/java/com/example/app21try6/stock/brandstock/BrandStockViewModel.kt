@@ -250,13 +250,13 @@ class BrandStockViewModel(
             bestSelling.value=product.bestSelling
             defaultNet.value=product.default_net
             alternatePrice.value=product.alternate_price
-            branName.value= repository.getCategoryNameById(product.brand_code)//selectedBrand.value?.name?: ""
             categoryName.value= repository.getCategoryNameById(product.cath_code)//_selectedKategoriSpinner.value ?: ""
             discountId=MutableLiveData<Int?>(null)
             purchasePrice.value=product.purchasePrice
             puchaseUnit.value=product.puchaseUnit
             alternateCapital=MutableLiveData<Double>()
-            getDiscNameById(product.discountId)
+            discountName.value=discountRepository.getDiscountNameById(product.discountId)
+            branName.value= repository.getBrandNameyId(product.brand_code)//selectedBrand.value?.name?: ""
         }
     }
     private val _brandList = MutableLiveData<List<String>>()
@@ -313,26 +313,7 @@ class BrandStockViewModel(
             //updateProductRv(product.brand_code)
         }
     }
-    fun insertAnItemProductStock(product_name:String,price:Int,capital:Int,capital2:Double,modusNet:Double,discName: String,purchasePrice:Int?,purcaseUnit:String?){
-        uiScope.launch {
-            if (product_name!="") {
-                val product = Product()
-                product.brand_code = selectedBrand.value!!.id
-                product.product_name = product_name
-                product.product_price = price
-                product.cath_code = kategori_id.value?:0
-                product.product_capital = price
-                product.discountId=discountRepository.getDiscountIdByName(discName)
-                product.product_capital=capital
-                product.alternate_capital=capital2
-                product.default_net=modusNet
-                product.purchasePrice=purchasePrice
-                product.puchaseUnit=purcaseUnit
-                repository.insertProduct(product)
-                updateProductRv(selectedBrand.value?.id)
-            }
-        }
-    }
+
     fun getDiscNameById(id:Int?){
         viewModelScope.launch {
             val disc = discountRepository.getDiscountNameById(id)

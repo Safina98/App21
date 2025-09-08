@@ -6,6 +6,9 @@
         <variable
             name="item"
             type="com.example.app21try6.database.models.DetailMerchandiseModel"/>
+        <variable
+            name="clickListener"
+            type="com.example.app21try6.transaction.transactiondetail.ClickMerchListener" />
 
     </data>
 
@@ -21,10 +24,10 @@
                 android:layout_marginStart="4dp"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:onClick="@{()->clickListener.onPlusButtonClick(item)}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
 
             <CheckBox
                 android:id="@+id/checkbox_net"

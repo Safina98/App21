@@ -25,12 +25,9 @@ import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.database.tables.MerchandiseRetail
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
-import com.example.app21try6.formatRupiah
 import com.example.app21try6.utils.TextGenerator
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.lang.Math.abs
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -39,17 +36,9 @@ import java.util.Locale
 import java.util.UUID
 import com.example.app21try6.Constants
 import com.example.app21try6.database.tables.MerchandiseRetailLog
+import java.text.NumberFormat
 
-/*
- private val datasource1: TransSumDao,
-                                  private val datasource2: TransDetailDao,
-                                  private val datasource3: SummaryDbDao,
-                                  private val datasource4: PaymentDao,
-                                  private val datasource5: SubProductDao,
-                                  private val discountDao: DiscountDao,
-                                  private val discountTransDao: DiscountTransDao,
-                                  private val customerDao: CustomerDao,
- */
+
 class TransactionDetailViewModel (
     val stockRepo: StockRepositories,
     val bookRepo: BookkeepingRepository,
@@ -58,41 +47,33 @@ class TransactionDetailViewModel (
     application: Application,
     var id:Int):AndroidViewModel(application){
 
-    //transaction detail for recyclerview
     val transDetail = transRepo.getTransactionDetails(id)
-    //val transDetailWithProduct= transRepo.getTransactionDetailsWithProductID(id)
-    //Transaction Summary
     val transSum = transRepo.getTransactionSummary(id)
-    //Total Trans
     val transTotalDouble = transRepo.getTotalTransaction(id)
-    val transTotal: LiveData<String> = transTotalDouble.map { formatRupiah(it).toString() }
-   //To update icons color on night mode or liht mode
+    val transTotal: LiveData<String> = transTotalDouble.map { formatRupiahVM(it).toString() }
     private var _uiMode = MutableLiveData<Int>(16)
     val uiMode :LiveData<Int> get() =_uiMode
-    //Text Generator to send receipt
     private lateinit var textGenerator: TextGenerator
 
     private var _isDiskClicked=MutableLiveData<Boolean>()
     val isDiscClicked:LiveData<Boolean> get() = _isDiskClicked
 
-   // private var _multipleMerch=MutableLiveData<TransactionDetail?>()
-    //val multipleMerch:LiveData<TransactionDetail?> get() = _multipleMerch
-   private val _multipleMerch = MutableLiveData<Pair<TransactionDetail?, Double?>>()
+    private val _multipleMerch = MutableLiveData<Pair<TransactionDetail?, Double?>>()
     val multipleMerch: LiveData<Pair<TransactionDetail?, Double?>> = _multipleMerch
 
 
     private var _pickNewItem=MutableLiveData<String?>()
     val pickNewItem:LiveData<String?> get() = _pickNewItem
 
-    private var _detailWarnaList=MutableLiveData<List<DetailMerchandiseModel>>()
-    val detailWarnaList:LiveData<List<DetailMerchandiseModel>> get() = _detailWarnaList
+
     //todo update the selected value from repo
     private var _retailMerchList=MutableLiveData<List<DetailMerchandiseModel>?>()
     val retailMerchList:LiveData<List<DetailMerchandiseModel>?> get() = _retailMerchList
 
-    //private var merchSelectionDeferred: CompletableDeferred<List<MerchandiseRetail?>?>? = null
     private var merchSelectionDeferred:CompletableDeferred <Pair<List<DetailMerchandiseModel?>?, Double?>?>? = null
-    private var longMerchSelectionDeferred: CompletableDeferred<Pair<List<MerchandiseRetail?>?, Double?>?>? = null
+
+    private var transdetail=TransactionDetail()
+
 
     // Get the total discount from the database
     // Get the total discount from the database
@@ -113,7 +94,7 @@ class TransactionDetailViewModel (
                 paidAmount == 0.0 -> "Total: "
                 else -> "Sisa: "
             }
-            value = label + formatRupiah(abs(finalAmount)).toString()
+            value = label + formatRupiahVM(abs(finalAmount)).toString()
         }
 
         // Observe 'transSum' to get total transaction amount
@@ -134,10 +115,6 @@ class TransactionDetailViewModel (
             updateBayar()
         }
     }
-
-    // Get the total discount from the database
-
-    // Combine 'bayar' and 'discSum' into a single LiveData
 
 
     var itemCount :LiveData<String> = transDetail.map{ items->
@@ -369,6 +346,8 @@ class TransactionDetailViewModel (
     }
     fun updateRetailOnClick(item:TransactionDetail){
         viewModelScope.launch {
+
+            transdetail=item//transDetail untuk update retail net
             val subId=item.sub_id
             val retailList = stockRepo.selectRetailBySumId(subId ?: -1)
             val totalNet = retailList?.sumOf { it.net }
@@ -392,7 +371,6 @@ class TransactionDetailViewModel (
                         val merchAndExtra=waitForMerchSelection()
                         val (merch,extra) = merchAndExtra?: Pair(null, null)
                         val merchandiseRetailList = merch.toMerchandiseRetailList()
-
                         updateMerchValue(merchandiseRetailList,totalQty,item.copy(),extra)
                     }
                 }else{
@@ -421,10 +399,28 @@ class TransactionDetailViewModel (
             }
         }
     }
+    fun DetailMerchandiseModel.toMerchandiseRetail():MerchandiseRetail{
+        return this.let { model->
+            MerchandiseRetail(
+                id=model.id,
+                sub_id=model.sub_id,
+                ref=model.ref,
+                net = model.net,
+                date = model.date?: Date()
+            )
+        }
+    }
+    fun updateMerchNet(model:DetailMerchandiseModel){
+        viewModelScope.launch {
+            val merc=model.toMerchandiseRetail()
+            stockRepo.updateDetailRetail(merc)
+            Log.i("multipleMerch","updateMerchNet ${_multipleMerch.value?.first}")
+            updateRetailOnClick(transdetail)
+        }
+    }
     fun updateMerchValue(merchList:List<MerchandiseRetail?>?,qty:Double, trans: TransactionDetail,extra:Double?){
         viewModelScope.launch {
             var remainingQty=qty+ (extra?:0.0)
-           // Log.i("Unit","updateMerchValue  ${trans.qty} unit_qty ${trans.unit_qty} _multipleMerch: qty${_multipleMerch.value?.qty} unit_qty ${_multipleMerch.value?.unit_qty}")
             if (merchList!=null){
                 trans.is_cutted=true
                 merchList.sortedBy { it!!.net }.forEach { merch->
@@ -509,13 +505,12 @@ class TransactionDetailViewModel (
         return inventoryLog
     }
 
-    fun createMerchandiseRetail(detailWarnaTable: DetailMerchandiseModel):MerchandiseRetail{
-        Log.i("Check","${detailWarnaTable.id}")
+    fun createMerchandiseRetail(dmModel: DetailMerchandiseModel):MerchandiseRetail{
         val merchandiseRetail=MerchandiseRetail()
-        merchandiseRetail.sub_id=detailWarnaTable.sub_id
-        merchandiseRetail.net=detailWarnaTable.net
+        merchandiseRetail.sub_id=dmModel.sub_id
+        merchandiseRetail.net=dmModel.net
         merchandiseRetail.ref=UUID.randomUUID().toString()
-        merchandiseRetail.date=detailWarnaTable.date?:Date()
+        merchandiseRetail.date=dmModel.date?:Date()
         return merchandiseRetail
     }
     fun setValuesToNull(){
@@ -647,4 +642,14 @@ class TransactionDetailViewModel (
         return true
     }
     fun onTxtTransSumLongClikced(){_transSumDateLongClick.value = false}
+    fun formatRupiahVM(number: Double?): String? {
+        val localeID = Locale("in", "ID")
+        val formatRupiah: NumberFormat = NumberFormat.getCurrencyInstance(localeID)
+        formatRupiah.maximumFractionDigits = 0
+        return if (number != null) {
+            formatRupiah.format(number)
+        } else {
+            formatRupiah.format(0.0) // or any default value you prefer
+        }
+    }
 }
