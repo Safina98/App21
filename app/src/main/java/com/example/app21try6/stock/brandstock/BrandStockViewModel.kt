@@ -290,7 +290,7 @@ class BrandStockViewModel(
             product.cath_code=repository.getCategoryIdByName(categoryName.value ?: "")
             product.brand_code=repository.getBrandIdByName(branName.value?:"",product.cath_code)?:0
             if (product.brand_code!=0 && product.cath_code!=0) {
-                if (_product.value!=null){
+                if (_product.value==null){
                      repository.insertProduct(product)
                 }
                 else{

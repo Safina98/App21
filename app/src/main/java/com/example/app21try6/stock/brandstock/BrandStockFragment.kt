@@ -231,6 +231,7 @@ class BrandStockFragment : Fragment() {
         //Obsserve add fab
         viewModel.addItem.observe(viewLifecycleOwner,Observer{
             if (it==true){
+
                 if (layoutOneViews[0].visibility==View.VISIBLE){
                     if (viewModel.selectedBrand.value==null){
                         if (layoutOneViews[0].visibility == View.VISIBLE) {
