@@ -111,7 +111,7 @@ class TransactionActiveFragment : Fragment() {
                 duration = 300
                 start()
             }
-            binding.starShowerView.startStarShower()
+           // binding.starShowerView.startStarShower()
         }
 
 

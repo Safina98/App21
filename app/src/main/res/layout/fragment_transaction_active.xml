@@ -15,10 +15,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <com.example.app21try6.utils.StarShowerView
-            android:id="@+id/starShowerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="match_parent"
