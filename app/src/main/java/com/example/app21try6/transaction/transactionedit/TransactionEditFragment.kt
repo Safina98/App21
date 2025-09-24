@@ -134,9 +134,6 @@ class TransactionEditFragment : Fragment() {
 
         val autoCompleteTextView: AutoCompleteTextView = binding.custNameEdit
 
-        //val adapterr: ArrayAdapter<String> = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, suggestions)
-        //autoCompleteTextView.setAdapter(adapterr)
-
        viewModel.itemTransDetail.observe(viewLifecycleOwner) {
            it?.let {
                adapter.submitList(it)
@@ -177,7 +174,6 @@ class TransactionEditFragment : Fragment() {
         }
         viewModel.custName.observe(viewLifecycleOwner) {
             it?.let {
-
             }
         }
         viewModel.navigateToDetail.observe(viewLifecycleOwner) {
@@ -205,7 +201,6 @@ class TransactionEditFragment : Fragment() {
        return binding.root
     }
 
-
     private fun showDialog(transactionDetail: TransactionDetail, viewModel: TransactionEditViewModel, code: Constants.Code) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle(code.text)
@@ -226,7 +221,6 @@ class TransactionEditFragment : Fragment() {
                }
                textKet.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
                textKet.keyListener = DigitsKeyListener.getInstance("-0123456789.")
-
            }
         }
         textKet.requestFocus()
@@ -237,12 +231,11 @@ class TransactionEditFragment : Fragment() {
             when (code) {
                 Constants.Code.LONGSUBS -> {
                     if ((transactionDetail.qty-v.toDouble())>=0){
-                        viewModel.updateTransDetail(transactionDetail, -1.0)
+                        //viewModel.updateTransDetail(transactionDetail, -1.0)
+                        viewModel.updateTransDetail(transactionDetail, (v.toDouble() * -1))
                     }else{
                         DialogUtils.showFailedWarning(requireContext(),transactionDetail.trans_item_name)
                     }
-
-                    viewModel.updateTransDetail(transactionDetail, (v.toDouble() * -1))
                 }
                 Constants.Code.LONGPLUS -> {
                     viewModel.updateTransDetail(transactionDetail, v.toDouble())

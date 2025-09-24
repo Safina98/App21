@@ -14,7 +14,7 @@
     <color name="secondaryLightTextColor">#FFFFFF</color>
     <color name="primaryDarkTextColor">#FFFFFF</color>
     <color name="secondaryDarkTextColor">#FFFFFF</color>
-
+    <color name="unCuttedBgColor">#FFF5F2</color>
     <color name="startToolbar">#082946</color>
     <color name="centerToolbar">#105575</color>
     <color name="endToolbar">#06545C</color>

@@ -135,7 +135,7 @@ class TransactionDetailFragment : Fragment() {
             if (it!=null){
                 val (a, b) = it
                 if(a!=null && b!=null)
-                showMerchandiseRetailDialog(a,b)
+                    showMerchandiseRetailDialog(a,b)
             }
         }
         viewModel.pickNewItem.observe(viewLifecycleOwner){

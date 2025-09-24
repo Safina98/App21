@@ -133,6 +133,7 @@ interface TransDetailDao {
         d.trans_detail_date AS tans_detail_date,
         d.sub_id,
         d.unit_qty,
+        d.is_cutted,
         s.cust_name,
         s.sum_note
     FROM trans_detail_table AS d

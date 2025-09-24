@@ -11,5 +11,6 @@ data class TracketailWarnaModel (
     val sub_id:Int,
     var unit_qty:Double,
     var cust_name:String,
-    var sum_note:String?=null
+    var sum_note:String?=null,
+    var is_cutted: Boolean?
 )
