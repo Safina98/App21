@@ -60,8 +60,6 @@ class TransactionsRepository(
             transDetailDao.deleteAnItemTransDetail(id)
         }
     }
-
-
     suspend fun updateTransDetail(transdetail: TransactionDetail){
         withContext(Dispatchers.IO){
             transDetailDao.update(transdetail)

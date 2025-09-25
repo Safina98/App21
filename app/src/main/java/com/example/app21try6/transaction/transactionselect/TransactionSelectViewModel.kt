@@ -147,6 +147,9 @@ class TransactionSelectViewModel(
             var id =s.trans_detail_id
             if (id==0L) id = transRepo.insertTransDetail(t) else transRepo.updateTransDetail(t)
             s.trans_detail_id  = id ?: -1L
+            if (s.qty==0.0){
+                delete(s)
+            }
         //processTransDetailUpdate(s)
             //updateItemInTransDetailList(s)
         }

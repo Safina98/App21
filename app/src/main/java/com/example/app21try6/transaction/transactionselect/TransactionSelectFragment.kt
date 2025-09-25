@@ -58,12 +58,12 @@ class TransactionSelectFragment : Fragment() {
         var code: Constants.Code = Constants.Code.ZERO
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-         adapter = TransactionSelectAdapter(
+        adapter = TransactionSelectAdapter(
             PlusSelectListener {
                 it.qty = it.qty+1
                 viewModel.updateTransDetail(it)
 
-        }, SubsSelectListener {
+            },SubsSelectListener {
                 val number = it.qty-1
                 if(number>=0){
                     it.qty =number
@@ -71,8 +71,7 @@ class TransactionSelectFragment : Fragment() {
                 }else{
                     DialogUtils.showFailedWarning(requireContext(),it.item_name)
                 }
-        },
-            CheckBoxSelectListener{view:View, trans:TransSelectModel ->
+            },CheckBoxSelectListener{view:View, trans:TransSelectModel ->
                 val cb = view as CheckBox
                 viewModel.onCheckBoxClicked(trans,cb.isChecked)
             },
