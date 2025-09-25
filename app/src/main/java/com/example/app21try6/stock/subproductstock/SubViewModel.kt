@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
+import androidx.lifecycle.viewModelScope
 import com.example.app21try6.database.models.DetailMerchandiseModel
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
@@ -67,7 +68,12 @@ class SubViewModel (
     fun toggleSelectedSubProductId(subProduct: SubProduct?) {
         _selectedSubProduct.value = if (_selectedSubProduct.value?.sub_id ==subProduct?.sub_id) null else subProduct
     }
-
+    fun getSubProductById(spId:Int){
+        viewModelScope.launch {
+           val subProduct= stockRepo.getsubProductById(spId)
+            toggleSelectedSubProductId(subProduct)
+        }
+    }
     fun onCheckBoxClicked(subProduct: SubProduct, bool:Boolean){
         uiScope.launch {
             val transDetail = TransactionDetail()

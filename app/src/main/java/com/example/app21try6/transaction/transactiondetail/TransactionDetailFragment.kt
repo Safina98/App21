@@ -224,11 +224,16 @@ class TransactionDetailFragment : Fragment() {
         viewModel.navigateToEdit.observe(viewLifecycleOwner) {
             it?.let {
                 this.findNavController().navigate(
-                    TransactionDetailFragmentDirections.actionTransactionDetailFragmentToTransactionEditFragment(
-                        id
-                    )
+                    TransactionDetailFragmentDirections.actionTransactionDetailFragmentToTransactionEditFragment(id)
                 )
                 viewModel.onNavigatedToEdit()
+            }
+        }
+        viewModel.navigateToSubProduct.observe(viewLifecycleOwner){
+            it?.let {
+                this.findNavController().navigate(
+                    TransactionDetailFragmentDirections.actionTransactionDetailFragmentToSubProductStockFragment(it))
+                viewModel.onNavigatedToSubProduct()
             }
         }
 
@@ -467,6 +472,10 @@ class TransactionDetailFragment : Fragment() {
                 adapter.submitList(it.toList())
             }
         }
+        binding.txtNavigateToSub.setOnClickListener {
+            viewModel.onNavigateToSubProduct()
+            dialog.dismiss()
+        }
         dialog = AlertDialog.Builder(requireContext()) // 🔹 assign after declaration
             .setView(binding.root)
             .setTitle(newTrans.trans_item_name)
@@ -523,12 +532,17 @@ class TransactionDetailFragment : Fragment() {
                 adapter.submitList(it.toList())
             }
         }
+
         val dialog = AlertDialog.Builder(requireContext())
             .setView(binding.root)
             .setTitle("Stok Utuh $itemName")
             .setPositiveButton("OK", null)
             .setNegativeButton("Cancel", null)
             .create()
+        binding.txtNavigateToSub.setOnClickListener {
+            viewModel.onNavigateToSubProduct()
+            dialog.dismiss()
+        }
         dialog.setOnShowListener {
             val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             positiveButton.setOnClickListener {

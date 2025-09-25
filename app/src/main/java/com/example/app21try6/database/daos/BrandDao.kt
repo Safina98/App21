@@ -27,6 +27,9 @@ interface BrandDao {
     @Query("SELECT brand_name FROM brand_table WHERE brand_id=:id")
     fun getBrandNameById(id:Int):String
 
+    @Query("SELECT cath_code FROM brand_table WHERE brand_id=:id")
+    fun getCtgIdByBrandId(id:Int?):Int?
+
     @Query("SELECT sub_name as subProduct, " +
             "warna as warna, " +
             "roll_u as  roll_u," +

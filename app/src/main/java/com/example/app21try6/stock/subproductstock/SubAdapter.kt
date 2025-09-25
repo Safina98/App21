@@ -42,6 +42,23 @@ class SubAdapter (val code:Int,
         ){
             binding.subProduct = item
             binding.subProductTxt.text = item.sub_name
+            binding.stokTxt.text = item.roll_u.toString()
+            binding.colorTxt.text = item.warna
+            binding.ketTxt.text = item.ket
+            binding.textStokToko.text = item.roll_bt.toString()+"B + "+item.roll_st+"S + "+item.roll_kt+"K"
+            binding.textStokGudang.text = item.roll_bg.toString()+"BG + "+item.roll_sg+"SG + "+item.roll_kg+"KG"
+            binding.substockCheckbox.visibility=View.GONE
+            binding.longListener = longListener
+            binding.plusListener = plusListener
+            binding.subssListener = subsListener
+            binding.warnaListener = warnaListener
+            binding.ketListener = ketListener
+            binding.subProductListener = subProductListener
+            // binding.cvSub.setBackgroundColor(if (isSelected) Color.LTGRAY else Color.WHITE)
+            binding.cvSub.setBackgroundColor(
+                if (isSelected) ContextCompat.getColor(context, R.color.dialogbtncolor) else ContextCompat.getColor(context, R.color.logrvbg)
+            )
+            /*
             if (code==0){
                 binding.stokTxt.text = item.roll_u.toString()
                 binding.colorTxt.text = item.warna
@@ -73,6 +90,8 @@ class SubAdapter (val code:Int,
                 binding.substockCheckbox.isChecked = item.is_checked
 
             }
+
+            */
 
             binding.executePendingBindings()
 

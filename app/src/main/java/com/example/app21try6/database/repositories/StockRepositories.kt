@@ -57,6 +57,11 @@ class StockRepositories (
             categoryDao.getCategoryId(id)
         }
     }
+    suspend fun getCategoryIdByBrandId(brandId: Int?):Int?{
+        return withContext(Dispatchers.IO){
+            brandDao.getCtgIdByBrandId(brandId)
+        }
+    }
     suspend fun insertCategory(category: Category){ withContext(Dispatchers.IO){ categoryDao.insert(category) } }
     suspend fun updateCategory(category: Category){withContext(Dispatchers.IO){ categoryDao.update(category) } }
     //delete category by id
@@ -76,7 +81,7 @@ class StockRepositories (
     //delete brand
     suspend fun deleteBrand(id:Int){ withContext(Dispatchers.IO){ brandDao.deleteBrand(id) } }
     //get brand id by product id
-    suspend fun getBrandId(subId:Int?):Int?{ return withContext(Dispatchers.IO){ productDao.getBrandIdByProductId(subId) } }
+    suspend fun getBrandId(productId:Int?):Int?{ return withContext(Dispatchers.IO){ productDao.getBrandIdByProductId(productId) } }
     suspend fun getBrandIdByName(name:String,catCode:Int):Int?{return withContext(Dispatchers.IO){brandDao.getBrandIdbyName(name,catCode)} }
     suspend fun getBrandNameyId(id:Int):String{return withContext(Dispatchers.IO){brandDao.getBrandNameById(id)} }
 
@@ -153,6 +158,11 @@ class StockRepositories (
     suspend fun uncheckedAllSubs(){
         withContext(Dispatchers.IO){
             subProductDao.unchecked_allCheckbox()
+        }
+    }
+    suspend fun getsubProductById(spId:Int): SubProduct{
+        return withContext(Dispatchers.IO){
+            subProductDao.getSubProductIdBySubId(spId)
         }
     }
     //////////////////////////////////////Detail Warna////////////////////////////////////////////////

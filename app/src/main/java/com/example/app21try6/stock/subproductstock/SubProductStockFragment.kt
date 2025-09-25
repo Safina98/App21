@@ -49,7 +49,7 @@ class SubProductStockFragment : Fragment() {
         val stockRepo = StockRepositories(application)
         val transRepo=TransactionsRepository(application)
         val id = arguments?.let { SubProductStockFragmentArgs.fromBundle(it).productId }
-        (activity as AppCompatActivity).supportActionBar?.title = id?.last()
+        (activity as AppCompatActivity).supportActionBar?.title = id?.get(4)
         id?.set(4,"0")
         val id_ = id?.map { it.toInt() }?.toTypedArray()
 
@@ -60,10 +60,18 @@ class SubProductStockFragment : Fragment() {
         binding.reset.setOnClickListener {
             DialogUtils.showDeleteDialog(requireContext(),this, viewModel, SubProduct(), { vm, item -> (vm as SubViewModel).resetAllSubProductStock() })
         }
+        val isSubIdExist = id_.getOrNull(5)
+        if (isSubIdExist!=null){
+            if (binding.rvSubDetail.visibility==View.GONE){
+                setDetailRvVisibility(true)
+            }
+            viewModel.getSubProductById(isSubIdExist)
+        }
+
 
         val adapter = SubAdapter(id_[3],
             null,
-        CheckBoxListenerSub{view:View,subProduct: SubProduct ->
+            CheckBoxListenerSub{view:View,subProduct: SubProduct ->
             val cb = view as CheckBox
             subProduct.is_checked = cb.isChecked
             viewModel.onCheckBoxClicked(subProduct,cb.isChecked)

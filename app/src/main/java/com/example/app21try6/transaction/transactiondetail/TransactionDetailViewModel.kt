@@ -155,6 +155,9 @@ class TransactionDetailViewModel (
     private val _navigateToEdit = MutableLiveData<Int>()
     val navigateToEdit: LiveData<Int> get() = _navigateToEdit
 
+    private val _navigateToSubProduct= MutableLiveData<Array<String>?>()
+    val navigateToSubProduct: LiveData<Array<String>?> get() = _navigateToSubProduct
+
     val discountTransBySumId=discountRepo.getTransactionDiscounts(id)
     //Set ui to change icons color when night mode or day mode on
     init {
@@ -628,6 +631,23 @@ class TransactionDetailViewModel (
     fun onNavigateToEdit(){
         _navigateToEdit.value = id
     }
+
+    fun onNavigateToSubProduct(){
+        viewModelScope.launch {
+            val subId=transdetail.sub_id
+            val productId=stockRepo.getProdutId(subId?:0)
+            val brandId=stockRepo.getBrandId(productId)
+            val transDetailId=transdetail.trans_detail_id
+            val ctgId=stockRepo.getCategoryIdByBrandId(brandId)
+            val productName=stockRepo.getProductById(productId?:0).product_name
+            val stringArray=arrayOf(productId.toString(),brandId.toString(),ctgId.toString(),transDetailId.toString(),productName,subId.toString())
+            _navigateToSubProduct.value=stringArray
+        }
+    }
+    fun onNavigatedToSubProduct(){
+        _navigateToSubProduct.value=null
+    }
+
     fun onNavigatedToEdit(){this._navigateToEdit.value = null}
     //Toggle
     fun onBtnBayarClick(){

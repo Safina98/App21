@@ -35,6 +35,9 @@ interface SubProductDao {
     @Query("SELECT product_code FROM sub_table WHERE sub_id = :sub_id_")
     fun getProductIdBySubId(sub_id_:Int?):Int?
 
+    @Query("SELECT * FROM sub_table WHERE sub_id = :sub_id_")
+    fun getSubProductIdBySubId(sub_id_:Int?): SubProduct
+
     @Query("SELECT sub_name FROM sub_table WHERE sub_id = :sub_id_")
     fun getNama(sub_id_: Int):LiveData<String>
 
