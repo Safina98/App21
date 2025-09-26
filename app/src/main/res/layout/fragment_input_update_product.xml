@@ -63,7 +63,7 @@
                         android:paddingStart="@dimen/big_margin"
                         android:paddingEnd="@dimen/big_margin"
                         android:inputType="text"
-                        android:text="@={view_model.categoryName}"
+                        android:text="@={view_model.ctgName}"
                         />
                 </com.google.android.material.textfield.TextInputLayout>
                 <com.google.android.material.textfield.TextInputLayout

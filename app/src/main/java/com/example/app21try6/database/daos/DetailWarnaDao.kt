@@ -1,5 +1,6 @@
 package com.example.app21try6.database.daos
 
+import android.util.Log
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -94,7 +95,7 @@ interface DetailWarnaDao {
         delete(detailWarnaId)
         if (merchandiseRetail!=null) {
             insert(merchandiseRetail)
-        }//TODO insert merchandise retail
+        }
     }
     @Transaction
     fun deleteDetailWarnaAndInsertLog(detailWarnaId:Int,inventoryLog: InventoryLog,merchandiseRetail: List<MerchandiseRetail?>){
@@ -105,8 +106,8 @@ interface DetailWarnaDao {
                 insert(it)
             }
         }
-
     }
+
     @Transaction
     fun updateTransDetailAndRetail(merchandiseRetail: MerchandiseRetail,transactionDetail: TransactionDetail){
         updateRetail(merchandiseRetail)

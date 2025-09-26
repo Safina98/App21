@@ -10,20 +10,12 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import androidx.room.ColumnInfo
-import com.example.app21try6.database.*
-import com.example.app21try6.database.daos.BrandDao
 import com.example.app21try6.database.tables.Category
-import com.example.app21try6.database.daos.CategoryDao
-import com.example.app21try6.database.daos.DiscountDao
-import com.example.app21try6.database.daos.ProductDao
-import com.example.app21try6.database.daos.SubProductDao
 import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.repositories.DiscountRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.tables.Product
-import com.example.app21try6.database.tables.SubProduct
 
 import kotlinx.coroutines.*
 import java.io.BufferedWriter
@@ -34,7 +26,6 @@ import java.io.IOException
 class BrandStockViewModel(
     private val repository: StockRepositories,
     private val discountRepository:DiscountRepository,
-
     application: Application): AndroidViewModel(application){
     private var viewModelJob = Job()
     //ui scope for coroutines
@@ -48,22 +39,20 @@ class BrandStockViewModel(
 
     //Display Data
     //category recyclerview data
-    val cathList = repository.getCategoryModelLiveData()
+    val ctgList = repository.getCategoryModelLiveData()
     //spinner entries
-    val cathList_ = repository.getCategoryNameLiveData()
+    val ctgNameList = repository.getCategoryNameLiveData()
 
-    var _all_brand_from_db = MutableLiveData<List<BrandProductModel>>()
-    val all_brand_from_db :LiveData<List<BrandProductModel>> get()= _all_brand_from_db
+    var _brandBpModelList = MutableLiveData<List<BrandProductModel>>()
+    val brandBpModelList :LiveData<List<BrandProductModel>> get()= _brandBpModelList
 
-    var kategori_id = MutableLiveData<Int>(-1)
-    var selectedBrand = MutableLiveData<BrandProductModel?>()
-
-    private var checkedItemList = mutableListOf<Category>()
+    var ctgId = MutableLiveData<Int>(-1)
+    var selectedBrandBpModel = MutableLiveData<BrandProductModel?>()
 
     val all_item = repository.getExportedStockData()
 
-    private val _selectedKategoriSpinner = MutableLiveData<String>()
-    val selectedKategoriSpinner: LiveData<String> get() = _selectedKategoriSpinner
+    private val _selectedCtgSpinner = MutableLiveData<String>()
+    val selectedCtgSpinner: LiveData<String> get() = _selectedCtgSpinner
 
     //Insert batch
     private val _insertionCompleted = MutableLiveData<Boolean>()
@@ -74,12 +63,12 @@ class BrandStockViewModel(
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
-    val _all_product_from_db=MutableLiveData<List<BrandProductModel>>()
-    val all_product_from_db :LiveData<List<BrandProductModel>> get() = _all_product_from_db
+    val _productBpModelList=MutableLiveData<List<BrandProductModel>>()
+    val productBpModelList :LiveData<List<BrandProductModel>> get() = _productBpModelList
 
     private val _addProduct = MutableLiveData<Boolean>()
     val addProduct: LiveData<Boolean> get() = _addProduct
-    val allDiscountFromDB=discountRepository.getAllDicountName()
+    val discountList=discountRepository.getAllDicountName()
     val discountName=MutableLiveData<String?>("")
     val _product=MutableLiveData<Product?>()
 
@@ -92,7 +81,7 @@ class BrandStockViewModel(
     var defaultNet=MutableLiveData<Double>()
     var alternatePrice=MutableLiveData<Double>()
     var branName=MutableLiveData<String>()
-    var categoryName=MutableLiveData<String>()
+    var ctgName=MutableLiveData<String>()
     var discountId=MutableLiveData<Int?>(null)
     var purchasePrice=MutableLiveData<Int?>(null)
     var puchaseUnit=MutableLiveData<String?>()
@@ -103,26 +92,26 @@ class BrandStockViewModel(
 
     fun setSelectedKategoriValue(value: String) {
         viewModelScope.launch {
-            var id = repository.getCategoryIdByName(value)
-            kategori_id.value = id
-            _selectedKategoriSpinner.value = value
+            val id = repository.getCategoryIdByName(value)
+            ctgId.value = id
+            _selectedCtgSpinner.value = value
         }
 
     }
 
     fun updateRv(){
         viewModelScope.launch {
-            val brandlist = repository.getBrandByCategoryId(kategori_id.value ?:0)
-            _all_brand_from_db.value = brandlist
+            val brandlist = repository.getBrandByCategoryId(ctgId.value ?:0)
+            _brandBpModelList.value = brandlist
         }
     }
 
     //toggle selectedBrand value, null/brandModel
     fun getBrandIdByName(branModel:BrandProductModel?){
         viewModelScope.launch {
-            if (selectedBrand.value?.id==branModel?.id){
-                selectedBrand.value=null
-            }else {selectedBrand.value=branModel}
+            if (selectedBrandBpModel.value?.id==branModel?.id){
+                selectedBrandBpModel.value=null
+            }else {selectedBrandBpModel.value=branModel}
             //Log.i("BRANDPROBS","${selectedBrand.value}")
         }
     }
@@ -145,11 +134,11 @@ class BrandStockViewModel(
             }
         }
     }
-    fun insertItemCath(cath_name:String){
+    fun insertItemCtg(ctgName:String){
         uiScope.launch {
-            if (cath_name!="") {
+            if (ctgName!="") {
                 val category = Category()
-                category.category_name = cath_name
+                category.category_name = ctgName
                 try {
                     repository.insertCategory(category)
                 } catch (e: SQLiteException) {
@@ -197,29 +186,29 @@ class BrandStockViewModel(
         }
     }
 
-    fun updateCath(categoryModel: CategoryModel){
+    fun updateCtg(ctgModel: CategoryModel){
         uiScope.launch {
         val category= Category()
-        category.category_id=categoryModel.id
-        category.category_name=categoryModel.categoryName
+        category.category_id=ctgModel.id
+        category.category_name=ctgModel.categoryName
         repository.updateCategory(category)
         }
     }
-    fun updateBrand(brandPm: BrandProductModel,categoryName:String){ uiScope.launch {
+    fun updateBrand(brandBpModel: BrandProductModel, ctgName:String){ uiScope.launch {
         val brand=Brand()
-        brand.brand_name=brandPm.name
-        brand.brand_id=brandPm.id
-        brand.cath_code=repository.getCategoryIdByName(categoryName)
+        brand.brand_name=brandBpModel.name
+        brand.brand_id=brandBpModel.id
+        brand.cath_code=repository.getCategoryIdByName(ctgName)
         repository.updateBrand(brand)
         updateRv()
     } }
 
-    fun deleteBrand(brand: BrandProductModel){ uiScope.launch {
-        repository.deleteBrand(brand.id)
+    fun deleteBrand(brandBpModel: BrandProductModel){ uiScope.launch {
+        repository.deleteBrand(brandBpModel.id)
         updateRv()
     } }
 
-    fun clearCheckedItemList(){checkedItemList.clear()}
+
 
     fun onAddItem(){ _addItem.value = true }
     fun onItemAdded(){ _addItem.value = false }
@@ -236,7 +225,7 @@ class BrandStockViewModel(
     fun updateProductRv(brandId:Int?){
         viewModelScope.launch {
             val list =if (brandId!=null) repository.getProductModel(brandId) else listOf()
-            _all_product_from_db.value=list
+            _productBpModelList.value=list
         }
     }
     fun getLongClickedProduct(id:Int){
@@ -250,7 +239,7 @@ class BrandStockViewModel(
             bestSelling.value=product.bestSelling
             defaultNet.value=product.default_net
             alternatePrice.value=product.alternate_price
-            categoryName.value= repository.getCategoryNameById(product.cath_code)//_selectedKategoriSpinner.value ?: ""
+            ctgName.value= repository.getCategoryNameById(product.cath_code)//_selectedKategoriSpinner.value ?: ""
             discountId=MutableLiveData<Int?>(null)
             purchasePrice.value=product.purchasePrice
             puchaseUnit.value=product.puchaseUnit
@@ -277,9 +266,9 @@ class BrandStockViewModel(
         viewModelScope.launch {
             val product=Product()
             product.product_name=(productName.value?:"").uppercase().trim()
-            product.brand_code = selectedBrand.value!!.id
+            product.brand_code = selectedBrandBpModel.value!!.id
             product.product_price = productPice.value?:0
-            product.cath_code = kategori_id.value?:0
+            product.cath_code = ctgId.value?:0
             product.product_capital = productCapital.value?:0
             product.discountId=discountRepository.getDiscountIdByName((discountName.value?:"").uppercase().trim())
             product.alternate_capital=alternateCapital.value ?: 0.0
@@ -287,7 +276,7 @@ class BrandStockViewModel(
             product.purchasePrice=purchasePrice.value ?: 0
             product.puchaseUnit=(puchaseUnit.value)?.uppercase()?.trim()
             product.alternate_price=alternatePrice.value ?: 0.0
-            product.cath_code=repository.getCategoryIdByName(categoryName.value ?: "")
+            product.cath_code=repository.getCategoryIdByName(ctgName.value ?: "")
             product.brand_code=repository.getBrandIdByName(branName.value?:"",product.cath_code)?:0
             if (product.brand_code!=0 && product.cath_code!=0) {
                 if (_product.value==null){
@@ -297,7 +286,7 @@ class BrandStockViewModel(
                     product.product_id=_product.value!!.product_id
                     updateProduct(product,"")
                 }
-                updateProductRv(selectedBrand.value?.id)
+                updateProductRv(selectedBrandBpModel.value?.id)
                 onNavigateBackToBrandStock()
             }else{
                 Toast.makeText(getApplication(),"kategori atau brand tidak valid",Toast.LENGTH_SHORT).show()
@@ -314,12 +303,6 @@ class BrandStockViewModel(
         }
     }
 
-    fun getDiscNameById(id:Int?){
-        viewModelScope.launch {
-            val disc = discountRepository.getDiscountNameById(id)
-            discountName.value=disc
-        }
-    }
     fun onProductAdded(){ _addProduct.value = false}
 
     fun deleteProduct(product: BrandProductModel){

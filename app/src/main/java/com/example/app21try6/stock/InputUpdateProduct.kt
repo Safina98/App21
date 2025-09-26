@@ -1,18 +1,14 @@
 package com.example.app21try6.stock
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.room.InvalidationTracker
 import com.example.app21try6.R
 import com.example.app21try6.database.repositories.DiscountRepository
 import com.example.app21try6.database.repositories.StockRepositories
@@ -41,7 +37,7 @@ class InputUpdateProduct : Fragment() {
 
         // Observe the ViewModel LiveData and update the adapter
 
-        viewModel.allDiscountFromDB.observe(viewLifecycleOwner, Observer {discounts ->
+        viewModel.discountList.observe(viewLifecycleOwner, Observer { discounts ->
             if(discounts!=null){
                 val adapterr = ArrayAdapter(
                     requireContext(),
@@ -52,7 +48,7 @@ class InputUpdateProduct : Fragment() {
                 binding.textDiscount.setAdapter(adapterr)
             }
         })
-        viewModel.cathList_.observe(viewLifecycleOwner){entries->
+        viewModel.ctgNameList.observe(viewLifecycleOwner){ entries->
             if(entries!=null){
                 val adapterCat = ArrayAdapter(
                     requireContext(),

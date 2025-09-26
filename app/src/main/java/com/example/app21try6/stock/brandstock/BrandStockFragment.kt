@@ -15,20 +15,16 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.Constants
 import com.example.app21try6.R
 import com.example.app21try6.ToolbarUtil
-import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.repositories.DiscountRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.databinding.FragmentBrandStockBinding
-import com.example.app21try6.transaction.transactionselect.TransactionSelectViewModel
-import com.example.app21try6.transaction.transactionselect.TransactionSelectViewModelFactory
 import com.example.app21try6.utils.CsvHandler
 import com.example.app21try6.utils.DatabaseBackupHelper
 import com.example.app21try6.utils.DialogUtils
@@ -90,7 +86,7 @@ class BrandStockFragment : Fragment() {
                     binding.btnEditEcNew.visibility = View.VISIBLE
                     binding.cardView.visibility = View.GONE
                     return
-                }else if(layoutOneViews[0].visibility == View.VISIBLE && binding.rvProductStock.visibility==View.VISIBLE&&viewModel.selectedBrand.value!=null){
+                }else if(layoutOneViews[0].visibility == View.VISIBLE && binding.rvProductStock.visibility==View.VISIBLE&&viewModel.selectedBrandBpModel.value!=null){
                     viewModel.getBrandIdByName(null)
                 }else if(layoutOneViews[0].visibility == View.GONE && binding.rvCat.visibility==View.VISIBLE){
                     Log.i("CustomBackProbs"," second if else condition met")
@@ -133,8 +129,8 @@ class BrandStockFragment : Fragment() {
                     title = "Update Kategori",
                     getBrandName = { (it as CategoryModel).categoryName },
                     setBrandName = { it, name -> (it as CategoryModel).categoryName = name },
-                    updateFunction = { vm, item -> (vm as BrandStockViewModel).updateCath(item as CategoryModel) },
-                    insertFunction = { vm, name -> (vm as BrandStockViewModel).insertItemCath(name as String) }
+                    updateFunction = { vm, item -> (vm as BrandStockViewModel).updateCtg(item as CategoryModel) },
+                    insertFunction = { vm, name -> (vm as BrandStockViewModel).insertItemCtg(name as String) }
                 )
             },DeleteListener {
                 DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as BrandStockViewModel).deleteCategory(item as CategoryModel) })
@@ -143,7 +139,7 @@ class BrandStockFragment : Fragment() {
         //Product adapter
         val adapterProduct = BrandStockAdapter(
             BrandStockListener {
-                viewModel.onProductCLick(arrayOf(it.id.toString(),it.parentId.toString(),viewModel.selectedBrand.value?.parentId.toString(),"0",it.name))
+                viewModel.onProductCLick(arrayOf(it.id.toString(),it.parentId.toString(),viewModel.selectedBrandBpModel.value?.parentId.toString(),"0",it.name))
             }, BrandStockLongListener {
                 viewModel.getLongClickedProduct(it.id)
                 showDialogBox(viewModel,it,Constants.MODELTYPE.PRODUCT)
@@ -191,33 +187,33 @@ class BrandStockFragment : Fragment() {
         viewModel.all_item.observe(viewLifecycleOwner, Observer {})
 
         //Spinner
-        viewModel.cathList_.observe(viewLifecycleOwner){entries->
+        viewModel.ctgNameList.observe(viewLifecycleOwner){ entries->
             val adapter1 = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, entries)
             binding.spinnerM.adapter = adapter1
         }
-        viewModel.selectedKategoriSpinner.observe(viewLifecycleOwner) {
+        viewModel.selectedCtgSpinner.observe(viewLifecycleOwner) {
             viewModel.updateRv()
         }
         //Kategori adapter
-        viewModel.cathList.observe(viewLifecycleOwner, Observer {
+        viewModel.ctgList.observe(viewLifecycleOwner, Observer {
             it.let {
                 adapterCat.submitList(it)
                 adapter.notifyDataSetChanged()
             }
         })
         //Brand adapter
-        viewModel.all_brand_from_db.observe(viewLifecycleOwner){
+        viewModel.brandBpModelList.observe(viewLifecycleOwner){
             adapter.submitList(it.sortedBy { it.name})
             adapter.notifyDataSetChanged()
         }
         // product adapter
-        viewModel.all_product_from_db.observe(viewLifecycleOwner, Observer {
+        viewModel.productBpModelList.observe(viewLifecycleOwner, Observer {
                 adapterProduct.submitList(it.sortedBy { it.name})
                 adapterProduct.notifyDataSetChanged()
         })
 
         //to toggle selected recyclerview
-        viewModel.selectedBrand.observe(viewLifecycleOwner){
+        viewModel.selectedBrandBpModel.observe(viewLifecycleOwner){
             if (binding.linear1!=null){
                 layoutOneViews.forEach { it.visibility = View.GONE }
                 binding.btnEditEcNew.visibility=View.GONE
@@ -233,15 +229,15 @@ class BrandStockFragment : Fragment() {
             if (it==true){
 
                 if (layoutOneViews[0].visibility==View.VISIBLE){
-                    if (viewModel.selectedBrand.value==null){
+                    if (viewModel.selectedBrandBpModel.value==null){
                         if (layoutOneViews[0].visibility == View.VISIBLE) {
                             DialogUtils.updateBrandDialog(
                                 context = requireContext(),
                                 viewModel = viewModel, // Replace with your ViewModel instance
                                 model = null,         // Replace with your model instance
                                 title = "Brand Baru",
-                                categoryName = viewModel.selectedKategoriSpinner.value?:"",
-                                categoryList = viewModel.cathList_.value,
+                                categoryName = viewModel.selectedCtgSpinner.value?:"",
+                                categoryList = viewModel.ctgNameList.value,
                             )
                         }
                     }else{
@@ -256,8 +252,8 @@ class BrandStockFragment : Fragment() {
                         title = "Kategori Baru",
                         getBrandName = { (it as CategoryModel).categoryName },
                         setBrandName = { it, name -> (it as CategoryModel).categoryName = name },
-                        updateFunction = { vm, item -> (vm as BrandStockViewModel).updateCath(item as CategoryModel) },
-                        insertFunction = { vm, name -> (vm as BrandStockViewModel).insertItemCath(name as String) }
+                        updateFunction = { vm, item -> (vm as BrandStockViewModel).updateCtg(item as CategoryModel) },
+                        insertFunction = { vm, name -> (vm as BrandStockViewModel).insertItemCtg(name as String) }
                     )
                 }
                 viewModel.onItemAdded()
@@ -265,14 +261,14 @@ class BrandStockFragment : Fragment() {
         })
 
 
-        viewModel.allDiscountFromDB.observe(viewLifecycleOwner, Observer {discounts ->
+        viewModel.discountList.observe(viewLifecycleOwner, Observer { discounts ->
             if(discounts!=null){
                 list=discounts.toMutableList()
             }
         })
         viewModel.addProduct.observe(viewLifecycleOwner, Observer {
             if (it==true){
-                val list=viewModel.allDiscountFromDB.value
+                val list=viewModel.discountList.value
                 this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct())
                 //DialogUtils.updateDialog(requireContext(),viewModel,list)
                 viewModel.onProductAdded()
@@ -302,8 +298,8 @@ class BrandStockFragment : Fragment() {
                         viewModel = viewModel, // Replace with your ViewModel instance
                         model = vendible,         // Replace with your model instance
                         title = "Update Brand",
-                        categoryName=viewModel.selectedKategoriSpinner.value?:"",
-                        categoryList = viewModel.cathList_.value
+                        categoryName=viewModel.selectedCtgSpinner.value?:"",
+                        categoryList = viewModel.ctgNameList.value
                     )
                 }else{
                     this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct())

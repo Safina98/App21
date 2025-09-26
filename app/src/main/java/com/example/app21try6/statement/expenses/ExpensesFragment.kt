@@ -278,8 +278,6 @@ class ExpensesFragment : Fragment() {
             }
         }
 
-
-
         // Load data if available
         if (expenses != null) {
             textExpenseName.setText(expenses.expense_name.toString())

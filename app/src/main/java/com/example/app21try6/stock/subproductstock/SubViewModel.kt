@@ -194,7 +194,6 @@ class SubViewModel (
             stockRepo.deleteDetailWarna(detailWarnaTable,createInventoryLog(detailWarnaTable, detailWarnaTable.batchCount,productId, brandId,"Dihapus"),null)
             getDetailWarnaList(detailWarnaTable.subId)
         }
-
     }
     fun trackDetailWarna(detailWarnaModel: DetailMerchandiseModel){
         uiScope.launch {

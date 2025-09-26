@@ -61,7 +61,7 @@
                 style="@style/text_product_title"
                 android:layout_margin="@dimen/big_margin"
                 android:layout_gravity="center_horizontal"
-                android:text="@{brandStockViewModel.selectedBrand.name}"
+                android:text="@{brandStockViewModel.selectedBrandBpModel.name}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
             <androidx.recyclerview.widget.RecyclerView
