@@ -25,11 +25,13 @@ class MyApplication: Application()  {
         // Now safe to initialize everything else
        RealtimeDatabaseSync.init(this)
         Thread {
-            val db = VendibleDatabase.getInstance(this)
-            RealtimeDatabaseSync.startSyncAllFourTables(
-                brandDao    = db.brandDao,
-                categoryDao = db.categoryDao
-            )
+            Thread {
+                val db = VendibleDatabase.getInstance(this)
+                RealtimeDatabaseSync.startSyncAllFourTables(
+                    brandDao    = db.brandDao,
+                    categoryDao = db.categoryDao
+                )
+            }.start()
         }.start()
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
 

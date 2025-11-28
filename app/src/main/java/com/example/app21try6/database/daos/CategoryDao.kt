@@ -19,6 +19,9 @@ interface CategoryDao {
     fun update(category: Category)
     @Query("DELETE FROM category_table WHERE category_id=:id")
     fun delete(id:Int)
+    @Query("SELECT * FROM category_table WHERE category_id = :id LIMIT 1")
+    suspend fun getById(id: Int): Category?
+
     @Query("SELECT category_id AS id, category_name AS categoryName FROM category_table")
     fun getCategoryModelList():LiveData<List<CategoryModel>>
     @Query("SELECT category_name FROM category_table")

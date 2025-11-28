@@ -9,6 +9,7 @@ import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.tables.Category
 import com.google.firebase.database.*
 import com.google.firebase.database.DataSnapshot
+import java.util.concurrent.Executors
 
 object RealtimeDatabaseSync {
     private lateinit var database: DatabaseReference
@@ -47,7 +48,7 @@ object RealtimeDatabaseSync {
         if (!isInitialized) return
 
         // Example for Brand table – add more later
-        listenToTable("brands", BrandCloud::class.java) { cloud, key ->
+        listenToTable("brand_table", BrandCloud::class.java) { cloud, key ->
             // Convert cloud → local Brand and save to Room
             val localBrand = Brand(
                 brand_id = key.toInt(),
@@ -92,14 +93,17 @@ object RealtimeDatabaseSync {
     // RealtimeDatabaseSync.kt  ← add inside the object
 
     fun startSyncAllFourTables(brandDao: BrandDao, categoryDao: CategoryDao) {
-        Log.e("RDBSync", "start sync stared")
-        syncTable("brands", BrandCloud::class.java) { cloud, key ->
+
+        syncTable("brand_table", BrandCloud::class.java) { cloud, key ->
             val brand = Brand(
                 brand_id = key.toInt(),
                 brand_name = cloud.brandName,
                 cath_code = cloud.cathCode
             )
-            brandDao.insert(brand)    // create or update
+            Executors.newSingleThreadExecutor().execute {
+                brandDao.insert(brand)
+            }
+                // create or update
         }
 
         syncTable("category_table", CategoryCloud::class.java) { cloud, key ->
@@ -108,7 +112,10 @@ object RealtimeDatabaseSync {
                 category_name = cloud.categoryName
             )
 
-            categoryDao.insert(category)
+            Executors.newSingleThreadExecutor().execute {
+                categoryDao.insert(category)
+            }
+
         }
 
 

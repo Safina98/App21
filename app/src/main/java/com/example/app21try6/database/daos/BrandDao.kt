@@ -18,6 +18,9 @@ interface BrandDao {
     @Update
     fun update(brand: Brand)
 
+    @Query("SELECT * FROM brand_table WHERE brand_id = :id LIMIT 1")
+    suspend fun getById(id: Int): Brand?
+
     @Query("SELECT brand_id as id, brand_name as name,cath_code as parentId from brand_table WHERE cath_code IS null OR cath_code=:catId")
     fun getBrandModelByCatId(catId:Int?):List<BrandProductModel>
     @Query("SELECT  brand_name  from brand_table WHERE  cath_code=:catId")
