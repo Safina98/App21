@@ -3,6 +3,7 @@ package com.example.app21try6.database.daos
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.app21try6.database.models.BrandProductModel
@@ -11,8 +12,8 @@ import com.example.app21try6.stock.brandstock.ExportModel
 
 @Dao
 interface BrandDao {
-    @Insert
-    fun insert(brand: Brand)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(brand: Brand):Long
 
     @Update
     fun update(brand: Brand)

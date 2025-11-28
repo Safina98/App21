@@ -3,6 +3,9 @@ package com.example.app21try6.database.repositories
 import android.app.Application
 import androidx.lifecycle.LiveData
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.database.cloud.BrandCloud
+import com.example.app21try6.database.cloud.CategoryCloud
+import com.example.app21try6.database.cloud.RealtimeDatabaseSync
 import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.models.DetailMerchandiseModel
 import com.example.app21try6.database.tables.Brand
@@ -62,17 +65,47 @@ class StockRepositories (
             brandDao.getCtgIdByBrandId(brandId)
         }
     }
-    suspend fun insertCategory(category: Category){ withContext(Dispatchers.IO){ categoryDao.insert(category) } }
-    suspend fun updateCategory(category: Category){withContext(Dispatchers.IO){ categoryDao.update(category) } }
+    suspend fun insertCategory(category: Category){
+        withContext(Dispatchers.IO){
+            val newId= categoryDao.insert(category).toInt()
+            val cloudCategory = CategoryCloud(
+                categoryName = category.category_name,
+                lastUpdated = System.currentTimeMillis()
+            ).apply { localId = newId }
+            RealtimeDatabaseSync.upload("category_table", newId, cloudCategory)
+        }
+    }
+    suspend fun updateCategory(category: Category){
+        withContext(Dispatchers.IO){
+            categoryDao.update(category)
+            val cloudCategory = CategoryCloud(
+                categoryName = category.category_name,
+                lastUpdated = System.currentTimeMillis()
+            ).apply { localId = category.category_id }
+            RealtimeDatabaseSync.upload("category_table", category.category_id, cloudCategory)
+        }
+    }
     //delete category by id
     suspend fun deleteCategory(id:Int){
         withContext(Dispatchers.IO){
             categoryDao.delete(id)
+            RealtimeDatabaseSync.deleteById("category_table", id)
         }
     }
     ////////////////////////////////////////Brand////////////////////////////////////////////////////////
 
-    suspend fun insertBrand(brand: Brand){ withContext(Dispatchers.IO){ brandDao.insert(brand) } }
+    suspend fun insertBrand(brand: Brand){
+        withContext(Dispatchers.IO){
+           val newId= brandDao.insert(brand).toInt()
+            val cloudBrand = BrandCloud(
+                brandName = brand.brand_name,
+                cathCode = brand.cath_code,
+                lastUpdated = System.currentTimeMillis()
+            ).apply { localId = newId }
+
+            RealtimeDatabaseSync.upload("brand_table", newId, cloudBrand)
+        }
+    }
     // get brand recycler view data by categoryId
     suspend fun getBrandByCategoryId(id:Int):List<BrandProductModel>{ return withContext(Dispatchers.IO){ brandDao.getBrandModelByCatId(id) } }
     suspend fun getBrandNameListByCategoryName(cat:Int):List<String>{ return withContext(Dispatchers.IO){ brandDao.getBrandNameListByCatName(cat) } }

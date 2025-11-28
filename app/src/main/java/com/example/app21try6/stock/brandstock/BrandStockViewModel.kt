@@ -30,7 +30,6 @@ class BrandStockViewModel(
     private var viewModelJob = Job()
     //ui scope for coroutines
     private val uiScope = CoroutineScope(Dispatchers.Main +  viewModelJob)
-
     //Navigation
     private val _navigateProduct = MutableLiveData<Array<String>>()
     val navigateProduct:LiveData<Array<String>> get() = _navigateProduct
@@ -42,15 +41,11 @@ class BrandStockViewModel(
     val ctgList = repository.getCategoryModelLiveData()
     //spinner entries
     val ctgNameList = repository.getCategoryNameLiveData()
-
     var _brandBpModelList = MutableLiveData<List<BrandProductModel>>()
     val brandBpModelList :LiveData<List<BrandProductModel>> get()= _brandBpModelList
-
     var ctgId = MutableLiveData<Int>(-1)
     var selectedBrandBpModel = MutableLiveData<BrandProductModel?>()
-
     val all_item = repository.getExportedStockData()
-
     private val _selectedCtgSpinner = MutableLiveData<String>()
     val selectedCtgSpinner: LiveData<String> get() = _selectedCtgSpinner
 

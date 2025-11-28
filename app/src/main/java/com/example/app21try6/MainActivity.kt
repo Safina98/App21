@@ -9,6 +9,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import com.example.app21try6.database.cloud.RealtimeDatabaseSync
 import com.example.app21try6.databinding.ActivityMainBinding
 import com.example.app21try6.stock.brandstock.BrandStockFragment
 import com.example.app21try6.stock.subproductstock.SubProductStockFragment
@@ -25,6 +26,7 @@ class MainActivity : AppCompatActivity() {
         val toolbar:androidx.appcompat.widget.Toolbar = binding.toolbar
        drawerLayout = binding.drawerLayout
         setSupportActionBar(toolbar)
+        RealtimeDatabaseSync.startListening()
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.myNavHostFragment) as NavHostFragment
         val navController = navHostFragment.navController

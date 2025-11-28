@@ -9,11 +9,28 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.app21try6.MainActivity
+import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.database.cloud.RealtimeDatabaseSync
+import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class MyApplication: Application()  {
     override fun onCreate() {
         super.onCreate()
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
+
+        // Now safe to initialize everything else
+       RealtimeDatabaseSync.init(this)
+        Thread {
+            val db = VendibleDatabase.getInstance(this)
+            RealtimeDatabaseSync.startSyncAllFourTables(
+                brandDao    = db.brandDao,
+                categoryDao = db.categoryDao
+            )
+        }.start()
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
 
         val wmbPreference = PreferenceManager.getDefaultSharedPreferences(this)

@@ -98,11 +98,3 @@ abstract class VendibleDatabase:RoomDatabase(){
         }
     }
 }
-//28/5 bayar lancar 2.341.500 dark bruno 10.5
-// 10/01 bayar cahaya indah 4.950.000  karpet a 2 roll bisa 1 roll
-
-//kalau cahsback bagaimana?
-//harga yang masuk di pembukuan harga setelah dikurangi cahsback?
-//buat table log barang
-//id, ref, sub id, harga, jumlah roll, isi dalam 1 roll, tanggal
-//pas kurangi stok, lacak berapa meter setiap barang keluar, kalau sambungan bagaimana?, kalau tambah 20 cm bagaimana?

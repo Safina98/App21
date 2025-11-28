@@ -5,7 +5,9 @@ import android.text.InputType
 import android.text.method.DigitsKeyListener
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Spinner
@@ -132,6 +134,9 @@ object DialogUtils{
         val alert = builder.create()
         alert.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         alert.show()
+        alert.setOnDismissListener {
+            alert.dismiss()
+        }
         alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context, R.color.dialogbtncolor))
         alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context, R.color.dialogbtncolor))
     }

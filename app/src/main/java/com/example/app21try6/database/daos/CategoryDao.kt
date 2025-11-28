@@ -4,6 +4,7 @@ import android.hardware.camera2.CameraExtensionSession.StillCaptureLatency
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
@@ -12,8 +13,8 @@ import com.example.app21try6.stock.brandstock.CategoryModel
 
 @Dao
 interface CategoryDao {
-    @Insert
-    fun insert(category: Category)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(category: Category):Long
     @Update
     fun update(category: Category)
     @Query("DELETE FROM category_table WHERE category_id=:id")

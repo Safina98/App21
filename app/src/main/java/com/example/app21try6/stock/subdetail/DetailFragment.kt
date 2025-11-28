@@ -17,7 +17,6 @@ import com.example.app21try6.databinding.FragmentDetailBinding
 class DetailFragment : Fragment() {
     private lateinit var binding: FragmentDetailBinding
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_detail,container,false)
