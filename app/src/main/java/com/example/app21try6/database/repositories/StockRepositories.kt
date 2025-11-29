@@ -71,8 +71,8 @@ class StockRepositories (
             val cloudCategory = CategoryCloud(
                 categoryName = category.category_name,
                 lastUpdated = System.currentTimeMillis()
-            ).apply { localId = newId }
-            RealtimeDatabaseSync.upload("category_table", newId, cloudCategory)
+            ).apply { cloudId=category.cloudId }
+            RealtimeDatabaseSync.upload("category_table", cloudCategory.cloudId, cloudCategory)
         }
     }
     suspend fun updateCategory(category: Category){
@@ -81,8 +81,8 @@ class StockRepositories (
             val cloudCategory = CategoryCloud(
                 categoryName = category.category_name,
                 lastUpdated = System.currentTimeMillis()
-            ).apply { localId = category.category_id }
-            RealtimeDatabaseSync.upload("category_table", category.category_id, cloudCategory)
+            ).apply { cloudId = category.cloudId }
+            RealtimeDatabaseSync.upload("category_table", cloudCategory.cloudId, cloudCategory)
         }
     }
     //delete category by id
@@ -101,9 +101,9 @@ class StockRepositories (
                 brandName = brand.brand_name,
                 cathCode = brand.cath_code,
                 lastUpdated = System.currentTimeMillis()
-            ).apply { localId = newId }
+            ).apply {cloudId=brand.cloudId }
 
-            RealtimeDatabaseSync.upload("brand_table", newId, cloudBrand)
+            RealtimeDatabaseSync.upload("brand_table", cloudBrand.cloudId, cloudBrand)
         }
     }
     // get brand recycler view data by categoryId

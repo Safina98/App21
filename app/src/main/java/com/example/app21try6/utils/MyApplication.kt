@@ -1,10 +1,15 @@
 package com.example.app21try6.utils
 
 import android.app.Application
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
 import android.preference.PreferenceManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
@@ -27,7 +32,7 @@ class MyApplication: Application()  {
         Thread {
             Thread {
                 val db = VendibleDatabase.getInstance(this)
-                RealtimeDatabaseSync.startSyncAllFourTables(
+                RealtimeDatabaseSync.startSyncAllTables(
                     brandDao    = db.brandDao,
                     categoryDao = db.categoryDao
                 )
@@ -50,6 +55,16 @@ class MyApplication: Application()  {
            // markFirstRunCompleted() // Set the flag after scheduling
         //}
         //runUpdateTotalAfterDiscountWorker()
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        val networkCallback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                CloudSyncManager.startCloudSync(applicationContext)
+            }
+        }
+
+        connectivityManager.registerDefaultNetworkCallback(networkCallback)
+
     }
     private fun markFirstRunCompleted() {
         val wmbPreference = PreferenceManager.getDefaultSharedPreferences(this)
@@ -70,5 +85,7 @@ class MyApplication: Application()  {
             workRequest
         )
     }
+
+
 
 }

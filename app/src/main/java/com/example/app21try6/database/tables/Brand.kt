@@ -17,5 +17,11 @@ data class Brand(
     @ColumnInfo(name="brand_name")
     var brand_name:String = "emtpy",
     @ColumnInfo(name="cath_code")
-    var cath_code:Int = 0
+    var cath_code:Int = 0,
+    @ColumnInfo(name="cloud_id")
+    var cloudId:String="",
+    @ColumnInfo(name="needs_syncs")
+    var needsSyncs:Int=1
+
 )
+

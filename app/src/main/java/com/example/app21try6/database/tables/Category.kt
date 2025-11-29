@@ -11,6 +11,10 @@ data class Category(
         var category_id:Int = 0,
         @ColumnInfo(name="category_name")
         var category_name:String = "emtpy",
+        @ColumnInfo(name="cloud_id")
+        var cloudId:String="",
+        @ColumnInfo(name="needs_syncs")
+        var needsSyncs:Int=1,
         @Ignore
         var checkBoxBoolean:Boolean = false
 )

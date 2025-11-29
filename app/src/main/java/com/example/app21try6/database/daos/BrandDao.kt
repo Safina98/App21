@@ -20,6 +20,11 @@ interface BrandDao {
 
     @Query("SELECT * FROM brand_table WHERE brand_id = :id LIMIT 1")
     suspend fun getById(id: Int): Brand?
+    @Query("SELECT * FROM brand_table WHERE needs_syncs = 1")
+    fun getPendingSync(): List<Brand>
+
+    @Query("UPDATE brand_table SET needs_syncs = 0 WHERE brand_id = :id")
+    fun markSynced(id: Int)
 
     @Query("SELECT brand_id as id, brand_name as name,cath_code as parentId from brand_table WHERE cath_code IS null OR cath_code=:catId")
     fun getBrandModelByCatId(catId:Int?):List<BrandProductModel>

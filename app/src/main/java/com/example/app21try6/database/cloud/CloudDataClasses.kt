@@ -12,12 +12,12 @@ data class BrandCloud(
 
     // This field is only used on device, never uploaded, never saved to Firebase
     @get:Exclude
-    var localId: Int = 0
+    var cloudId: String = ""
 )
 
 @IgnoreExtraProperties
 data class CategoryCloud(
-    @get:Exclude var localId: Int = 0,
+    @get:Exclude var cloudId: String ="",
     var categoryName: String = "",
     var lastUpdated: Long = System.currentTimeMillis()
 )

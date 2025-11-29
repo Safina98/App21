@@ -27,8 +27,8 @@ class MainActivity : AppCompatActivity() {
         val toolbar:androidx.appcompat.widget.Toolbar = binding.toolbar
        drawerLayout = binding.drawerLayout
         setSupportActionBar(toolbar)
-        val db = VendibleDatabase.getInstance(this)
-        RealtimeDatabaseSync.startListening()
+       // val db = VendibleDatabase.getInstance(this)
+        //RealtimeDatabaseSync.startSyncAllTables(db.brandDao, db.categoryDao)
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.myNavHostFragment) as NavHostFragment
         val navController = navHostFragment.navController

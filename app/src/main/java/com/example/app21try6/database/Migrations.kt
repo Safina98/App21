@@ -5,6 +5,42 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 object Migrations {
 
+    val MIGRATION_45_46 = object : Migration(45, 46) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+
+            // --- Add columns to brand_table ---
+            database.execSQL(
+                """
+            ALTER TABLE brand_table 
+            ADD COLUMN cloud_id TEXT NOT NULL DEFAULT ''
+            """
+            )
+
+            database.execSQL(
+                """
+            ALTER TABLE brand_table 
+            ADD COLUMN needs_syncs INTEGER NOT NULL DEFAULT 1
+            """
+            )
+
+            // --- Add columns to category_table ---
+            database.execSQL(
+                """
+            ALTER TABLE category_table 
+            ADD COLUMN cloud_id TEXT NOT NULL DEFAULT ''
+            """
+            )
+
+            database.execSQL(
+                """
+            ALTER TABLE category_table 
+            ADD COLUMN needs_syncs INTEGER NOT NULL DEFAULT 1
+            """
+            )
+        }
+    }
+
+
     val MIGRATION_44_45 = object : Migration(44, 45) {
         override fun migrate(database: SupportSQLiteDatabase) {
             database.execSQL(

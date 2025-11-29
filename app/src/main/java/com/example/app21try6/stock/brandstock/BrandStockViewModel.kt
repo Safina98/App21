@@ -22,6 +22,7 @@ import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
+import java.util.UUID
 
 class BrandStockViewModel(
     private val repository: StockRepositories,
@@ -124,6 +125,7 @@ class BrandStockViewModel(
                 val brand = Brand()
                 brand.brand_name = brand_name
                 brand.cath_code = repository.getCategoryIdByName(categoryName)
+                brand.cloudId= UUID.randomUUID().toString()
                 repository.insertBrand(brand)
                 updateRv()
             }
@@ -134,6 +136,7 @@ class BrandStockViewModel(
             if (ctgName!="") {
                 val category = Category()
                 category.category_name = ctgName
+                category.cloudId= UUID.randomUUID().toString()
                 try {
                     repository.insertCategory(category)
                 } catch (e: SQLiteException) {
