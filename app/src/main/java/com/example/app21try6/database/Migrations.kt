@@ -5,6 +5,284 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 object Migrations {
 
+
+
+    val MIGRATION_47_48 = object : Migration(47, 48) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+
+            // -------------------------
+            // 1. CATEGORY_TABLE
+            // -------------------------
+            database.execSQL("""
+            CREATE TABLE category_table_new (
+                categoryCloudId INTEGER NOT NULL,
+                category_name TEXT NOT NULL,
+                needs_syncs INTEGER NOT NULL,
+                PRIMARY KEY(categoryCloudId)
+            )
+        """.trimIndent())
+
+            database.execSQL("""
+            INSERT INTO category_table_new (categoryCloudId, category_name, needs_syncs)
+            SELECT cloud_id, category_name, needs_syncs
+            FROM category_table
+        """.trimIndent())
+
+            database.execSQL("DROP TABLE category_table")
+            database.execSQL("ALTER TABLE category_table_new RENAME TO category_table")
+
+
+            // -------------------------
+            // 2. BRAND_TABLE
+            // -------------------------
+            database.execSQL("""
+            CREATE TABLE brand_table_new (
+                brandCloudId INTEGER NOT NULL,
+                brand_name TEXT NOT NULL,
+                cath_code INTEGER NOT NULL,
+                needs_syncs INTEGER NOT NULL,
+                PRIMARY KEY(brandCloudId),
+                FOREIGN KEY(cath_code) REFERENCES category_table(categoryCloudId)
+                    ON DELETE CASCADE ON UPDATE CASCADE
+            )
+        """.trimIndent())
+
+            database.execSQL("""
+            INSERT INTO brand_table_new (brandCloudId, brand_name, cath_code, needs_syncs)
+            SELECT cloud_id, brand_name, cath_code, needs_syncs
+            FROM brand_table
+        """.trimIndent())
+
+            database.execSQL("DROP TABLE brand_table")
+            database.execSQL("ALTER TABLE brand_table_new RENAME TO brand_table")
+
+
+            // -------------------------
+            // 3. PRODUCT_TABLE
+            // -------------------------
+            database.execSQL("""
+            CREATE TABLE product_table_new (
+                product_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                product_name TEXT NOT NULL,
+                product_price INTEGER NOT NULL,
+                product_capital INTEGER NOT NULL,
+                checkBoxBoolean INTEGER NOT NULL,
+                best_selling INTEGER NOT NULL,
+                default_net REAL NOT NULL,
+                alternate_price REAL NOT NULL,
+                brand_code INTEGER NOT NULL,
+                cath_code INTEGER NOT NULL,
+                discountId INTEGER,
+                purchasePrice INTEGER,
+                purchaseUnit TEXT,
+                alternate_capital REAL NOT NULL,
+                FOREIGN KEY(brand_code) REFERENCES brand_table(brandCloudId)
+                    ON DELETE CASCADE ON UPDATE CASCADE,
+                FOREIGN KEY(cath_code) REFERENCES category_table(categoryCloudId)
+                    ON DELETE CASCADE ON UPDATE CASCADE,
+                FOREIGN KEY(discountId) REFERENCES discount_table(discountId)
+                    ON DELETE SET NULL ON UPDATE CASCADE
+            )
+        """.trimIndent())
+
+            database.execSQL("""
+            INSERT INTO product_table_new (
+                product_id, product_name, product_price, product_capital,
+                checkBoxBoolean, best_selling, default_net, alternate_price,
+                brand_code, cath_code, discountId, purchasePrice, purchaseUnit, alternate_capital
+            )
+            SELECT product_id, product_name, product_price, product_capital,
+                   checkBoxBoolean, best_selling, default_net, alternate_price,
+                   brand_code, cath_code, discountId, purchasePrice, purchaseUnit, alternate_capital
+            FROM product_table
+        """.trimIndent())
+
+            database.execSQL("DROP TABLE product_table")
+            database.execSQL("ALTER TABLE product_table_new RENAME TO product_table")
+
+            database.execSQL(
+                """
+            CREATE TABLE IF NOT EXISTS inventory_log_table_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                brandId INTEGER,
+                productId INTEGER,
+                subProductId INTEGER,
+                detailWarnaRef TEXT,
+                isi REAL NOT NULL,
+                pcs INTEGER NOT NULL,
+                barangLogDate TEXT NOT NULL,
+                barangLogRef TEXT NOT NULL,
+                barangLogKet TEXT NOT NULL,
+                
+                FOREIGN KEY(brandId) REFERENCES brand_table(brandCloudId) 
+                    ON UPDATE SET NULL ON DELETE SET NULL,
+                
+                FOREIGN KEY(productId) REFERENCES product_table(product_id)
+                    ON UPDATE SET NULL ON DELETE SET NULL,
+                
+                FOREIGN KEY(subProductId) REFERENCES sub_table(sub_id)
+                    ON UPDATE SET NULL ON DELETE SET NULL,
+                
+                FOREIGN KEY(detailWarnaRef) REFERENCES detail_warna_table(ref)
+                    ON UPDATE SET NULL ON DELETE SET NULL
+            )
+            """
+            )
+
+            // 2. Copy data
+            database.execSQL(
+                """
+            INSERT INTO inventory_log_table_new (
+                id, brandId, productId, subProductId,
+                detailWarnaRef, isi, pcs, barangLogDate,
+                barangLogRef, barangLogKet
+            )
+            SELECT 
+                id, brandId, productId, subProductId,
+                detailWarnaRef, isi, pcs, barangLogDate,
+                barangLogRef, barangLogKet
+            FROM inventory_log_table
+            """
+            )
+
+            // 3. Drop old table
+            database.execSQL("DROP TABLE inventory_log_table")
+
+            // 4. Rename new → original
+            database.execSQL(
+                "ALTER TABLE inventory_log_table_new RENAME TO inventory_log_table"
+            )
+
+            // 5. Re-create index
+            database.execSQL(
+                "CREATE UNIQUE INDEX index_inventory_log_table_barangLogRef ON inventory_log_table(barangLogRef)"
+            )
+
+            database.execSQL(
+                """
+            CREATE TABLE IF NOT EXISTS sub_table_new (
+                sub_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                sub_name TEXT NOT NULL,
+                roll_u INTEGER NOT NULL,
+                roll_b_t INTEGER NOT NULL,
+                roll_s_t INTEGER NOT NULL,
+                roll_k_t INTEGER NOT NULL,
+                roll_b_g INTEGER NOT NULL,
+                roll_s_g INTEGER NOT NULL,
+                roll_k_g INTEGER NOT NULL,
+                warna TEXT NOT NULL,
+                ket TEXT NOT NULL,
+                product_code INTEGER NOT NULL,
+                brand_code INTEGER NOT NULL,
+                cath_code INTEGER NOT NULL,
+                is_checked INTEGER NOT NULL,
+                discountId INTEGER,
+
+                FOREIGN KEY (product_code) REFERENCES product_table(product_id)
+                    ON UPDATE CASCADE ON DELETE CASCADE,
+
+                FOREIGN KEY (brand_code) REFERENCES brand_table(brandCloudId)
+                    ON UPDATE CASCADE ON DELETE CASCADE,
+
+                FOREIGN KEY (cath_code) REFERENCES category_table(categoryCloudId)
+                    ON UPDATE CASCADE ON DELETE CASCADE,
+
+                FOREIGN KEY (discountId) REFERENCES discount_table(discountId)
+                    ON UPDATE CASCADE ON DELETE SET NULL
+            )
+            """.trimIndent()
+            )
+
+            // 2. Copy data
+            database.execSQL(
+                """
+            INSERT INTO sub_table_new (
+                sub_id, sub_name, roll_u, roll_b_t, roll_s_t, roll_k_t,
+                roll_b_g, roll_s_g, roll_k_g, warna, ket, product_code,
+                brand_code, cath_code, is_checked, discountId
+            )
+            SELECT 
+                sub_id, sub_name, roll_u, roll_b_t, roll_s_t, roll_k_t,
+                roll_b_g, roll_s_g, roll_k_g, warna, ket, product_code,
+                brand_code, cath_code, is_checked, discountId
+            FROM sub_table
+            """
+            )
+
+            // 3. Drop old table
+            database.execSQL("DROP TABLE sub_table")
+
+            // 4. Rename new -> old name
+            database.execSQL("ALTER TABLE sub_table_new RENAME TO sub_table")
+
+        }
+    }
+
+    val MIGRATION_46_47 = object : Migration(46, 47) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+
+            // ---------------------------------------------
+            // 1. CATEGORY TABLE - cloudId TEXT → INTEGER
+            // ---------------------------------------------
+            database.execSQL("""
+            CREATE TABLE category_table_new (
+                category_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                category_name TEXT NOT NULL,
+                cloud_id INTEGER NOT NULL,
+                needs_syncs INTEGER NOT NULL
+            )
+        """)
+
+            // Copy + convert TEXT to INTEGER
+            database.execSQL("""
+            INSERT INTO category_table_new (category_id, category_name, cloud_id, needs_syncs)
+            SELECT 
+                category_id, 
+                category_name,
+                CAST(cloud_id AS INTEGER),
+                needs_syncs
+            FROM category_table
+        """)
+
+            database.execSQL("DROP TABLE category_table")
+            database.execSQL("ALTER TABLE category_table_new RENAME TO category_table")
+
+
+
+            // ---------------------------------------------
+            // 2. BRAND TABLE - cloudId TEXT → INTEGER
+            // ---------------------------------------------
+            database.execSQL("""
+            CREATE TABLE brand_table_new (
+                brand_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                brand_name TEXT NOT NULL,
+                cath_code INTEGER NOT NULL,
+                cloud_id INTEGER NOT NULL,
+                needs_syncs INTEGER NOT NULL,
+                FOREIGN KEY (cath_code) REFERENCES category_table(category_id)
+                   ON UPDATE CASCADE ON DELETE CASCADE
+            )
+        """)
+
+            // Copy + convert TEXT to INTEGER
+            database.execSQL("""
+            INSERT INTO brand_table_new (brand_id, brand_name, cath_code, cloud_id, needs_syncs)
+            SELECT 
+                brand_id,
+                brand_name,
+                cath_code,
+                CAST(cloud_id AS INTEGER),
+                needs_syncs
+            FROM brand_table
+        """)
+            database.execSQL("DROP TABLE brand_table")
+            database.execSQL("ALTER TABLE brand_table_new RENAME TO brand_table")
+
+        }
+
+    }
+
+
     val MIGRATION_45_46 = object : Migration(45, 46) {
         override fun migrate(database: SupportSQLiteDatabase) {
 

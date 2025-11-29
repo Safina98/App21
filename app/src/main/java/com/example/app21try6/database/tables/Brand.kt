@@ -7,21 +7,19 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "brand_table",
         foreignKeys = [ForeignKey(entity = Category::class,
-                parentColumns = ["category_id"],
+                parentColumns = ["categoryCloudId"],
                 childColumns = ["cath_code"],
                 onDelete = ForeignKey.CASCADE,
                 onUpdate = ForeignKey.CASCADE)])
 data class Brand(
-    @PrimaryKey(autoGenerate = true)
-    var brand_id:Int = 0,
+    @PrimaryKey
+    @ColumnInfo(name = "brandCloudId")
+    var brandCloudId:Long = 0L,
     @ColumnInfo(name="brand_name")
     var brand_name:String = "emtpy",
     @ColumnInfo(name="cath_code")
-    var cath_code:Int = 0,
-    @ColumnInfo(name="cloud_id")
-    var cloudId:String="",
+    var cath_code:Long = 0L,
     @ColumnInfo(name="needs_syncs")
     var needsSyncs:Int=1
-
 )
 

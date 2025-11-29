@@ -56,7 +56,7 @@ class BrandStockAdapter(
 }
 class BrandStockDiffCallback:DiffUtil.ItemCallback<BrandProductModel>(){
     override fun areItemsTheSame(oldItem: BrandProductModel, newItem: BrandProductModel): Boolean {
-        return oldItem.id == newItem.id
+        return oldItem.id== newItem.id
     }
 
     override fun areContentsTheSame(oldItem: BrandProductModel, newItem: BrandProductModel): Boolean {

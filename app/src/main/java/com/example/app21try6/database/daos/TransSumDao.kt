@@ -28,8 +28,6 @@ interface TransSumDao {
     """)
     suspend fun updateCustIdBasedOnCustName()
 
-// @Query("INSERT INTO product_table (product_name,product_price,checkBoxBoolean,best_selling,brand_code,cath_code) SELECT :product_name_ as product_name,:product_price_ as product_price, 0 as checkBoxBoolean,:best_selling_ as best_selling,(SELECT brand_id FROM brand_table WHERE brand_name = :brand_code_ limit 1) as brand_code,(SELECT category_id FROM category_table WHERE category_name = :cath_code_ limit 1) as cath_code WHERE NOT EXISTS (SELECT 1 FROM product_table WHERE product_name = :product_name_)")
-    // @Query("INSERT INTO category_table(category_name) SELECT :cath_name_ WHERE NOT EXISTS (SELECT 1 FROM category_table WHERE category_name = :cath_name_)")
 @Query("INSERT INTO trans_sum_table (cust_name, total_trans, paid, trans_date, is_taken, is_paid_off, is_keeped,ref,sum_note) " +
         "SELECT  :custName, :totalTrans, :paid, :transDate, :isTaken, :isPaidOff,:isKeeped, :ref, :sum_note " +
         "WHERE NOT EXISTS (SELECT 1 FROM trans_sum_table WHERE ref = :ref)")

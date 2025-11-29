@@ -44,7 +44,7 @@ class BrandStockViewModel(
     val ctgNameList = repository.getCategoryNameLiveData()
     var _brandBpModelList = MutableLiveData<List<BrandProductModel>>()
     val brandBpModelList :LiveData<List<BrandProductModel>> get()= _brandBpModelList
-    var ctgId = MutableLiveData<Int>(-1)
+    var ctgId = MutableLiveData<Long>(-1L)
     var selectedBrandBpModel = MutableLiveData<BrandProductModel?>()
     val all_item = repository.getExportedStockData()
     private val _selectedCtgSpinner = MutableLiveData<String>()
@@ -89,7 +89,9 @@ class BrandStockViewModel(
     fun setSelectedKategoriValue(value: String) {
         viewModelScope.launch {
             val id = repository.getCategoryIdByName(value)
+            Log.i("brandList","categoryIdfromrepo: ${ctgId.value}")
             ctgId.value = id
+            Log.i("brandList","ctgId: ${ctgId.value}")
             _selectedCtgSpinner.value = value
         }
 
@@ -97,7 +99,7 @@ class BrandStockViewModel(
 
     fun updateRv(){
         viewModelScope.launch {
-            val brandlist = repository.getBrandByCategoryId(ctgId.value ?:0)
+            val brandlist = repository.getBrandByCategoryId(ctgId.value?.toLong() ?:0L)
             _brandBpModelList.value = brandlist
         }
     }
@@ -112,7 +114,7 @@ class BrandStockViewModel(
         }
     }
 
-    fun deleteCategory(category:CategoryModel){
+    fun deleteCategory(category:StockCategoryModel){
         viewModelScope.launch {
             repository.deleteCategory(category.id)
         }
@@ -125,10 +127,14 @@ class BrandStockViewModel(
                 val brand = Brand()
                 brand.brand_name = brand_name
                 brand.cath_code = repository.getCategoryIdByName(categoryName)
-                brand.cloudId= UUID.randomUUID().toString()
+                brand.brandCloudId= System.currentTimeMillis()
                 repository.insertBrand(brand)
                 updateRv()
             }
+        }
+    }
+    fun assignCloudIdToAllData() {
+        viewModelScope.launch(Dispatchers.IO) {
         }
     }
     fun insertItemCtg(ctgName:String){
@@ -136,7 +142,7 @@ class BrandStockViewModel(
             if (ctgName!="") {
                 val category = Category()
                 category.category_name = ctgName
-                category.cloudId= UUID.randomUUID().toString()
+                category.categoryCloudId= System.currentTimeMillis().toLong()
                 try {
                     repository.insertCategory(category)
                 } catch (e: SQLiteException) {
@@ -184,10 +190,10 @@ class BrandStockViewModel(
         }
     }
 
-    fun updateCtg(ctgModel: CategoryModel){
+    fun updateCtg(ctgModel: StockCategoryModel){
         uiScope.launch {
         val category= Category()
-        category.category_id=ctgModel.id
+        category.categoryCloudId=ctgModel.id
         category.category_name=ctgModel.categoryName
         repository.updateCategory(category)
         }
@@ -195,14 +201,14 @@ class BrandStockViewModel(
     fun updateBrand(brandBpModel: BrandProductModel, ctgName:String){ uiScope.launch {
         val brand=Brand()
         brand.brand_name=brandBpModel.name
-        brand.brand_id=brandBpModel.id
+        brand.brandCloudId=brandBpModel.brandId?: System.currentTimeMillis()
         brand.cath_code=repository.getCategoryIdByName(ctgName)
         repository.updateBrand(brand)
         updateRv()
     } }
 
     fun deleteBrand(brandBpModel: BrandProductModel){ uiScope.launch {
-        repository.deleteBrand(brandBpModel.id)
+        repository.deleteBrand(brandBpModel.brandId?:0L)
         updateRv()
     } }
 
@@ -220,7 +226,7 @@ class BrandStockViewModel(
     fun onProductCLick(id: Array<String>){ _navigateProduct.value = id }
     @SuppressLint("NullSafeMutableLiveData")
 
-    fun updateProductRv(brandId:Int?){
+    fun updateProductRv(brandId:Long?){
         viewModelScope.launch {
             val list =if (brandId!=null) repository.getProductModel(brandId) else listOf()
             _productBpModelList.value=list
@@ -264,9 +270,9 @@ class BrandStockViewModel(
         viewModelScope.launch {
             val product=Product()
             product.product_name=(productName.value?:"").uppercase().trim()
-            product.brand_code = selectedBrandBpModel.value!!.id
+            product.brand_code = selectedBrandBpModel.value!!.brandId?:0L
             product.product_price = productPice.value?:0
-            product.cath_code = ctgId.value?:0
+            product.cath_code = ctgId.value?.toLong()?:0L
             product.product_capital = productCapital.value?:0
             product.discountId=discountRepository.getDiscountIdByName((discountName.value?:"").uppercase().trim())
             product.alternate_capital=alternateCapital.value ?: 0.0
@@ -276,7 +282,7 @@ class BrandStockViewModel(
             product.alternate_price=alternatePrice.value ?: 0.0
             product.cath_code=repository.getCategoryIdByName(ctgName.value ?: "")
             product.brand_code=repository.getBrandIdByName(branName.value?:"",product.cath_code)?:0
-            if (product.brand_code!=0 && product.cath_code!=0) {
+            if (product.brand_code!=0L && product.cath_code!=0L) {
                 if (_product.value==null){
                      repository.insertProduct(product)
                 }
@@ -284,7 +290,7 @@ class BrandStockViewModel(
                     product.product_id=_product.value!!.product_id
                     updateProduct(product,"")
                 }
-                updateProductRv(selectedBrandBpModel.value?.id)
+                updateProductRv(selectedBrandBpModel.value?.brandId)
                 onNavigateBackToBrandStock()
             }else{
                 Toast.makeText(getApplication(),"kategori atau brand tidak valid",Toast.LENGTH_SHORT).show()
@@ -306,7 +312,8 @@ class BrandStockViewModel(
     fun deleteProduct(product: BrandProductModel){
         uiScope.launch {
            repository.deleteProduct(product.id)
-            updateProductRv(product.parentId)
+        //todo uncomment
+        //updateProductRv(product.parentId)
 
         } }
     fun onNavigateBackToBrandStock(){

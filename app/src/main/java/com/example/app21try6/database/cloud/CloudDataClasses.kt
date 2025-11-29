@@ -7,7 +7,7 @@ import com.google.firebase.database.IgnoreExtraProperties
 @IgnoreExtraProperties
 data class BrandCloud(
     var brandName: String = "",
-    var cathCode: Int = 0,
+    var cathCode: Long = 0L,
     var lastUpdated: Long = System.currentTimeMillis(),
 
     // This field is only used on device, never uploaded, never saved to Firebase

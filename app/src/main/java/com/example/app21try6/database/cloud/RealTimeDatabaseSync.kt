@@ -51,7 +51,7 @@ object RealtimeDatabaseSync {
     }
 
     // Delete record in Firebase
-    fun deleteById(tableName: String, localId: Int) {
+    fun deleteById(tableName: String, localId: Long) {
         if (!isInitialized || localId <= 0) return
         database.child(tableName).child(localId.toString()).removeValue()
     }
@@ -72,7 +72,7 @@ object RealtimeDatabaseSync {
         ) { cloud, key ->
 
             val brand = Brand(
-                cloudId = key,
+                brandCloudId = key.toLong(),
                 brand_name = cloud.brandName,
                 cath_code = cloud.cathCode
             )
@@ -89,7 +89,7 @@ object RealtimeDatabaseSync {
         ) { cloud, key ->
 
             val category = Category(
-                cloudId = key,
+                categoryCloudId = key.toLong(),
                 category_name = cloud.categoryName
             )
 

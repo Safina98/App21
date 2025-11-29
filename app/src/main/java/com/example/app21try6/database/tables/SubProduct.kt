@@ -14,12 +14,12 @@ import java.util.Date
         onDelete = ForeignKey.CASCADE,
         onUpdate = ForeignKey.CASCADE),
         ForeignKey(entity = Brand::class,
-                parentColumns = ["brand_id"],
+                parentColumns = ["brandCloudId"],
                 childColumns = ["brand_code"],
                 onDelete = ForeignKey.CASCADE,
                 onUpdate = ForeignKey.CASCADE),
         ForeignKey(entity = Category::class,
-                parentColumns = ["category_id"],
+                parentColumns = ["categoryCloudId"],
                 childColumns = ["cath_code"],
                 onDelete = ForeignKey.CASCADE,
                 onUpdate = ForeignKey.CASCADE),
@@ -57,9 +57,9 @@ data class SubProduct(
     @ColumnInfo(name="product_code")
     var product_code:Int = 0,
     @ColumnInfo(name="brand_code")
-    var brand_code:Int = 0,
+    var brand_code:Long = 0L,
     @ColumnInfo(name="cath_code")
-    var cath_code:Int = 0,
+    var cath_code:Long = 0L,
     @ColumnInfo(name="is_checked")
     var is_checked:Boolean = false,
     @ColumnInfo(name = "discountId")

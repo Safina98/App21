@@ -46,8 +46,8 @@ class GraphicViewModel(
                       ): AndroidViewModel(application) {
 
     val summariesLiveData = bookRepo.getAllSummary()
-    val productsLiveData: LiveData<List<Product>> = stockRepo.getAllProduct()
-    val categoriesLiveData: LiveData<List<CategoryModel>> = stockRepo.getCategoryModelLiveData()
+    //val productsLiveData: LiveData<List<Product>> = stockRepo.getAllProduct()
+    //val categoriesLiveData: LiveData<List<CategoryModel>> = stockRepo.getCategoryModelLiveData()
 
     private val _combinedStockLiveData = MediatorLiveData<List<StockModel>?>()
     val combinedStockLiveData: LiveData<List<StockModel>?> get() = _combinedStockLiveData

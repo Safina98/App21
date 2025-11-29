@@ -529,7 +529,7 @@ class PurchaseViewModel(application: Application,
             expenseCategoryDao.getECIdByName(name)
         }
     }
-    private suspend fun getBrandId(productId:Int?):Int?{
+    private suspend fun getBrandId(productId:Int?):Long?{
         return withContext(Dispatchers.IO){
             productDao.getBrandIdByProductId(productId)
         }

@@ -1,4 +1,4 @@
-package com.example.app21try6.stock.brandstock
+package com.example.app21try6.statement.expenses
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -6,15 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-
 import com.example.app21try6.databinding.ItemListCategoryBinding
-import com.example.app21try6.databinding.ItemListStockCategoryModelBinding
+import com.example.app21try6.stock.brandstock.CategoryModel
 
-
-class CategoryAdapter (val updateListener: UpdateListener,
-    val deleteListener: DeleteListener):ListAdapter<StockCategoryModel,CategoryAdapter.MyViewHolder>(BookDiffCallback()) {
-    class MyViewHolder private constructor(val binding: ItemListStockCategoryModelBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(item:StockCategoryModel,
+class ExpenseCategoryAdapter (val updateListener: UpdateListener,
+                       val deleteListener: DeleteListener):ListAdapter<CategoryModel,ExpenseCategoryAdapter.MyViewHolder>(BookDiffCallback()) {
+    class MyViewHolder private constructor(val binding: ItemListCategoryBinding): RecyclerView.ViewHolder(binding.root){
+        fun bind(item:CategoryModel,
                  updateListener: UpdateListener,
                  deleteListener: DeleteListener
         ){
@@ -27,7 +25,7 @@ class CategoryAdapter (val updateListener: UpdateListener,
         companion object{
             fun from(parent: ViewGroup): MyViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = ItemListStockCategoryModelBinding.inflate(layoutInflater,parent,false)
+                val binding =ItemListCategoryBinding.inflate(layoutInflater,parent,false)
                 return MyViewHolder(binding)
             }
         }
@@ -37,25 +35,25 @@ class CategoryAdapter (val updateListener: UpdateListener,
     }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bind(getItem(position),
-                updateListener,deleteListener)
+            updateListener,deleteListener)
     }
 
 }
-class BookDiffCallback : DiffUtil.ItemCallback<StockCategoryModel>() {
-    override fun areItemsTheSame(oldItem: StockCategoryModel, newItem: StockCategoryModel): Boolean {
+class BookDiffCallback : DiffUtil.ItemCallback<CategoryModel>() {
+    override fun areItemsTheSame(oldItem: CategoryModel, newItem: CategoryModel): Boolean {
         return oldItem.categoryName== newItem.categoryName
     }
 
     @SuppressLint("DiffUtilEquals")
-    override fun areContentsTheSame(oldItem: StockCategoryModel, newItem: StockCategoryModel): Boolean {
+    override fun areContentsTheSame(oldItem: CategoryModel, newItem: CategoryModel): Boolean {
         return oldItem == newItem
     }
 }
-class UpdateListener(val clickListener: (StockCategoryModel:StockCategoryModel) -> Unit) {
-    fun onClick(categoryModel:StockCategoryModel) = clickListener(categoryModel)
+class UpdateListener(val clickListener: (categoryModel:CategoryModel) -> Unit) {
+    fun onClick(categoryModel:CategoryModel) = clickListener(categoryModel)
 
 }
-class DeleteListener(val clickListener: (categoryModel:StockCategoryModel) -> Unit) {
-    fun onClick(categoryModel:StockCategoryModel) = clickListener(categoryModel)
+class DeleteListener(val clickListener: (categoryModel:CategoryModel) -> Unit) {
+    fun onClick(categoryModel:CategoryModel) = clickListener(categoryModel)
 
 }

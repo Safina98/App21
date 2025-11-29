@@ -12,6 +12,8 @@ import com.example.app21try6.database.Migrations.MIGRATION_42_43
 import com.example.app21try6.database.Migrations.MIGRATION_43_44
 import com.example.app21try6.database.Migrations.MIGRATION_44_45
 import com.example.app21try6.database.Migrations.MIGRATION_45_46
+import com.example.app21try6.database.Migrations.MIGRATION_46_47
+import com.example.app21try6.database.Migrations.MIGRATION_47_48
 import com.example.app21try6.database.daos.BrandDao
 import com.example.app21try6.database.tables.Category
 import com.example.app21try6.database.daos.CategoryDao
@@ -54,7 +56,7 @@ import com.example.app21try6.database.tables.TransactionSummary
     ExpenseCategory::class, Summary::class, DiscountTable::class, DiscountTransaction::class,
     CustomerTable::class,DetailWarnaTable::class,InventoryLog::class,
     SuplierTable::class,InventoryPurchase::class, MerchandiseRetail::class
-                     ],version=46, exportSchema = true)
+                     ],version=48, exportSchema = true)
 @TypeConverters(DateTypeConverter::class)
 abstract class VendibleDatabase:RoomDatabase(){
     abstract val brandDao : BrandDao
@@ -90,6 +92,8 @@ abstract class VendibleDatabase:RoomDatabase(){
                             "vendible_table"
                     )
                         .addMigrations(MIGRATION_45_46)
+                        .addMigrations(MIGRATION_46_47)
+                        .addMigrations(MIGRATION_47_48)
                         // .fallbackToDestructiveMigration()
                     .build()
                     INSTANCE = instance

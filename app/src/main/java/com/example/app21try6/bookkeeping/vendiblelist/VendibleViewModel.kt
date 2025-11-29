@@ -53,7 +53,7 @@ class VendibleViewModel(
     val all_item_from_db get() = itemCathPosition.value.let {position->
         val cath = cathList.value
         val selectedCath = position?.let { cath?.get(it) }
-        stockRepo.getProductLiveDataByCategoryId(selectedCath?.id ?: 0)
+        stockRepo.getProductLiveDataByCategoryId(selectedCath?.id ?: 0L)
     }
     fun onCheckBoxClicked(product: Product, bool:Boolean){
         if(bool){

@@ -5,13 +5,13 @@
     <data>
         <variable
             name="categoryModel"
-            type="com.example.app21try6.stock.brandstock.CategoryModel" />
+            type="com.example.app21try6.stock.brandstock.StockCategoryModel" />
         <variable
             name="updateListener"
-            type="com.example.app21try6.statement.expenses.UpdateListener" />
+            type="com.example.app21try6.stock.brandstock.UpdateListener" />
         <variable
             name="deleteListener"
-            type="com.example.app21try6.statement.expenses.DeleteListener" />
+            type="com.example.app21try6.stock.brandstock.DeleteListener" />
     </data>
     <LinearLayout
         android:layout_width="match_parent"

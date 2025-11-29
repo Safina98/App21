@@ -10,6 +10,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.example.app21try6.database.tables.Category
 import com.example.app21try6.stock.brandstock.CategoryModel
+import com.example.app21try6.stock.brandstock.StockCategoryModel
 
 @Dao
 interface CategoryDao {
@@ -17,21 +18,22 @@ interface CategoryDao {
     fun insert(category: Category):Long
     @Update
     fun update(category: Category)
-    @Query("DELETE FROM category_table WHERE category_id=:id")
-    fun delete(id:Int)
-    @Query("SELECT * FROM category_table WHERE category_id = :id LIMIT 1")
-    suspend fun getById(id: Int): Category?
+    @Query("DELETE FROM category_table WHERE categoryCloudId=:id")
+    fun delete(id:Long)
+    @Query("SELECT * FROM category_table WHERE categoryCloudId = :id LIMIT 1")
+    suspend fun getById(id: Long): Category?
 
-    @Query("SELECT category_id AS id, category_name AS categoryName FROM category_table")
-    fun getCategoryModelList():LiveData<List<CategoryModel>>
+    @Query("SELECT categoryCloudId AS id, category_name AS categoryName FROM category_table")
+    fun getCategoryModelList():LiveData<List<StockCategoryModel>>
+
     @Query("SELECT category_name FROM category_table")
     fun getName():LiveData<List<String>>
     @Query("SELECT category_name FROM category_table")
     fun getAllCategoryName():List<String>
-    @Query("SELECT category_id FROM category_table WHERE category_name = :name")
-    fun getCategoryId(name:String):Int
-    @Query("SELECT category_name FROM category_table WHERE category_id=:id")
-    fun getCategoryNameById(id:Int):String
+    @Query("SELECT categoryCloudId FROM category_table WHERE category_name = :name")
+    fun getCategoryId(name:String):Long
+    @Query("SELECT category_name FROM category_table WHERE categoryCloudId=:id")
+    fun getCategoryNameById(id:Long):String
     @Query("INSERT INTO category_table(category_name) SELECT :cath_name_ WHERE NOT EXISTS (SELECT 1 FROM category_table WHERE category_name = :cath_name_)")
     fun insertIfNotExist(cath_name_:String)
     @Transaction

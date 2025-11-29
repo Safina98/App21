@@ -7,12 +7,11 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "category_table")
 data class Category(
-        @PrimaryKey(autoGenerate = true)
-        var category_id:Int = 0,
+        @PrimaryKey
+        @ColumnInfo(name = "categoryCloudId")
+        var categoryCloudId:Long = 0L,
         @ColumnInfo(name="category_name")
         var category_name:String = "emtpy",
-        @ColumnInfo(name="cloud_id")
-        var cloudId:String="",
         @ColumnInfo(name="needs_syncs")
         var needsSyncs:Int=1,
         @Ignore

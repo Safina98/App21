@@ -494,7 +494,7 @@ class TransactionDetailViewModel (
             // Note: date is not part of DetailWarnaTable so it's omitted
         )
     }
-    fun createInventoryLog(detailWarnaTable: DetailWarnaTable,batchCount:Double,productId:Int,brandId:Int,ket:String): InventoryLog {
+    fun createInventoryLog(detailWarnaTable: DetailWarnaTable, batchCount:Double, productId:Int, brandId: Long, ket:String): InventoryLog {
         val inventoryLog= InventoryLog()
         inventoryLog.detailWarnaRef=detailWarnaTable.ref
         inventoryLog.subProductId=detailWarnaTable.subId

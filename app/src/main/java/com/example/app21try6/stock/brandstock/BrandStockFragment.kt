@@ -60,6 +60,7 @@ class BrandStockFragment : Fragment() {
             binding.spinnerM,
             binding.rvBrandStock,
         )
+        viewModel.assignCloudIdToAllData()
         csvHandler = CsvHandler(requireContext())
 
         binding.brandStockViewModel = viewModel
@@ -129,11 +130,11 @@ class BrandStockFragment : Fragment() {
                     title = "Update Kategori",
                     getBrandName = { (it as CategoryModel).categoryName },
                     setBrandName = { it, name -> (it as CategoryModel).categoryName = name },
-                    updateFunction = { vm, item -> (vm as BrandStockViewModel).updateCtg(item as CategoryModel) },
+                    updateFunction = { vm, item -> (vm as BrandStockViewModel).updateCtg(item as StockCategoryModel) },
                     insertFunction = { vm, name -> (vm as BrandStockViewModel).insertItemCtg(name as String) }
                 )
             },DeleteListener {
-                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as BrandStockViewModel).deleteCategory(item as CategoryModel) })
+                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as BrandStockViewModel).deleteCategory(item as StockCategoryModel) })
             })
 
         //Product adapter
@@ -196,13 +197,18 @@ class BrandStockFragment : Fragment() {
         }
         //Kategori adapter
         viewModel.ctgList.observe(viewLifecycleOwner, Observer {
+            Log.i("ctgList","$it")
             it.let {
                 adapterCat.submitList(it)
                 adapter.notifyDataSetChanged()
             }
         })
+        viewModel.ctgId.observe(viewLifecycleOwner, Observer{
+            Log.i("brandList","ctg id fragment observer $it")
+        })
         //Brand adapter
         viewModel.brandBpModelList.observe(viewLifecycleOwner){
+            Log.i("brandList","$it")
             adapter.submitList(it.sortedBy { it.name})
             adapter.notifyDataSetChanged()
         }
@@ -220,7 +226,7 @@ class BrandStockFragment : Fragment() {
                 binding.txtBrand?.visibility=View.VISIBLE
                 binding.rvProductStock.visibility=View.VISIBLE
             }
-            viewModel.updateProductRv(it?.id)
+            viewModel.updateProductRv(it?.brandId)
             adapter.selectedItemId = it?.id  // Pass the selected ID to the adapter
             adapter.notifyDataSetChanged()
         }
@@ -252,7 +258,7 @@ class BrandStockFragment : Fragment() {
                         title = "Kategori Baru",
                         getBrandName = { (it as CategoryModel).categoryName },
                         setBrandName = { it, name -> (it as CategoryModel).categoryName = name },
-                        updateFunction = { vm, item -> (vm as BrandStockViewModel).updateCtg(item as CategoryModel) },
+                        updateFunction = { vm, item -> (vm as BrandStockViewModel).updateCtg(item as StockCategoryModel) },
                         insertFunction = { vm, name -> (vm as BrandStockViewModel).insertItemCtg(name as String) }
                     )
                 }

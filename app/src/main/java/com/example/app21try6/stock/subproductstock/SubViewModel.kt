@@ -149,8 +149,8 @@ class SubViewModel (
                 val subProduct= SubProduct()
                 subProduct.product_code = product_id[0]
                 subProduct.sub_name = subProduct_name
-                subProduct.brand_code = product_id[1]
-                subProduct.cath_code = product_id[2]
+                subProduct.brand_code = product_id[1].toLong()
+                subProduct.cath_code = product_id[2].toLong()
                 stockRepo.insertSubProduct(subProduct)
             }
         }
@@ -244,7 +244,7 @@ class SubViewModel (
             // Note: date is not part of DetailWarnaTable so it's omitted
         )
     }
-    fun createInventoryLog(detailWarnaTable: DetailWarnaTable,batchCount:Double,productId:Int,brandId:Int,ket:String):InventoryLog{
+    fun createInventoryLog(detailWarnaTable: DetailWarnaTable,batchCount:Double,productId:Int,brandId:Long,ket:String):InventoryLog{
         val inventoryLog=InventoryLog()
         inventoryLog.detailWarnaRef=detailWarnaTable.ref
         inventoryLog.subProductId=detailWarnaTable.subId

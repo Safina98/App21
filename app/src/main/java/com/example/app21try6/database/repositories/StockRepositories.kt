@@ -18,6 +18,7 @@ import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.stock.brandstock.CategoryModel
 import com.example.app21try6.stock.brandstock.ExportModel
+import com.example.app21try6.stock.brandstock.StockCategoryModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -31,14 +32,14 @@ class StockRepositories (
     private val detailWarnaDao=VendibleDatabase.getInstance(application).detailWarnaDao
 
     //category rv data
-    fun getCategoryModelLiveData(): LiveData<List<CategoryModel>> {
+    fun getCategoryModelLiveData(): LiveData<List<StockCategoryModel>> {
         return categoryDao.getCategoryModelList()
     }
     //spinner catogory entires
     fun getCategoryNameLiveData(): LiveData<List<String>> {
         return categoryDao.getName()
     }
-    suspend fun getCategoryNameById(id:Int):String{
+    suspend fun getCategoryNameById(id:Long):String{
         return withContext(Dispatchers.IO){
             categoryDao.getCategoryNameById(id)
         }
@@ -55,12 +56,12 @@ class StockRepositories (
         }
     }
     // get category id by category name
-    suspend fun getCategoryIdByName(id: String):Int{
+    suspend fun getCategoryIdByName(id: String): Long{
         return withContext(Dispatchers.IO){
             categoryDao.getCategoryId(id)
         }
     }
-    suspend fun getCategoryIdByBrandId(brandId: Int?):Int?{
+    suspend fun getCategoryIdByBrandId(brandId: Long?):Long?{
         return withContext(Dispatchers.IO){
             brandDao.getCtgIdByBrandId(brandId)
         }
@@ -71,7 +72,7 @@ class StockRepositories (
             val cloudCategory = CategoryCloud(
                 categoryName = category.category_name,
                 lastUpdated = System.currentTimeMillis()
-            ).apply { cloudId=category.cloudId }
+            ).apply { cloudId=category.categoryCloudId.toString() }
             RealtimeDatabaseSync.upload("category_table", cloudCategory.cloudId, cloudCategory)
         }
     }
@@ -81,18 +82,27 @@ class StockRepositories (
             val cloudCategory = CategoryCloud(
                 categoryName = category.category_name,
                 lastUpdated = System.currentTimeMillis()
-            ).apply { cloudId = category.cloudId }
+            ).apply { cloudId = category.categoryCloudId.toString() }
             RealtimeDatabaseSync.upload("category_table", cloudCategory.cloudId, cloudCategory)
         }
     }
     //delete category by id
-    suspend fun deleteCategory(id:Int){
+    suspend fun deleteCategory(id:Long){
         withContext(Dispatchers.IO){
             categoryDao.delete(id)
             RealtimeDatabaseSync.deleteById("category_table", id)
         }
     }
+    //todo delete later
+
+    //todo delete later
+
     ////////////////////////////////////////Brand////////////////////////////////////////////////////////
+
+
+    //todo delete later
+
+
 
     suspend fun insertBrand(brand: Brand){
         withContext(Dispatchers.IO){
@@ -101,26 +111,26 @@ class StockRepositories (
                 brandName = brand.brand_name,
                 cathCode = brand.cath_code,
                 lastUpdated = System.currentTimeMillis()
-            ).apply {cloudId=brand.cloudId }
+            ).apply {cloudId=brand.brandCloudId.toString() }
 
             RealtimeDatabaseSync.upload("brand_table", cloudBrand.cloudId, cloudBrand)
         }
     }
     // get brand recycler view data by categoryId
-    suspend fun getBrandByCategoryId(id:Int):List<BrandProductModel>{ return withContext(Dispatchers.IO){ brandDao.getBrandModelByCatId(id) } }
-    suspend fun getBrandNameListByCategoryName(cat:Int):List<String>{ return withContext(Dispatchers.IO){ brandDao.getBrandNameListByCatName(cat) } }
+    suspend fun getBrandByCategoryId(id:Long):List<BrandProductModel>{ return withContext(Dispatchers.IO){ brandDao.getBrandModelByCatId(null) } }
+    suspend fun getBrandNameListByCategoryName(cat:Long):List<String>{ return withContext(Dispatchers.IO){ brandDao.getBrandNameListByCatName(cat) } }
     //update brand
     suspend fun updateBrand(brand: Brand){ withContext(Dispatchers.IO){ brandDao.update(brand) } }
     //delete brand
-    suspend fun deleteBrand(id:Int){ withContext(Dispatchers.IO){ brandDao.deleteBrand(id) } }
+    suspend fun deleteBrand(id:Long){ withContext(Dispatchers.IO){ brandDao.deleteBrand(id) } }
     //get brand id by product id
-    suspend fun getBrandId(productId:Int?):Int?{ return withContext(Dispatchers.IO){ productDao.getBrandIdByProductId(productId) } }
-    suspend fun getBrandIdByName(name:String,catCode:Int):Int?{return withContext(Dispatchers.IO){brandDao.getBrandIdbyName(name,catCode)} }
-    suspend fun getBrandNameyId(id:Int):String{return withContext(Dispatchers.IO){brandDao.getBrandNameById(id)} }
+    suspend fun getBrandId(productId:Int?):Long?{ return withContext(Dispatchers.IO){ productDao.getBrandIdByProductId(productId) } }
+    suspend fun getBrandIdByName(name:String,catCode:Long):Long?{return withContext(Dispatchers.IO){brandDao.getBrandIdbyName(name,catCode)} }
+    suspend fun getBrandNameyId(id:Long):String{return withContext(Dispatchers.IO){brandDao.getBrandNameById(id)} }
 
     //////////////////////////////////////Product///////////////////////////////////////
     //get product recyclerview data
-    suspend fun getProductModel(brandId:Int?):List<BrandProductModel>{
+    suspend fun getProductModel(brandId:Long?):List<BrandProductModel>{
         return withContext(Dispatchers.IO){
             productDao.getAll(brandId)
         }
@@ -134,12 +144,12 @@ class StockRepositories (
             subProductDao.getProduct(subId)
         }
     }
-    fun getProductLiveDataByCategoryId(id:Int):LiveData<List<Product>>{
+    fun getProductLiveDataByCategoryId(id: Long):LiveData<List<Product>>{
         return productDao.getCategoriedProduct(id)
     }
-    suspend fun getProductListByCategoryId(category_id:Int?):List<Product>{
+    suspend fun getProductListByCategoryId(categoryCloudId:Long?):List<Product>{
         return withContext(Dispatchers.IO){
-            productDao.getProductByCategory(category_id)
+            productDao.getProductByCategory(categoryCloudId)
         }
     }
     suspend fun getProductNameListByCategoryName(name:String):List<String>{

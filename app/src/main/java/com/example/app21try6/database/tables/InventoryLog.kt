@@ -14,7 +14,7 @@ import java.util.Date
     foreignKeys = [
         ForeignKey(
             entity = Brand::class,
-            parentColumns = ["brand_id"],
+            parentColumns = ["brandCloudId"],
             childColumns = ["brandId"],
             onDelete = ForeignKey.SET_NULL,
             onUpdate = ForeignKey.SET_NULL
@@ -49,7 +49,7 @@ data class InventoryLog(
     var id: Int = 0,
     // merk_table refMerk
     @ColumnInfo(name="brandId")
-    var brandId: Int? =null,
+    var brandId: Long? =null,
     // product table
     @ColumnInfo(name="productId")
     var productId: Int? = null,

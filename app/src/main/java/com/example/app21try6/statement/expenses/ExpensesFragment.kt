@@ -36,13 +36,7 @@ import com.example.app21try6.statement.StatementHSViewModel
 import com.example.app21try6.statement.StatementHSViewModelFactory
 import com.example.app21try6.statement.purchase.PurchaseViewModel
 import com.example.app21try6.statement.purchase.PurchaseViewModelFactory
-import com.example.app21try6.statement.purchase.tagp
-import com.example.app21try6.stock.brandstock.BrandStockViewModel
-import com.example.app21try6.stock.brandstock.CategoryAdapter
 import com.example.app21try6.stock.brandstock.CategoryModel
-
-import com.example.app21try6.stock.brandstock.DeleteListener
-import com.example.app21try6.stock.brandstock.UpdateListener
 import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 import java.text.SimpleDateFormat
@@ -115,12 +109,19 @@ class ExpensesFragment : Fragment() {
                     })
 
             })
-        val categoryAdapter = CategoryAdapter(
-        UpdateListener {
+        val categoryAdapter = ExpenseCategoryAdapter(UpdateListener{
             showsAddExpenseCategoryDialog(it)
+        }, DeleteListener{
+            DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as PurchaseViewModel).deleteExpenseCategory(item as CategoryModel) })
+        }
+       /*
+        UpdateListener {
+
         }, DeleteListener {
-                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as PurchaseViewModel).deleteExpenseCategory(item as CategoryModel) })
+
             }
+
+        */
         )
         val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
         binding.rvCat.addItemDecoration(dividerItemDecoration)
