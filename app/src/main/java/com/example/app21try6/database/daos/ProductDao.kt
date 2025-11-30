@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.tables.Product
@@ -16,7 +17,38 @@ interface ProductDao {
     fun update(product: Product)
     @Query("SELECT product_id as id,product_name as name,brand_code as parentId from product_table WHERE (:brandCloudId_ IS NULL OR brand_code = :brandCloudId_)")
     fun getAll(brandCloudId_:Long?): List<BrandProductModel>
-
+// todo delete later
+@Query("""
+        UPDATE sub_table
+        SET cath_code = (
+            SELECT product_table.cath_code
+            FROM product_table
+            WHERE product_table.product_id = sub_table.product_code
+        )
+        WHERE EXISTS (
+            SELECT 1 FROM product_table
+            WHERE product_table.product_id = sub_table.product_code
+        )
+    """)
+fun updateSubCathCodeFromProduct()
+    @Query("""
+        UPDATE sub_table
+        SET brand_code = (
+            SELECT product_table.brand_code
+            FROM product_table
+            WHERE product_table.product_id = sub_table.product_code
+        )
+        WHERE EXISTS (
+            SELECT 1 FROM product_table
+            WHERE product_table.product_id = sub_table.product_code
+        )
+    """)
+    fun updateSubBrandCodeFromProduct()
+    @Transaction
+    fun updateSubForeignKeysFromProduct() {
+        updateSubCathCodeFromProduct()
+        updateSubBrandCodeFromProduct()
+    }
     //@Query("SELECT year as year_n,month as month_n,month_number as month_nbr, month as nama,day as day_n,day_name as day_name,SUM(total_income) as total FROM SUMMARY_TABLE  WHERE year = :year_  GROUP BY month ORDER BY month_nbr ASC")
 
     @Query("SELECT * FROM product_table WHERE product_id =:id")

@@ -153,6 +153,7 @@ class SubProductStockFragment : Fragment() {
         }
         viewModel.subProductFromDb.observe(viewLifecycleOwner){
             it?.let {
+                Log.i("SubList","$it")
                 adapter.submitList(it.sortedBy { it.sub_name })
                 adapter.notifyDataSetChanged()
             }

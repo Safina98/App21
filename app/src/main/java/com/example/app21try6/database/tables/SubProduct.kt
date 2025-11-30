@@ -64,10 +64,4 @@ data class SubProduct(
     var is_checked:Boolean = false,
     @ColumnInfo(name = "discountId")
     var discountId:Int?=null,
-   // @ColumnInfo(name = "last_in_date")
-    //@Ignore
-    //var lastInDate: Date, //new added column
-    //@ColumnInfo(name = "last_out_date")
-    //@Ignore
-    //var lastOutDate: Date //new added column
 )

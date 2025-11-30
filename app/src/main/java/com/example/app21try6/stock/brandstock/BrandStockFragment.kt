@@ -107,12 +107,12 @@ class BrandStockFragment : Fragment() {
 
             }
         })
-
+        //viewModel.updateSubTable()
 
 
         /////////////////////////////////////Initalizing Adapter/////////////////////////////////
         //BRAND ADAPTER
-        val adapter = BrandStockAdapter(
+        val adapter = BrandStockAdapterNew(
             BrandStockListener {
                 viewModel.getBrandIdByName(it)
 
@@ -208,7 +208,7 @@ class BrandStockFragment : Fragment() {
         })
         //Brand adapter
         viewModel.brandBpModelList.observe(viewLifecycleOwner){
-            Log.i("brandList","$it")
+          //  Log.i("brandList","$it")
             adapter.submitList(it.sortedBy { it.name})
             adapter.notifyDataSetChanged()
         }
@@ -227,7 +227,7 @@ class BrandStockFragment : Fragment() {
                 binding.rvProductStock.visibility=View.VISIBLE
             }
             viewModel.updateProductRv(it?.brandId)
-            adapter.selectedItemId = it?.id  // Pass the selected ID to the adapter
+            adapter.selectedItemId = it?.brandId  // Pass the selected ID to the adapter
             adapter.notifyDataSetChanged()
         }
         //Obsserve add fab

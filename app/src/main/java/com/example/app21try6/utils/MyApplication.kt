@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit
 class MyApplication: Application()  {
     override fun onCreate() {
         super.onCreate()
-
+/*
         FirebaseDatabase.getInstance().setPersistenceEnabled(true)
 
         // Now safe to initialize everything else
@@ -39,6 +39,8 @@ class MyApplication: Application()  {
                 )
             }.start()
         }.start()
+
+ */
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
 

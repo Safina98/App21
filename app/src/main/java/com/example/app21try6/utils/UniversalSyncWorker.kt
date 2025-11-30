@@ -21,7 +21,7 @@ class UniversalSyncWorker(
             .reference
 
         // Example for Brand (repeat for all tables)
-        val brands = db.brandDao.getPendingSync()
+       // val brands = db.brandDao.getPendingSync()
 /*
         for (b in brands) {
             firebase.child("brand_table")

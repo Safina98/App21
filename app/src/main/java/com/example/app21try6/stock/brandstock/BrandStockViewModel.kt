@@ -174,7 +174,12 @@ class BrandStockViewModel(
             Toast.makeText(getApplication(),"fAILED",Toast.LENGTH_SHORT).show()
         }
     }
-
+//todo delete later
+fun updateSubTable(){
+    viewModelScope.launch {
+        repository.updateSubForeignKeysFromProduct()
+    }
+}
     fun insertCSVBatch(tokensList: List<List<String>>) {
         viewModelScope.launch {
             try {
@@ -204,6 +209,7 @@ class BrandStockViewModel(
         brand.brandCloudId=brandBpModel.brandId?: System.currentTimeMillis()
         brand.cath_code=repository.getCategoryIdByName(ctgName)
         repository.updateBrand(brand)
+        Log.i("UpdateBrand","${brand.brand_name} ${brand.cath_code}")
         updateRv()
     } }
 

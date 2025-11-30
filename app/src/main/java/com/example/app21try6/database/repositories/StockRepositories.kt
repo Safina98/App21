@@ -117,7 +117,7 @@ class StockRepositories (
         }
     }
     // get brand recycler view data by categoryId
-    suspend fun getBrandByCategoryId(id:Long):List<BrandProductModel>{ return withContext(Dispatchers.IO){ brandDao.getBrandModelByCatId(null) } }
+    suspend fun getBrandByCategoryId(id:Long):List<BrandProductModel>{ return withContext(Dispatchers.IO){ brandDao.getBrandModelByCatId(id) } }
     suspend fun getBrandNameListByCategoryName(cat:Long):List<String>{ return withContext(Dispatchers.IO){ brandDao.getBrandNameListByCatName(cat) } }
     //update brand
     suspend fun updateBrand(brand: Brand){ withContext(Dispatchers.IO){ brandDao.update(brand) } }
@@ -133,6 +133,12 @@ class StockRepositories (
     suspend fun getProductModel(brandId:Long?):List<BrandProductModel>{
         return withContext(Dispatchers.IO){
             productDao.getAll(brandId)
+        }
+    }
+    //todo delete later
+    suspend fun updateSubForeignKeysFromProduct() {
+        withContext(Dispatchers.IO){
+            productDao.updateSubForeignKeysFromProduct()
         }
     }
     suspend fun getProductById(id:Int):Product{
