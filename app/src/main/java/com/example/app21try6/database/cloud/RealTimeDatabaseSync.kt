@@ -7,6 +7,8 @@ import com.example.app21try6.database.daos.BrandDao
 import com.example.app21try6.database.daos.CategoryDao
 import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.tables.Category
+import com.example.app21try6.scheduleImmediateSync
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.*
 import java.util.concurrent.Executors
 
@@ -50,6 +52,27 @@ object RealtimeDatabaseSync {
             }
     }
 
+    suspend fun <T> uploadSuspended(tableName: String, cloudId: String, cloudObject: T) {
+        if (!isInitialized || cloudId.isEmpty()) return
+
+        try {
+            // Tasks.await() is the key: it suspends the coroutine until the operation completes.
+            Tasks.await(
+                database.child(tableName)
+                    .child(cloudId)
+                    .setValue(cloudObject)
+            )
+            // If we reach here, Firebase has successfully written the data.
+            Log.e("FIREBASE_UPLOAD", "CONFIRMED SUCCESS → $tableName/$cloudId")
+
+        } catch (e: Exception) {
+            // If Tasks.await() throws an exception (e.g., security denied, or network failure),
+            // we log it and throw it again.
+            Log.e("FIREBASE_UPLOAD", "CONFIRMED FAILED → $tableName/$cloudId", e)
+            throw e // Re-throw to signal failure to the SyncManager/Worker
+        }
+    }
+
     // Delete record in Firebase
     fun deleteById(tableName: String, localId: Long) {
         if (!isInitialized || localId <= 0) return
@@ -63,6 +86,7 @@ object RealtimeDatabaseSync {
         brandDao: BrandDao,
         categoryDao: CategoryDao
     ) {
+
         if (!isInitialized) return
 
         // BRAND TABLE SYNC
@@ -129,6 +153,35 @@ object RealtimeDatabaseSync {
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
             override fun onCancelled(error: DatabaseError) {
                 Log.e("RDBSync", "Sync cancelled for $tableName", error.toException())
+            }
+        })
+    }
+// 📁 RealtimeDatabaseSync.kt (Updated)
+
+// ... existing code (init, upload, deleteById, startSyncAllTables, syncTable) ...
+
+    // --------------------------------------------------------------
+// 5️⃣ Start a Firebase Connection Status Listener (New Function)
+// --------------------------------------------------------------
+    fun startConnectionListener(context: Context) {
+        if (!isInitialized) return
+
+        val connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected")
+
+        connectedRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val connected = snapshot.getValue(Boolean::class.java) ?: false
+                if (connected) {
+                    Log.d("RDBSync", "Reconnected to Firebase! Scheduling sync.")
+
+                    // IMPORTANT: You must define 'scheduleImmediateSync' somewhere
+                    // accessible and pass the Application Context (the context parameter).
+                    scheduleImmediateSync(context) // <-- Your code snippet is inside here
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("RDBSync", "Connection listener cancelled.", error.toException())
             }
         })
     }

@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
 
+
     // Compose BOM + libraries
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)

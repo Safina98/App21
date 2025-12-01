@@ -7,12 +7,14 @@ import android.net.Network
 import android.preference.PreferenceManager
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import androidx.work.WorkRequest
 import com.example.app21try6.MainActivity
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.cloud.RealtimeDatabaseSync
@@ -25,9 +27,9 @@ import java.util.concurrent.TimeUnit
 class MyApplication: Application()  {
     override fun onCreate() {
         super.onCreate()
-/*
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
 
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
+        RealtimeDatabaseSync.startConnectionListener(applicationContext)
         // Now safe to initialize everything else
        RealtimeDatabaseSync.init(this)
         Thread {
@@ -40,7 +42,7 @@ class MyApplication: Application()  {
             }.start()
         }.start()
 
- */
+
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
 
@@ -70,6 +72,9 @@ class MyApplication: Application()  {
         connectivityManager.registerDefaultNetworkCallback(networkCallback)
 
     }
+
+
+
     private fun markFirstRunCompleted() {
         val wmbPreference = PreferenceManager.getDefaultSharedPreferences(this)
         wmbPreference.edit().putBoolean("FIRSTRUN", false).apply()

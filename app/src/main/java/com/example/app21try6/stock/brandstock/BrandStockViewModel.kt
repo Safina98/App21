@@ -143,6 +143,7 @@ class BrandStockViewModel(
                 val category = Category()
                 category.category_name = ctgName
                 category.categoryCloudId= System.currentTimeMillis().toLong()
+                category.needsSyncs=1
                 try {
                     repository.insertCategory(category)
                 } catch (e: SQLiteException) {

@@ -12,8 +12,10 @@ junitJupiter = "5.8.1"
 googleServices = "4.4.1"
 firebaseBom = "33.0.0"
 firebaseDatabase = "22.0.1"
+gmsTasks = "18.0.2"
 
 [libraries]
+google-gms-tasks-ktx = { group = "com.google.android.gms", name = "play-services-tasks-ktx", version.ref = "gmsTasks" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

@@ -22,6 +22,10 @@ interface CategoryDao {
     fun delete(id:Long)
     @Query("SELECT * FROM category_table WHERE categoryCloudId = :id LIMIT 1")
     suspend fun getById(id: Long): Category?
+    @Query("SELECT * FROM category_table where needs_syncs=1")
+    fun getAllNeedsSync():List<Category>
+    @Query("UPDATE category_table SET needs_syncs = 0 WHERE categoryCloudId = :cloudId")
+    suspend fun markAsSynced(cloudId: Long)
 
     @Query("SELECT categoryCloudId AS id, category_name AS categoryName FROM category_table")
     fun getCategoryModelList():LiveData<List<StockCategoryModel>>

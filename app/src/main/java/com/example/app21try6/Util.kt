@@ -1,18 +1,50 @@
 package com.example.app21try6
 
+import android.content.Context
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.FragmentActivity
+import androidx.work.BackoffPolicy
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
 import com.example.app21try6.transaction.transactionselect.TransSelectModel
+import com.example.app21try6.utils.MasterSyncWorker
 import java.text.NumberFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
+fun scheduleImmediateSync(context: Context) {
+    // 1. Define Constraints: Requires network connectivity
+    val constraints = Constraints.Builder()
+        .setRequiredNetworkType(NetworkType.CONNECTED)
+        .build()
 
+    // 2. Define the One-Time work request
+    val syncRequest = OneTimeWorkRequest.Builder(MasterSyncWorker::class.java) // FIX 1 & 2
+        .setConstraints(constraints)
+        .setBackoffCriteria(
+            BackoffPolicy.LINEAR,
+            WorkRequest.MIN_BACKOFF_MILLIS, // FIX 3
+            TimeUnit.MILLISECONDS
+        )
+        .build()
+
+    // 3. Enqueue the work (Unique to avoid scheduling duplicates)
+    WorkManager.getInstance(context).enqueueUniqueWork(
+        "RealtimeDatabaseImmediateSync",
+        ExistingWorkPolicy.KEEP, // If unsynced data is saved again, replace the previous scheduled sync.
+        syncRequest
+    )
+}
 fun formatRupiah(number: Double?): String? {
     val localeID = Locale("in", "ID")
     val formatRupiah: NumberFormat = NumberFormat.getCurrencyInstance(localeID)
