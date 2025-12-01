@@ -128,8 +128,8 @@ class BrandStockFragment : Fragment() {
                     viewModel = viewModel,
                     model = it,
                     title = "Update Kategori",
-                    getBrandName = { (it as CategoryModel).categoryName },
-                    setBrandName = { it, name -> (it as CategoryModel).categoryName = name },
+                    getBrandName = { (it as StockCategoryModel).categoryName },
+                    setBrandName = { it, name -> (it as StockCategoryModel).categoryName = name },
                     updateFunction = { vm, item -> (vm as BrandStockViewModel).updateCtg(item as StockCategoryModel) },
                     insertFunction = { vm, name -> (vm as BrandStockViewModel).insertItemCtg(name as String) }
                 )

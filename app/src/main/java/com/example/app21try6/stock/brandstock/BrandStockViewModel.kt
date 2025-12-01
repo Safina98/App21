@@ -199,8 +199,9 @@ fun updateSubTable(){
     fun updateCtg(ctgModel: StockCategoryModel){
         uiScope.launch {
         val category= Category()
-        category.categoryCloudId=ctgModel.id
-        category.category_name=ctgModel.categoryName
+            category.categoryCloudId=ctgModel.id
+            category.category_name=ctgModel.categoryName
+            category.needsSyncs=1
         repository.updateCategory(category)
         }
     }

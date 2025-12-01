@@ -1,6 +1,7 @@
 package com.example.app21try6.database.repositories
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.cloud.BrandCloud
@@ -79,11 +80,26 @@ class StockRepositories (
     suspend fun updateCategory(category: Category){
         withContext(Dispatchers.IO){
             categoryDao.update(category)
-            val cloudCategory = CategoryCloud(
-                categoryName = category.category_name,
-                lastUpdated = System.currentTimeMillis()
-            ).apply { cloudId = category.categoryCloudId.toString() }
-            RealtimeDatabaseSync.upload("category_table", cloudCategory.cloudId, cloudCategory)
+            try {
+                val cloudObject = CategoryCloud(categoryName = category.category_name)
+
+                // 1. CALL THE SUSPENDING FUNCTION
+                RealtimeDatabaseSync.uploadSuspended( // <-- Using the new function
+                    tableName = "category_table",
+                    cloudId = category.categoryCloudId.toString(),
+                    cloudObject = cloudObject
+                )
+
+                // 2. ONLY MARK AS SYNCED IF THE UPLOAD SUCCEEDED
+                categoryDao.markAsSynced(category.categoryCloudId)
+
+            } catch (e: Exception) {
+                // If the upload failed (e.g., no internet), the exception is caught here.
+                // We just log it and move to the next item. The Worker will catch this failure
+                // and return Result.retry() to re-schedule the entire job.
+                Log.w("SyncManager", "Upload failed for category ${category.categoryCloudId}: ${e.message}")
+            }
+
         }
     }
     //delete category by id
