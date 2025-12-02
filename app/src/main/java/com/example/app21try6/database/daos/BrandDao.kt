@@ -35,7 +35,11 @@ interface BrandDao {
     WHERE (:catId IS NULL OR cath_code = :catId)
 """)
     fun getBrandModelByCatId(catId:Long?):List<BrandProductModel>
-    // (:catId IS NULL OR cath_code = :catId)
+
+    // to be deleted
+    @Query("SELECT * FROM brand_table")
+    fun getAllBrand():List<Brand>
+
     @Query("SELECT  brand_name  from brand_table WHERE  cath_code=:catId")
     fun getBrandNameListByCatName(catId:Long):List<String>
 

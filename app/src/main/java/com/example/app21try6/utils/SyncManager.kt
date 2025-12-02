@@ -34,18 +34,15 @@ class SyncManager(
 
     private suspend fun syncCategories() {
         val unsyncedList = categoryDao.getAllNeedsSync()
-
         for (category in unsyncedList) {
             try {
                 val cloudObject = CategoryCloud(categoryName = category.category_name)
-
                 // 1. CALL THE SUSPENDING FUNCTION
                 rdbSync.uploadSuspended( // <-- Using the new function
                     tableName = "category_table",
                     cloudId = category.categoryCloudId.toString(),
                     cloudObject = cloudObject
                 )
-
                 // 2. ONLY MARK AS SYNCED IF THE UPLOAD SUCCEEDED
                 categoryDao.markAsSynced(category.categoryCloudId)
 

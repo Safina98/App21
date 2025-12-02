@@ -21,7 +21,7 @@ data class Brand(
     var cath_code:Long = 0L,
     @ColumnInfo(name="needs_syncs")
     var needsSyncs:Int=1,
-    @ColumnInfo(name="is_deleted")
-    var isDeleted: Boolean = false, //newly added cloumn
+    //@ColumnInfo(name="is_deleted")
+    //var isDeleted: Boolean = false, //newly added cloumn
 )
 

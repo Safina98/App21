@@ -96,10 +96,15 @@ class BrandStockViewModel(
         }
 
     }
-
     fun updateRv(){
         viewModelScope.launch {
+
             val brandlist = repository.getBrandByCategoryId(ctgId.value?.toLong() ?:0L)
+            val allbrand = repository.getAllBrand()
+            Log.i("brandList","view mode update rv $allbrand")
+            allbrand.forEach {
+                Log.i("brandList","$it")
+            }
             _brandBpModelList.value = brandlist
         }
     }
@@ -135,6 +140,7 @@ class BrandStockViewModel(
     }
     fun assignCloudIdToAllData() {
         viewModelScope.launch(Dispatchers.IO) {
+            repository.assignCloudIdToAllData()
         }
     }
     fun insertItemCtg(ctgName:String){

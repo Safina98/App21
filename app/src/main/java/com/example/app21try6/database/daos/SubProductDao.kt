@@ -26,7 +26,7 @@ interface SubProductDao {
     @Query("UPDATE sub_table SET is_checked =0")
     fun unchecked_allCheckbox()
     @Query("SELECT * FROM sub_table WHERE  (:product_id_ IS NULL OR product_code = :product_id_) AND (:brandId IS NULL OR brand_code=:brandId)")
-    fun getAll(product_id_:Int?,brandId: Int?):LiveData<List<SubProduct>>
+    fun getAll(product_id_:Int?,brandId: Long?):LiveData<List<SubProduct>>
 
 
     @Query("SELECT * FROM sub_table WHERE sub_id = :sub_id_")

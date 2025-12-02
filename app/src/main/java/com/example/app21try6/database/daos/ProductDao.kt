@@ -31,6 +31,17 @@ interface ProductDao {
         )
     """)
 fun updateSubCathCodeFromProduct()
+
+//TODO DELETE LATER
+    @Query("""
+        UPDATE product_table
+        SET productCloudId =:cloudId
+        WHERE product_id=:id
+    """)
+    fun assignProductCloudId(cloudId:Long,id:Int)
+    //TODO DELETE LATER
+    @Query("SELECT * FROM product_table")
+    fun selectAllProduct(): List<Product>
     @Query("""
         UPDATE sub_table
         SET brand_code = (

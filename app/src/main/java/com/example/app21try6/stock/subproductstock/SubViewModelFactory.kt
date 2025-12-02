@@ -12,14 +12,18 @@ import com.example.app21try6.database.repositories.TransactionsRepository
 
 class SubViewModelFactory(private val stockRepo: StockRepositories,
                           private val transactionsRepo: TransactionsRepository,
+                          private val product_id:Int,
+                          private val brandId:Long,
+                          private val ctgId:Long,
+                          private val tDId:Int,
+                          private val sPId:Int,
                           private val sum_id:Int,
-                          private val product_id:Array<Int>,
                           private val application: Application
 ): ViewModelProvider.Factory{
     @Suppress("unchecked_cast")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SubViewModel::class.java)) {
-            return SubViewModel(stockRepo,transactionsRepo,sum_id,product_id,application) as T
+            return SubViewModel(stockRepo,transactionsRepo,product_id,brandId,ctgId,tDId,sum_id,sum_id,application) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

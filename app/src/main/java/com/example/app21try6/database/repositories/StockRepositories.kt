@@ -109,16 +109,9 @@ class StockRepositories (
             RealtimeDatabaseSync.deleteById("category_table", id)
         }
     }
-    //todo delete later
 
-    //todo delete later
 
     ////////////////////////////////////////Brand////////////////////////////////////////////////////////
-
-
-    //todo delete later
-
-
 
     suspend fun insertBrand(brand: Brand){
         withContext(Dispatchers.IO){
@@ -133,7 +126,8 @@ class StockRepositories (
         }
     }
     // get brand recycler view data by categoryId
-    suspend fun getBrandByCategoryId(id:Long):List<BrandProductModel>{ return withContext(Dispatchers.IO){ brandDao.getBrandModelByCatId(id) } }
+    suspend fun getBrandByCategoryId(id:Long):List<BrandProductModel>{ return withContext(Dispatchers.IO){ brandDao.getBrandModelByCatId(null) } }
+    suspend fun getAllBrand():List<Brand>{ return withContext(Dispatchers.IO){ brandDao.getAllBrand() } }
     suspend fun getBrandNameListByCategoryName(cat:Long):List<String>{ return withContext(Dispatchers.IO){ brandDao.getBrandNameListByCatName(cat) } }
     //update brand
     suspend fun updateBrand(brand: Brand){ withContext(Dispatchers.IO){ brandDao.update(brand) } }
@@ -156,6 +150,12 @@ class StockRepositories (
         withContext(Dispatchers.IO){
             productDao.updateSubForeignKeysFromProduct()
         }
+    }
+    suspend fun assignCloudIdToAllData() {
+        withContext(Dispatchers.IO){
+
+    }
+
     }
     suspend fun getProductById(id:Int):Product{
         return withContext(Dispatchers.IO){productDao.getProductById(id)}
@@ -192,7 +192,7 @@ class StockRepositories (
     suspend fun deleteProduct(id:Int){ withContext(Dispatchers.IO){ productDao.delete(id) } }
     suspend fun insertProduct(product: Product){ withContext(Dispatchers.IO){ productDao.insert(product) } }
 ////////////////////////////////////////////////SubProduct//////////////////////////////////////////
-    fun getSubProductLiveData(id:Int?,brandId:Int?): LiveData<List<SubProduct>> {
+    fun getSubProductLiveData(id:Int?,brandId: Long?): LiveData<List<SubProduct>> {
         return  subProductDao.getAll(id,brandId)
     }
     suspend fun updateSubProduct(subProduct: SubProduct){

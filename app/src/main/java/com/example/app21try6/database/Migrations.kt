@@ -247,11 +247,11 @@ object Migrations {
             ADD COLUMN needs_syncs INTEGER NOT NULL DEFAULT 1
         """.trimIndent())
 
-            //brand
-            database.execSQL("""
-            ALTER TABLE brand_table
-            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
-        """.trimIndent())
+//            //brand
+//            database.execSQL("""
+//            ALTER TABLE brand_table
+//            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+//        """.trimIndent())
 
             //category
             database.execSQL("""

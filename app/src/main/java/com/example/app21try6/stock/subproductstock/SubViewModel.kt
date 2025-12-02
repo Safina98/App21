@@ -26,8 +26,12 @@ import java.util.UUID
 class SubViewModel (
     private val stockRepo:StockRepositories,
     private val transRepository: TransactionsRepository,
+    private val product_id:Int,
+    private val parameterBrandId:Long,
+    private val ctgId:Long,
+    private val tDId:Int,
+    private val parameterSubId:Int,
     val sum_id:Int,
-    val product_id:Array<Int>,
     application: Application
 ): AndroidViewModel(application){
 
@@ -35,13 +39,13 @@ class SubViewModel (
     //ui scope for coroutines
     private val uiScope = CoroutineScope(Dispatchers.Main +  viewModelJob)
 
-    val allProductFromDb = stockRepo.getSubProductLiveData(product_id[0],null)
-    private val _brandId=MutableLiveData<Int?>(null)
-    val brandId:LiveData<Int?>get() = _brandId
+    val allProductFromDb = stockRepo.getSubProductLiveData(product_id,null)
+    private val _brandId=MutableLiveData<Long?>(null)
+    val brandId:LiveData<Long?>get() = _brandId
 
     val subProductFromDb :LiveData<List<SubProduct>> = _brandId.switchMap { brandId ->
         if (brandId==null){
-            stockRepo.getSubProductLiveData(product_id[0],null)
+            stockRepo.getSubProductLiveData(product_id,null)
         }else{
             stockRepo.getSubProductLiveData(null,brandId)
         }
@@ -77,7 +81,7 @@ class SubViewModel (
     fun onCheckBoxClicked(subProduct: SubProduct, bool:Boolean){
         uiScope.launch {
             val transDetail = TransactionDetail()
-            transDetail.sum_id = product_id[3]
+            transDetail.sum_id = tDId
             transDetail.trans_item_name = subProduct.sub_name
             if(bool){
                 checkedItemList.add(subProduct)
@@ -85,7 +89,7 @@ class SubViewModel (
             }
             else{
                 checkedItemList.remove(subProduct)
-                transRepository.deleteTransDetail( product_id[3],subProduct.sub_name)
+                transRepository.deleteTransDetail( tDId,subProduct.sub_name)
             }
         }
     }
@@ -147,10 +151,10 @@ class SubViewModel (
         uiScope.launch {
             if (subProduct_name!=""){
                 val subProduct= SubProduct()
-                subProduct.product_code = product_id[0]
+                subProduct.product_code = product_id
                 subProduct.sub_name = subProduct_name
-                subProduct.brand_code = product_id[1].toLong()
-                subProduct.cath_code = product_id[2].toLong()
+                subProduct.brand_code = parameterBrandId
+                subProduct.cath_code = ctgId
                 stockRepo.insertSubProduct(subProduct)
             }
         }
@@ -277,7 +281,7 @@ class SubViewModel (
 
     fun onShowByBrandId(){
         if (brandId.value==null){
-            _brandId.value=product_id[1]
+            _brandId.value=parameterBrandId
         }else{
             _brandId.value=null
         }

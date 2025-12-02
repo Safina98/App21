@@ -140,7 +140,7 @@ class BrandStockFragment : Fragment() {
         //Product adapter
         val adapterProduct = BrandStockAdapter(
             BrandStockListener {
-                viewModel.onProductCLick(arrayOf(it.id.toString(),it.parentId.toString(),viewModel.selectedBrandBpModel.value?.parentId.toString(),"0",it.name))
+                viewModel.onProductCLick(arrayOf(it.id.toString(),it.parentId.toString(),viewModel.selectedBrandBpModel.value?.parentId.toString(),"0",it.name,"-1"))
             }, BrandStockLongListener {
                 viewModel.getLongClickedProduct(it.id)
                 showDialogBox(viewModel,it,Constants.MODELTYPE.PRODUCT)
@@ -193,6 +193,7 @@ class BrandStockFragment : Fragment() {
             binding.spinnerM.adapter = adapter1
         }
         viewModel.selectedCtgSpinner.observe(viewLifecycleOwner) {
+            Log.i("brandList","selected ctg spinner $it")
             viewModel.updateRv()
         }
         //Kategori adapter
@@ -208,7 +209,7 @@ class BrandStockFragment : Fragment() {
         })
         //Brand adapter
         viewModel.brandBpModelList.observe(viewLifecycleOwner){
-          //  Log.i("brandList","$it")
+            Log.i("brandList","$it")
             adapter.submitList(it.sortedBy { it.name})
             adapter.notifyDataSetChanged()
         }

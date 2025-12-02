@@ -50,26 +50,35 @@ class SubProductStockFragment : Fragment() {
         val transRepo=TransactionsRepository(application)
         val id = arguments?.let { SubProductStockFragmentArgs.fromBundle(it).productId }
         (activity as AppCompatActivity).supportActionBar?.title = id?.get(4)
-        id?.set(4,"0")
-        val id_ = id?.map { it.toInt() }?.toTypedArray()
+        //id?.set(4,"0")
+        val productId=id?.get(0)?.toInt()
+        val brandId=id?.get(1)?.toLong()
+        val ctgId=id?.get(2)?.toLong()
+        val tDId=id?.get(3)?.toInt()
+        val productName=id?.get(4).toString()
+        val sPId=id?.get(5)?.toInt()
 
-        val viewModelFactory = SubViewModelFactory(stockRepo,transRepo,0,id_!!,application)
+
+        Log.i("SUBPROBLEM","id[0] ${id?.get(0)}  id[1] ${id?.get(1)}  id[2] ${id?.get(2)}  id[3] ${id?.get(3)} id[4] ${id?.get(4)} ")
+      //  val id_ = id?.map { it.toInt() }?.toTypedArray()
+
+       val viewModelFactory = SubViewModelFactory(stockRepo,transRepo,productId!!,brandId!!,ctgId!!,tDId!!, sPId!!,0,application)
         binding.lifecycleOwner =this
         viewModel = ViewModelProvider(this,viewModelFactory).get(SubViewModel::class.java)
         binding.subViewModel = viewModel
         binding.reset.setOnClickListener {
             DialogUtils.showDeleteDialog(requireContext(),this, viewModel, SubProduct(), { vm, item -> (vm as SubViewModel).resetAllSubProductStock() })
         }
-        val isSubIdExist = id_.getOrNull(5)
-        if (isSubIdExist!=null){
+
+        val isSubIdExist = sPId
+        if (isSubIdExist!=-1){
             if (binding.rvSubDetail.visibility==View.GONE){
                 setDetailRvVisibility(true)
             }
             viewModel.getSubProductById(isSubIdExist)
         }
 
-
-        val adapter = SubAdapter(id_[3],
+        val adapter = SubAdapter(tDId,
             null,
             CheckBoxListenerSub{view:View,subProduct: SubProduct ->
             val cb = view as CheckBox
