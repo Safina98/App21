@@ -52,4 +52,11 @@ data class Summary(
         //new added column
         @ColumnInfo(name = "product_capital")
         var product_capital:Int=0,
+        @ColumnInfo(name="is_deleted")
+        var isDeleted: Boolean = false, //newly added cloumn
+        @ColumnInfo(name = "summaryCloudId")
+        var summaryCloudId: Long = 0L,//newly added cloumn
+        @ColumnInfo(name="needs_syncs")
+        var needsSyncs:Int=1//newly added cloumn
+
 )

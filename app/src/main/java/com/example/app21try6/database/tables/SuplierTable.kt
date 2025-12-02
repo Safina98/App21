@@ -14,5 +14,11 @@ data class SuplierTable(
     @ColumnInfo(name="suplierName")
     var suplierName:String="",
     @ColumnInfo(name="suplierLocation")
-    var suplierLocation:String=""
+    var suplierLocation:String="",
+    @ColumnInfo(name="is_deleted")
+    var isDeleted: Boolean = false, //newly added cloumn
+    @ColumnInfo(name = "suplierCloudId")
+    var suplierCloudId: Long = 0L,//newly added cloumn
+    @ColumnInfo(name="needs_syncs")
+    var needsSyncs:Int=1//newly added cloumn
 )

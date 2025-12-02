@@ -55,19 +55,27 @@ data class InventoryLog(
     var productId: Int? = null,
     @ColumnInfo(name="subProductId")
     var subProductId: Int? = null,
-    // detail_warna_table,
     @ColumnInfo(name="detailWarnaRef")
     var detailWarnaRef: String? = null,
     @ColumnInfo(name="isi")
     var isi: Double = 0.0,
-    // detail_warna_table
     @ColumnInfo(name="pcs")
     var pcs: Int = 0,
     @ColumnInfo(name="barangLogDate")
     var barangLogDate: Date = Date(),
-    // log_table
     @ColumnInfo(name="barangLogRef")
     var barangLogRef: String = "",
-    //added column
-    var barangLogKet: String = ""
+    @ColumnInfo(name="barangLogKet")
+    var barangLogKet: String = "",
+    // FIX 1: Add defaultValue='0' to match the migration's DEFAULT 0
+    @ColumnInfo(name="is_deleted", defaultValue = "0")
+    var isDeleted: Boolean = false,
+
+    // FIX 2: Add defaultValue='0' to match the migration's DEFAULT 0
+    @ColumnInfo(name = "iLCloudId", defaultValue = "0")
+    var iLCloudId: Long = 0L,
+
+    // FIX 3: Add defaultValue='1' to match the migration's DEFAULT 1
+    @ColumnInfo(name="needs_syncs", defaultValue = "1")
+    var needsSyncs:Int=1
 )

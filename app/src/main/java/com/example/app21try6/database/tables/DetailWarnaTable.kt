@@ -34,5 +34,11 @@ data class DetailWarnaTable(
     var ket:String="",
     @ColumnInfo(name="ref")
     var ref: String="",
+    @ColumnInfo(name="is_deleted")
+    var isDeleted: Boolean = false, //newly added cloumn
+    @ColumnInfo(name = "dWCloudId")
+    var dWCloudId: Long = 0L,//newly added cloumn
+    @ColumnInfo(name="needs_syncs")
+    var needsSyncs:Int=1//newly added cloumn
 )
 

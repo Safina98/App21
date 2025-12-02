@@ -30,6 +30,12 @@ data class MerchandiseRetail(
     var ref:String="",
     @ColumnInfo(name="date")
     var date: Date = Date(),
+    @ColumnInfo(name="is_deleted")
+    var isDeleted: Boolean = false, //newly added cloumn
+    @ColumnInfo(name = "mRCloudId")
+    var mRCloudId: Long = 0L,//newly added cloumn
+    @ColumnInfo(name="needs_syncs")
+    var needsSyncs:Int=1,//newly added cloumn
     //@ColumnInfo(name = "initial_net")
    @Ignore
     var initialNet:Double=0.0 ,//new column

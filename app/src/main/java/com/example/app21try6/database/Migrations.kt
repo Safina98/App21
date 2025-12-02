@@ -5,7 +5,262 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 object Migrations {
 
+    /**
+     * Migration from version 1 to 2.
+     * This migration adds three new columns to the 'customer_table'.
+     * It's crucial that the column names and types match exactly what is defined
+     * in your updated CustomerTable data class.
+     */
+    val MIGRATION_48_49 = object : Migration(48, 49) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            //CUSTOMER TABLE
+            // 1. Add 'is_deleted' column (Boolean, defaults to FALSE)
+            database.execSQL("""
+            ALTER TABLE customer_table
+            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+            // 2. Add 'customerCloudId' column (String?, nullable)
+            database.execSQL("""ALTER TABLE customer_table
+                 ADD COLUMN customerCloudId INTEGER NOT NULL DEFAULT 0""".trimIndent())
+            // 3. Add 'needs_syncs' column (Int, defaults to 1)
+            database.execSQL("""
+            ALTER TABLE customer_table
+            ADD COLUMN needs_syncs INTEGER NOT NULL DEFAULT 1
+        """.trimIndent())
 
+            //DETAIL WARNA TABLE
+            database.execSQL("""
+            ALTER TABLE detail_warna_table
+            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+            // 2. Add 'customerCloudId' column (String?, nullable)
+            database.execSQL("""ALTER TABLE detail_warna_table
+                 ADD COLUMN dWCloudId INTEGER NOT NULL DEFAULT 0""".trimIndent())
+            // 3. Add 'needs_syncs' column (Int, defaults to 1)
+            database.execSQL("""
+            ALTER TABLE detail_warna_table
+            ADD COLUMN needs_syncs INTEGER NOT NULL DEFAULT 1
+        """.trimIndent())
+
+            //DISCOUNT TABLE
+            database.execSQL("""
+            ALTER TABLE discount_table
+            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+            // 2. Add 'customerCloudId' column (String?, nullable)
+            database.execSQL("""ALTER TABLE discount_table
+                 ADD COLUMN discountCloudId INTEGER NOT NULL DEFAULT 0""".trimIndent())
+            // 3. Add 'needs_syncs' column (Int, defaults to 1)
+            database.execSQL("""
+            ALTER TABLE discount_table
+            ADD COLUMN needs_syncs INTEGER NOT NULL DEFAULT 1
+        """.trimIndent())
+
+            //DISCOUNT TRANSACTION TABLE
+            database.execSQL("""
+            ALTER TABLE discout_transaction_table
+            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+            // 2. Add 'customerCloudId' column (String?, nullable)
+            database.execSQL("""ALTER TABLE discout_transaction_table
+                 ADD COLUMN dTCloudId INTEGER NOT NULL DEFAULT 0""".trimIndent())
+            // 3. Add 'needs_syncs' column (Int, defaults to 1)
+            database.execSQL("""
+            ALTER TABLE discout_transaction_table
+            ADD COLUMN needs_syncs INTEGER NOT NULL DEFAULT 1
+        """.trimIndent())
+
+            //ExpenseCategoryTable
+            database.execSQL("""
+            ALTER TABLE expense_category_table
+            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+            // 2. Add 'customerCloudId' column (String?, nullable)
+            database.execSQL("""ALTER TABLE expense_category_table
+                 ADD COLUMN eCCloudId INTEGER NOT NULL DEFAULT 0""".trimIndent())
+            // 3. Add 'needs_syncs' column (Int, defaults to 1)
+            database.execSQL("""
+            ALTER TABLE expense_category_table
+            ADD COLUMN needs_syncs INTEGER NOT NULL DEFAULT 1
+        """.trimIndent())
+
+            //EXPENSE TABLE
+            database.execSQL("""
+            ALTER TABLE expenses_table
+            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+            // 2. Add 'customerCloudId' column (String?, nullable)
+            database.execSQL("""ALTER TABLE expenses_table
+                 ADD COLUMN expenseCloudId INTEGER NOT NULL DEFAULT 0""".trimIndent())
+            // 3. Add 'needs_syncs' column (Int, defaults to 1)
+            database.execSQL("""
+            ALTER TABLE expenses_table
+            ADD COLUMN needs_syncs INTEGER NOT NULL DEFAULT 1
+        """.trimIndent())
+
+            //INVENTORY LOG TABLE
+            // 1. Add 'is_deleted' column (Boolean, defaults to FALSE)
+            database.execSQL("""
+            ALTER TABLE inventory_log_table
+            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+            // 2. Add 'customerCloudId' column (String?, nullable)
+            database.execSQL("""ALTER TABLE inventory_log_table
+                 ADD COLUMN iLCloudId INTEGER NOT NULL DEFAULT 0""".trimIndent())
+            // 3. Add 'needs_syncs' column (Int, defaults to 1)
+            database.execSQL("""
+            ALTER TABLE inventory_log_table
+            ADD COLUMN needs_syncs INTEGER NOT NULL DEFAULT 1
+        """.trimIndent())
+
+            //INVENTORY PURCHASE TABLE
+            // 1. Add 'is_deleted' column (Boolean, defaults to FALSE)
+            database.execSQL("""
+            ALTER TABLE inventory_purchase_table
+            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+            // 2. Add 'customerCloudId' column (String?, nullable)
+            database.execSQL("""ALTER TABLE inventory_purchase_table
+                 ADD COLUMN iPCloudId INTEGER NOT NULL DEFAULT 0""".trimIndent())
+            // 3. Add 'needs_syncs' column (Int, defaults to 1)
+            database.execSQL("""
+            ALTER TABLE inventory_purchase_table
+            ADD COLUMN needs_syncs INTEGER NOT NULL DEFAULT 1
+        """.trimIndent())
+
+            //MERCHANDISE RETAIL
+            // 1. Add 'is_deleted' column (Boolean, defaults to FALSE)
+            database.execSQL("""
+            ALTER TABLE merchandise_table
+            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+            // 2. Add 'customerCloudId' column (String?, nullable)
+            database.execSQL("""ALTER TABLE merchandise_table
+                 ADD COLUMN mRCloudId INTEGER NOT NULL DEFAULT 0""".trimIndent())
+            // 3. Add 'needs_syncs' column (Int, defaults to 1)
+            database.execSQL("""
+            ALTER TABLE merchandise_table
+            ADD COLUMN needs_syncs INTEGER NOT NULL DEFAULT 1
+        """.trimIndent())
+
+            //PAYMENT
+            // 1. Add 'is_deleted' column (Boolean, defaults to FALSE)
+            database.execSQL("""
+            ALTER TABLE paymen_table
+            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+            // 2. Add 'customerCloudId' column (String?, nullable)
+            database.execSQL("""ALTER TABLE paymen_table
+                 ADD COLUMN paymentCloudId INTEGER NOT NULL DEFAULT 0""".trimIndent())
+            // 3. Add 'needs_syncs' column (Int, defaults to 1)
+            database.execSQL("""
+            ALTER TABLE paymen_table
+            ADD COLUMN needs_syncs INTEGER NOT NULL DEFAULT 1
+        """.trimIndent())
+
+            //PRODUCT TABLE
+            // 1. Add 'is_deleted' column (Boolean, defaults to FALSE)
+            database.execSQL("""
+            ALTER TABLE product_table
+            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+            // 2. Add 'customerCloudId' column (String?, nullable)
+            database.execSQL("""ALTER TABLE product_table
+                 ADD COLUMN productCloudId INTEGER NOT NULL DEFAULT 0""".trimIndent())
+            // 3. Add 'needs_syncs' column (Int, defaults to 1)
+            database.execSQL("""
+            ALTER TABLE product_table
+            ADD COLUMN needs_syncs INTEGER NOT NULL DEFAULT 1
+        """.trimIndent())
+
+            //SUB TABLE
+            // 1. Add 'is_deleted' column (Boolean, defaults to FALSE)
+            database.execSQL("""
+            ALTER TABLE sub_table
+            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+            // 2. Add 'customerCloudId' column (String?, nullable)
+            database.execSQL("""ALTER TABLE sub_table
+                 ADD COLUMN sPCloudId INTEGER NOT NULL DEFAULT 0""".trimIndent())
+            // 3. Add 'needs_syncs' column (Int, defaults to 1)
+            database.execSQL("""
+            ALTER TABLE sub_table
+            ADD COLUMN needs_syncs INTEGER NOT NULL DEFAULT 1
+        """.trimIndent())
+
+            //SUMMARY TABLE
+            // 1. Add 'is_deleted' column (Boolean, defaults to FALSE)
+            database.execSQL("""
+            ALTER TABLE summary_table
+            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+            // 2. Add 'customerCloudId' column (String?, nullable)
+            database.execSQL("""ALTER TABLE summary_table
+                 ADD COLUMN summaryCloudId INTEGER NOT NULL DEFAULT 0""".trimIndent())
+            // 3. Add 'needs_syncs' column (Int, defaults to 1)
+            database.execSQL("""
+            ALTER TABLE summary_table
+            ADD COLUMN needs_syncs INTEGER NOT NULL DEFAULT 1
+        """.trimIndent())
+
+            //SUPLIER TABLE
+            // 1. Add 'is_deleted' column (Boolean, defaults to FALSE)
+            database.execSQL("""
+            ALTER TABLE suplier_table
+            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+            // 2. Add 'customerCloudId' column (String?, nullable)
+            database.execSQL("""ALTER TABLE suplier_table
+                 ADD COLUMN suplierCloudId INTEGER NOT NULL DEFAULT 0""".trimIndent())
+            // 3. Add 'needs_syncs' column (Int, defaults to 1)
+            database.execSQL("""
+            ALTER TABLE suplier_table
+            ADD COLUMN needs_syncs INTEGER NOT NULL DEFAULT 1
+        """.trimIndent())
+
+            //TRANSACTIONDETAIL TABLE
+            // 1. Add 'is_deleted' column (Boolean, defaults to FALSE)
+            database.execSQL("""
+            ALTER TABLE trans_detail_table
+            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+            // 2. Add 'customerCloudId' column (String?, nullable)
+            database.execSQL("""ALTER TABLE trans_detail_table
+                 ADD COLUMN tDCloudId INTEGER NOT NULL DEFAULT 0""".trimIndent())
+            // 3. Add 'needs_syncs' column (Int, defaults to 1)
+            database.execSQL("""
+            ALTER TABLE trans_detail_table
+            ADD COLUMN needs_syncs INTEGER NOT NULL DEFAULT 1
+        """.trimIndent())
+
+            //TRANSACTION SUMMARY TABLE
+            database.execSQL("""
+            ALTER TABLE trans_sum_table
+            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+            // 2. Add 'customerCloudId' column (String?, nullable)
+            database.execSQL("""ALTER TABLE trans_sum_table
+                 ADD COLUMN tSCloudId INTEGER NOT NULL DEFAULT 0""".trimIndent())
+            // 3. Add 'needs_syncs' column (Int, defaults to 1)
+            database.execSQL("""
+            ALTER TABLE trans_sum_table
+            ADD COLUMN needs_syncs INTEGER NOT NULL DEFAULT 1
+        """.trimIndent())
+
+            //brand
+            database.execSQL("""
+            ALTER TABLE brand_table
+            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+
+            //category
+            database.execSQL("""
+            ALTER TABLE category_table
+            ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0
+        """.trimIndent())
+
+        }
+    }
 
     val MIGRATION_47_48 = object : Migration(47, 48) {
         override fun migrate(database: SupportSQLiteDatabase) {

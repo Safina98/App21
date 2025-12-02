@@ -64,4 +64,10 @@ data class SubProduct(
     var is_checked:Boolean = false,
     @ColumnInfo(name = "discountId")
     var discountId:Int?=null,
+    @ColumnInfo(name="is_deleted")
+    var isDeleted: Boolean = false, //newly added cloumn
+    @ColumnInfo(name = "sPCloudId")
+    var sPCloudId: Long = 0L,//newly added cloumn
+    @ColumnInfo(name="needs_syncs")
+    var needsSyncs:Int=1//newly added cloumn
 )

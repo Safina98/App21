@@ -45,5 +45,11 @@ data class TransactionSummary (
         @ColumnInfo(name = "sum_note")
         var sum_note:String?=null,
         @ColumnInfo(name = "custId")
-        var custId:Int?=null
+        var custId:Int?=null,
+        @ColumnInfo(name="is_deleted")
+        var isDeleted: Boolean = false, //newly added cloumn
+        @ColumnInfo(name = "tSCloudId")
+        var tSCloudId: Long = 0L,//newly added cloumn
+        @ColumnInfo(name="needs_syncs")
+        var needsSyncs:Int=1//newly added cloumn
 )

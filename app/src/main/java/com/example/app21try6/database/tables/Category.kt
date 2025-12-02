@@ -14,6 +14,8 @@ data class Category(
         var category_name:String = "emtpy",
         @ColumnInfo(name="needs_syncs")
         var needsSyncs:Int=1,
+        @ColumnInfo(name="is_deleted")
+        var isDeleted: Boolean = false, //newly added cloumn
         @Ignore
         var checkBoxBoolean:Boolean = false
 )

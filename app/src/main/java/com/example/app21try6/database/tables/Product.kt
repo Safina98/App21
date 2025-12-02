@@ -56,4 +56,10 @@ data class Product(
         var puchaseUnit:String?=null,
     @ColumnInfo(name = "alternate_capital") //newly added
         var alternate_capital:Double = 0.0,
+    @ColumnInfo(name="is_deleted")
+    var isDeleted: Boolean = false, //newly added cloumn
+    @ColumnInfo(name = "productCloudId")
+    var productCloudId: Long = 0L,//newly added cloumn
+    @ColumnInfo(name="needs_syncs")
+    var needsSyncs:Int=1//newly added cloumn
 )

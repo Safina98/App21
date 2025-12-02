@@ -34,4 +34,10 @@ data class DiscountTransaction(
     var discTransName:String="",
     @ColumnInfo(name = "discountAppliedValue")
     var discountAppliedValue: Double = 0.0,
+    @ColumnInfo(name="is_deleted")
+    var isDeleted: Boolean = false, //newly added cloumn
+    @ColumnInfo(name = "dTCloudId")
+    var dTCloudId: Long = 0L,//newly added cloumn
+    @ColumnInfo(name="needs_syncs")
+    var needsSyncs:Int=1//newly added cloumn
 )

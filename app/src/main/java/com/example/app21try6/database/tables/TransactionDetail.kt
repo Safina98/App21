@@ -49,5 +49,11 @@ data class TransactionDetail(
         var sub_id:Int? = null,
         @ColumnInfo(name = "product_capital")
         var product_capital:Int=0,
+        @ColumnInfo(name="is_deleted")
+        var isDeleted: Boolean = false, //newly added cloumn
+        @ColumnInfo(name = "tDCloudId")
+        var tDCloudId: Long = 0L,//newly added cloumn
+        @ColumnInfo(name="needs_syncs")
+        var needsSyncs:Int=1//newly added cloumn
         )
 

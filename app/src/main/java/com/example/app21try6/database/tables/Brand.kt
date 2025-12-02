@@ -20,6 +20,8 @@ data class Brand(
     @ColumnInfo(name="cath_code")
     var cath_code:Long = 0L,
     @ColumnInfo(name="needs_syncs")
-    var needsSyncs:Int=1
+    var needsSyncs:Int=1,
+    @ColumnInfo(name="is_deleted")
+    var isDeleted: Boolean = false, //newly added cloumn
 )
 

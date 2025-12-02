@@ -17,5 +17,11 @@ data class  ExpenseCategory (
     @ColumnInfo(name="repeat_period")
     var repeat_period:String?=null,
     @ColumnInfo(name="repeat_date")
-    var repeat_date:Date?=null
+    var repeat_date:Date?=null,
+    @ColumnInfo(name="is_deleted")
+    var isDeleted: Boolean = false, //newly added cloumn
+    @ColumnInfo(name = "eCCloudId")
+    var eCCloudId: Long = 0L,//newly added cloumn
+    @ColumnInfo(name="needs_syncs")
+    var needsSyncs:Int=1//newly added cloumn
 )

@@ -26,5 +26,11 @@ data class Payment(
     @ColumnInfo(name="payment_date")
     var payment_date: Date?=null,
     @ColumnInfo(name = "ref")
-    var payment_ref:String=""
+    var payment_ref:String="",
+    @ColumnInfo(name="is_deleted")
+    var isDeleted: Boolean = false, //newly added cloumn
+    @ColumnInfo(name = "paymentCloudId")
+    var paymentCloudId: Long = 0L,//newly added cloumn
+    @ColumnInfo(name="needs_syncs")
+    var needsSyncs:Int=1//newly added cloumn
 )

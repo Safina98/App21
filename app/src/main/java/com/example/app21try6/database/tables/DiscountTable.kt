@@ -32,7 +32,13 @@ import java.util.Date
         @ColumnInfo(name = "discountDuration")
         var discountDuration:Date?=null,
         @ColumnInfo(name = "custLocation")
-        var custLocation:String?=null
+        var custLocation:String?=null,
+        @ColumnInfo(name="is_deleted")
+        var isDeleted: Boolean = false, //newly added cloumn
+        @ColumnInfo(name = "discountCloudId")
+        var discountCloudId: Long = 0L,//newly added cloumn
+        @ColumnInfo(name="needs_syncs")
+        var needsSyncs:Int=1//newly added cloumn
     )
 
 /***************************************Cashback & Discount******************************************/
