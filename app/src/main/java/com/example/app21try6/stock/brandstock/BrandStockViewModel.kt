@@ -12,10 +12,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.app21try6.database.tables.Category
 import com.example.app21try6.database.models.BrandProductModel
+import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.DiscountRepository
+import com.example.app21try6.database.repositories.ExpensesRepository
+import com.example.app21try6.database.repositories.LogsRepository
 import com.example.app21try6.database.repositories.StockRepositories
+import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.tables.Product
+import com.example.app21try6.utils.AssignCloudIdManager
 
 import kotlinx.coroutines.*
 import java.io.BufferedWriter
@@ -23,10 +28,14 @@ import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 import java.util.UUID
-
+//todo delete bookkeeping repositories and transaction repository
 class BrandStockViewModel(
     private val repository: StockRepositories,
     private val discountRepository:DiscountRepository,
+    private val bookKeepingRepository: BookkeepingRepository,
+    private val transactionsRepository: TransactionsRepository,
+    private val expensesRepository: ExpensesRepository,
+    private val logsRepository: LogsRepository,
     application: Application): AndroidViewModel(application){
     private var viewModelJob = Job()
     //ui scope for coroutines
@@ -68,6 +77,11 @@ class BrandStockViewModel(
     val discountName=MutableLiveData<String?>("")
     val _product=MutableLiveData<Product?>()
 
+    //TODO DELETE LATER
+    private val assignManager= AssignCloudIdManager(bookKeepingRepository,discountRepository,expensesRepository,logsRepository,repository,transactionsRepository)
+
+
+
     /////////////////////////// Produk variables///////////////////////////////////////////////////////////
     var productName = MutableLiveData<String>()
     var productPice=MutableLiveData<Int>()
@@ -94,7 +108,12 @@ class BrandStockViewModel(
             Log.i("brandList","ctgId: ${ctgId.value}")
             _selectedCtgSpinner.value = value
         }
+    }
 
+    fun assignCloudIdtoALlData(){
+        viewModelScope.launch {
+            assignManager.assignCloudIdForAllTables()
+        }
     }
     fun updateRv(){
         viewModelScope.launch {
@@ -140,7 +159,8 @@ class BrandStockViewModel(
     }
     fun assignCloudIdToAllData() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.assignCloudIdToAllData()
+            //repository.assignCloudIdToAllData()
+
         }
     }
     fun insertItemCtg(ctgName:String){
@@ -184,7 +204,7 @@ class BrandStockViewModel(
 //todo delete later
 fun updateSubTable(){
     viewModelScope.launch {
-        repository.updateSubForeignKeysFromProduct()
+        //repository.updateSubForeignKeysFromProduct()
     }
 }
     fun insertCSVBatch(tokensList: List<List<String>>) {
@@ -296,8 +316,10 @@ fun updateSubTable(){
             product.alternate_price=alternatePrice.value ?: 0.0
             product.cath_code=repository.getCategoryIdByName(ctgName.value ?: "")
             product.brand_code=repository.getBrandIdByName(branName.value?:"",product.cath_code)?:0
+            product.needsSyncs=1
             if (product.brand_code!=0L && product.cath_code!=0L) {
                 if (_product.value==null){
+                    product.productCloudId=System.currentTimeMillis()
                      repository.insertProduct(product)
                 }
                 else{
@@ -326,8 +348,7 @@ fun updateSubTable(){
     fun deleteProduct(product: BrandProductModel){
         uiScope.launch {
            repository.deleteProduct(product.id)
-        //todo uncomment
-        //updateProductRv(product.parentId)
+        updateProductRv(product.parentId)
 
         } }
     fun onNavigateBackToBrandStock(){

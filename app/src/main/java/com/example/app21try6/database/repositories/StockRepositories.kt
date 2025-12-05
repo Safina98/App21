@@ -145,18 +145,11 @@ class StockRepositories (
             productDao.getAll(brandId)
         }
     }
-    //todo delete later
-    suspend fun updateSubForeignKeysFromProduct() {
-        withContext(Dispatchers.IO){
-            productDao.updateSubForeignKeysFromProduct()
-        }
-    }
-    suspend fun assignCloudIdToAllData() {
-        withContext(Dispatchers.IO){
 
-    }
 
-    }
+
+
+
     suspend fun getProductById(id:Int):Product{
         return withContext(Dispatchers.IO){productDao.getProductById(id)}
     }

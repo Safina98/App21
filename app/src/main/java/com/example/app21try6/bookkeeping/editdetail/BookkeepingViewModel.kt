@@ -117,6 +117,7 @@ private val tagg="ProfitProbs"
                         summary.day_name = day
                         summary.item_name = v.product_name
                         summary.price = v.product_price.toDouble()
+                        summary.summaryCloudId= System.currentTimeMillis()
                         bookRepo.insertItemToSummary(summary)
                         }
                 }
@@ -136,6 +137,7 @@ private val tagg="ProfitProbs"
         viewModelScope.launch {
             summary.item_sold = summary.item_sold+1
             summary.total_income = summary.item_sold*summary.price
+            summary.needsSyncs=1
             bookRepo.update(summary)
         }
     }
@@ -150,6 +152,7 @@ private val tagg="ProfitProbs"
                 summary.total_income = summary.price*summary.item_sold
             }
             summary.total_income = summary.item_sold*summary.price
+            summary.needsSyncs=1
             bookRepo.update(summary)
         }
     }
@@ -157,6 +160,7 @@ private val tagg="ProfitProbs"
         viewModelScope.launch {
             summary.item_sold = summary.item_sold-1
             summary.total_income = summary.item_sold*summary.price
+            summary.needsSyncs=1
             bookRepo.update(summary)
         }
     }

@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.app21try6.database.tables.Payment
 import com.example.app21try6.database.models.PaymentModel
+import com.example.app21try6.database.tables.DetailWarnaTable
 
 
 @Dao
@@ -23,6 +24,7 @@ interface PaymentDao{
 
     @Query("SELECT SUM(payment_ammount) FROM paymen_table WHERE sum_id =:sumId")
     fun selectSumFragmentBySumId(sumId:Int):Int
+
 
 
     @Query("SELECT\n" +

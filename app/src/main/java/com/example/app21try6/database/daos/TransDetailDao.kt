@@ -9,6 +9,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.example.app21try6.bookkeeping.summary.MonthlyProfit
 import com.example.app21try6.database.models.TracketailWarnaModel
+import com.example.app21try6.database.tables.DiscountTable
 import com.example.app21try6.database.tables.MerchandiseRetail
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.grafik.StockModel
@@ -26,6 +27,7 @@ interface TransDetailDao {
     fun update(transactionDetail: TransactionDetail)
     @Update
     suspend fun updateItemPosition(item: TransactionDetail)
+
 
 
     @Query("""

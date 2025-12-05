@@ -144,8 +144,14 @@ class TransactionSelectViewModel(
             Log.i("DialogUtilProblems","View Model. Update TransDetail called")
             s.item_price= calculatePriceByQty(s.qty,s.item_default_price)
             val t = converter(s)
+            t.needsSyncs=1
             var id =s.trans_detail_id
-            if (id==0L) id = transRepo.insertTransDetail(t) else transRepo.updateTransDetail(t)
+            if (id==0L) {
+                t.tDCloudId= System.currentTimeMillis()
+                id = transRepo.insertTransDetail(t)
+            } else {
+                transRepo.updateTransDetail(t)
+            }
             s.trans_detail_id  = id ?: -1L
             if (s.qty==0.0){
                 delete(s)
@@ -177,6 +183,7 @@ class TransactionSelectViewModel(
             if (boolean == true) {
                 var t = converter(s)
                 try {
+                    t.tDCloudId= System.currentTimeMillis()
                     var id = transRepo.insertTransDetail(t)
                     s.trans_detail_id  = id ?: -1L
                      updateItemInTransDetailList(s)
@@ -185,18 +192,6 @@ class TransactionSelectViewModel(
                     Log.i("DataProb",e.toString())
                 }
             }
-        }
-    }
-
-    fun insertDuplicateSubProduct(s:TransSelectModel){
-        viewModelScope.launch {
-            Log.i("DuplicateProbs","s id ${s.trans_detail_id}")
-            val t = converter(s)
-            val id =transRepo.insertTransDetail(t)
-            Log.i("DuplicateProbs","inserted id $id")
-            s.trans_detail_id  = id ?: -1L
-            //getTransModel(_productId.value!!)
-            //updateItemInTransDetailList(s)
         }
     }
 

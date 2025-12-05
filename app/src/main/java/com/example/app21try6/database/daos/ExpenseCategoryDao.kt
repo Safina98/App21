@@ -23,4 +23,6 @@ interface ExpenseCategoryDao {
 
     @Query("SELECT id FROM expense_category_table WHERE expense_category_name=:name")
     fun getECIdByName(name:String):Int?
+
+
 }

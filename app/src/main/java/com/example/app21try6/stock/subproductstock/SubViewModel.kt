@@ -83,6 +83,8 @@ class SubViewModel (
             val transDetail = TransactionDetail()
             transDetail.sum_id = tDId
             transDetail.trans_item_name = subProduct.sub_name
+            transDetail.tDCloudId= System.currentTimeMillis()
+            transDetail.needsSyncs=1
             if(bool){
                 checkedItemList.add(subProduct)
                 transRepository.insertTransDetail(transDetail)
@@ -97,6 +99,7 @@ class SubViewModel (
     fun updateSubProduct(subProduct: SubProduct, text_: String, i: Int){
         uiScope.launch {
             var text = text_
+            subProduct.needsSyncs=1
             if (text ==""){text="click to add"}
             if (i==1){
                 subProduct.sub_name = text
@@ -113,6 +116,7 @@ class SubViewModel (
     fun addStockClicked(subProduct: SubProduct){
         uiScope.launch {
             subProduct.roll_u = subProduct.roll_u+1
+            subProduct.needsSyncs=1
             stockRepo.updateSubProduct(subProduct)
         }
     }
@@ -120,6 +124,7 @@ class SubViewModel (
     fun subsStockClicked(subProduct: SubProduct){
         uiScope.launch {
             subProduct.roll_u = subProduct.roll_u-1
+            subProduct.needsSyncs=1
             stockRepo.updateSubProduct(subProduct)
         }
     }
@@ -155,6 +160,8 @@ class SubViewModel (
                 subProduct.sub_name = subProduct_name
                 subProduct.brand_code = parameterBrandId
                 subProduct.cath_code = ctgId
+                subProduct.needsSyncs=1
+                subProduct.sPCloudId=System.currentTimeMillis()
                 stockRepo.insertSubProduct(subProduct)
             }
         }
@@ -179,12 +186,15 @@ class SubViewModel (
                     net = net,
                     batchCount = batchCount,
                     ket = "Stok Awal",
-                    ref = UUID.randomUUID().toString()
+                    ref = UUID.randomUUID().toString(),
+                    dWCloudId = System.currentTimeMillis().toLong(),
+
                 )
                 stockRepo.insertDetailWarna(newDetailWarna, createInventoryLog(newDetailWarna, batchCount,productId, brandId,"Masuk"))
             } else {
                 // Update existing record
                 existingDetailWarna.batchCount += batchCount  // Accumulate batch count
+                existingDetailWarna.needsSyncs=1
                 stockRepo.updateDetailWarna(existingDetailWarna, createInventoryLog(existingDetailWarna, batchCount,productId, brandId,"Masuk"),null)
             }
             getDetailWarnaList(subId) // Refresh UI
@@ -207,6 +217,7 @@ class SubViewModel (
             val brandId = stockRepo.getBrandId(productId) ?: return@launch
             val inventoryLog =createInventoryLog(detailWarnaTable,detailWarnaTable.batchCount,productId,brandId,"Keluar Retail")
             val merchandiseRetail=createMerchandiseRetail(detailWarnaModel)
+            merchandiseRetail.mRCloudId=System.currentTimeMillis()
             if (detailWarnaTable.batchCount>0)
                 stockRepo.updateDetailWarna(detailWarnaTable,inventoryLog,merchandiseRetail)
             else
@@ -259,6 +270,8 @@ class SubViewModel (
         inventoryLog.barangLogRef=UUID.randomUUID().toString()
         inventoryLog.productId=productId
         inventoryLog.brandId=brandId
+        inventoryLog.iLCloudId=System.currentTimeMillis()
+        inventoryLog.needsSyncs=1
         return inventoryLog
     }
 

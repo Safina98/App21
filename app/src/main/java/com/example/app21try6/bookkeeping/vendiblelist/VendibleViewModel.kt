@@ -74,6 +74,7 @@ class VendibleViewModel(
                         summary.day_name = day
                         summary.item_name = v.product_name
                         summary.price = v.product_price.toDouble()
+                    summary.summaryCloudId=System.currentTimeMillis()
                        bookRepo.insertItemToSummary(summary)
             }
             checkedItemList.clear()

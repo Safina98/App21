@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.TracketailWarnaModel
+import com.example.app21try6.database.tables.Summary
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.getDate
@@ -93,6 +94,7 @@ class TransactionsRepository(
     }
     suspend fun updateTransactionSummary(transSum: TransactionSummary){
         withContext(Dispatchers.IO){
+            transSum.needsSyncs=1
             transSumDao.update(transSum)
         }
 
@@ -135,6 +137,7 @@ class TransactionsRepository(
             insertCSVN(tokens)
         }
     }
+
     private suspend fun insertCSVN(token: List<String>) {
         // Log.i("INSERTCSVPROB","token: $token")
         Log.i("INSERTCSVPROB","trans_detail: $token")

@@ -9,6 +9,7 @@ import androidx.room.Update
 import com.example.app21try6.bookkeeping.summary.ListModel
 import com.example.app21try6.bookkeeping.summary.MonthlyProfit
 import com.example.app21try6.bookkeeping.summary.ProductProfit
+import com.example.app21try6.database.tables.DiscountTable
 import com.example.app21try6.database.tables.Summary
 import com.example.app21try6.grafik.StockModel
 
@@ -20,6 +21,7 @@ interface SummaryDbDao {
     @Update
     fun update(summary: Summary)
 
+
     @Query("SELECT * FROM summary_table WHERE item_name = :itemName AND year =:year AND month=:month_n AND day=:day AND price = :price LIMIT 1")
     fun getSummaryByItemNameAndDayName(itemName: String, year: Int, month_n:String, day: Int,price:Double): Summary?
 
@@ -30,6 +32,7 @@ interface SummaryDbDao {
     fun insertOrUpdate(summary: Summary) {
         val existingSummary = getSummaryByItemNameAndDayName(summary.item_name, summary.year,summary.month,summary.day,summary.price)
         if (existingSummary == null) {
+            summary.summaryCloudId= System.currentTimeMillis()
             insert(summary)
         } else {
             summary.id_m = existingSummary.id_m
@@ -42,6 +45,7 @@ interface SummaryDbDao {
     fun insertOrUpdateD(summary: Summary) {
         val existingSummary = getSummaryByItemNameAndDayName(summary.item_name, summary.year,summary.month,summary.day)
         if (existingSummary == null) {
+            summary.summaryCloudId=System.currentTimeMillis()
             insert(summary)
         } else {
             summary.id_m = existingSummary.id_m

@@ -91,6 +91,8 @@ class StatementHSViewModel(application: Application,
         customerTable.customerLocation=location
         customerTable.customerAddress=address ?:""
         customerTable.customerTag1=tag1
+        if (id==null) customerTable.customerCloudId=System.currentTimeMillis()
+        customerTable.needsSyncs= 1
         return customerTable
     }
 
@@ -117,6 +119,8 @@ class StatementHSViewModel(application: Application,
         discountTable.minimumQty=minQty
         discountTable.discountType=tipe
         discountTable.custLocation= if(location.isNotEmpty()) location else null
+        if (id==null) discountTable.discountCloudId=System.currentTimeMillis()
+        discountTable.needsSyncs=1
         return discountTable
     }
     fun deleteDiscountTable(id:Int){viewModelScope.launch {

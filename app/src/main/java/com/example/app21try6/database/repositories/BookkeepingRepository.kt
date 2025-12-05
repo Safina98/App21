@@ -6,6 +6,7 @@ import com.example.app21try6.bookkeeping.summary.ListModel
 import com.example.app21try6.bookkeeping.summary.MonthlyProfit
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.daos.SummaryDbDao
+import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.database.tables.Summary
 import com.example.app21try6.getDateFromComponents
 import kotlinx.coroutines.Dispatchers
@@ -102,15 +103,6 @@ class BookkeepingRepository(
         }
         summaryDbDao.insert(summary)
     }
-
-
-
-
-
-
-
-
-
 
 
 }

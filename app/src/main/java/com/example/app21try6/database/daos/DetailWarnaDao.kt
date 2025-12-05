@@ -8,6 +8,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.example.app21try6.database.models.DetailMerchandiseModel
 import com.example.app21try6.database.tables.Brand
+import com.example.app21try6.database.tables.CustomerTable
 import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.database.tables.MerchandiseRetail
@@ -30,6 +31,16 @@ interface DetailWarnaDao {
     fun insert(merchandiseRetail: MerchandiseRetail)
     @Update
     fun updateRetail(merchandiseRetail: MerchandiseRetail)
+
+    @Query("""
+        UPDATE merchandise_table
+        SET mRCloudId =:cloudId
+        WHERE id=:id
+    """)
+    fun assignMerchandiseRetailCloudID(cloudId:Long,id:Int)
+
+    @Query("SELECT * FROM merchandise_table WHERE mRCloudId=0")
+    fun selectAllMerchandiseRetailTable(): List<MerchandiseRetail>
 
     @Query("DELETE FROM detail_warna_table WHERE id=:id")
     fun delete(id:Int)
@@ -85,8 +96,10 @@ interface DetailWarnaDao {
         update(detailWarnaTable)
         insertLog(inventoryLog)
         merchandiseRetail.forEach {
-            if (it!=null)
+            if (it!=null){
                 insert(it)
+            }
+
             }
     }
     @Transaction
@@ -107,7 +120,6 @@ interface DetailWarnaDao {
             }
         }
     }
-
     @Transaction
     fun updateTransDetailAndRetail(merchandiseRetail: MerchandiseRetail,transactionDetail: TransactionDetail){
         updateRetail(merchandiseRetail)

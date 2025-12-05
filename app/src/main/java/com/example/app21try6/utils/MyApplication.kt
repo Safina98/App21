@@ -28,19 +28,19 @@ class MyApplication: Application()  {
     override fun onCreate() {
         super.onCreate()
 
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
-        RealtimeDatabaseSync.startConnectionListener(applicationContext)
-        // Now safe to initialize everything else
-       RealtimeDatabaseSync.init(this)
-        Thread {
-            Thread {
-                val db = VendibleDatabase.getInstance(this)
-                RealtimeDatabaseSync.startSyncAllTables(
-                    brandDao    = db.brandDao,
-                    categoryDao = db.categoryDao
-                )
-            }.start()
-        }.start()
+//        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
+//        RealtimeDatabaseSync.startConnectionListener(applicationContext)
+//        // Now safe to initialize everything else
+//       RealtimeDatabaseSync.init(this)
+//        Thread {
+//            Thread {
+//                val db = VendibleDatabase.getInstance(this)
+//                RealtimeDatabaseSync.startSyncAllTables(
+//                    brandDao    = db.brandDao,
+//                    categoryDao = db.categoryDao
+//                )
+//            }.start()
+//        }.start()
 
 
 

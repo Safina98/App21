@@ -84,6 +84,8 @@ class TransactionActiveViewModel(
             val trans =   TransactionSummary()
             trans.trans_date = Date()
             trans.ref =UUID.randomUUID().toString()
+            trans.tSCloudId=System.currentTimeMillis()
+            trans.needsSyncs=1
             val id =transRepo.insertNewSumAndGetId(trans).toInt()
             trans.sum_id = id
             onNavigatetoTransEdit(id)

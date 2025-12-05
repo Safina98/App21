@@ -14,10 +14,8 @@ import com.example.app21try6.stock.brandstock.ExportModel
 interface BrandDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(brand: Brand):Long
-
     @Update
     fun update(brand: Brand)
-
     @Query("SELECT * FROM brand_table WHERE brandCloudId = :id LIMIT 1")
     suspend fun getById(id: Long): Brand?
     @Query("SELECT * FROM brand_table WHERE needs_syncs = 1")

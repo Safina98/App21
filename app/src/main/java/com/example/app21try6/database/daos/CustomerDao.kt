@@ -8,6 +8,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.app21try6.database.tables.CustomerTable
+import com.example.app21try6.database.tables.Product
 
 @Dao
 interface CustomerDao {
@@ -19,6 +20,8 @@ interface CustomerDao {
 
     @Delete
     fun delete(customerTable: CustomerTable)
+
+
 
     @Query("SELECT custId FROM customer_table WHERE customerBussinessName=:name")
     fun getIdByName(name:String):Int?

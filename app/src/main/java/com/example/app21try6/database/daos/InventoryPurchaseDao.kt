@@ -8,6 +8,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.example.app21try6.database.models.StringDateModel
 import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.Expenses
 import com.example.app21try6.database.tables.InventoryLog
@@ -89,6 +90,7 @@ interface InventoryPurchaseDao {
                 purchaseList.map { it.apply { it.id=0 } }
                 purchaseList.map { it.apply { purchaseDate=expenses.expense_date?: Date() } }
                 purchaseList.forEach{
+                    it.iPCloudId=System.currentTimeMillis()
                     Log.i("insertPurchaseAndExpense","insert $it")
                 }
                 // Map the purchases to associate the expensesId, then insert them
@@ -119,6 +121,7 @@ interface InventoryPurchaseDao {
         deletePurchases(purchasesToDelete)
 
         purchaseList.forEach {
+            it.needsSyncs=1
             Log.i("SavePurchaseProbs","$it")
         }
 
@@ -128,6 +131,7 @@ interface InventoryPurchaseDao {
                 Log.i("SavePurchaseProbs","Insert $it")
                 it.expensesId=expenses.id
                 it.id=0
+                it.iPCloudId=System.currentTimeMillis()
                 var id = insertPurchase(it)
                 var purhcaseItem=getPurchaseById(id.toInt())
                 Log.i("SavePurchaseProbs","pId $purhcaseItem")
@@ -138,4 +142,19 @@ interface InventoryPurchaseDao {
         }
 
     }
+
+
+
+
+    @Query("SELECT id as id,subProductName as nama,purchaseDate as date FROM inventory_purchase_table")
+    fun selectNameAndDate(): List<StringDateModel?>?
+    @Query("SELECT id as id,subProductName as nama,purchaseDate as date FROM inventory_purchase_table where id=:id")
+    fun selectADataNameAndDate(id:Int):StringDateModel
+
+    @Query("""
+        UPDATE inventory_purchase_table
+        SET purchaseDate =:date
+        WHERE id=:id
+    """)
+    fun updatePurchaseDate(id: Int, date:Date)
 }

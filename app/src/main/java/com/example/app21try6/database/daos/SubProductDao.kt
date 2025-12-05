@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.example.app21try6.database.models.SubWithPriceModel
+import com.example.app21try6.database.tables.Payment
 import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.transaction.transactiondetail.TransactionDetailWithProduct
@@ -27,6 +28,8 @@ interface SubProductDao {
     fun unchecked_allCheckbox()
     @Query("SELECT * FROM sub_table WHERE  (:product_id_ IS NULL OR product_code = :product_id_) AND (:brandId IS NULL OR brand_code=:brandId)")
     fun getAll(product_id_:Int?,brandId: Long?):LiveData<List<SubProduct>>
+
+
 
 
     @Query("SELECT * FROM sub_table WHERE sub_id = :sub_id_")
@@ -82,16 +85,14 @@ interface SubProductDao {
 
     @Query("""
         UPDATE trans_detail_table
-        SET trans_item_name =:updatedName
+        SET trans_item_name =:updatedName, needs_syncs=1
         WHERE sub_id =:sub_id
     """)
     suspend fun updateTransItemName(sub_id:Int,updatedName:String)
 
     @Transaction
     suspend fun updateSubProductAndTransDetail(
-
         subProduct: SubProduct
-
     ) {
         update(subProduct)
         updateTransItemName(subProduct.sub_id, subProduct.sub_name)

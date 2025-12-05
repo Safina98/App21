@@ -60,9 +60,12 @@ interface InventoryLogDao {
                 val updatedDetail = existingDetail.copy(
                     batchCount = existingDetail.batchCount + detail.batchCount
                 )
+                updatedDetail.needsSyncs=1
                 updateDetail(updatedDetail)
                 ref=existingDetail.ref
             } else {
+                detail.dWCloudId=System.currentTimeMillis()
+                detail.needsSyncs=1
                 insertDetail(detail)
                 ref=detail.ref
             }
@@ -135,5 +138,6 @@ interface InventoryLogDao {
         val list=selectAllDetailWarna()
         Log.i("LOGPROBS","$list")
     }
+
 
 }

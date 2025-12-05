@@ -67,6 +67,7 @@ class TransactionEditViewModel(
         viewModelScope.launch {
             for ((index, item) in updatedItems.withIndex()) {
                 item.item_position = index
+                item.needsSyncs=1
                 Log.i("drag","viewModel ${item.trans_item_name} ${item.item_position}")
                 transRepo.updateTransDetail(item)
             }
@@ -128,9 +129,11 @@ class TransactionEditViewModel(
             discountTransactions.forEach { discountTransaction ->
                 val existingDiscount = discountRepo.selectExistingDiscount(discountTransaction.sum_id, discountTransaction.discTransName)
                 if (existingDiscount == null) {
+                    discountTransaction.dTCloudId=System.currentTimeMillis()
                     discountRepo.insertTransactionDiscount(discountTransaction)
                 } else {
                     existingDiscount.discountAppliedValue = discountTransaction.discountAppliedValue
+                    existingDiscount.needsSyncs=1
                     discountRepo.updateTransactionDiscount(existingDiscount.discTransId, existingDiscount.discountAppliedValue)
                 }
             }
@@ -174,7 +177,7 @@ class TransactionEditViewModel(
             val product=stockRepo.getProductBySubId(transactionDetail.sub_id?:0)
             transactionDetail.trans_price= calculatePriceByQty(transactionDetail.qty,product!!.product_price)
             transactionDetail.total_price = transactionDetail.trans_price * transactionDetail.qty * transactionDetail.unit_qty
-
+            transactionDetail.needsSyncs=1
             transRepo.updateTransDetail(transactionDetail)
         }
     }
@@ -198,6 +201,7 @@ class TransactionEditViewModel(
                     transactionDetail.total_price=transactionDetail.trans_price*transactionDetail.unit_qty*transactionDetail.qty
                     transactionDetail.unit = selectedItem
                 }
+                transactionDetail.needsSyncs=1
                 transRepo.updateTransDetail(transactionDetail)
             }
         }
@@ -234,6 +238,7 @@ class TransactionEditViewModel(
     fun updateTransDetailItemName(transactionDetail: TransactionDetail, itemName: String){
         viewModelScope.launch {
             transactionDetail.trans_item_name = itemName
+            transactionDetail.needsSyncs=1
             transRepo.updateTransDetail(transactionDetail)
         }
     }
@@ -242,6 +247,7 @@ class TransactionEditViewModel(
         viewModelScope.launch {
             transactionDetail.trans_price = itemPrice
             transactionDetail.total_price = transactionDetail.trans_price * transactionDetail.qty *transactionDetail.unit_qty
+            transactionDetail.needsSyncs=1
            transRepo.updateTransDetail(transactionDetail)
         }
     }
@@ -250,6 +256,7 @@ class TransactionEditViewModel(
         viewModelScope.launch {
             transactionDetail.unit_qty = unit_qyt
             transactionDetail.total_price = transactionDetail.trans_price * transactionDetail.qty *transactionDetail.unit_qty
+            transactionDetail.needsSyncs=1
             transRepo.updateTransDetail(transactionDetail)
         }
 

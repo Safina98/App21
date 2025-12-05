@@ -3,6 +3,7 @@ package com.example.app21try6.database.daos
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.app21try6.database.models.TransSumModel
+import com.example.app21try6.database.tables.DiscountTable
 import com.example.app21try6.database.tables.TransactionSummary
 import java.util.Date
 
@@ -50,6 +51,7 @@ interface TransSumDao {
 
     @Query("SELECT * FROM trans_sum_table WHERE sum_id = :sum_id_")
     suspend fun getTrans(sum_id_:Int): TransactionSummary
+
 
 
     @Query("""

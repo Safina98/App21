@@ -253,6 +253,7 @@ class TransactionDetailViewModel (
             val bayar = modelToPaymentConverter(paymentModel)
             if (paymentModel.id!=null){
                 bayar.id = paymentModel.id!!
+                bayar.needsSyncs=1
                 discountRepo.updatePayment(bayar) }
             else{
                 insertPayment(bayar)
@@ -269,6 +270,8 @@ class TransactionDetailViewModel (
                 discount.discTransName=paymentModel.name?:"Potongan: "
                 discount.discountAppliedValue=paymentModel.payment_ammount?.toDouble() ?: 0.0
                 discount.sum_id=id
+                discount.needsSyncs=1
+                discount.dTCloudId= System.currentTimeMillis()
                 discountRepo.insertTransactionDiscount(discount)
             }else{
                 discountRepo.updateTransactionDiscount(paymentModel.id!!,paymentModel.payment_ammount!!.toDouble())
@@ -292,6 +295,8 @@ class TransactionDetailViewModel (
             bayar.payment_date =Date()
             bayar.sum_id = transSum.value?.sum_id ?:-1
             bayar.payment_ref = UUID.randomUUID().toString()
+            bayar.paymentCloudId=System.currentTimeMillis()
+            bayar.needsSyncs=1
             discountRepo.insertPayment(bayar)
             updateTransSum()
         }
@@ -434,6 +439,8 @@ class TransactionDetailViewModel (
                         merch.net=merch.net-remainingQty
                         remainingQty=-1.0
                     }
+                    merch.needsSyncs=1
+                    trans.needsSyncs=1
                     stockRepo.updateDetaiAndlRetail(merch,trans)
                 }
             }
@@ -514,6 +521,7 @@ class TransactionDetailViewModel (
         merchandiseRetail.net=dmModel.net
         merchandiseRetail.ref=UUID.randomUUID().toString()
         merchandiseRetail.date=dmModel.date?:Date()
+        merchandiseRetail.mRCloudId=System.currentTimeMillis()
         return merchandiseRetail
     }
     fun setValuesToNull(){
@@ -545,6 +553,7 @@ class TransactionDetailViewModel (
                         price = it.trans_price.toDouble()
                         total_income = it.total_price
                         product_capital = (product?.product_capital ?: 0.0).toInt()
+                        needsSyncs=1
                     }
                     val unitQty = it.unit_qty ?: 1.0
                     summary.item_sold = it.qty * unitQty
@@ -568,6 +577,7 @@ class TransactionDetailViewModel (
                 summary.price = it.payment_ammount?.toDouble()?.times((-1)) ?: 0.0
                 summary.item_sold = 1.0
                 summary.total_income = it.payment_ammount?.toDouble()?.times((-1)) ?: 0.0
+                summary.needsSyncs=1
                 bookRepo.insertTransactionToSummary(summary)
             }
         }
@@ -597,6 +607,7 @@ class TransactionDetailViewModel (
     //Update Trans Detail value
     fun updateTransDetail(transdetail: TransactionDetail){
         viewModelScope.launch {
+            transdetail.needsSyncs=1
             transRepo.updateTransDetail(transdetail)
         }
     }

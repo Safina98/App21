@@ -10,8 +10,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.app21try6.R
+import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.DiscountRepository
+import com.example.app21try6.database.repositories.ExpensesRepository
+import com.example.app21try6.database.repositories.LogsRepository
 import com.example.app21try6.database.repositories.StockRepositories
+import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentInputUpdateProductBinding
 import com.example.app21try6.stock.brandstock.BrandStockViewModel
 import com.example.app21try6.stock.brandstock.BrandStockViewModelFactory
@@ -30,7 +34,14 @@ class InputUpdateProduct : Fragment() {
         val application = requireNotNull(this.activity).application
         val repository = StockRepositories(application)
         val discountRepository= DiscountRepository(application)
-        viewModel = ViewModelProvider(requireActivity(), BrandStockViewModelFactory(repository,discountRepository,application))
+
+        //todo delete later
+        val bookKeepingRepository= BookkeepingRepository(application)
+        val transactionsRepository= TransactionsRepository(application)
+        val expensesRepository= ExpensesRepository(application)
+        val logRepository= LogsRepository(application)
+
+        viewModel = ViewModelProvider(requireActivity(), BrandStockViewModelFactory(repository,discountRepository,bookKeepingRepository,transactionsRepository,expensesRepository,logRepository,application))
             .get(BrandStockViewModel::class.java)
         binding.viewModel=viewModel
 

@@ -22,12 +22,17 @@ import com.example.app21try6.Constants
 import com.example.app21try6.R
 import com.example.app21try6.ToolbarUtil
 import com.example.app21try6.database.models.BrandProductModel
+import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.DiscountRepository
+import com.example.app21try6.database.repositories.ExpensesRepository
+import com.example.app21try6.database.repositories.LogsRepository
 import com.example.app21try6.database.repositories.StockRepositories
+import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentBrandStockBinding
 import com.example.app21try6.utils.CsvHandler
 import com.example.app21try6.utils.DatabaseBackupHelper
 import com.example.app21try6.utils.DialogUtils
+import kotlin.math.log
 
 
 class BrandStockFragment : Fragment() {
@@ -50,20 +55,31 @@ class BrandStockFragment : Fragment() {
         val application = requireNotNull(this.activity).application
         val repository = StockRepositories(application)
         val discountRepository=DiscountRepository(application)
+        //todo delete later
+        val bookKeepingRepository= BookkeepingRepository(application)
+        val transactionsRepository= TransactionsRepository(application)
+        val expensesRepository= ExpensesRepository(application)
+        val logRepository= LogsRepository(application)
+
+
        // val viewModelFactory = BrandStockViewModelFactory(repository,discountRepository,application)
         // val viewModel = ViewModelProvider(this,viewModelFactory).get(BrandStockViewModel::class.java)
         // val viewModel = ViewModelProvider(this,viewModelFactory).get(BrandStockViewModel::class.java)
-        viewModel = ViewModelProvider(requireActivity(), BrandStockViewModelFactory(repository,discountRepository,application))
+        //todo delete bookkeeping repositories and transaction repository and expenses repository and log repository
+
+        viewModel = ViewModelProvider(requireActivity(), BrandStockViewModelFactory(repository,discountRepository,bookKeepingRepository,transactionsRepository,expensesRepository,
+            logRepository,application))
             .get(BrandStockViewModel::class.java)
         binding.lifecycleOwner =this
         val layoutOneViews = listOf(
             binding.spinnerM,
             binding.rvBrandStock,
         )
-        viewModel.assignCloudIdToAllData()
+       // viewModel.assignCloudIdToAllData()
         csvHandler = CsvHandler(requireContext())
 
         binding.brandStockViewModel = viewModel
+        viewModel.assignCloudIdtoALlData()
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////
                 //////////////////////////Exporting CSV////////////////////////////////////////////////////////////////////////////

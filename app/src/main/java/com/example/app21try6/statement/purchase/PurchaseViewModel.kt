@@ -37,6 +37,7 @@ import kotlinx.coroutines.withContext
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
+import kotlin.math.exp
 
 val tagp="PURCHASEPROBS"
 @RequiresApi(Build.VERSION_CODES.O)
@@ -219,6 +220,8 @@ class PurchaseViewModel(application: Application,
                 expenses.expense_category_id=getCategoryIdByName("BELI BARANG")?:0
                 expenses.expense_name="Bayar ${suplierName.value}"
                 expenses.expense_date=Date()
+                expenses.expenseCloudId=System.currentTimeMillis()
+                expenses.needsSyncs=1
                 if (inventoryPurchaseList.value!=null){
                     insertPurchase(expenses,inventoryPurchaseList.value!!)
                 }
@@ -228,9 +231,9 @@ class PurchaseViewModel(application: Application,
                 val cleanedText = totalTransSum.value?.replace("[Rp,.\\s]".toRegex(), "")
                 expenses.expense_ammount=cleanedText?.toInt()?: 0
                 expenses.expense_name="Bayar ${suplierName.value}"
+                expenses.needsSyncs=1
                 updatePurchasesAndExpense(expenses,inventoryPurchaseList.value!!)
             }
-
         }
     }
     fun onBtnSimppanClick(){
@@ -256,6 +259,8 @@ class PurchaseViewModel(application: Application,
         item.suplierId=suplierDummy.value?.find { it.suplierName==suplierName.value }?.id ?: null
         item.purchaseDate= Date()
         item.expensesId=id
+        item.iPCloudId= System.currentTimeMillis()
+        item.needsSyncs=1
         inventoryList.add(item)
         _inventoryPurchaseList.value=inventoryList
         Log.i("SavePruchaseProbs","addItemToList pId: $inventoryPurchaseId")
@@ -283,6 +288,8 @@ class PurchaseViewModel(application: Application,
                     subDetail.net=i.net
                     subDetail.ket
                     subDetail.ref=UUID.randomUUID().toString()
+                    //subDetail.dWCloudId= System.currentTimeMillis()
+                    subDetail.needsSyncs=1
                     subDetailList.add(subDetail)
                     //update or insert detail
                     val inventoryLog=InventoryLog()
@@ -296,6 +303,8 @@ class PurchaseViewModel(application: Application,
                     inventoryLog.isi=i.net
                     inventoryLog.pcs=i.batchCount.toInt()
                     inventoryLog.barangLogKet="PENDING"
+                    inventoryLog.iLCloudId=System.currentTimeMillis()
+                    inventoryLog.needsSyncs=1
                     logList.add(inventoryLog)
                 }
             }
@@ -408,6 +417,7 @@ class PurchaseViewModel(application: Application,
         viewModelScope.launch {
             val expenseCategory= ExpenseCategory()
             expenseCategory.expense_category_name=categoryName
+            expenseCategory.eCCloudId=System.currentTimeMillis()
             insertExpensesCategory(expenseCategory)
             getAllexpenseCategory()
         }
@@ -417,6 +427,7 @@ class PurchaseViewModel(application: Application,
             val expenseCategory= ExpenseCategory()
             expenseCategory.id =category.id
             expenseCategory.expense_category_name=category.categoryName
+            expenseCategory.needsSyncs=1
             updateExpensesCategory(expenseCategory)
         }
     }
@@ -447,6 +458,8 @@ class PurchaseViewModel(application: Application,
             expenses.expense_date=expenseDate
             expenses.expense_ref=UUID.randomUUID().toString()
             expenses.expense_category_id=catId?:0
+            expenses.expenseCloudId=System.currentTimeMillis()
+            expenses.needsSyncs=1
             //Log.i(tagg,"date $expenseDate")
             insertExpense(expenses)
 
@@ -464,6 +477,7 @@ class PurchaseViewModel(application: Application,
             expenses.expense_ammount=expensesM.expense_ammount
             expenses.expense_ref=expensesM.expense_ref!!
             expenses.expense_date=expensesM.date
+            expenses.needsSyncs=1
             updateExpenseToDao(expenses)
             updateRv4()
         }

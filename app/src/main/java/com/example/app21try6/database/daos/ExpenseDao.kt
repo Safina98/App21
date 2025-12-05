@@ -34,7 +34,8 @@ interface ExpenseDao {
             AND(:selectedYear IS NULL OR strftime('%Y', e.expense_date) = :selectedYear)
           AND (:selectedMonth IS NULL OR strftime('%m', e.expense_date) = :selectedMonth)
           ORDER BY expense_date DESC
-    """)
+    """
+    )
     suspend fun getAllExpense(selectedMonth: String?, selectedYear: String?, ceId:Int?): List<DiscountAdapterModel>
     
     @Query("""SELECT
@@ -50,7 +51,8 @@ interface ExpenseDao {
             WHERE ip.subProductName LIKE '%' || :name || '%' 
              AND(:selectedYear IS NULL OR strftime('%Y', e.expense_date) = :selectedYear)
           AND (:selectedMonth IS NULL OR strftime('%m', e.expense_date) = :selectedMonth)
-            """)
+            """
+    )
     fun getExpenseByQuery(name: String, selectedMonth: String?,selectedYear: String?): List<DiscountAdapterModel>
 
     @Query("DELETE FROM expenses_table WHERE id=:id")

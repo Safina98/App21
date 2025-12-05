@@ -39,6 +39,7 @@ class DiscountRepository(
             discountDao.getDiscountIdByName(discName)
         }
     }
+
     //.................................DiscountTrans/................................................
     fun getTransactionTotalDiscounts(id:Int): LiveData<Double> {
         return discountTransDao.getTotalDiscountBySumId(id)
@@ -68,6 +69,8 @@ class DiscountRepository(
     suspend fun getDiscountTransactionList(id:Int):List<DiscountTransaction>{
         return withContext(Dispatchers.IO) { discountTransDao.getDiscountListBySumId(id) }
     }
+
+
     //..................................Payment....................................................../
     fun getTransactionPayments(id:Int):LiveData<List<PaymentModel>>{
         return paymentDao.selectPaymentModelBySumId(id)
@@ -93,6 +96,8 @@ class DiscountRepository(
             paymentDao.insert(payment)
         }
     }
+
+
     //..................................CustomerDao.............................................../
     fun getAllCustomers():LiveData<List<CustomerTable>>{
         return customerDao.allCustomer()
@@ -107,6 +112,5 @@ class DiscountRepository(
             customerDao.getIdByName(name)
         }
     }
-
 
 }
