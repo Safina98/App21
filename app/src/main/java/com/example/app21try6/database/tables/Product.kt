@@ -1,9 +1,6 @@
 package com.example.app21try6.database.tables
 
 import androidx.room.*
-import com.example.app21try6.database.tables.Category
-import com.example.app21try6.database.tables.Brand
-import com.example.app21try6.database.tables.DiscountTable
 
 @Entity(tableName = "product_table",
         foreignKeys = [
@@ -23,12 +20,12 @@ import com.example.app21try6.database.tables.DiscountTable
                         childColumns = ["discountId"],
                         onDelete = ForeignKey.SET_NULL,
                         onUpdate = ForeignKey.CASCADE),
-
         ]
 )
 data class Product(
-    @PrimaryKey(autoGenerate = true)
-        var product_id:Int = 0,
+    @PrimaryKey
+    @ColumnInfo(name = "productCloudId")
+        var productCloudId: Long = 0,
     @ColumnInfo(name="product_name")
         var product_name:String = "emtpy",
     @ColumnInfo(name="product_price")
@@ -54,12 +51,11 @@ data class Product(
         var purchasePrice:Int?=null,
     @ColumnInfo(name="purchaseUnit")
         var puchaseUnit:String?=null,
-    @ColumnInfo(name = "alternate_capital") //newly added
+    @ColumnInfo(name = "alternate_capital")
         var alternate_capital:Double = 0.0,
     @ColumnInfo(name="is_deleted")
-    var isDeleted: Boolean = false, //newly added cloumn
-    @ColumnInfo(name = "productCloudId")
-    var productCloudId: Long = 0L,//newly added cloumn
+    var isDeleted: Boolean = false,
+
     @ColumnInfo(name="needs_syncs")
-    var needsSyncs:Int=1//newly added cloumn
+    var needsSyncs:Int=1
 )

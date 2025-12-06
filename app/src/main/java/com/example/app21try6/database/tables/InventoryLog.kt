@@ -21,8 +21,8 @@ import java.util.Date
         ),
         ForeignKey(
             entity = Product::class,
-            parentColumns = ["product_id"],
-            childColumns = ["productId"],
+            parentColumns = ["productCloudId"],
+            childColumns = ["productCloudId"],
             onDelete = ForeignKey.SET_NULL,
             onUpdate = ForeignKey.SET_NULL
         ),
@@ -51,8 +51,8 @@ data class InventoryLog(
     @ColumnInfo(name="brandId")
     var brandId: Long? =null,
     // product table
-    @ColumnInfo(name="productId")
-    var productId: Int? = null,
+    @ColumnInfo(name="productCloudId")
+    var productCloudId: Long? = null,
     @ColumnInfo(name="subProductId")
     var subProductId: Int? = null,
     @ColumnInfo(name="detailWarnaRef")

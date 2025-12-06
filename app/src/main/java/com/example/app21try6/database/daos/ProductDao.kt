@@ -8,6 +8,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.tables.Product
+import com.example.app21try6.database.tables.TransactionDetail
 
 @Dao
 interface ProductDao {
@@ -15,50 +16,35 @@ interface ProductDao {
     fun insert(product: Product)
     @Update
     fun update(product: Product)
-    @Query("SELECT product_id as id,product_name as name,brand_code as parentId from product_table WHERE (:brandCloudId_ IS NULL OR brand_code = :brandCloudId_)")
+    @Query("SELECT productCloudId as id,product_name as name,brand_code as parentId from product_table WHERE (:brandCloudId_ IS NULL OR brand_code = :brandCloudId_)")
     fun getAll(brandCloudId_:Long?): List<BrandProductModel>
 // todo delete later
-@Query("""
-        UPDATE sub_table
-        SET cath_code = (
-            SELECT product_table.cath_code
-            FROM product_table
-            WHERE product_table.product_id = sub_table.product_code
-        )
-        WHERE EXISTS (
-            SELECT 1 FROM product_table
-            WHERE product_table.product_id = sub_table.product_code
-        )
-    """)
-fun updateSubCathCodeFromProduct()
-
 
     @Query("""
-        UPDATE sub_table
-        SET brand_code = (
-            SELECT product_table.brand_code
-            FROM product_table
-            WHERE product_table.product_id = sub_table.product_code
-        )
-        WHERE EXISTS (
-            SELECT 1 FROM product_table
-            WHERE product_table.product_id = sub_table.product_code
-        )
-    """)
-    fun updateSubBrandCodeFromProduct()
+    SELECT *
+    FROM product_table
+    WHERE productCloudId IN (
+        SELECT productCloudId
+        FROM product_table
+        GROUP BY productCloudId
+        HAVING COUNT(productCloudId) > 1
+    )
+    ORDER BY productCloudId
+""")
+    fun getPriductsWithDuplicateCloudIds(): List<Product>
     @Transaction
     fun updateSubForeignKeysFromProduct() {
-        updateSubCathCodeFromProduct()
-        updateSubBrandCodeFromProduct()
+       // updateSubCathCodeFromProduct()
+        //updateSubBrandCodeFromProduct()
     }
     //@Query("SELECT year as year_n,month as month_n,month_number as month_nbr, month as nama,day as day_n,day_name as day_name,SUM(total_income) as total FROM SUMMARY_TABLE  WHERE year = :year_  GROUP BY month ORDER BY month_nbr ASC")
 
-    @Query("SELECT * FROM product_table WHERE product_id =:id")
-    fun getProductById(id:Int):Product
+    @Query("SELECT * FROM product_table WHERE productCloudId =:id")
+    fun getProductById(id:Long):Product
 
 
-    @Query("SELECT brand_code FROM product_table WHERE product_id =:id")
-    fun getBrandIdByProductId(id:Int?):Long?
+    @Query("SELECT brand_code FROM product_table WHERE productCloudId =:id")
+    fun getBrandIdByProductId(id:Long?):Long?
 
     @Query("SELECT * FROM product_table WHERE cath_code = :c_id_")
     fun getCategoriedProduct(c_id_:Long): LiveData<List<Product>>
@@ -78,8 +64,8 @@ fun updateSubCathCodeFromProduct()
     @Query("SELECT * FROM product_table")
     fun getAllProduct(): LiveData<List<Product>>
 
-    @Query("DELETE FROM product_table WHERE product_id= :id_")
-    fun delete(id_:Int)
+    @Query("DELETE FROM product_table WHERE productCloudId= :id_")
+    fun delete(id_:Long)
     @Query("INSERT INTO product_table (product_name,product_price,checkBoxBoolean,best_selling,brand_code, cath_code) VALUES (:product_name_,:product_price_,0,:best_selling_,(SELECT brandCloudId FROM brand_table WHERE brand_name = :brand_code_ LIMIT 1),(SELECT categoryCloudId FROM category_table WHERE category_name = :cath_code_ LIMIT 1))")
     fun inserProduct(product_name_:String,product_price_:Int, best_selling_:Boolean,brand_code_:String,cath_code_:String)
    // @Query("INSERT INTO brand_table (brand_name,cath_code) SELECT :brand_name_ as brand_name, (SELECT categoryCloudId FROM category_table WHERE category_name = :caht_name_ limit 1) as cath_code FROM brand_table WHERE NOT EXISTS(SELECT brand_name,cath_code FROM brand_table WHERE brand_name =:brand_name_ AND cath_code = (SELECT categoryCloudId FROM category_table WHERE category_name = :caht_name_ limit 1)) LIMIT 1 ")
@@ -91,9 +77,9 @@ fun updateSubCathCodeFromProduct()
     @Query("""
         UPDATE product_table
         SET productCloudId =:cloudId
-        WHERE product_id=:id
+        WHERE productCloudId=:id
     """)
-    fun assignProductCloudID(cloudId:Long,id:Int)
+    fun assignProductCloudID(cloudId:Long,id: Long)
 
     @Query("SELECT * FROM product_table")
     fun selectAllProductTable(): List<Product>

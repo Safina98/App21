@@ -25,11 +25,9 @@ import com.example.app21try6.database.tables.ExpenseCategory
 import com.example.app21try6.database.tables.Expenses
 import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.database.tables.InventoryPurchase
-import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.formatRupiah
 import com.example.app21try6.getMonthNumber
 import com.example.app21try6.statement.DiscountAdapterModel
-import com.example.app21try6.statement.expenses.tagg
 import com.example.app21try6.stock.brandstock.CategoryModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,7 +35,6 @@ import kotlinx.coroutines.withContext
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
-import kotlin.math.exp
 
 val tagp="PURCHASEPROBS"
 @RequiresApi(Build.VERSION_CODES.O)
@@ -296,8 +293,8 @@ class PurchaseViewModel(application: Application,
                     inventoryLog.detailWarnaRef=subDetail.ref
                     inventoryLog.barangLogDate=i.purchaseDate
                     inventoryLog.subProductId=i.subProductId
-                    inventoryLog.productId=getProductId(i.subProductId!!)
-                    inventoryLog.brandId=getBrandId(inventoryLog.productId?:0)
+                    inventoryLog.productCloudId =getProductId(i.subProductId!!)
+                    inventoryLog.brandId=getBrandId(inventoryLog.productCloudId ?:0)
                     inventoryLog.barangLogDate=i.purchaseDate
                     inventoryLog.barangLogRef=UUID.randomUUID().toString()
                     inventoryLog.isi=i.net
@@ -543,12 +540,12 @@ class PurchaseViewModel(application: Application,
             expenseCategoryDao.getECIdByName(name)
         }
     }
-    private suspend fun getBrandId(productId:Int?):Long?{
+    private suspend fun getBrandId(productId:Long?):Long?{
         return withContext(Dispatchers.IO){
             productDao.getBrandIdByProductId(productId)
         }
     }
-    private suspend fun getProductId(subId:Int?):Int?{
+    private suspend fun getProductId(subId:Int?):Long?{
         return withContext(Dispatchers.IO){
             subProductDao.getProductIdBySubId(subId)
         }

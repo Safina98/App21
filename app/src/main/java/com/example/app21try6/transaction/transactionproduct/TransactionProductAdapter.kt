@@ -38,7 +38,7 @@ class TransactionProductAdapter (
 
 class ProductTransDiffCallBack: DiffUtil.ItemCallback<Product>(){
     override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
-        return oldItem.product_id==oldItem.product_id
+        return oldItem.productCloudId ==oldItem.productCloudId
     }
     override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
         return oldItem==newItem

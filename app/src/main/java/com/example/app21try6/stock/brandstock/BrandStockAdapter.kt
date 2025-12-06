@@ -16,7 +16,7 @@ import com.example.app21try6.databinding.ItemListBrandBinding
 class BrandStockAdapter(
     val brandListener:BrandStockListener,
     val longListener: BrandStockLongListener,
-    var selectedItemId:Int?,
+    var selectedItemId:Long?,
     val context: Context
 ):ListAdapter<BrandProductModel,BrandStockAdapter.MyViewHolder>(BrandStockDiffCallback()){
     class MyViewHolder private constructor(val binding: ItemListBrandBinding):RecyclerView.ViewHolder(binding.root){

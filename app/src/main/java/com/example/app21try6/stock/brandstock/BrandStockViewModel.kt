@@ -27,7 +27,7 @@ import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
-import java.util.UUID
+
 //todo delete bookkeeping repositories and transaction repository
 class BrandStockViewModel(
     private val repository: StockRepositories,
@@ -195,7 +195,7 @@ class BrandStockViewModel(
 
             for (j in all_item.value!!){
                 //bw.newLine()   0                  1        2           3           4                   5           6               7           8               9          10              11          12          13              14              15                      16
-                var content = "${j.category},${j.brand},${j.product},${j.price},${j.bestSelling},${j.subProduct},${j.roll_u},${j.roll_b_t},${j.roll_s_t},${j.roll_k_t},${j.roll_b_g},${j.roll_s_g},${j.roll_k_g},${j.capital},${j.defaultNet},${j.alternate_capital},${j.alternate_price}"
+                var content = "${j.category},${j.brand},${j.product},${j.price},${j.bestSelling},${j.subProduct},${j.roll_u},${j.capital},${j.defaultNet},${j.alternate_capital},${j.alternate_price}"
                 bw.write(content)
                 bw.newLine()
             }
@@ -239,7 +239,7 @@ fun updateSubTable(){
     fun updateBrand(brandBpModel: BrandProductModel, ctgName:String){ uiScope.launch {
         val brand=Brand()
         brand.brand_name=brandBpModel.name
-        brand.brandCloudId=brandBpModel.brandId?: System.currentTimeMillis()
+        brand.brandCloudId=brandBpModel.id?: System.currentTimeMillis()
         brand.cath_code=repository.getCategoryIdByName(ctgName)
         repository.updateBrand(brand)
         Log.i("UpdateBrand","${brand.brand_name} ${brand.cath_code}")
@@ -247,7 +247,7 @@ fun updateSubTable(){
     } }
 
     fun deleteBrand(brandBpModel: BrandProductModel){ uiScope.launch {
-        repository.deleteBrand(brandBpModel.brandId?:0L)
+        repository.deleteBrand(brandBpModel.id?:0L)
         updateRv()
     } }
 
@@ -271,7 +271,7 @@ fun updateSubTable(){
             _productBpModelList.value=list
         }
     }
-    fun getLongClickedProduct(id:Int){
+    fun getLongClickedProduct(id:Long){
         viewModelScope.launch {
             val product= repository.getProductById(id)
             _product.value=product
@@ -309,7 +309,7 @@ fun updateSubTable(){
         viewModelScope.launch {
             val product=Product()
             product.product_name=(productName.value?:"").uppercase().trim()
-            product.brand_code = selectedBrandBpModel.value!!.brandId?:0L
+            product.brand_code = selectedBrandBpModel.value!!.id?:0L
             product.product_price = productPice.value?:0
             product.cath_code = ctgId.value?.toLong()?:0L
             product.product_capital = productCapital.value?:0
@@ -328,10 +328,10 @@ fun updateSubTable(){
                      repository.insertProduct(product)
                 }
                 else{
-                    product.product_id=_product.value!!.product_id
+                    product.productCloudId =_product.value!!.productCloudId
                     updateProduct(product,"")
                 }
-                updateProductRv(selectedBrandBpModel.value?.brandId)
+                updateProductRv(selectedBrandBpModel.value?.id)
                 onNavigateBackToBrandStock()
             }else{
                 Toast.makeText(getApplication(),"kategori atau brand tidak valid",Toast.LENGTH_SHORT).show()

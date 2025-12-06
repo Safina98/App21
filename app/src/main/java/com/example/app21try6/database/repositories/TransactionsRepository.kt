@@ -57,7 +57,7 @@ class TransactionsRepository(application: Application) {
     fun getStockModel(): LiveData<List<StockModel>> {
         return transDetailDao.getTransactionDetails()
     }
-    fun getTransSelectModelLive(productId: Int, sum_id: Long): LiveData<List<TransSelectModel>> {
+    fun getTransSelectModelLive(productId: Long, sum_id: Long): LiveData<List<TransSelectModel>> {
         Log.i("LiveDataProbs","getTransSelectModelLive sumId: $sum_id")
         return transDetailDao.getSubProductMLive(productId, sum_id)
     }

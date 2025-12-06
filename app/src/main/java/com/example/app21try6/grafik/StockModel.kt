@@ -3,7 +3,7 @@ package com.example.app21try6.grafik
 data class StockModel(
     var year:Int,
     var month:String,
-    var product_id:Int?,
+    var productCloudId: Long?,
     var sub_id:Int?,
     var sub_name:String?,
     var item_name:String,

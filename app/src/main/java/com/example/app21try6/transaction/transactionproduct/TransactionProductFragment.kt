@@ -52,10 +52,10 @@ class TransactionProductFragment : Fragment() {
 
         val adapter = TransactionProductAdapter(ProductTransListener {
             //viewModel.getTransModel(it.product_id)
-            viewModel.setProductId(it.product_id)
+            viewModel.setProductId(it.productCloudId)
             //viewModel.saveSelectedItemId(it.product_id)
-            viewModel.saveSelectedItemPosition(it.product_id)
-            viewModel.onNavigatetoTransSelect(it.product_id.toString())
+            viewModel.saveSelectedItemPosition(it.productCloudId)
+            viewModel.onNavigatetoTransSelect(it.productCloudId.toString())
 
         })
         binding.transproductRv.adapter  = adapter

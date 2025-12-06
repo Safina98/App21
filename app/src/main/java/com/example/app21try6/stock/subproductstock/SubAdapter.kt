@@ -45,8 +45,8 @@ class SubAdapter (val code: Long,
             binding.stokTxt.text = item.roll_u.toString()
             binding.colorTxt.text = item.warna
             binding.ketTxt.text = item.ket
-            binding.textStokToko.text = item.roll_bt.toString()+"B + "+item.roll_st+"S + "+item.roll_kt+"K"
-            binding.textStokGudang.text = item.roll_bg.toString()+"BG + "+item.roll_sg+"SG + "+item.roll_kg+"KG"
+            binding.textStokToko.text = ""
+            binding.textStokGudang.text = ""
             binding.substockCheckbox.visibility=View.GONE
             binding.longListener = longListener
             binding.plusListener = plusListener

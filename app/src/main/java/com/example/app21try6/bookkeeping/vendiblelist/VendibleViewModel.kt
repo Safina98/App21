@@ -93,7 +93,7 @@ class VendibleViewModel(
         }
     }
 
-    fun deleteItemVendible(item_id:Int){ uiScope.launch { stockRepo.deleteProduct(item_id)} }
+    fun deleteItemVendible(item_id:Long){ uiScope.launch { stockRepo.deleteProduct(item_id)} }
     fun updateVendible(product: Product){ uiScope.launch { stockRepo.updateProduct(product) } }
     //////////////////////////////////////////////SUSPEND///////////////////////////////////////////////
 

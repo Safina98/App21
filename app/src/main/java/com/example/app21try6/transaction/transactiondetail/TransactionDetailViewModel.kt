@@ -501,7 +501,7 @@ class TransactionDetailViewModel (
             // Note: date is not part of DetailWarnaTable so it's omitted
         )
     }
-    fun createInventoryLog(detailWarnaTable: DetailWarnaTable, batchCount:Double, productId:Int, brandId: Long, ket:String): InventoryLog {
+    fun createInventoryLog(detailWarnaTable: DetailWarnaTable, batchCount:Double, productId: Long, brandId: Long, ket:String): InventoryLog {
         val inventoryLog= InventoryLog()
         inventoryLog.detailWarnaRef=detailWarnaTable.ref
         inventoryLog.subProductId=detailWarnaTable.subId
@@ -510,7 +510,7 @@ class TransactionDetailViewModel (
         inventoryLog.barangLogKet=ket
         inventoryLog.barangLogDate= Date()
         inventoryLog.barangLogRef=UUID.randomUUID().toString()
-        inventoryLog.productId=productId
+        inventoryLog.productCloudId =productId
         inventoryLog.brandId=brandId
         return inventoryLog
     }
@@ -549,7 +549,7 @@ class TransactionDetailViewModel (
                         day_name = transSum.value!!.trans_date.toString()
                         item_name = product?.product_name ?: it.trans_item_name
                         sub_id = it.sub_id
-                        product_id = product?.product_id
+                        productCloudId = product?.productCloudId
                         price = it.trans_price.toDouble()
                         total_income = it.total_price
                         product_capital = (product?.product_capital ?: 0.0).toInt()

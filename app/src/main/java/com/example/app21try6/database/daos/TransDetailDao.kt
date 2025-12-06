@@ -32,10 +32,10 @@ interface TransDetailDao {
 
 
     @Query("""
-    SELECT td.*, p.product_id, p.product_name,p.discountId as discount_id, p.product_price as product_price
+    SELECT td.*, p.productCloudId, p.product_name,p.discountId as discount_id, p.product_price as product_price
     FROM trans_detail_table td
     INNER JOIN sub_table sp ON td.sub_id = sp.sub_id
-    INNER JOIN product_table p ON sp.product_code = p.product_id
+    INNER JOIN product_table p ON sp.productCloudId = p.productCloudId
     WHERE td.tSCloudId = :transactionSummaryId
 """)
     fun getTransactionDetailsWithProductList(transactionSummaryId: Long): List<TransactionDetailWithProduct>?
@@ -79,10 +79,10 @@ interface TransDetailDao {
 
             "t.qty as qty,t.tDCloudId as trans_detail_id" +
             " FROM sub_table s" +
-            " JOIN product_table p ON (S.product_code=P.product_id) " +
-            " LEFT OUTER JOIN trans_detail_table t ON (S.sub_name = T.trans_item_name and T.tSCloudId =:tSCloudId_) WHERE s.product_code =:productId" +
+            " JOIN product_table p ON (S.productCloudId=P.productCloudId) " +
+            " LEFT OUTER JOIN trans_detail_table t ON (S.sub_name = T.trans_item_name and T.tSCloudId =:tSCloudId_) WHERE s.productCloudId =:productId" +
             " ORDER BY s.sub_name ASC,t.tDCloudId ASC")
-    fun getSubProductMLive(productId:Int,tSCloudId_: Long):LiveData<List<TransSelectModel>>
+    fun getSubProductMLive(productId:Long,tSCloudId_: Long):LiveData<List<TransSelectModel>>
 
 
     @Query("""
@@ -94,7 +94,7 @@ interface TransDetailDao {
             category_table.category_name AS category_name,
             product_table.product_name AS product_name,
             sub_table.sub_name AS sub_name,
-            product_table.product_id AS product_id,
+            product_table.productCloudId AS productCloudId,
             trans_detail_table.sub_id AS sub_id,
             trans_detail_table.product_capital AS product_capital,
             trans_detail_table.trans_price AS price,
@@ -102,7 +102,7 @@ interface TransDetailDao {
         FROM trans_detail_table
         JOIN sub_table ON trans_detail_table.sub_id = sub_table.sub_id
         JOIN category_table ON sub_table.cath_code = category_table.categoryCloudId
-        JOIN product_table ON sub_table.product_code = product_table.product_id
+        JOIN product_table ON sub_table.productCloudId = product_table.productCloudId
     """)
     fun getTransactionDetails(): LiveData<List<StockModel>>
 
@@ -115,7 +115,7 @@ interface TransDetailDao {
             category_table.category_name AS category_name,
             product_table.product_name AS product_name,
             sub_table.sub_name AS sub_name,
-            product_table.product_id AS product_id,
+            product_table.productCloudId AS productCloudId,
             trans_detail_table.sub_id AS sub_id,
             trans_detail_table.product_capital AS product_capital,
             trans_detail_table.trans_price AS price,
@@ -123,7 +123,7 @@ interface TransDetailDao {
         FROM trans_detail_table
         JOIN sub_table ON trans_detail_table.sub_id = sub_table.sub_id
         JOIN category_table ON sub_table.cath_code = category_table.categoryCloudId
-        JOIN product_table ON sub_table.product_code = product_table.product_id
+        JOIN product_table ON sub_table.productCloudId = product_table.productCloudId
     """)
     fun getTransactionDetailsList(): List<StockModel>
 

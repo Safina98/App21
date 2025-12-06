@@ -12,7 +12,7 @@ import com.example.app21try6.database.repositories.TransactionsRepository
 
 class SubViewModelFactory(private val stockRepo: StockRepositories,
                           private val transactionsRepo: TransactionsRepository,
-                          private val product_id:Int,
+                          private val product_id:Long,
                           private val brandId:Long,
                           private val ctgId:Long,
                           private val tSId:Long,

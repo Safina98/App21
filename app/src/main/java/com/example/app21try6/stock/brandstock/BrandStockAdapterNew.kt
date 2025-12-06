@@ -46,7 +46,7 @@ class BrandStockAdapterNew(
 
     override fun onBindViewHolder(holder:MyViewHolder, position: Int) {
         val item = getItem(position)
-        val isSelected = item.brandId == selectedItemId
+        val isSelected = item.id == selectedItemId
 
         holder.bind(getItem(position),brandListener,longListener,isSelected,context)
     }
@@ -54,7 +54,7 @@ class BrandStockAdapterNew(
 }
 class BrandStockDiffCallbackNew:DiffUtil.ItemCallback<BrandProductModel>(){
     override fun areItemsTheSame(oldItem: BrandProductModel, newItem: BrandProductModel): Boolean {
-        return oldItem.brandId== newItem.brandId
+        return oldItem.id== newItem.id
     }
 
     override fun areContentsTheSame(oldItem: BrandProductModel, newItem: BrandProductModel): Boolean {

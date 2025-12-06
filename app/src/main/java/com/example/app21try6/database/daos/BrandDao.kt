@@ -25,8 +25,7 @@ interface BrandDao {
     fun markSynced(id: Long)
 
     @Query("""
-    SELECT brandCloudId AS brandId,
-           0 AS id,
+    SELECT brandCloudId AS id,
            brand_name AS name,
            cath_code AS parentId
     FROM brand_table
@@ -49,22 +48,29 @@ interface BrandDao {
     @Query("SELECT cath_code FROM brand_table WHERE brandCloudId=:id")
     fun getCtgIdByBrandId(id:Long?): Long?
 
-    @Query("SELECT sub_name as subProduct, " +
-            "warna as warna, " +
-            "roll_u as  roll_u," +
-            " roll_b_t as roll_b_t, " +
-            "roll_s_t as roll_s_t," +
-            "roll_k_t as roll_k_t," +
-            "roll_b_g as roll_b_g," +
-            "roll_s_g as roll_s_g," +
-            "roll_k_g as roll_k_g," +
-            "product_name as product, " +
-            "product_price as price, product_capital as capital," +
-            "best_selling as bestSelling," +
-            "default_net as defaultNet,alternate_capital as alternate_capital,alternate_price as alternate_price,  "+
-
-            "brand_name as brand, category_name as category FROM sub_table INNER JOIN PRODUCT_TABLE ON product_id = sub_table.product_code INNER JOIN brand_table ON brandCloudId = sub_table.brand_code INNER JOIN category_table ON categoryCloudId = sub_table.cath_code")
-    fun getExportedData():LiveData<List<ExportModel>>
+    @Query("""
+    SELECT 
+        sub_table.sub_name AS subProduct,
+        sub_table.warna AS warna,
+        sub_table.roll_u AS roll_u,
+        product_table.product_name AS product,
+        product_table.product_price AS price,
+        product_table.product_capital AS capital,
+        product_table.best_selling AS bestSelling,
+        product_table.default_net AS defaultNet,
+        product_table.alternate_capital AS alternate_capital,
+        product_table.alternate_price AS alternate_price,
+        brand_table.brand_name AS brand,
+        category_table.category_name AS category
+    FROM sub_table
+    INNER JOIN product_table 
+        ON product_table.productCloudId = sub_table.productCloudId
+    INNER JOIN brand_table 
+        ON brand_table.brandCloudId = sub_table.brand_code
+    INNER JOIN category_table 
+        ON category_table.categoryCloudId = sub_table.cath_code
+""")
+    fun getExportedData(): LiveData<List<ExportModel>>
 
     @Query("DELETE FROM brand_table WHERE brandCloudId = :id_")
     fun deleteBrand(id_: Long)

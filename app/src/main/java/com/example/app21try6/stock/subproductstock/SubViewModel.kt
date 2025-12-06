@@ -24,7 +24,7 @@ import java.util.UUID
 class SubViewModel (
     private val stockRepo:StockRepositories,
     private val transRepository: TransactionsRepository,
-    private val product_id:Int,
+    private val product_id:Long,
     private val parameterBrandId:Long,
     private val ctgId:Long,
     private val tSId: Long,
@@ -137,14 +137,7 @@ class SubViewModel (
     private suspend fun resetSupProductSuspend(pList:List<SubProduct>){
         withContext(Dispatchers.IO){
             for(p in pList){
-                p.roll_bg=0
-                p.roll_bt=0
-                p.roll_kg=0
-                p.roll_kt=0
-                p.roll_sg=0
-                p.roll_st=0
                 p.roll_u=0
-
                 stockRepo.updateSubProduct(p)
                 stockRepo.deleteDetailWarnaBySubId(p.sub_id)
             }
@@ -154,7 +147,7 @@ class SubViewModel (
         uiScope.launch {
             if (subProduct_name!=""){
                 val subProduct= SubProduct()
-                subProduct.product_code = product_id
+                subProduct.productCloudId = product_id
                 subProduct.sub_name = subProduct_name
                 subProduct.brand_code = parameterBrandId
                 subProduct.cath_code = ctgId
@@ -257,7 +250,7 @@ class SubViewModel (
             // Note: date is not part of DetailWarnaTable so it's omitted
         )
     }
-    fun createInventoryLog(detailWarnaTable: DetailWarnaTable,batchCount:Double,productId:Int,brandId:Long,ket:String):InventoryLog{
+    fun createInventoryLog(detailWarnaTable: DetailWarnaTable,batchCount:Double,productId:Long,brandId:Long,ket:String):InventoryLog{
         val inventoryLog=InventoryLog()
         inventoryLog.detailWarnaRef=detailWarnaTable.ref
         inventoryLog.subProductId=detailWarnaTable.subId
@@ -266,7 +259,7 @@ class SubViewModel (
         inventoryLog.barangLogKet=ket
         inventoryLog.barangLogDate= Date()
         inventoryLog.barangLogRef=UUID.randomUUID().toString()
-        inventoryLog.productId=productId
+        inventoryLog.productCloudId =productId
         inventoryLog.brandId=brandId
         inventoryLog.iLCloudId=System.currentTimeMillis()
         inventoryLog.needsSyncs=1

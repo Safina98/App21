@@ -129,7 +129,7 @@ class BrandStockFragment : Fragment() {
 
         /////////////////////////////////////Initalizing Adapter/////////////////////////////////
         //BRAND ADAPTER
-        val adapter = BrandStockAdapterNew(
+        val adapter = BrandStockAdapter(
             BrandStockListener {
                 viewModel.getBrandIdByName(it)
 
@@ -155,7 +155,7 @@ class BrandStockFragment : Fragment() {
             })
 
         //Product adapter
-        val adapterProduct = BrandStockAdapter(
+        val adapterProduct = BrandStockAdapterNew(
             BrandStockListener {
                 viewModel.onProductCLick(arrayOf(it.id.toString(),it.parentId.toString(),viewModel.selectedBrandBpModel.value?.parentId.toString(),"0",it.name,"-1"))
             }, BrandStockLongListener {
@@ -244,8 +244,8 @@ class BrandStockFragment : Fragment() {
                 binding.txtBrand?.visibility=View.VISIBLE
                 binding.rvProductStock.visibility=View.VISIBLE
             }
-            viewModel.updateProductRv(it?.brandId)
-            adapter.selectedItemId = it?.brandId  // Pass the selected ID to the adapter
+            viewModel.updateProductRv(it?.id)
+            adapter.selectedItemId = it?.id // Pass the selected ID to the adapter
             adapter.notifyDataSetChanged()
         }
         //Obsserve add fab

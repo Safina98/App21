@@ -34,11 +34,11 @@ class TransactionSelectViewModel(
     var transSelectModel = MutableLiveData<List<TransSelectModel>>()
     val trans_select_model :LiveData<List<TransSelectModel>> get() = transSelectModel
 
-    private var _productId = MutableLiveData<Int?>(-1)
-    val productId: LiveData<Int?> get() = _productId
+    private var _productId = MutableLiveData<Long?>(-1L)
+    val productId: LiveData<Long?> get() = _productId
 
     val trans_select_modelNew :LiveData<List<TransSelectModel>> = _productId.switchMap { productId ->
-        if (productId == null || productId == -1 || _sumId.value==null || _sumId.value==-1L) {
+        if (productId == null || productId == -1L || _sumId.value==null || _sumId.value==-1L) {
             AbsentLiveData.create()
         } else {
             Log.i("LiveDataProbs","TransProductFragment SumId ${sum_id}")
@@ -121,7 +121,7 @@ class TransactionSelectViewModel(
         transSelectModel.value =  emptyList()
     }
     /////////////////////////////////////old functions///////////////////////////////////////////
-    fun setProductId(id:Int){
+    fun setProductId(id:Long){
         _productId.value = id
     }
     fun setProductSumId(id:Long?){
@@ -133,8 +133,8 @@ class TransactionSelectViewModel(
         _selectedItemId = itemId
     }
 
-    fun saveSelectedItemPosition(itemId: Int) {
-        _selectedItemPosition = _unFilteredProduct.value?.sortedBy { it.product_name }?.indexOfFirst { it.product_id == itemId }
+    fun saveSelectedItemPosition(itemId: Long) {
+        _selectedItemPosition = _unFilteredProduct.value?.sortedBy { it.product_name }?.indexOfFirst { it.productCloudId == itemId }
             ?: 0
         Log.i("SelectedRvPos","selected position: ${_selectedItemPosition}")
     }

@@ -134,7 +134,7 @@ class StockRepositories (
     //delete brand
     suspend fun deleteBrand(id:Long){ withContext(Dispatchers.IO){ brandDao.deleteBrand(id) } }
     //get brand id by product id
-    suspend fun getBrandId(productId:Int?):Long?{ return withContext(Dispatchers.IO){ productDao.getBrandIdByProductId(productId) } }
+    suspend fun getBrandId(productId: Long?):Long?{ return withContext(Dispatchers.IO){ productDao.getBrandIdByProductId(productId) } }
     suspend fun getBrandIdByName(name:String,catCode:Long):Long?{return withContext(Dispatchers.IO){brandDao.getBrandIdbyName(name,catCode)} }
     suspend fun getBrandNameyId(id:Long):String{return withContext(Dispatchers.IO){brandDao.getBrandNameById(id)} }
 
@@ -146,7 +146,7 @@ class StockRepositories (
         }
     }
 
-    suspend fun assignCloudIdToProductTable(cloudId: Long, id: Int){
+    suspend fun assignCloudIdToProductTable(cloudId: Long, id: Long){
         withContext(Dispatchers.IO){
             productDao.assignProductCloudID(cloudId, id)
         }
@@ -187,7 +187,11 @@ class StockRepositories (
             detailWarnaDao.assignMerchandiseRetailCloudID(cloudId, id)
         }
     }
-
+    suspend fun getProductsWithDuplicateCloudIds(): List<Product> {
+        return withContext(Dispatchers.IO) {
+            productDao.getPriductsWithDuplicateCloudIds()
+        }
+    }
     suspend fun getAllMerchandiseRetailTable(): List<MerchandiseRetail> {
         return withContext(Dispatchers.IO) {
             detailWarnaDao.selectAllMerchandiseRetailTable()
@@ -195,7 +199,7 @@ class StockRepositories (
     }
 
 
-    suspend fun getProductById(id:Int):Product{
+    suspend fun getProductById(id:Long):Product{
         return withContext(Dispatchers.IO){productDao.getProductById(id)}
     }
 
@@ -225,12 +229,15 @@ class StockRepositories (
     }
    suspend fun insertTry(product: Product, brand: String, cath: String){ withContext(Dispatchers.IO){ productDao.inserProduct(product.product_name,product.product_price,product.bestSelling,brand,cath) } }
     //get product id by sub  id
-    suspend fun getProdutId(subId:Int):Int?{ return withContext(Dispatchers.IO){ subProductDao.getProductIdBySubId(subId) } }
+    suspend fun getProdutId(subId:Int):Long?{ return withContext(Dispatchers.IO){ subProductDao.getProductIdBySubId(subId) } }
     suspend fun updateProduct(product: Product){ withContext(Dispatchers.IO){ productDao.update(product) } }
-    suspend fun deleteProduct(id:Int){ withContext(Dispatchers.IO){ productDao.delete(id) } }
-    suspend fun insertProduct(product: Product){ withContext(Dispatchers.IO){ productDao.insert(product) } }
+    suspend fun deleteProduct(id:Long){ withContext(Dispatchers.IO){ productDao.delete(id) } }
+    suspend fun insertProduct(product: Product){
+        withContext(Dispatchers.IO){
+            product.productCloudId=System.currentTimeMillis()
+            productDao.insert(product) } }
 ////////////////////////////////////////////////SubProduct//////////////////////////////////////////
-    fun getSubProductLiveData(id:Int?,brandId: Long?): LiveData<List<SubProduct>> {
+    fun getSubProductLiveData(id:Long?,brandId: Long?): LiveData<List<SubProduct>> {
         return  subProductDao.getAll(id,brandId)
     }
     suspend fun updateSubProduct(subProduct: SubProduct){
@@ -373,13 +380,7 @@ class StockRepositories (
 
         val subProduct = SubProduct(
             sub_name = token[5].uppercase().trim(),
-            roll_u = token[6].toInt(),
-            roll_bt = token[7].toInt(),
-            roll_st = token[8].toInt(),
-            roll_kt = token[9].toInt(),
-            roll_bg = token[10].toInt(),
-            roll_sg = token[11].toInt(),
-            roll_kg = token[12].toInt()
+            roll_u = token[6].toInt()
         )
 
         val brandName = token[1].uppercase().trim()
@@ -394,8 +395,7 @@ class StockRepositories (
         )
         subProductDao.insertIfNotExist(
             subProduct.sub_name, subProduct.warna, subProduct.ket, subProduct.roll_u,
-            subProduct.roll_bt, subProduct.roll_st, subProduct.roll_kt, subProduct.roll_bg,
-            subProduct.roll_sg, subProduct.roll_kg, product.product_name, brandName, categoryName
+             product.product_name, brandName, categoryName
         )
     }
 

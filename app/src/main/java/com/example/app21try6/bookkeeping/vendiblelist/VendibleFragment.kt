@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
 import com.example.app21try6.database.tables.Product
-import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.databinding.FragmentVendibleBinding
@@ -46,8 +45,8 @@ class VendibleFragment : Fragment() {
             vendibleViewModel.onCheckBoxClicked(product, cb.isChecked)
         }, TextListener { view, vendible ->
 
-            datee.add(0, vendible.product_id.toString())
-            Toast.makeText(context, vendible.product_id.toString() + " " + vendible.product_name + " date[0] " + datee[0], Toast.LENGTH_SHORT).show()
+            datee.add(0, vendible.productCloudId.toString())
+            Toast.makeText(context, vendible.productCloudId.toString() + " " + vendible.product_name + " date[0] " + datee[0], Toast.LENGTH_SHORT).show()
             datee.add(1, vendible.brand_code.toString())
             datee.add(2, vendible.cath_code.toString())
             datee.add(3, date[0])
@@ -160,7 +159,7 @@ class VendibleFragment : Fragment() {
         builder.setMessage("Are you sure you want to Delete?")
                 .setCancelable(true)
                 .setPositiveButton("Yes") { dialog, id ->
-                    vendibleViewModel.deleteItemVendible(product.product_id)
+                    vendibleViewModel.deleteItemVendible(product.productCloudId)
                     Toast.makeText(context, "Deleted!!", Toast.LENGTH_SHORT).show()
                 }
                 .setNegativeButton("No") { dialog, id ->

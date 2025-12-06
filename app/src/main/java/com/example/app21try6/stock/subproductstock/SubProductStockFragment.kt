@@ -51,7 +51,7 @@ class SubProductStockFragment : Fragment() {
         val id = arguments?.let { SubProductStockFragmentArgs.fromBundle(it).productId }
         (activity as AppCompatActivity).supportActionBar?.title = id?.get(4)
         //id?.set(4,"0")
-        val productId=id?.get(0)?.toInt()
+        val productId=id?.get(0)?.toLong()
         val brandId=id?.get(1)?.toLong()
         val ctgId=id?.get(2)?.toLong()
         val tSId=id?.get(3)?.toLong()
