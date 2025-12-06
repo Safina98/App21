@@ -33,13 +33,23 @@ interface DetailWarnaDao {
     fun updateRetail(merchandiseRetail: MerchandiseRetail)
 
     @Query("""
+        UPDATE detail_warna_table
+        SET dWCloudId =:cloudId
+        WHERE id=:id
+    """)
+    fun assignDetailWarnaCloudID(cloudId:Long,id:Int)
+
+    @Query("SELECT * FROM detail_warna_table")
+    fun selectAllDetailWarnaTable(): List<DetailWarnaTable>
+
+    @Query("""
         UPDATE merchandise_table
         SET mRCloudId =:cloudId
         WHERE id=:id
     """)
     fun assignMerchandiseRetailCloudID(cloudId:Long,id:Int)
 
-    @Query("SELECT * FROM merchandise_table WHERE mRCloudId=0")
+    @Query("SELECT * FROM merchandise_table")
     fun selectAllMerchandiseRetailTable(): List<MerchandiseRetail>
 
     @Query("DELETE FROM detail_warna_table WHERE id=:id")
@@ -120,6 +130,7 @@ interface DetailWarnaDao {
             }
         }
     }
+
     @Transaction
     fun updateTransDetailAndRetail(merchandiseRetail: MerchandiseRetail,transactionDetail: TransactionDetail){
         updateRetail(merchandiseRetail)

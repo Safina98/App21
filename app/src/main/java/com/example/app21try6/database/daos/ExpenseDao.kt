@@ -58,4 +58,13 @@ interface ExpenseDao {
     @Query("DELETE FROM expenses_table WHERE id=:id")
     fun delete(id:Int)
 
+    @Query("""
+        UPDATE expenses_table
+        SET expenseCloudId =:cloudId
+        WHERE id=:id
+    """)
+    fun assignExpenseCloudID(cloudId:Long,id:Int)
+    
+    @Query("SELECT * FROM expenses_table")
+    fun selectAllExpenseTable(): List<Expenses>
 }

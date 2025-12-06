@@ -39,6 +39,17 @@ class DiscountRepository(
             discountDao.getDiscountIdByName(discName)
         }
     }
+    suspend fun assignCloudIdToDiscountTable(cloudId: Long, id: Int){
+        withContext(Dispatchers.IO){
+            discountDao.assignDiscountCloudID(cloudId, id)
+        }
+    }
+
+    suspend fun getAllDiscountTable(): List<DiscountTable> {
+        return withContext(Dispatchers.IO) {
+            discountDao.selectAllDiscountTable()
+        }
+    }
 
     //.................................DiscountTrans/................................................
     fun getTransactionTotalDiscounts(id:Int): LiveData<Double> {
@@ -70,6 +81,17 @@ class DiscountRepository(
         return withContext(Dispatchers.IO) { discountTransDao.getDiscountListBySumId(id) }
     }
 
+    suspend fun assignCloudIdToDiscountTransactionTable(cloudId: Long, id: Int){
+        withContext(Dispatchers.IO){
+            discountTransDao.assignDiscountTransactionCloudID(cloudId, id)
+        }
+    }
+
+    suspend fun getAllDiscountTransactionTable(): List<DiscountTransaction> {
+        return withContext(Dispatchers.IO) {
+            discountTransDao.selectAllDiscountTransactionTable()
+        }
+    }
 
     //..................................Payment....................................................../
     fun getTransactionPayments(id:Int):LiveData<List<PaymentModel>>{
@@ -97,6 +119,18 @@ class DiscountRepository(
         }
     }
 
+    suspend fun assignCloudIdToPaymentTable(cloudId: Long, id: Int){
+        withContext(Dispatchers.IO){
+            paymentDao.assignPaymentCloudID(cloudId, id)
+        }
+    }
+
+    suspend fun getAllPaymentTable(): List<Payment> {
+        return withContext(Dispatchers.IO) {
+            paymentDao.selectAllPaymentTable()
+        }
+    }
+
 
     //..................................CustomerDao.............................................../
     fun getAllCustomers():LiveData<List<CustomerTable>>{
@@ -110,6 +144,23 @@ class DiscountRepository(
     suspend fun getCustomerId(name:String):Int?{
         return withContext(Dispatchers.IO){
             customerDao.getIdByName(name)
+        }
+    }
+
+    suspend fun assignCloudIdToCustomerTable(cloudId: Long, id: Int){
+        withContext(Dispatchers.IO){
+            customerDao.assignCustomerCloudID(cloudId, id)
+        }
+    }
+
+    suspend fun getAllCustomerTable(): List<CustomerTable> {
+        return withContext(Dispatchers.IO) {
+            customerDao.selectAllCustomerTable()
+        }
+    }
+    suspend fun getCustomersWithDuplicateId(): List<CustomerTable> {
+        return withContext(Dispatchers.IO) {
+            customerDao.getCustomersWithDuplicateCloudId()
         }
     }
 

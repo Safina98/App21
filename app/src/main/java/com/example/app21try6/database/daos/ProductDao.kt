@@ -87,5 +87,15 @@ fun updateSubCathCodeFromProduct()
 
     @Query("INSERT INTO product_table (product_name,product_price,checkBoxBoolean,best_selling,product_capital,default_net,alternate_capital,alternate_price,brand_code,cath_code) SELECT :product_name_ as product_name,:product_price_ as product_price, 0 as checkBoxBoolean,:best_selling_ as best_selling,:product_capital as product_capital,:defaultNet as default_net,:alternate_capital as alternate_capital,:alternate_price as alternate_price,(SELECT brandCloudId FROM brand_table WHERE brand_name = :brand_code_ limit 1) as brand_code,(SELECT categoryCloudId FROM category_table WHERE category_name = :cath_code_ limit 1) as cath_code WHERE NOT EXISTS (SELECT 1 FROM product_table WHERE product_name = :product_name_)")
     fun insertIfNotExist(product_name_:String,product_price_:Int, product_capital:Int,defaultNet:Double,alternate_capital:Double,alternate_price:Double,best_selling_:Boolean,brand_code_:String,cath_code_:String)
+    
+    @Query("""
+        UPDATE product_table
+        SET productCloudId =:cloudId
+        WHERE product_id=:id
+    """)
+    fun assignProductCloudID(cloudId:Long,id:Int)
+
+    @Query("SELECT * FROM product_table")
+    fun selectAllProductTable(): List<Product>
 
 }

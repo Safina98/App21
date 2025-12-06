@@ -12,6 +12,7 @@ import com.example.app21try6.database.models.TracketailWarnaModel
 import com.example.app21try6.database.tables.DiscountTable
 import com.example.app21try6.database.tables.MerchandiseRetail
 import com.example.app21try6.database.tables.TransactionDetail
+import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.grafik.StockModel
 import com.example.app21try6.transaction.transactionactive.TransExportModel
 import com.example.app21try6.transaction.transactiondetail.TransactionDetailWithProduct
@@ -146,5 +147,28 @@ interface TransDetailDao {
              AND (:endDate IS NULL OR d.trans_detail_date <= :endDate)
     """)
     fun getTracketailWarnaModels(query: String,startDate:Date?,endDate:Date?): List<TracketailWarnaModel>
+
+    @Query("""
+        UPDATE trans_detail_table
+        SET tDCloudId =:cloudId
+        WHERE trans_detail_id=:id
+    """)
+    fun assignTransactionDetailCloudID(cloudId:Long,id:Long)
+
+    @Query("SELECT * FROM trans_detail_table")
+    fun selectAllTransactionDetailTable(): List<TransactionDetail>
+
+    @Query("""
+    SELECT *
+    FROM trans_detail_table
+    WHERE tDCloudId IN (
+        SELECT tDCloudId
+        FROM trans_detail_table
+        GROUP BY tDCloudId
+        HAVING COUNT(tDCloudId) > 1
+    )
+    ORDER BY tDCloudId
+""")
+    fun getTransactionDetailsWithDuplicateCloudIds(): List<TransactionDetail>
 
 }

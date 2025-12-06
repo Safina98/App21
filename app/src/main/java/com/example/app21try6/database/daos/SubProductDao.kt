@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.example.app21try6.database.models.SubWithPriceModel
+import com.example.app21try6.database.tables.CustomerTable
 import com.example.app21try6.database.tables.Payment
 import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.tables.SubProduct
@@ -97,4 +98,13 @@ interface SubProductDao {
         update(subProduct)
         updateTransItemName(subProduct.sub_id, subProduct.sub_name)
     }
+    @Query("""
+        UPDATE sub_table
+        SET sPCloudId =:cloudId
+        WHERE sub_id=:id
+    """)
+    fun assignSubProductCloudID(cloudId:Long,id:Int)
+
+    @Query("SELECT * FROM sub_table ")
+    fun selectAllSubProductTable(): List<SubProduct>
 }

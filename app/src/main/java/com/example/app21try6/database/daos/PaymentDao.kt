@@ -25,7 +25,15 @@ interface PaymentDao{
     @Query("SELECT SUM(payment_ammount) FROM paymen_table WHERE sum_id =:sumId")
     fun selectSumFragmentBySumId(sumId:Int):Int
 
+    @Query("""
+        UPDATE paymen_table
+        SET paymentCloudId =:cloudId
+        WHERE id=:id
+    """)
+    fun assignPaymentCloudID(cloudId:Long,id:Int)
 
+    @Query("SELECT * FROM paymen_table")
+    fun selectAllPaymentTable(): List<Payment>
 
     @Query("SELECT\n" +
             "    p.id,\n" +

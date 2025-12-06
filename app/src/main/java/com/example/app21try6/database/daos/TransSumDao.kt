@@ -3,6 +3,7 @@ package com.example.app21try6.database.daos
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.app21try6.database.models.TransSumModel
+import com.example.app21try6.database.tables.CustomerTable
 import com.example.app21try6.database.tables.DiscountTable
 import com.example.app21try6.database.tables.TransactionSummary
 import java.util.Date
@@ -162,5 +163,28 @@ interface TransSumDao {
     }
     @Query("SELECT * FROM trans_sum_table ORDER BY trans_date")
     fun getAllTransactionSumList():List<TransactionSummary>
+
+    @Query("""
+        UPDATE trans_sum_table
+        SET tSCloudId =:cloudId
+        WHERE sum_id=:id
+    """)
+    fun assignTransactionSummaryCloudID(cloudId:Long,id:Int)
+
+    @Query("SELECT * FROM trans_sum_table")
+    fun selectAllTransactionSummaryTable(): List<TransactionSummary>
+
+    @Query("""
+        SELECT *
+        FROM trans_sum_table
+        WHERE tSCloudId IN (
+            SELECT tSCloudId
+            FROM trans_sum_table
+            GROUP BY tSCloudId
+            HAVING COUNT(tSCloudId) > 1
+        )
+        ORDER BY tSCloudId
+    """)
+    fun getTransactionSummariesWithDuplicateCloudIds(): List<TransactionSummary>
 }
 

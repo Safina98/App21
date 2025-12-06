@@ -146,8 +146,53 @@ class StockRepositories (
         }
     }
 
+    suspend fun assignCloudIdToProductTable(cloudId: Long, id: Int){
+        withContext(Dispatchers.IO){
+            productDao.assignProductCloudID(cloudId, id)
+        }
+    }
 
+    suspend fun getAllProductTable(): List<Product> {
+        return withContext(Dispatchers.IO) {
+            productDao.selectAllProductTable()
+        }
+    }
 
+    suspend fun assignCloudIdToDetailWarnaTable(cloudId: Long, id: Int){
+        withContext(Dispatchers.IO){
+            detailWarnaDao.assignDetailWarnaCloudID(cloudId, id)
+        }
+    }
+
+    suspend fun getAllDetailWarnaTable(): List<DetailWarnaTable> {
+        return withContext(Dispatchers.IO) {
+            detailWarnaDao.selectAllDetailWarnaTable()
+        }
+    }
+
+    suspend fun assignCloudIdToSubProductTable(cloudId: Long, id: Int){
+        withContext(Dispatchers.IO){
+            subProductDao.assignSubProductCloudID(cloudId, id)
+        }
+    }
+
+    suspend fun getAllDSubProductTable(): List<SubProduct> {
+        return withContext(Dispatchers.IO) {
+            subProductDao.selectAllSubProductTable()
+        }
+    }
+
+    suspend fun assignCloudIdToMerchandiseRetailTable(cloudId: Long, id: Int){
+        withContext(Dispatchers.IO){
+            detailWarnaDao.assignMerchandiseRetailCloudID(cloudId, id)
+        }
+    }
+
+    suspend fun getAllMerchandiseRetailTable(): List<MerchandiseRetail> {
+        return withContext(Dispatchers.IO) {
+            detailWarnaDao.selectAllMerchandiseRetailTable()
+        }
+    }
 
 
     suspend fun getProductById(id:Int):Product{
@@ -299,7 +344,7 @@ class StockRepositories (
     ////////////////////////////CSV///////////////////////////////////////////////////
     suspend fun insertCSVBatch(tokensList: List<List<String>>) {
         categoryDao.performTransaction {
-            val batchSize = 100 // Define batch size
+            val batchSize = 100 // Define your batch size here
             for (i in 0 until tokensList.size step batchSize) {
                 val batch = tokensList.subList(i, minOf(i + batchSize, tokensList.size))
                 insertBatch(batch)

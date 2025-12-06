@@ -157,4 +157,14 @@ interface InventoryPurchaseDao {
         WHERE id=:id
     """)
     fun updatePurchaseDate(id: Int, date:Date)
+
+    @Query("""
+        UPDATE inventory_purchase_table
+        SET iPCloudId =:cloudId
+        WHERE id=:id
+    """)
+    fun assignInventoryPurchaseCloudID(cloudId:Long,id:Int)
+    
+    @Query("SELECT * FROM inventory_purchase_table")
+    fun selectAllInventoryPurchaseTable(): List<InventoryPurchase>
 }

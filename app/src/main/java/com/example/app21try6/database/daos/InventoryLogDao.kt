@@ -139,5 +139,14 @@ interface InventoryLogDao {
         Log.i("LOGPROBS","$list")
     }
 
+    @Query("""
+        UPDATE inventory_log_table
+        SET iLCloudId =:cloudId
+        WHERE id=:id
+    """)
+    fun assignInventoryLogCloudID(cloudId:Long,id:Int)
+
+    @Query("SELECT * FROM inventory_log_table")
+    fun selectAllInventoryLogTable(): List<InventoryLog>
 
 }

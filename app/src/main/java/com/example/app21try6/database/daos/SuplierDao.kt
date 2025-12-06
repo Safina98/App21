@@ -15,5 +15,15 @@ interface SuplierDao {
     @Query("SELECT * FROM suplier_table")
     fun getAllSuplier():LiveData<List<SuplierTable>>
 
+    @Query("""
+        UPDATE suplier_table
+        SET suplierCloudId =:cloudId
+        WHERE id=:id
+    """)
+    fun assignSuplierCloudID(cloudId:Long,id:Int)
+    
+    @Query("SELECT * FROM suplier_table ")
+    fun selectAllSuplierTable(): List<SuplierTable>
+
 
 }

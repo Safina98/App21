@@ -58,8 +58,13 @@ interface DiscountTransDao {
 
     @Query("SELECT SUM(d.discountAppliedValue) FROM discout_transaction_table d WHERE d.sum_id = :sumId")
     fun getTotalDiscountBySumId(sumId: Int): LiveData<Double>
-
-    @Query("SELECT * FROM discout_transaction_table WHERE dTCloudId=0")
+    @Query("""
+        UPDATE discout_transaction_table
+        SET dTCloudId =:cloudId
+        WHERE discountId=:id
+    """)
+    fun assignDiscountTransactionCloudID(cloudId:Long,id:Int)
+    @Query("SELECT * FROM discout_transaction_table")
     fun selectAllDiscountTransactionTable(): List<DiscountTransaction>
 
 }

@@ -21,6 +21,15 @@ interface CustomerDao {
     @Delete
     fun delete(customerTable: CustomerTable)
 
+    @Query("""
+        UPDATE customer_table
+        SET customerCloudId =:cloudId
+        WHERE custId=:id
+    """)
+    fun assignCustomerCloudID(cloudId:Long,id:Int)
+    
+    @Query("SELECT * FROM customer_table")
+    fun selectAllCustomerTable(): List<CustomerTable>
 
 
     @Query("SELECT custId FROM customer_table WHERE customerBussinessName=:name")
@@ -31,4 +40,17 @@ interface CustomerDao {
 
     @Query("SELECT * FROM customer_table")
     fun allCustomer():LiveData<List<CustomerTable>>
+
+    @Query("""
+    SELECT *
+    FROM customer_table
+    WHERE customerCloudId IN (
+        SELECT customerCloudId
+        FROM customer_table
+        GROUP BY customerCloudId
+        HAVING COUNT(customerCloudId) > 1
+    )
+    ORDER BY customerCloudId
+""")
+    fun getCustomersWithDuplicateCloudId(): List<CustomerTable>
 }

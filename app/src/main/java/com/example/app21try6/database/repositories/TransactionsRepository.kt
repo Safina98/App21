@@ -18,11 +18,43 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Date
 
-class TransactionsRepository(
-    application: Application
-) {
+class TransactionsRepository(application: Application) {
     private val transDetailDao= VendibleDatabase.getInstance(application).transDetailDao
     private val transSumDao=VendibleDatabase.getInstance(application).transSumDao
+
+
+    suspend fun getAllTransactionSummary():List<TransactionSummary>{
+        return withContext(Dispatchers.IO){
+            transSumDao.selectAllTransactionSummaryTable()
+        }
+    }
+    suspend fun assignCloudIdToTransactionSummaryTable(cloudId: Long, id: Int){
+        withContext(Dispatchers.IO){
+            transSumDao.assignTransactionSummaryCloudID(cloudId,id)
+        }
+    }
+
+    suspend fun getAllTransactionDetail():List<TransactionDetail>{
+        return withContext(Dispatchers.IO){
+            transDetailDao.selectAllTransactionDetailTable()
+        }
+    }
+    suspend fun assignCloudIdToTransactionDetailTable(cloudId: Long, id: Long){
+        withContext(Dispatchers.IO){
+            transDetailDao.assignTransactionDetailCloudID(cloudId,id)
+        }
+    }
+    suspend fun getTransactionDetailsWithDuplicateCloudIds(): List<TransactionDetail> {
+        return withContext(Dispatchers.IO) {
+            transDetailDao.getTransactionDetailsWithDuplicateCloudIds()
+        }
+    }
+
+    suspend fun getTransactionSummariesWithDuplicateCloudIds(): List<TransactionSummary> {
+        return withContext(Dispatchers.IO) {
+            transSumDao.getTransactionSummariesWithDuplicateCloudIds()
+        }
+    }
 
     fun getStockModel(): LiveData<List<StockModel>> {
         return transDetailDao.getTransactionDetails()
@@ -48,6 +80,7 @@ class TransactionsRepository(
 
     suspend fun insertTransDetail(transDetail: TransactionDetail):Long{
        return withContext(Dispatchers.IO){
+           transDetail.tDCloudId= System.currentTimeMillis()
             transDetailDao.insert(transDetail)
         }
     }

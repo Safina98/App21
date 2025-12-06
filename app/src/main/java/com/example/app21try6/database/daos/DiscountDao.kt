@@ -26,6 +26,16 @@ interface DiscountDao {
             "FROM discount_table")
     fun getAllDiscount():LiveData<List<DiscountAdapterModel>>
 
+    @Query("""
+        UPDATE discount_table
+        SET discountCloudId =:cloudId
+        WHERE discountId=:id
+    """)
+    fun assignDiscountCloudID(cloudId:Long,id:Int)
+    
+    @Query("SELECT * FROM discount_table")
+    fun selectAllDiscountTable(): List<DiscountTable>
+
 
     @Query("SELECT * FROM discount_table")
     fun getAllDiscountList():List<DiscountTable>

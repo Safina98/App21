@@ -9,6 +9,7 @@ import androidx.room.Update
 import com.example.app21try6.bookkeeping.summary.ListModel
 import com.example.app21try6.bookkeeping.summary.MonthlyProfit
 import com.example.app21try6.bookkeeping.summary.ProductProfit
+import com.example.app21try6.database.tables.CustomerTable
 import com.example.app21try6.database.tables.DiscountTable
 import com.example.app21try6.database.tables.Summary
 import com.example.app21try6.grafik.StockModel
@@ -107,5 +108,13 @@ interface SummaryDbDao {
             throw e
         }
     }
+    @Query("""
+        UPDATE summary_table
+        SET summaryCloudId =:cloudId
+        WHERE id_m=:id
+    """)
+    fun assignSumamryCloudID(cloudId:Long,id:Int)
 
+    @Query("SELECT * FROM summary_table")
+    fun selectAllSummaryTable(): List<Summary>
 }

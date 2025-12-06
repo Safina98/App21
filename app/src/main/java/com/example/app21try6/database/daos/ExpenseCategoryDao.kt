@@ -24,5 +24,15 @@ interface ExpenseCategoryDao {
     @Query("SELECT id FROM expense_category_table WHERE expense_category_name=:name")
     fun getECIdByName(name:String):Int?
 
+    @Query("""
+        UPDATE expense_category_table
+        SET eCCloudId =:cloudId
+        WHERE id=:id
+    """)
+    fun assignExpenseCategoryCloudID(cloudId:Long,id:Int)
+    
+    @Query("SELECT * FROM expense_category_table ")
+    fun selectAllExpenseCategoryTable(): List<ExpenseCategory>
+
 
 }

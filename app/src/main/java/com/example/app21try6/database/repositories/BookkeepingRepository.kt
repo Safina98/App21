@@ -8,6 +8,7 @@ import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.daos.SummaryDbDao
 import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.database.tables.Summary
+import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.getDateFromComponents
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -16,6 +17,17 @@ class BookkeepingRepository(
     application: Application
 ) {
     private val summaryDbDao= VendibleDatabase.getInstance(application).summaryDbDao
+
+    suspend fun getAllSummaryTable():List<Summary>{
+        return withContext(Dispatchers.IO){
+            summaryDbDao.selectAllSummaryTable()
+        }
+    }
+    suspend fun assignCloudIdToSummaryTable(cloudId: Long, id: Int){
+        withContext(Dispatchers.IO){
+            summaryDbDao.assignSumamryCloudID(cloudId,id)
+        }
+    }
 
     fun getAllYear():LiveData<List<Int>>{
         return summaryDbDao.getAllYear()

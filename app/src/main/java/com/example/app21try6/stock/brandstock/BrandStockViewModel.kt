@@ -112,7 +112,12 @@ class BrandStockViewModel(
 
     fun assignCloudIdtoALlData(){
         viewModelScope.launch {
-            assignManager.assignCloudIdForAllTables()
+          assignManager.assignCloudIdForAllTables()
+        }
+    }
+    fun checkDuplicateIds(){
+        viewModelScope.launch {
+            assignManager.getDuplicateIds()
         }
     }
     fun updateRv(){
