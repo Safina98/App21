@@ -54,7 +54,7 @@ class SubProductStockFragment : Fragment() {
         val productId=id?.get(0)?.toInt()
         val brandId=id?.get(1)?.toLong()
         val ctgId=id?.get(2)?.toLong()
-        val tDId=id?.get(3)?.toInt()
+        val tSId=id?.get(3)?.toLong()
         val productName=id?.get(4).toString()
         val sPId=id?.get(5)?.toInt()
 
@@ -62,7 +62,7 @@ class SubProductStockFragment : Fragment() {
         Log.i("SUBPROBLEM","id[0] ${id?.get(0)}  id[1] ${id?.get(1)}  id[2] ${id?.get(2)}  id[3] ${id?.get(3)} id[4] ${id?.get(4)} ")
       //  val id_ = id?.map { it.toInt() }?.toTypedArray()
 
-       val viewModelFactory = SubViewModelFactory(stockRepo,transRepo,productId!!,brandId!!,ctgId!!,tDId!!, sPId!!,0L,application)
+       val viewModelFactory = SubViewModelFactory(stockRepo,transRepo,productId!!,brandId!!,ctgId!!,tSId!!, sPId!!,0L,application)
         binding.lifecycleOwner =this
         viewModel = ViewModelProvider(this,viewModelFactory).get(SubViewModel::class.java)
         binding.subViewModel = viewModel
@@ -78,7 +78,7 @@ class SubProductStockFragment : Fragment() {
             viewModel.getSubProductById(isSubIdExist)
         }
 
-        val adapter = SubAdapter(tDId,
+        val adapter = SubAdapter(tSId,
             null,
             CheckBoxListenerSub{view:View,subProduct: SubProduct ->
             val cb = view as CheckBox

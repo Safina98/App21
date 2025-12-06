@@ -27,7 +27,7 @@ class SubViewModel (
     private val product_id:Int,
     private val parameterBrandId:Long,
     private val ctgId:Long,
-    private val tDId: Int,
+    private val tSId: Long,
     private val parameterSubId:Int,
     val sum_id: Long,
     application: Application
@@ -79,7 +79,7 @@ class SubViewModel (
     fun onCheckBoxClicked(subProduct: SubProduct, bool:Boolean){
         uiScope.launch {
             val transDetail = TransactionDetail()
-            transDetail.tSCloudId = sum_id
+            transDetail.tSCloudId = tSId
             transDetail.trans_item_name = subProduct.sub_name
             transDetail.tDCloudId= System.currentTimeMillis()
             transDetail.needsSyncs=1

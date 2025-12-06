@@ -14,21 +14,21 @@ import com.example.app21try6.R
 import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.databinding.ItemListSubproductBinding
 
-class SubAdapter (val code:Int,
+class SubAdapter (val code: Long,
                   var selectedItemId:Int?,
                   val checkBoxListenerSub: CheckBoxListenerSub,
-    val longListener: SubStokLongListener,
-    val plusListener: PlusStokListener,
-    val subsListener : SubsStokListener,
-    val warnaListener: WarnaStokListener,
-    val ketListener:KetStokListener,
-    val subProductListener:SubListener,
-    val context: Context
+                  val longListener: SubStokLongListener,
+                  val plusListener: PlusStokListener,
+                  val subsListener : SubsStokListener,
+                  val warnaListener: WarnaStokListener,
+                  val ketListener:KetStokListener,
+                  val subProductListener:SubListener,
+                  val context: Context
 ) :
     ListAdapter<SubProduct,
             SubAdapter.MyViewHolder>(SubDiffCallback()){
     class MyViewHolder private constructor( val binding: ItemListSubproductBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(code: Int,
+        fun bind(code: Long,
                  isSelected:Boolean,
                  longListener :SubStokLongListener,
                  plusListener:PlusStokListener,

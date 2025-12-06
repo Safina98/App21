@@ -15,7 +15,7 @@ class SubViewModelFactory(private val stockRepo: StockRepositories,
                           private val product_id:Int,
                           private val brandId:Long,
                           private val ctgId:Long,
-                          private val tDId:Int,
+                          private val tSId:Long,
                           private val sPId:Int,
                           private val sum_id:Long,
                           private val application: Application
@@ -23,7 +23,7 @@ class SubViewModelFactory(private val stockRepo: StockRepositories,
     @Suppress("unchecked_cast")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SubViewModel::class.java)) {
-            return SubViewModel(stockRepo,transactionsRepo,product_id,brandId,ctgId,tDId,sPId,sum_id,application) as T
+            return SubViewModel(stockRepo,transactionsRepo,product_id,brandId,ctgId,tSId,sPId,sum_id,application) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
