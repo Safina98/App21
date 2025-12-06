@@ -234,14 +234,14 @@ class SubViewModel (
     fun updateRetail( detailWarnaModel: DetailMerchandiseModel){
         uiScope.launch {
             val merchandiseRetail = createMerchandiseRetail(detailWarnaModel)
-            merchandiseRetail.id = detailWarnaModel.id
+            merchandiseRetail.mRCloudId = detailWarnaModel.id
             stockRepo.updateDetailRetail(merchandiseRetail)
             getRetailList(detailWarnaModel.sPCloudId)
         }
     }
     fun DetailMerchandiseModel.toDetailWarnaTable(): DetailWarnaTable {
         return DetailWarnaTable(
-            id = this.id,
+            dWCloudId = this.id,
             sPCloudId = this.sPCloudId,
             ref = this.ref,
             net = this.net,
@@ -269,6 +269,7 @@ class SubViewModel (
     fun createMerchandiseRetail(detailWarnaTable: DetailMerchandiseModel):MerchandiseRetail{
         Log.i("Check","${detailWarnaTable.id}")
         val merchandiseRetail=MerchandiseRetail()
+        merchandiseRetail.mRCloudId = if(detailWarnaTable.id==0L) System.currentTimeMillis() else detailWarnaTable.id
         merchandiseRetail.sPCloudId =detailWarnaTable.sPCloudId
         merchandiseRetail.net=detailWarnaTable.net
         merchandiseRetail.ref=UUID.randomUUID().toString()

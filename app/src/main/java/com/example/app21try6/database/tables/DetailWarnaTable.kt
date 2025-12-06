@@ -21,8 +21,9 @@ import androidx.room.PrimaryKey
     indices = [Index(value = ["ref"], unique = true)] // Add this index
 )
 data class DetailWarnaTable(
-    @PrimaryKey(autoGenerate = true)
-    var id:Int=0,
+    @PrimaryKey
+    @ColumnInfo(name = "dWCloudId")
+    var dWCloudId: Long =0L,
     @ColumnInfo(name="sPCloudId")
     var sPCloudId: Long =0,
     @ColumnInfo(name="batchCount")
@@ -34,10 +35,8 @@ data class DetailWarnaTable(
     @ColumnInfo(name="ref")
     var ref: String="",
     @ColumnInfo(name="is_deleted")
-    var isDeleted: Boolean = false, //newly added cloumn
-    @ColumnInfo(name = "dWCloudId")
-    var dWCloudId: Long = 0L,//newly added cloumn
+    var isDeleted: Boolean = false,
     @ColumnInfo(name="needs_syncs")
-    var needsSyncs:Int=1//newly added cloumn
+    var needsSyncs:Int=1
 )
 

@@ -10,7 +10,7 @@ data class MerchandiseRetailLog(
     //var detailWarnaRef:String="", //not recorded
     var transDetailId:Long?=null,
     //foreign key merchadise_table ref
-    var retailId:Int=0,
+    var retailId:Long=0,
     var detailWarnaNet:Double=0.0,
     var cutCount:Int=0,
     var previousNet:Double=0.0,

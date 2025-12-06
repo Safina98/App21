@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Ignore
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.util.Date
 
@@ -17,11 +18,13 @@ import java.util.Date
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
         )
-    ]
+    ],
+            indices = [Index(value = ["ref"], unique = true)] // Add this index
 )
 data class MerchandiseRetail(
-    @PrimaryKey(autoGenerate = true)
-    var id:Int=0,
+    @PrimaryKey
+    @ColumnInfo(name = "mRCloudId")
+    var mRCloudId: Long =0L,
     @ColumnInfo(name="sPCloudId")
     var sPCloudId: Long =0,//foreignkey
     @ColumnInfo(name="net")
@@ -32,8 +35,6 @@ data class MerchandiseRetail(
     var date: Date = Date(),
     @ColumnInfo(name="is_deleted")
     var isDeleted: Boolean = false,
-    @ColumnInfo(name = "mRCloudId")
-    var mRCloudId: Long = 0L,
     @ColumnInfo(name="needs_syncs")
     var needsSyncs:Int=1,
     //@ColumnInfo(name = "initial_net")

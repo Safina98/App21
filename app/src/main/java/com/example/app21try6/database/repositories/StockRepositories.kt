@@ -157,7 +157,7 @@ class StockRepositories (
         }
     }
 
-    suspend fun assignCloudIdToDetailWarnaTable(cloudId: Long, id: Int){
+    suspend fun assignCloudIdToDetailWarnaTable(cloudId: Long, id: Long){
         withContext(Dispatchers.IO){
             detailWarnaDao.assignDetailWarnaCloudID(cloudId, id)
         }
@@ -181,7 +181,7 @@ class StockRepositories (
         }
     }
 
-    suspend fun assignCloudIdToMerchandiseRetailTable(cloudId: Long, id: Int){
+    suspend fun assignCloudIdToMerchandiseRetailTable(cloudId: Long, id: Long){
         withContext(Dispatchers.IO){
             detailWarnaDao.assignMerchandiseRetailCloudID(cloudId, id)
         }
@@ -304,12 +304,12 @@ class StockRepositories (
     }
     suspend fun deleteDetailWarna(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog,merchandiseRetail: MerchandiseRetail?){
         withContext(Dispatchers.IO){
-            detailWarnaDao.deleteDetailWarnaAndInsertLog(detailWarnaTable.id,inventoryLog,merchandiseRetail)
+            detailWarnaDao.deleteDetailWarnaAndInsertLog(detailWarnaTable.dWCloudId,inventoryLog,merchandiseRetail)
         }
     }
     suspend fun deleteDetailWarna(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog,merchandiseRetail: List<MerchandiseRetail?>){
         withContext(Dispatchers.IO){
-            detailWarnaDao.deleteDetailWarnaAndInsertLog(detailWarnaTable.id,inventoryLog,merchandiseRetail)
+            detailWarnaDao.deleteDetailWarnaAndInsertLog(detailWarnaTable.dWCloudId,inventoryLog,merchandiseRetail)
         }
     }
 
@@ -325,7 +325,7 @@ class StockRepositories (
         }
     }
 
-    suspend fun deleteRetail(id:Int){
+    suspend fun deleteRetail(id:Long){
         withContext(Dispatchers.IO){
             detailWarnaDao.deleteMerchandise(id)
         }

@@ -398,7 +398,7 @@ class TransactionDetailViewModel (
         return this?.map { detail ->
             detail?.id?.let {
                 MerchandiseRetail(
-                    id = it,
+                    mRCloudId = it,
                     sPCloudId = detail.sPCloudId,
                     ref = detail.ref,
                     net = detail.net,
@@ -410,7 +410,7 @@ class TransactionDetailViewModel (
     fun DetailMerchandiseModel.toMerchandiseRetail():MerchandiseRetail{
         return this.let { model->
             MerchandiseRetail(
-                id=model.id,
+                mRCloudId =model.id,
                 sPCloudId =model.sPCloudId,
                 ref=model.ref,
                 net = model.net,
@@ -449,7 +449,7 @@ class TransactionDetailViewModel (
 
     fun createRetailLog(merchandiseRetail: MerchandiseRetail, remainingQty: Double, trans: TransactionDetail):MerchandiseRetailLog{
             val retailLog=MerchandiseRetailLog()
-            retailLog.retailId=merchandiseRetail.id
+            retailLog.retailId=merchandiseRetail.mRCloudId
             retailLog.transDetailId=trans.tDCloudId
             retailLog.ket="Pembelian"
             retailLog.date=Date()
@@ -492,7 +492,7 @@ class TransactionDetailViewModel (
 
     fun DetailMerchandiseModel.toDetailWarnaTable(): DetailWarnaTable {
         return DetailWarnaTable(
-            id = this.id,
+            dWCloudId = this.id,
             sPCloudId = this.sPCloudId,
             ref = this.ref,
             net = this.net,
@@ -517,6 +517,7 @@ class TransactionDetailViewModel (
 
     fun createMerchandiseRetail(dmModel: DetailMerchandiseModel):MerchandiseRetail{
         val merchandiseRetail=MerchandiseRetail()
+        merchandiseRetail.mRCloudId=if (dmModel.id==0L)  System.currentTimeMillis() else dmModel.id
         merchandiseRetail.sPCloudId =dmModel.sPCloudId
         merchandiseRetail.net=dmModel.net
         merchandiseRetail.ref=UUID.randomUUID().toString()

@@ -3,7 +3,7 @@ package com.example.app21try6.database.models
 import java.util.Date
 
 data class DetailMerchandiseModel(
-    var id:Int=0,
+    var id: Long=0L,
     var sPCloudId: Long =0L,
     var ref:String="",
     var net:Double=0.0,

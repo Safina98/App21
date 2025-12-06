@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.database.models.DetailMerchandiseModel
 import com.example.app21try6.databinding.TextItemViewBinding
 
+
 /*
 class MerchandiseAdapter(
     //val clickListener: MerchCheckBoxListener,
@@ -80,7 +81,7 @@ class MerchandiseAdapter(
     val clickMerchListener: ClickMerchListener
 ) : ListAdapter<DetailMerchandiseModel, MerchandiseAdapter.ViewHolder>(MerchandiseDiffCallback()) {
 
-    private val checkedMap: MutableMap<Int, Boolean> = mutableMapOf()
+    private val checkedMap: MutableMap<Long, Boolean> = mutableMapOf()
 
     inner class ViewHolder(private val binding: TextItemViewBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: DetailMerchandiseModel, isChecked: Boolean,clickMerchListener: ClickMerchListener) {
@@ -88,7 +89,7 @@ class MerchandiseAdapter(
             binding.item=item
             binding.clickListener=clickMerchListener
             if (item.batchCount==null){
-                binding.txtNet.text= String.format("Id: %d, Net: %.2f", item.id, item.net)
+                binding.txtNet.text= String.format("Net: %.2f",  item.net)
             }else{
                 binding.txtNet.text= String.format(" %.0f Roll, Net: %.2f", item.batchCount, item.net)
             }

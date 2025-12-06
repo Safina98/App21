@@ -41,14 +41,7 @@ class AssignCloudIdManager(
           }
           Log.i("AssignCloudIdManager", "Finnish Assigning customer table")
 
-          // ---------- Detail Warna Table ----------
-          val detailWarnaList = stockRepository.getAllDetailWarnaTable()
-          detailWarnaList.forEach { detailWarna ->
-              delay(1)
-              val newId = System.currentTimeMillis()
-              stockRepository.assignCloudIdToDetailWarnaTable(newId, detailWarna.id)
-          }
-          Log.i("AssignCloudIdManager", "Finnish Assigning DetailWarna table")
+
 
           // ---------- Discount Table ----------
           val discountList = discountRepository.getAllDiscountTable()
@@ -113,14 +106,6 @@ class AssignCloudIdManager(
           Log.i("AssignCloudIdManager", "Finnish Assigning InventoryPurchase table")
 
 
-          // ---------- Merchandise Retail ----------
-          val merchandiseRetailList = stockRepository.getAllMerchandiseRetailTable()
-          merchandiseRetailList.forEach { merchandiseRetail ->
-              delay(1)
-              val newId = System.currentTimeMillis()
-              stockRepository.assignCloudIdToMerchandiseRetailTable(newId, merchandiseRetail.id)
-          }
-          Log.i("AssignCloudIdManager", "Finnish Assigning MerchandiseRetail table")
 
           // ---------- payment ----------
           val paymentList = discountRepository.getAllPaymentTable()
@@ -158,6 +143,26 @@ class AssignCloudIdManager(
 
 
    */
+// ---------- Detail Warna Table ----------
+        val detailWarnaList = stockRepository.getAllDetailWarnaTable()
+        detailWarnaList.forEach { detailWarna ->
+            delay(1)
+            val newId = System.currentTimeMillis()
+            Log.i("AssignCloudIdManager","${detailWarna.dWCloudId}, ${detailWarna.net} ${detailWarna.batchCount} ${detailWarna.dWCloudId} ${detailWarna.sPCloudId}")
+            stockRepository.assignCloudIdToDetailWarnaTable(newId, detailWarna.dWCloudId)
+        }
+        Log.i("AssignCloudIdManager", "Finnish Assigning DetailWarna table")
+
+        // ---------- Merchandise Retail ----------
+        val merchandiseRetailList = stockRepository.getAllMerchandiseRetailTable()
+        merchandiseRetailList.forEach { merchandiseRetail ->
+            delay(1)
+            val newId = System.currentTimeMillis()
+            Log.i("AssignCloudIdManager","${merchandiseRetail.mRCloudId}, ${merchandiseRetail.net} ${merchandiseRetail.net} ${merchandiseRetail.mRCloudId}")
+            stockRepository.assignCloudIdToMerchandiseRetailTable(newId, merchandiseRetail.mRCloudId)
+        }
+        Log.i("AssignCloudIdManager", "Finnish Assigning MerchandiseRetail table")
+
 
         // ---------- Sub Product ----------
         val subProductList = stockRepository.getSubProductWithDuplicateId()

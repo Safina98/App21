@@ -35,34 +35,51 @@ interface DetailWarnaDao {
     @Query("""
         UPDATE detail_warna_table
         SET dWCloudId =:cloudId
-        WHERE id=:id
+        WHERE dWCloudId=:id
     """)
-    fun assignDetailWarnaCloudID(cloudId:Long,id:Int)
+    fun assignDetailWarnaCloudID(cloudId:Long,id: Long)
 
-    @Query("SELECT * FROM detail_warna_table")
+    @Query("" +
+            "SELECT *\n" +
+            "    FROM detail_warna_table\n" +
+            "    WHERE dWCloudId IN (\n" +
+            "        SELECT dWCloudId\n" +
+            "        FROM detail_warna_table\n" +
+            "        GROUP BY dWCloudId\n" +
+            "        HAVING COUNT(dWCloudId) > 1\n" +
+            "    )\n" +
+            "    ORDER BY dWCloudId")
     fun selectAllDetailWarnaTable(): List<DetailWarnaTable>
 
     @Query("""
         UPDATE merchandise_table
         SET mRCloudId =:cloudId
-        WHERE id=:id
+        WHERE mRCloudId=:id
     """)
-    fun assignMerchandiseRetailCloudID(cloudId:Long,id:Int)
+    fun assignMerchandiseRetailCloudID(cloudId:Long,id:Long)
 
-    @Query("SELECT * FROM merchandise_table")
+    @Query("SELECT *\n" +
+            "    FROM merchandise_table\n" +
+            "    WHERE mRCloudId IN (\n" +
+            "        SELECT mRCloudId\n" +
+            "        FROM merchandise_table\n" +
+            "        GROUP BY mRCloudId\n" +
+            "        HAVING COUNT(mRCloudId) > 1\n" +
+            "    )\n" +
+            "    ORDER BY mRCloudId")
     fun selectAllMerchandiseRetailTable(): List<MerchandiseRetail>
 
-    @Query("DELETE FROM detail_warna_table WHERE id=:id")
-    fun delete(id:Int)
+    @Query("DELETE FROM detail_warna_table WHERE dWCloudId=:id")
+    fun delete(id:Long)
 
     @Query("DELETE FROM detail_warna_table WHERE sPCloudId=:subId")
     fun deleteDetailWarnaBySubId(subId:Long)
 
-    @Query("DELETE FROM merchandise_table WHERE id =:id")
-    fun deleteMerchandise(id:Int)
+    @Query("DELETE FROM merchandise_table WHERE mRCloudId =:id")
+    fun deleteMerchandise(id:Long)
 
     @Query("SELECT \n" +
-            "    id, \n" +
+            "    mRCloudId AS id, \n" +
             "    sPCloudId AS sPCloudId, \n" +
             "    ref, \n" +
             "    net, \n" +
@@ -74,7 +91,7 @@ interface DetailWarnaDao {
     fun getRetaiBySubId(subId:Long):List<DetailMerchandiseModel>
 
     @Query("SELECT \n" +
-            "    id, \n" +
+            "    dWCloudId AS id, \n" +
             "    sPCloudId AS sPCloudId, \n" +
             "    ref, \n" +
             "    net, \n" +
@@ -90,6 +107,7 @@ interface DetailWarnaDao {
 
     @Transaction
     fun insertDetailWarnaAndLog(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog) {
+        detailWarnaTable.dWCloudId=System.currentTimeMillis()
         insert(detailWarnaTable)
         insertLog(inventoryLog)
     }
@@ -113,7 +131,7 @@ interface DetailWarnaDao {
             }
     }
     @Transaction
-    fun deleteDetailWarnaAndInsertLog(detailWarnaId:Int,inventoryLog: InventoryLog,merchandiseRetail: MerchandiseRetail?){
+    fun deleteDetailWarnaAndInsertLog(detailWarnaId:Long,inventoryLog: InventoryLog,merchandiseRetail: MerchandiseRetail?){
         insertLog(inventoryLog)
         delete(detailWarnaId)
         if (merchandiseRetail!=null) {
@@ -121,7 +139,7 @@ interface DetailWarnaDao {
         }
     }
     @Transaction
-    fun deleteDetailWarnaAndInsertLog(detailWarnaId:Int,inventoryLog: InventoryLog,merchandiseRetail: List<MerchandiseRetail?>){
+    fun deleteDetailWarnaAndInsertLog(detailWarnaId:Long,inventoryLog: InventoryLog,merchandiseRetail: List<MerchandiseRetail?>){
         insertLog(inventoryLog)
         delete(detailWarnaId)
         merchandiseRetail.forEach {
