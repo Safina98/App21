@@ -356,7 +356,7 @@ class TransactionDetailViewModel (
         viewModelScope.launch {
 
             transdetail=item//transDetail untuk update retail net
-            val subId=item.sub_id
+            val subId=item.sPCloudId
             val retailList = stockRepo.selectRetailBySumId(subId ?: -1)
             val totalNet = retailList?.sumOf { it.net }
             var trans=item.copy()
@@ -399,7 +399,7 @@ class TransactionDetailViewModel (
             detail?.id?.let {
                 MerchandiseRetail(
                     id = it,
-                    sub_id = detail.sub_id,
+                    sPCloudId = detail.sPCloudId,
                     ref = detail.ref,
                     net = detail.net,
                     date = detail.date ?: Date() // Fallback to current date if null
@@ -411,7 +411,7 @@ class TransactionDetailViewModel (
         return this.let { model->
             MerchandiseRetail(
                 id=model.id,
-                sub_id=model.sub_id,
+                sPCloudId =model.sPCloudId,
                 ref=model.ref,
                 net = model.net,
                 date = model.date?: Date()
@@ -453,7 +453,7 @@ class TransactionDetailViewModel (
             retailLog.transDetailId=trans.tDCloudId
             retailLog.ket="Pembelian"
             retailLog.date=Date()
-            retailLog.subId=trans.sub_id!!
+            retailLog.subId=trans.sPCloudId!!
             retailLog.customer=transSum.value?.cust_name ?: ""
             retailLog.cutCount = merchandiseRetail.cutCount+1
             retailLog.detailWarnaNet=merchandiseRetail.initialNet
@@ -469,7 +469,7 @@ class TransactionDetailViewModel (
                 if (detailWarnaModel!=null){
                     val detailWarnaTable=detailWarnaModel.toDetailWarnaTable()
                     detailWarnaTable.batchCount -=detailWarnaModel.selectedQty
-                    val productId = stockRepo.getProdutId(detailWarnaTable.subId) ?: return@launch
+                    val productId = stockRepo.getProdutId(detailWarnaTable.sPCloudId) ?: return@launch
                     val brandId = stockRepo.getBrandId(productId) ?: return@launch
                     val inventoryLog =createInventoryLog(detailWarnaTable,detailWarnaTable.batchCount,productId,brandId,"Keluar Retail")
                     val merchandiseRetailList= mutableListOf<MerchandiseRetail?>()
@@ -493,7 +493,7 @@ class TransactionDetailViewModel (
     fun DetailMerchandiseModel.toDetailWarnaTable(): DetailWarnaTable {
         return DetailWarnaTable(
             id = this.id,
-            subId = this.sub_id,
+            sPCloudId = this.sPCloudId,
             ref = this.ref,
             net = this.net,
             batchCount = this.batchCount ?: 0.0, // Handle null with default value
@@ -504,7 +504,7 @@ class TransactionDetailViewModel (
     fun createInventoryLog(detailWarnaTable: DetailWarnaTable, batchCount:Double, productId: Long, brandId: Long, ket:String): InventoryLog {
         val inventoryLog= InventoryLog()
         inventoryLog.detailWarnaRef=detailWarnaTable.ref
-        inventoryLog.subProductId=detailWarnaTable.subId
+        inventoryLog.sPCloudId =detailWarnaTable.sPCloudId
         inventoryLog.isi=detailWarnaTable.net
         inventoryLog.pcs=batchCount.toInt()
         inventoryLog.barangLogKet=ket
@@ -517,7 +517,7 @@ class TransactionDetailViewModel (
 
     fun createMerchandiseRetail(dmModel: DetailMerchandiseModel):MerchandiseRetail{
         val merchandiseRetail=MerchandiseRetail()
-        merchandiseRetail.sub_id=dmModel.sub_id
+        merchandiseRetail.sPCloudId =dmModel.sPCloudId
         merchandiseRetail.net=dmModel.net
         merchandiseRetail.ref=UUID.randomUUID().toString()
         merchandiseRetail.date=dmModel.date?:Date()
@@ -539,7 +539,7 @@ class TransactionDetailViewModel (
             calendar.time = transSum.value!!.trans_date
             val dateFormat = SimpleDateFormat("MMMM", Locale.getDefault())
             transDetail.value?.forEach { it ->
-                val product = stockRepo.getProductBySubId(it.sub_id?:-1)
+                val product = stockRepo.getProductBySubId(it.sPCloudId ?:-1)
                 if(product?.product_name?.contains("biaya", ignoreCase = true) != true){
                     val summary = Summary().apply {
                         year = calendar.get(Calendar.YEAR)
@@ -548,7 +548,7 @@ class TransactionDetailViewModel (
                         day = calendar.get(Calendar.DATE)
                         day_name = transSum.value!!.trans_date.toString()
                         item_name = product?.product_name ?: it.trans_item_name
-                        sub_id = it.sub_id
+                        sPCloudId = it.sPCloudId
                         productCloudId = product?.productCloudId
                         price = it.trans_price.toDouble()
                         total_income = it.total_price
@@ -645,7 +645,7 @@ class TransactionDetailViewModel (
 
     fun onNavigateToSubProduct(){
         viewModelScope.launch {
-            val subId=transdetail.sub_id
+            val subId=transdetail.sPCloudId
             val productId=stockRepo.getProdutId(subId?:0)
             val brandId=stockRepo.getBrandId(productId)
             val transDetailId=transdetail.tDCloudId

@@ -33,8 +33,6 @@ import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentSubProductStockBinding
 import com.example.app21try6.databinding.PopUpUpdateBayarBinding
-import com.example.app21try6.transaction.transactionselect.TransSelectModel
-import com.example.app21try6.transaction.transactionselect.TransactionSelectViewModel
 import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 
@@ -56,7 +54,7 @@ class SubProductStockFragment : Fragment() {
         val ctgId=id?.get(2)?.toLong()
         val tSId=id?.get(3)?.toLong()
         val productName=id?.get(4).toString()
-        val sPId=id?.get(5)?.toInt()
+        val sPId=id?.get(5)?.toLong()
 
 
         Log.i("SUBPROBLEM","id[0] ${id?.get(0)}  id[1] ${id?.get(1)}  id[2] ${id?.get(2)}  id[3] ${id?.get(3)} id[4] ${id?.get(4)} ")
@@ -71,7 +69,7 @@ class SubProductStockFragment : Fragment() {
         }
 
         val isSubIdExist = sPId
-        if (isSubIdExist!=-1){
+        if (isSubIdExist!=-1L){
             if (binding.rvSubDetail.visibility==View.GONE){
                 setDetailRvVisibility(true)
             }
@@ -172,9 +170,9 @@ class SubProductStockFragment : Fragment() {
         }
 
         viewModel.selectedSubProduct.observe(viewLifecycleOwner){
-            viewModel.getDetailWarnaList(it?.sub_id)
-            viewModel.getRetailList(it?.sub_id)
-            adapter.selectedItemId = it?.sub_id  // Pass the selected ID to the adapter
+            viewModel.getDetailWarnaList(it?.sPCloudId)
+            viewModel.getRetailList(it?.sPCloudId)
+            adapter.selectedItemId = it?.sPCloudId  // Pass the selected ID to the adapter
             adapter.notifyDataSetChanged()
         }
 
@@ -273,7 +271,7 @@ class SubProductStockFragment : Fragment() {
         if (i==1){
             text = subProduct.sub_name.toString()
             lv.visibility=View.VISIBLE
-            tVId.setText(subProduct.sub_id.toString())
+            tVId.setText(subProduct.sPCloudId.toString())
         }else if(i==2){text = subProduct.warna
         }else{text = subProduct.ket}
         if (text!="click to add"){ textKet.setText(text) }

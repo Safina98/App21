@@ -4,7 +4,7 @@ data class StockModel(
     var year:Int,
     var month:String,
     var productCloudId: Long?,
-    var sub_id:Int?,
+    var sPCloudId: Long?,
     var sub_name:String?,
     var item_name:String,
     var price:Double?,

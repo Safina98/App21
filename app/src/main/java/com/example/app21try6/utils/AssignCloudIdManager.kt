@@ -133,14 +133,6 @@ class AssignCloudIdManager(
 
 
 
-          // ---------- Sub Product ----------
-          val subProductList = stockRepository.getAllDSubProductTable()
-          subProductList.forEach { subProduct ->
-              delay(1)
-              val newId = System.currentTimeMillis()
-              stockRepository.assignCloudIdToSubProductTable(newId, subProduct.sub_id)
-          }
-          Log.i("AssignCloudIdManager", "Finnish Assigning SubProduct table")
 
           // ---------- Summary ----------
           val summaryList = bookKeepingRepository.getAllSummaryTable()
@@ -166,6 +158,17 @@ class AssignCloudIdManager(
 
 
    */
+
+        // ---------- Sub Product ----------
+        val subProductList = stockRepository.getSubProductWithDuplicateId()
+        subProductList.forEach { subProduct ->
+            delay(1)
+            val newId = System.currentTimeMillis()
+            Log.i("AssignCloudIdManager","${subProduct.productCloudId}, ${subProduct.sub_name} ${subProduct.sPCloudId}")
+            stockRepository.assignCloudIdToSubProductTable(newId, subProduct.sPCloudId)
+        }
+        Log.i("AssignCloudIdManager", "Finnish Assigning SubProduct table")
+
         // ---------- Product Table ----------
         val productList = stockRepository.getProductsWithDuplicateCloudIds()
         productList.forEach { product ->

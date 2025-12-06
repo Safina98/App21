@@ -75,7 +75,7 @@ class SelectDiffCallback : DiffUtil.ItemCallback<TransSelectModel>() {
     override fun areItemsTheSame(oldItem: TransSelectModel, newItem:TransSelectModel): Boolean {
 
         return oldItem.trans_detail_id == newItem.trans_detail_id
-                && oldItem.sub_product_id == newItem.sub_product_id
+                && oldItem.sPCloudId == newItem.sPCloudId
     }
 
     override fun areContentsTheSame(oldItem: TransSelectModel, newItem: TransSelectModel): Boolean {

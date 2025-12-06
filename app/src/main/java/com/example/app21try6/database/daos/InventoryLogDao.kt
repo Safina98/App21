@@ -11,12 +11,9 @@ import androidx.room.Update
 import com.example.app21try6.Constants
 
 import com.example.app21try6.database.models.InventoryLogWithSubProduct
-import com.example.app21try6.database.models.SubWithPriceModel
 import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.statement.purchase.tagp
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @Dao
 interface InventoryLogDao {
@@ -28,7 +25,7 @@ interface InventoryLogDao {
     @Query("""
     SELECT il.*,s.sub_name
     FROM inventory_log_table il
-    INNER JOIN sub_table s ON il.subProductId = s.sub_id
+    INNER JOIN sub_table s ON il.sPCloudId = s.sPCloudId
 """)
     fun selectAllInventoryLogLD():LiveData<List<InventoryLogWithSubProduct>>
 
@@ -42,8 +39,8 @@ interface InventoryLogDao {
     fun deleteLog(log:InventoryLog)
 
 
-        @Query("SELECT * FROM detail_warna_table WHERE net = :net AND subId = :subId")
-        fun getDetailByNetAndSubId(net: Double, subId: Int): DetailWarnaTable?
+        @Query("SELECT * FROM detail_warna_table WHERE net = :net AND sPCloudId = :subId")
+        fun getDetailByNetAndSubId(net: Double, subId: Long): DetailWarnaTable?
 
         @Update
         fun updateDetail(detail: DetailWarnaTable)
@@ -53,7 +50,7 @@ interface InventoryLogDao {
 
         @Transaction
         fun upsertDetail(detail: DetailWarnaTable):String {
-            val existingDetail = getDetailByNetAndSubId(detail.net, detail.subId)
+            val existingDetail = getDetailByNetAndSubId(detail.net, detail.sPCloudId)
             var ref:String
             Log.e(tagp,"$detail")
             if (existingDetail != null) {
@@ -127,7 +124,7 @@ interface InventoryLogDao {
            delete log
            update detailwarna
          */
-        val detailWarna=getDetailByNetAndSubId(log.inventoryLog.isi,log.inventoryLog.subProductId!!)!!
+        val detailWarna=getDetailByNetAndSubId(log.inventoryLog.isi,log.inventoryLog.sPCloudId!!)!!
         if (log.inventoryLog.barangLogKet== Constants.BARANGLOGKET.keluar) {
             detailWarna.batchCount=detailWarna.batchCount + log.inventoryLog.pcs
         }else {

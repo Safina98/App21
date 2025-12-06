@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import java.util.Date
 
 
 @Entity(
@@ -13,8 +12,8 @@ import java.util.Date
     foreignKeys = [
         ForeignKey(
             entity = SubProduct::class,
-            parentColumns = ["sub_id"],
-            childColumns = ["subId"],
+            parentColumns = ["sPCloudId"],
+            childColumns = ["sPCloudId"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
         )
@@ -24,8 +23,8 @@ import java.util.Date
 data class DetailWarnaTable(
     @PrimaryKey(autoGenerate = true)
     var id:Int=0,
-    @ColumnInfo(name="subId")
-    var subId:Int=0,
+    @ColumnInfo(name="sPCloudId")
+    var sPCloudId: Long =0,
     @ColumnInfo(name="batchCount")
     var batchCount:Double=0.0,
     @ColumnInfo(name="net")

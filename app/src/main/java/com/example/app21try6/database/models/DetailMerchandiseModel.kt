@@ -4,7 +4,7 @@ import java.util.Date
 
 data class DetailMerchandiseModel(
     var id:Int=0,
-    var sub_id:Int=0,
+    var sPCloudId: Long =0L,
     var ref:String="",
     var net:Double=0.0,
     var batchCount:Double?,

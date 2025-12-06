@@ -2,7 +2,6 @@ package com.example.app21try6.stock.subproductstock
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +14,7 @@ import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.databinding.ItemListSubproductBinding
 
 class SubAdapter (val code: Long,
-                  var selectedItemId:Int?,
+                  var selectedItemId: Long?,
                   val checkBoxListenerSub: CheckBoxListenerSub,
                   val longListener: SubStokLongListener,
                   val plusListener: PlusStokListener,
@@ -115,7 +114,7 @@ class SubAdapter (val code: Long,
         val item = getItem(position)
 
         // Check if the item's ID matches the selectedSubProductId from ViewModel
-        val isSelected = item.sub_id == selectedItemId
+        val isSelected = item.sPCloudId == selectedItemId
 
         // Change background color
         //holder.binding.root.setBackgroundColor(if (isSelected) Color.LTGRAY else Color.TRANSPARENT)

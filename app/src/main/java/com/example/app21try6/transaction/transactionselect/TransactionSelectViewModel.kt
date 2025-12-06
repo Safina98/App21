@@ -96,8 +96,8 @@ class TransactionSelectViewModel(
             updatedList.forEach{
                 Log.i("DialogUtilProblems","viewModel before update currentList $it ")
             }
-            val index = updatedList.indexOfFirst { it.sub_product_id == trans.sub_product_id }
-            val matchedItems=updatedList.filter { it.sub_product_id == trans.sub_product_id }
+            val index = updatedList.indexOfFirst { it.sPCloudId == trans.sPCloudId }
+            val matchedItems=updatedList.filter { it.sPCloudId == trans.sPCloudId }
             Log.i("DialogUtilProblems","viewModel updateItemInTransDetail index: $index")
             if (matchedItems.size>1){
                 //val newIndex = matchedItems.indexOfFirst { it.trans_detail_id == trans.trans_detail_id }
@@ -171,7 +171,7 @@ class TransactionSelectViewModel(
         t.trans_price = s.item_price
         t.trans_detail_date = Date()
         t.item_position = pos
-        t.sub_id=s.sub_product_id
+        t.sPCloudId =s.sPCloudId
         Log.i("drag","insert pos $pos")
         pos+=1
         return t

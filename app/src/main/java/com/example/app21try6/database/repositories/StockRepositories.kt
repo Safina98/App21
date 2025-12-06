@@ -17,7 +17,6 @@ import com.example.app21try6.database.tables.MerchandiseRetail
 import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.database.tables.TransactionDetail
-import com.example.app21try6.stock.brandstock.CategoryModel
 import com.example.app21try6.stock.brandstock.ExportModel
 import com.example.app21try6.stock.brandstock.StockCategoryModel
 import kotlinx.coroutines.Dispatchers
@@ -170,7 +169,7 @@ class StockRepositories (
         }
     }
 
-    suspend fun assignCloudIdToSubProductTable(cloudId: Long, id: Int){
+    suspend fun assignCloudIdToSubProductTable(cloudId: Long, id: Long){
         withContext(Dispatchers.IO){
             subProductDao.assignSubProductCloudID(cloudId, id)
         }
@@ -192,6 +191,11 @@ class StockRepositories (
             productDao.getPriductsWithDuplicateCloudIds()
         }
     }
+    suspend fun getSubProductWithDuplicateId(): List<SubProduct> {
+        return withContext(Dispatchers.IO) {
+            subProductDao.getSubProductsWithDuplicateCloudIds()
+        }
+    }
     suspend fun getAllMerchandiseRetailTable(): List<MerchandiseRetail> {
         return withContext(Dispatchers.IO) {
             detailWarnaDao.selectAllMerchandiseRetailTable()
@@ -203,7 +207,7 @@ class StockRepositories (
         return withContext(Dispatchers.IO){productDao.getProductById(id)}
     }
 
-    suspend fun getProductBySubId(subId:Int): Product?{
+    suspend fun getProductBySubId(subId: Long): Product?{
         return withContext(Dispatchers.IO){
             subProductDao.getProduct(subId)
         }
@@ -229,7 +233,7 @@ class StockRepositories (
     }
    suspend fun insertTry(product: Product, brand: String, cath: String){ withContext(Dispatchers.IO){ productDao.inserProduct(product.product_name,product.product_price,product.bestSelling,brand,cath) } }
     //get product id by sub  id
-    suspend fun getProdutId(subId:Int):Long?{ return withContext(Dispatchers.IO){ subProductDao.getProductIdBySubId(subId) } }
+    suspend fun getProdutId(subId:Long):Long?{ return withContext(Dispatchers.IO){ subProductDao.getProductIdBySubId(subId) } }
     suspend fun updateProduct(product: Product){ withContext(Dispatchers.IO){ productDao.update(product) } }
     suspend fun deleteProduct(id:Long){ withContext(Dispatchers.IO){ productDao.delete(id) } }
     suspend fun insertProduct(product: Product){
@@ -247,11 +251,12 @@ class StockRepositories (
     }
     suspend fun deleteSubProduct(subProduct: SubProduct){
         withContext(Dispatchers.IO){
-            subProductDao.delete(subProduct.sub_id)
+            subProductDao.delete(subProduct.sPCloudId)
         }
     }
     suspend fun insertSubProduct(subProduct: SubProduct){
         withContext(Dispatchers.IO){
+            subProduct.sPCloudId= System.currentTimeMillis()
             subProductDao.insert(subProduct)
         }
     }
@@ -270,14 +275,14 @@ class StockRepositories (
             subProductDao.unchecked_allCheckbox()
         }
     }
-    suspend fun getsubProductById(spId:Int): SubProduct{
+    suspend fun getsubProductById(spId: Long): SubProduct{
         return withContext(Dispatchers.IO){
             subProductDao.getSubProductIdBySubId(spId)
         }
     }
     //////////////////////////////////////Detail Warna////////////////////////////////////////////////
 
-    suspend fun getDetailWarnaList(id:Int):List<DetailMerchandiseModel>{
+    suspend fun getDetailWarnaList(id: Long):List<DetailMerchandiseModel>{
         return withContext(Dispatchers.IO){
             detailWarnaDao.getDetailWarnaBySubId(id)
         }
@@ -308,13 +313,13 @@ class StockRepositories (
         }
     }
 
-    suspend fun deleteDetailWarnaBySubId(subId:Int){
+    suspend fun deleteDetailWarnaBySubId(subId: Long){
         withContext(Dispatchers.IO){
             detailWarnaDao.deleteDetailWarnaBySubId(subId)
         }
     }
 
-    suspend fun selectRetailBySumId(subId:Int):List<DetailMerchandiseModel>?{
+    suspend fun selectRetailBySumId(subId: Long):List<DetailMerchandiseModel>?{
         return withContext(Dispatchers.IO){
              detailWarnaDao.getRetaiBySubId(subId)
         }
@@ -338,7 +343,7 @@ class StockRepositories (
 
 
 
-    suspend fun isDetailWarnaExist(subId:Int,net:Double):DetailWarnaTable?{
+    suspend fun isDetailWarnaExist(subId: Long, net:Double):DetailWarnaTable?{
         return withContext(Dispatchers.IO){
             detailWarnaDao.getDetailBySubIdAndNet(subId,net)
         }

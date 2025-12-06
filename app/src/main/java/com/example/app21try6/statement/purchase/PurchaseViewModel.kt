@@ -196,7 +196,8 @@ class PurchaseViewModel(application: Application,
             item.totalPrice=totalPrice.value?.toDouble() ?: 0.0
             item.ref=inventoryPurchase.value!!.ref
             item.status=Constants.BARANGLOGKET.masuk
-            item.subProductId=allSubProductFromDb.value?.find { it.subProduct.sub_name ==productName.value }?.subProduct?.sub_id ?: inventoryPurchase.value!!.subProductId
+            item.sPCloudId =allSubProductFromDb.value?.find { it.subProduct.sub_name ==productName.value }?.subProduct?.sPCloudId
+                ?: inventoryPurchase.value!!.sPCloudId
             item.suplierId=suplierDummy.value?.find { it.suplierName==suplierName.value }?.id ?: inventoryPurchase.value!!.suplierId
             item.purchaseDate= Date()
             if (index != -1) {
@@ -252,7 +253,8 @@ class PurchaseViewModel(application: Application,
         item.totalPrice=totalPrice.value?.toDouble() ?: 0.0
         item.ref=UUID.randomUUID().toString()
         item.status="PENDING"
-        item.subProductId=allSubProductFromDb.value?.find { it.subProduct.sub_name ==productName.value }?.subProduct?.sub_id ?: 0
+        item.sPCloudId =allSubProductFromDb.value?.find { it.subProduct.sub_name ==productName.value }?.subProduct?.sPCloudId
+            ?: 0
         item.suplierId=suplierDummy.value?.find { it.suplierName==suplierName.value }?.id ?: null
         item.purchaseDate= Date()
         item.expensesId=id
@@ -280,7 +282,7 @@ class PurchaseViewModel(application: Application,
             for (i in inventoryList){
                 if (i.status!="DISCOUNT"){
                     val subDetail= DetailWarnaTable()
-                    subDetail.subId=i.subProductId!!
+                    subDetail.sPCloudId =i.sPCloudId!!
                     subDetail.batchCount=i.batchCount
                     subDetail.net=i.net
                     subDetail.ket
@@ -292,8 +294,8 @@ class PurchaseViewModel(application: Application,
                     val inventoryLog=InventoryLog()
                     inventoryLog.detailWarnaRef=subDetail.ref
                     inventoryLog.barangLogDate=i.purchaseDate
-                    inventoryLog.subProductId=i.subProductId
-                    inventoryLog.productCloudId =getProductId(i.subProductId!!)
+                    inventoryLog.sPCloudId =i.sPCloudId
+                    inventoryLog.productCloudId =getProductId(i.sPCloudId!!)
                     inventoryLog.brandId=getBrandId(inventoryLog.productCloudId ?:0)
                     inventoryLog.barangLogDate=i.purchaseDate
                     inventoryLog.barangLogRef=UUID.randomUUID().toString()
@@ -545,7 +547,7 @@ class PurchaseViewModel(application: Application,
             productDao.getBrandIdByProductId(productId)
         }
     }
-    private suspend fun getProductId(subId:Int?):Long?{
+    private suspend fun getProductId(subId:Long?):Long?{
         return withContext(Dispatchers.IO){
             subProductDao.getProductIdBySubId(subId)
         }

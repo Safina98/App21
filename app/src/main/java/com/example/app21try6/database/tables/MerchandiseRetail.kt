@@ -12,8 +12,8 @@ import java.util.Date
     foreignKeys = [
         ForeignKey(
             entity = SubProduct::class,
-            parentColumns = ["sub_id"],
-            childColumns = ["sub_id"],
+            parentColumns = ["sPCloudId"],
+            childColumns = ["sPCloudId"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
         )
@@ -22,8 +22,8 @@ import java.util.Date
 data class MerchandiseRetail(
     @PrimaryKey(autoGenerate = true)
     var id:Int=0,
-    @ColumnInfo(name="sub_id")
-    var sub_id: Int=0,//foreignkey
+    @ColumnInfo(name="sPCloudId")
+    var sPCloudId: Long =0,//foreignkey
     @ColumnInfo(name="net")
     var net:Double=0.0,
     @ColumnInfo(name="ref")
@@ -31,14 +31,14 @@ data class MerchandiseRetail(
     @ColumnInfo(name="date")
     var date: Date = Date(),
     @ColumnInfo(name="is_deleted")
-    var isDeleted: Boolean = false, //newly added cloumn
+    var isDeleted: Boolean = false,
     @ColumnInfo(name = "mRCloudId")
-    var mRCloudId: Long = 0L,//newly added cloumn
+    var mRCloudId: Long = 0L,
     @ColumnInfo(name="needs_syncs")
-    var needsSyncs:Int=1,//newly added cloumn
+    var needsSyncs:Int=1,
     //@ColumnInfo(name = "initial_net")
-   @Ignore
-    var initialNet:Double=0.0 ,//new column
+    @Ignore
+    var initialNet:Double=0.0,//new column
     @Ignore
     var cutCount:Int=0
 )

@@ -27,8 +27,9 @@ import androidx.room.*
     ]
 )
 data class SubProduct(
-    @PrimaryKey(autoGenerate = true)
-    var sub_id:Int = 0,
+    @PrimaryKey
+    @ColumnInfo(name = "sPCloudId")
+    var sPCloudId: Long = 0L,
     @ColumnInfo(name="sub_name")
     var sub_name:String = "emtpy",
     @ColumnInfo(name="roll_u")
@@ -49,8 +50,6 @@ data class SubProduct(
     var discountId:Int?=null,
     @ColumnInfo(name="is_deleted")
     var isDeleted: Boolean = false, //newly added cloumn
-    @ColumnInfo(name = "sPCloudId")
-    var sPCloudId: Long = 0L,//newly added cloumn
     @ColumnInfo(name="needs_syncs")
     var needsSyncs:Int=1//newly added cloumn
 )

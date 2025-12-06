@@ -34,7 +34,7 @@ interface TransDetailDao {
     @Query("""
     SELECT td.*, p.productCloudId, p.product_name,p.discountId as discount_id, p.product_price as product_price
     FROM trans_detail_table td
-    INNER JOIN sub_table sp ON td.sub_id = sp.sub_id
+    INNER JOIN sub_table sp ON td.sPCloudId = sp.sPCloudId
     INNER JOIN product_table p ON sp.productCloudId = p.productCloudId
     WHERE td.tSCloudId = :transactionSummaryId
 """)
@@ -71,12 +71,11 @@ interface TransDetailDao {
     fun deteleAnItemTransDetailSub(tSCloudId:Long,name:String)
 
 
-    @Query("SELECT s.sub_id AS sub_product_id," +
+    @Query("SELECT s.sPCloudId AS sPCloudId," +
             "s.sub_name AS item_name," +
             "s.is_checked AS selected ," +
             "p.product_price AS item_price," +
             "p.product_price AS item_default_price," +
-
             "t.qty as qty,t.tDCloudId as trans_detail_id" +
             " FROM sub_table s" +
             " JOIN product_table p ON (S.productCloudId=P.productCloudId) " +
@@ -95,12 +94,12 @@ interface TransDetailDao {
             product_table.product_name AS product_name,
             sub_table.sub_name AS sub_name,
             product_table.productCloudId AS productCloudId,
-            trans_detail_table.sub_id AS sub_id,
+            trans_detail_table.sPCloudId AS sPCloudId,
             trans_detail_table.product_capital AS product_capital,
             trans_detail_table.trans_price AS price,
             trans_detail_table.total_price AS total_income
         FROM trans_detail_table
-        JOIN sub_table ON trans_detail_table.sub_id = sub_table.sub_id
+        JOIN sub_table ON trans_detail_table.sPCloudId = sub_table.sPCloudId
         JOIN category_table ON sub_table.cath_code = category_table.categoryCloudId
         JOIN product_table ON sub_table.productCloudId = product_table.productCloudId
     """)
@@ -116,12 +115,12 @@ interface TransDetailDao {
             product_table.product_name AS product_name,
             sub_table.sub_name AS sub_name,
             product_table.productCloudId AS productCloudId,
-            trans_detail_table.sub_id AS sub_id,
+            trans_detail_table.sPCloudId AS sPCloudId,
             trans_detail_table.product_capital AS product_capital,
             trans_detail_table.trans_price AS price,
             trans_detail_table.total_price AS total_income
         FROM trans_detail_table
-        JOIN sub_table ON trans_detail_table.sub_id = sub_table.sub_id
+        JOIN sub_table ON trans_detail_table.sPCloudId = sub_table.sPCloudId
         JOIN category_table ON sub_table.cath_code = category_table.categoryCloudId
         JOIN product_table ON sub_table.productCloudId = product_table.productCloudId
     """)
@@ -134,7 +133,7 @@ interface TransDetailDao {
         d.trans_item_name,
         d.qty,
         d.trans_detail_date AS tans_detail_date,
-        d.sub_id,
+        d.sPCloudId,
         d.unit_qty,
         d.is_cutted,
         s.cust_name,

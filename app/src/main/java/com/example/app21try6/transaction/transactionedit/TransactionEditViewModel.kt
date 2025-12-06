@@ -166,7 +166,7 @@ class TransactionEditViewModel(
     fun updateTransDetail(transactionDetail: TransactionDetail, i: Double){
         viewModelScope.launch {
             transactionDetail.qty = transactionDetail.qty + i
-            val product=stockRepo.getProductBySubId(transactionDetail.sub_id?:0)
+            val product=stockRepo.getProductBySubId(transactionDetail.sPCloudId ?:0)
             transactionDetail.trans_price= calculatePriceByQty(transactionDetail.qty,product!!.product_price)
             transactionDetail.total_price = transactionDetail.trans_price * transactionDetail.qty * transactionDetail.unit_qty
             transactionDetail.needsSyncs=1
@@ -184,7 +184,7 @@ class TransactionEditViewModel(
                 }
                 else {
                     //get product by id
-                    val product = stockRepo.getProductBySubId(transactionDetail.sub_id?:-1)
+                    val product = stockRepo.getProductBySubId(transactionDetail.sPCloudId ?:-1)
                     if (selectedItem=="ROLL") {
                         transactionDetail.unit_qty=product?.default_net?:1.0
 

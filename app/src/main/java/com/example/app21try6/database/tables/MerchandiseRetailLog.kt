@@ -5,7 +5,7 @@ import java.util.Date
 data class MerchandiseRetailLog(
     var id:Long=0L,
     //foreign key sub_table sub_id
-    var subId:Int=0,
+    var subId:Long=0L,
     //foreign key detail_warna_table ref
     //var detailWarnaRef:String="", //not recorded
     var transDetailId:Long?=null,

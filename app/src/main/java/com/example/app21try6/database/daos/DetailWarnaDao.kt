@@ -55,38 +55,38 @@ interface DetailWarnaDao {
     @Query("DELETE FROM detail_warna_table WHERE id=:id")
     fun delete(id:Int)
 
-    @Query("DELETE FROM detail_warna_table WHERE subId=:subId")
-    fun deleteDetailWarnaBySubId(subId:Int)
+    @Query("DELETE FROM detail_warna_table WHERE sPCloudId=:subId")
+    fun deleteDetailWarnaBySubId(subId:Long)
 
     @Query("DELETE FROM merchandise_table WHERE id =:id")
     fun deleteMerchandise(id:Int)
 
     @Query("SELECT \n" +
             "    id, \n" +
-            "    sub_id AS sub_id, \n" +
+            "    sPCloudId AS sPCloudId, \n" +
             "    ref, \n" +
             "    net, \n" +
             "    NULL AS batchCount, \n" +
             "    NULL AS ket, \n" +
             "    0 AS selectedQty, \n" +
             "    date AS date \n" +
-            "FROM merchandise_table \n WHERE sub_id=:subId")
-    fun getRetaiBySubId(subId:Int):List<DetailMerchandiseModel>
+            "FROM merchandise_table \n WHERE sPCloudId=:subId")
+    fun getRetaiBySubId(subId:Long):List<DetailMerchandiseModel>
 
     @Query("SELECT \n" +
             "    id, \n" +
-            "    subId AS sub_id, \n" +
+            "    sPCloudId AS sPCloudId, \n" +
             "    ref, \n" +
             "    net, \n" +
             "    batchCount, \n" +
             "    ket, \n" +
             "    0 AS selectedQty, \n" +
             "    NULL AS date \n" +
-            "FROM detail_warna_table\n WHERE subId=:subId")
-    fun getDetailWarnaBySubId(subId:Int):List<DetailMerchandiseModel>
+            "FROM detail_warna_table\n WHERE sPCloudId=:subId")
+    fun getDetailWarnaBySubId(subId:Long):List<DetailMerchandiseModel>
     //if the combination of net and sub_id exist update, if not insert
-    @Query("SELECT * FROM detail_warna_table WHERE subId = :subId AND net = :net LIMIT 1")
-    fun getDetailBySubIdAndNet(subId: Int, net: Double): DetailWarnaTable?
+    @Query("SELECT * FROM detail_warna_table WHERE sPCloudId = :subId AND net = :net LIMIT 1")
+    fun getDetailBySubIdAndNet(subId: Long, net: Double): DetailWarnaTable?
 
     @Transaction
     fun insertDetailWarnaAndLog(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog) {

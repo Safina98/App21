@@ -28,7 +28,7 @@ class SubViewModel (
     private val parameterBrandId:Long,
     private val ctgId:Long,
     private val tSId: Long,
-    private val parameterSubId:Int,
+    private val parameterSubId: Long,
     val sum_id: Long,
     application: Application
 ): AndroidViewModel(application){
@@ -68,9 +68,9 @@ class SubViewModel (
 
 
     fun toggleSelectedSubProductId(subProduct: SubProduct?) {
-        _selectedSubProduct.value = if (_selectedSubProduct.value?.sub_id ==subProduct?.sub_id) null else subProduct
+        _selectedSubProduct.value = if (_selectedSubProduct.value?.sPCloudId ==subProduct?.sPCloudId) null else subProduct
     }
-    fun getSubProductById(spId:Int){
+    fun getSubProductById(spId:Long){
         viewModelScope.launch {
            val subProduct= stockRepo.getsubProductById(spId)
             toggleSelectedSubProductId(subProduct)
@@ -139,7 +139,7 @@ class SubViewModel (
             for(p in pList){
                 p.roll_u=0
                 stockRepo.updateSubProduct(p)
-                stockRepo.deleteDetailWarnaBySubId(p.sub_id)
+                stockRepo.deleteDetailWarnaBySubId(p.sPCloudId)
             }
         }
     }
@@ -158,7 +158,7 @@ class SubViewModel (
         }
     }
 
-    fun getDetailWarnaList(id:Int?){
+    fun getDetailWarnaList(id: Long?){
         uiScope.launch {
             val list= if (id!=null)stockRepo.getDetailWarnaList(id) else listOf()
             _detailWarnaList.value=list
@@ -166,14 +166,14 @@ class SubViewModel (
     }
     fun insertDetailWarna(batchCount: Double, net: Double) {
         uiScope.launch {
-            val subId = _selectedSubProduct.value?.sub_id ?: return@launch
+            val subId = _selectedSubProduct.value?.sPCloudId ?: return@launch
             val productId = stockRepo.getProdutId(subId) ?: return@launch
             val brandId = stockRepo.getBrandId(productId) ?: return@launch
             val existingDetailWarna = stockRepo.isDetailWarnaExist(subId, net)
             if (existingDetailWarna == null) {
                 // Insert new record
                 val newDetailWarna = DetailWarnaTable(
-                    subId = subId,
+                    sPCloudId = subId,
                     net = net,
                     batchCount = batchCount,
                     ket = "Stok Awal",
@@ -194,17 +194,17 @@ class SubViewModel (
     fun deleteDetailWarna(detailWarnaModel: DetailMerchandiseModel){
         uiScope.launch {
             var detailWarnaTable=detailWarnaModel.toDetailWarnaTable()
-            val productId = stockRepo.getProdutId(detailWarnaTable.subId) ?: return@launch
+            val productId = stockRepo.getProdutId(detailWarnaTable.sPCloudId) ?: return@launch
             val brandId = stockRepo.getBrandId(productId) ?: return@launch
             stockRepo.deleteDetailWarna(detailWarnaTable,createInventoryLog(detailWarnaTable, detailWarnaTable.batchCount,productId, brandId,"Dihapus"),null)
-            getDetailWarnaList(detailWarnaTable.subId)
+            getDetailWarnaList(detailWarnaTable.sPCloudId)
         }
     }
     fun trackDetailWarna(detailWarnaModel: DetailMerchandiseModel){
         uiScope.launch {
             val detailWarnaTable=detailWarnaModel.toDetailWarnaTable()
             detailWarnaTable.batchCount -=1
-            val productId = stockRepo.getProdutId(detailWarnaTable.subId) ?: return@launch
+            val productId = stockRepo.getProdutId(detailWarnaTable.sPCloudId) ?: return@launch
             val brandId = stockRepo.getBrandId(productId) ?: return@launch
             val inventoryLog =createInventoryLog(detailWarnaTable,detailWarnaTable.batchCount,productId,brandId,"Keluar Retail")
             val merchandiseRetail=createMerchandiseRetail(detailWarnaModel)
@@ -213,13 +213,13 @@ class SubViewModel (
                 stockRepo.updateDetailWarna(detailWarnaTable,inventoryLog,merchandiseRetail)
             else
                 stockRepo.deleteDetailWarna(detailWarnaTable,inventoryLog,merchandiseRetail)
-            getDetailWarnaList(detailWarnaTable.subId)
-            getRetailList(detailWarnaTable.subId)
+            getDetailWarnaList(detailWarnaTable.sPCloudId)
+            getRetailList(detailWarnaTable.sPCloudId)
         }
 
     }
 
-    fun getRetailList(subId:Int?){
+    fun getRetailList(subId: Long?){
         uiScope.launch {
             val list= if (subId!=null)stockRepo.selectRetailBySumId(subId) else listOf()
             _retailList.value=list
@@ -228,7 +228,7 @@ class SubViewModel (
     fun deleteRetail(model: DetailMerchandiseModel){
         uiScope.launch {
             stockRepo.deleteRetail(model.id)
-            getRetailList(model.sub_id)
+            getRetailList(model.sPCloudId)
         }
     }
     fun updateRetail( detailWarnaModel: DetailMerchandiseModel){
@@ -236,13 +236,13 @@ class SubViewModel (
             val merchandiseRetail = createMerchandiseRetail(detailWarnaModel)
             merchandiseRetail.id = detailWarnaModel.id
             stockRepo.updateDetailRetail(merchandiseRetail)
-            getRetailList(detailWarnaModel.sub_id)
+            getRetailList(detailWarnaModel.sPCloudId)
         }
     }
     fun DetailMerchandiseModel.toDetailWarnaTable(): DetailWarnaTable {
         return DetailWarnaTable(
             id = this.id,
-            subId = this.sub_id,
+            sPCloudId = this.sPCloudId,
             ref = this.ref,
             net = this.net,
             batchCount = this.batchCount ?: 0.0, // Handle null with default value
@@ -253,7 +253,7 @@ class SubViewModel (
     fun createInventoryLog(detailWarnaTable: DetailWarnaTable,batchCount:Double,productId:Long,brandId:Long,ket:String):InventoryLog{
         val inventoryLog=InventoryLog()
         inventoryLog.detailWarnaRef=detailWarnaTable.ref
-        inventoryLog.subProductId=detailWarnaTable.subId
+        inventoryLog.sPCloudId =detailWarnaTable.sPCloudId
         inventoryLog.isi=detailWarnaTable.net
         inventoryLog.pcs=batchCount.toInt()
         inventoryLog.barangLogKet=ket
@@ -269,7 +269,7 @@ class SubViewModel (
     fun createMerchandiseRetail(detailWarnaTable: DetailMerchandiseModel):MerchandiseRetail{
         Log.i("Check","${detailWarnaTable.id}")
         val merchandiseRetail=MerchandiseRetail()
-        merchandiseRetail.sub_id=detailWarnaTable.sub_id
+        merchandiseRetail.sPCloudId =detailWarnaTable.sPCloudId
         merchandiseRetail.net=detailWarnaTable.net
         merchandiseRetail.ref=UUID.randomUUID().toString()
         merchandiseRetail.date=detailWarnaTable.date?:Date()

@@ -20,8 +20,8 @@ import java.util.Date
         ),
         ForeignKey(
             entity = SubProduct::class,
-            parentColumns = ["sub_id"],
-            childColumns = ["subProductId"],
+            parentColumns = ["sPCloudId"],
+            childColumns = ["sPCloudId"],
             onDelete = ForeignKey.SET_NULL,
             onUpdate = ForeignKey.SET_NULL
         ),
@@ -39,8 +39,8 @@ import java.util.Date
 data class InventoryPurchase(
     @PrimaryKey(autoGenerate = true)
     var id: Int=0,
-    @ColumnInfo(name="subProductId")
-    var subProductId:Int?=null,//Foreign key
+    @ColumnInfo(name="sPCloudId")
+    var sPCloudId: Long? =null,//Foreign key
     @ColumnInfo(name="expensesId")
     var expensesId:Int?=null,//Foreign key
     @ColumnInfo(name="suplierId")

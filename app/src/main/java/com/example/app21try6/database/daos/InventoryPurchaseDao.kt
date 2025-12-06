@@ -34,8 +34,8 @@ interface InventoryPurchaseDao {
 
     @Insert
     fun insertLog(list: List<InventoryLog>)
-    @Query("SELECT * FROM detail_warna_table WHERE subId = :subId AND net = :net LIMIT 1")
-    suspend fun getDetailWarnaBySubIdAndNet(subId: Int, net: Double): DetailWarnaTable?
+    @Query("SELECT * FROM detail_warna_table WHERE sPCloudId = :subId AND net = :net LIMIT 1")
+    suspend fun getDetailWarnaBySubIdAndNet(subId: Long, net: Double): DetailWarnaTable?
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertDetailWarna(detailWarna: DetailWarnaTable): Long
@@ -43,8 +43,8 @@ interface InventoryPurchaseDao {
     @Query("SELECT * FROM inventory_purchase_table WHERE id = :id")
     suspend fun getPurchaseById(id:Int): InventoryPurchase?
 
-    @Query("UPDATE detail_warna_table SET batchCount = batchCount + :batchCount WHERE subId = :subId AND net = :net")
-    suspend fun updateBatchCount(subId: Int, net: Double, batchCount: Double)
+    @Query("UPDATE detail_warna_table SET batchCount = batchCount + :batchCount WHERE sPCloudId = :subId AND net = :net")
+    suspend fun updateBatchCount(subId: Long, net: Double, batchCount: Double)
 
     @Insert
     fun insertExpense(expenses: Expenses):Long
@@ -59,14 +59,14 @@ interface InventoryPurchaseDao {
         insertLog(inventoryLogList)
         //insert detailWarnaTable if combination of net and sub id not exist, if ecist than update the batch count (olad batch count = new batchcount + onld batch councount)
         for (detailWarna in detailWarnaList) {
-            val existingDetail = getDetailWarnaBySubIdAndNet(detailWarna.subId, detailWarna.net)
+            val existingDetail = getDetailWarnaBySubIdAndNet(detailWarna.sPCloudId, detailWarna.net)
             if (existingDetail == null) {
                 // Insert new entry if not exists
                 insertDetailWarna(detailWarna)
             } else {
                 // Update batch count if exists
                 updateBatchCount(
-                    detailWarna.subId,
+                    detailWarna.sPCloudId,
                     detailWarna.net,
                     detailWarna.batchCount
                 )

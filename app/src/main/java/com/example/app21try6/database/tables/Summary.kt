@@ -16,8 +16,8 @@ import java.util.*
                 onDelete = ForeignKey.CASCADE,
                 onUpdate = ForeignKey.SET_NULL),
                 ForeignKey(entity = SubProduct::class,
-                        parentColumns = ["sub_id"],
-                        childColumns = ["sub_id"],
+                        parentColumns = ["sPCloudId"],
+                        childColumns = ["sPCloudId"],
                         onDelete = ForeignKey.CASCADE,
                         onUpdate = ForeignKey.SET_NULL)]
         )
@@ -47,8 +47,8 @@ data class Summary(
         var total_income : Double = 0.0,
     @ColumnInfo(name = "productCloudId")
         var productCloudId: Long? = null,
-    @ColumnInfo(name = "sub_id")
-        var sub_id: Int? = null,
+    @ColumnInfo(name = "sPCloudId")
+        var sPCloudId: Long? = null,
         //new added column
     @ColumnInfo(name = "product_capital")
         var product_capital:Int=0,

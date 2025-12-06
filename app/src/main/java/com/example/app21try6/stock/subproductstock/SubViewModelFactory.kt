@@ -16,7 +16,7 @@ class SubViewModelFactory(private val stockRepo: StockRepositories,
                           private val brandId:Long,
                           private val ctgId:Long,
                           private val tSId:Long,
-                          private val sPId:Int,
+                          private val sPId: Long,
                           private val sum_id:Long,
                           private val application: Application
 ): ViewModelProvider.Factory{

@@ -15,8 +15,8 @@ import java.util.Date
                 onDelete = ForeignKey.CASCADE,
                 onUpdate = ForeignKey.CASCADE),
                 ForeignKey(entity = SubProduct::class,
-                        parentColumns = ["sub_id"],
-                        childColumns = ["sub_id"],
+                        parentColumns = ["sPCloudId"],
+                        childColumns = ["sPCloudId"],
                         onDelete = ForeignKey.SET_NULL,
                         onUpdate = ForeignKey.CASCADE),
         ])
@@ -46,8 +46,8 @@ data class TransactionDetail(
         var unit_qty:Double=1.0,
     @ColumnInfo(name = "item_position")
         var item_position:Int=0,
-    @ColumnInfo(name = "sub_id")
-        var sub_id:Int? = null,
+    @ColumnInfo(name = "sPCloudId")
+        var sPCloudId: Long? = null,
     @ColumnInfo(name = "product_capital")
         var product_capital:Int=0,
     @ColumnInfo(name="is_deleted")

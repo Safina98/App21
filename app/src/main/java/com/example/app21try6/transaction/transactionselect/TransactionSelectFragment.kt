@@ -49,7 +49,7 @@ class TransactionSelectFragment : Fragment() {
 
         viewModel = ViewModelProvider(requireActivity(), TransactionSelectViewModelFactory(stockRepo,transRepo,date[0].toLong()!!,date,application))
             .get(TransactionSelectViewModel::class.java)
-        var i = date!![1].toInt()
+        var i = date!![1].toLong()
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             viewModel.resetTransModel()
             findNavController().popBackStack()
