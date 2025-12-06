@@ -5,22 +5,14 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.app21try6.calculatePriceByQty
-import com.example.app21try6.database.daos.CustomerDao
-import com.example.app21try6.database.daos.DiscountDao
-import com.example.app21try6.database.daos.DiscountTransDao
-import com.example.app21try6.database.daos.ProductDao
-import com.example.app21try6.database.daos.TransDetailDao
-import com.example.app21try6.database.daos.TransSumDao
 import com.example.app21try6.database.repositories.DiscountRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.database.tables.DiscountTransaction
-import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.formatRupiah
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
@@ -31,7 +23,7 @@ class TransactionEditViewModel(
     private val transRepo:TransactionsRepository,
     private val discountRepo:DiscountRepository,
     application: Application,
-    var id:Int
+    var id: Long
 ):AndroidViewModel(application){
 
 
@@ -55,8 +47,8 @@ class TransactionEditViewModel(
     //Navigation
     private val _navigateToVendible = MutableLiveData<Array<String>>()
     val navigateToVendible: LiveData<Array<String>> get() = _navigateToVendible
-    private val _navigateToDetail = MutableLiveData<Int>()
-    val navigateToDetail: LiveData<Int> get() = _navigateToDetail
+    private val _navigateToDetail = MutableLiveData<Long>()
+    val navigateToDetail: LiveData<Long> get() = _navigateToDetail
 
 
 
@@ -116,7 +108,7 @@ class TransactionEditViewModel(
                                 discountId = discount.discountId,
                                 discTransRef = UUID.randomUUID().toString(),
                                 discTransName = discount.discountName,
-                                sum_id = transactionSummary.sum_id,
+                                tSCloudId = transactionSummary.tSCloudId,
                                 discTransDate = transactionSummary.trans_date ?: Date(),
                                 discountAppliedValue = discountAppliedValue
                             )
@@ -127,7 +119,7 @@ class TransactionEditViewModel(
 
             val existingDiscountList = discountRepo.getDiscountTransactionList(id)
             discountTransactions.forEach { discountTransaction ->
-                val existingDiscount = discountRepo.selectExistingDiscount(discountTransaction.sum_id, discountTransaction.discTransName)
+                val existingDiscount = discountRepo.selectExistingDiscount(discountTransaction.tSCloudId, discountTransaction.discTransName)
                 if (existingDiscount == null) {
                     discountTransaction.dTCloudId=System.currentTimeMillis()
                     discountRepo.insertTransactionDiscount(discountTransaction)
@@ -219,7 +211,7 @@ class TransactionEditViewModel(
 
     /////////////////////////////////Transaction Summary////////////////////////////
     //get custName value
-    fun getCustomerName(idm:Int){
+    fun getCustomerName(idm:Long){
         viewModelScope.launch {
             val customerName = transRepo.getTransactionSummaryById(id).cust_name
             custName.value = customerName
@@ -321,7 +313,7 @@ class TransactionEditViewModel(
         }
     }
     fun onNavigatetoVendible(){
-        _navigateToVendible.value= arrayOf(mutableTransSum.value!!.sum_id.toString(),"-1")
+        _navigateToVendible.value= arrayOf(mutableTransSum.value!!.tSCloudId.toString(),"-1")
     }
     @SuppressLint("NullSafeMutableLiveData")
     fun onNavigatedtoVendible(){

@@ -61,7 +61,7 @@ class AllTransactionsFragment : Fragment() {
             AllTransClickListener {transaction->
                 if (binding.transactionDetailFragmentContainer != null) {
                     val bundle = Bundle().apply {
-                        putInt("id", transaction.sum_id)
+                        putLong("id", transaction.tSCloudId)
                     }
                     val transactionDetailFragment = TransactionDetailFragment().apply {
                         arguments = bundle
@@ -70,10 +70,10 @@ class AllTransactionsFragment : Fragment() {
                         .replace(binding.transactionDetailFragmentContainer!!.id, transactionDetailFragment)
                         .commit()
                     //for toggle color
-                    viewModel.getSelectedTransSumId(transaction.sum_id)
+                    viewModel.getSelectedTransSumId(transaction.tSCloudId)
 
                 } else {
-                    viewModel.onNavigatetoTransDetail(transaction.sum_id)
+                    viewModel.onNavigatetoTransDetail(transaction.tSCloudId)
                 }
 
             },

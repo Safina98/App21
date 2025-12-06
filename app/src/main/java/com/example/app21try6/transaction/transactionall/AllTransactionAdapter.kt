@@ -19,7 +19,7 @@ import java.util.Locale
 
 class AllTransactionAdapter(val clickListener:AllTransClickListener,
                             val checkBoxListener: CheckBoxListenerTransAll,
-                            var selectedItemId:Int?
+                            var selectedItemId:Long?
 
 )
     :ListAdapter<TransactionSummary,AllTransactionAdapter.MyViewHolder>(AllTransDiffCallBack()) {
@@ -52,7 +52,7 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
             }
             cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, color))
             //binding.txtTglTrans.text = item.trans_date
-            if (item.sum_id<0){
+            if (item.tSCloudId <0){
                 val i = String.format(Locale.US,"%.2f", item.total_trans)
                 binding.txtTglTrans.text=i.toString()
                 binding.txtTotalTrans.visibility=View.GONE
@@ -98,7 +98,7 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val item = getItem(position)
-        val isIdSelected = item.sum_id == selectedItemId
+        val isIdSelected = item.tSCloudId == selectedItemId
         holder.bind(
             getItem(position),
             clickListener,

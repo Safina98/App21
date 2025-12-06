@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/medium_margin"
             android:textAlignment="viewEnd"
-            android:text="@{`Receipt: ` + viewModel.transSum.sum_id}"
+            android:text="@{`Receipt: ` + viewModel.transSum.tSCloudId}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/txt_date"
             style="@style/texr_detail_style" />

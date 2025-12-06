@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.app21try6.database.tables.TransactionSummary
-import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.formatDateRange
 import com.example.app21try6.formatRupiah
@@ -56,8 +55,8 @@ class AllTransactionViewModel(application: Application,val transRepo: Transactio
 
     val queryM=MutableLiveData<String?>()
 
-    private val _navigateToTransDetail = MutableLiveData<Int>()
-    val navigateToTransDetail: LiveData<Int> get() = _navigateToTransDetail
+    private val _navigateToTransDetail = MutableLiveData<Long>()
+    val navigateToTransDetail: LiveData<Long> get() = _navigateToTransDetail
     //var itemCount :LiveData<String> = allTransactionSummary.map { items-> "${items.size} transaksi" }
     var itemCount=MutableLiveData<String>("")
    /*
@@ -72,8 +71,8 @@ class AllTransactionViewModel(application: Application,val transRepo: Transactio
 
     val isTextViewVisible = MutableLiveData<Boolean>(true)
 
-    private val _selectedTransSum= MutableLiveData<Int?>()
-    val selectedTransSum:LiveData<Int?>get() = _selectedTransSum
+    private val _selectedTransSum= MutableLiveData<Long?>()
+    val selectedTransSum:LiveData<Long?>get() = _selectedTransSum
 
     private var offset = 0
     private val limit = 50
@@ -113,7 +112,7 @@ class AllTransactionViewModel(application: Application,val transRepo: Transactio
         _uiMode.value = mode
     }
 
-    fun getSelectedTransSumId(id:Int?){
+    fun getSelectedTransSumId(id:Long?){
         if (_selectedTransSum.value==id){
             _selectedTransSum.value=null
         }else {_selectedTransSum.value=id}
@@ -134,11 +133,11 @@ class AllTransactionViewModel(application: Application,val transRepo: Transactio
             queryM.value=query
             val list = mutableListOf<TransactionSummary>()
             if(!query.isNullOrEmpty()) {
-                val sumId=query.toIntOrNull()
+                val sumId=query.toLongOrNull()
                 val listFilterByTransName= transRepo.filterTransSum(query,sumId, limit, offset,_selectedStartDate.value,_selectedEndDate.value)
                 getTransactionCount(selectedStartDate.value,selectedEndDate.value,query)
                 getTotalTransactionAfterDiscount(selectedStartDate.value,selectedEndDate.value,query)
-                val distinctList =  listFilterByTransName.distinctBy { it.sum_id }
+                val distinctList =  listFilterByTransName.distinctBy { it.tSCloudId }
                 _allTransactionSummary.value =distinctList
             } else {
                 queryM.value=null
@@ -265,7 +264,7 @@ class AllTransactionViewModel(application: Application,val transRepo: Transactio
     private fun performDataFiltering(startDate: Date?, endDate: Date?) {
         viewModelScope.launch {
             try {
-                val newLogs= transRepo.filterTransSum(queryM.value,queryM.value?.toIntOrNull(),limit,offset,startDate,endDate)
+                val newLogs= transRepo.filterTransSum(queryM.value,queryM.value?.toLongOrNull(),limit,offset,startDate,endDate)
                 if (newLogs.isNotEmpty()) {
                     offset += limit
                 }
@@ -293,7 +292,7 @@ class AllTransactionViewModel(application: Application,val transRepo: Transactio
     fun onStartDatePickerClicked(){ _isStartDatePickerClicked.value = false }
 
     //Navigation
-    fun onNavigatetoTransDetail(id:Int){ _navigateToTransDetail.value = id }
+    fun onNavigatetoTransDetail(id:Long){ _navigateToTransDetail.value = id }
     fun onNavigatedToTransDetail(){ this._navigateToTransDetail.value = null }
 
     override fun onCleared() {

@@ -10,8 +10,8 @@ import java.util.Date
 @Entity(tableName = "trans_detail_table",
         foreignKeys = [
                 ForeignKey(entity = TransactionSummary::class,
-                parentColumns = ["sum_id"],
-                childColumns = ["sum_id"],
+                parentColumns = ["tSCloudId"],
+                childColumns = ["tSCloudId"],
                 onDelete = ForeignKey.CASCADE,
                 onUpdate = ForeignKey.CASCADE),
                 ForeignKey(entity = SubProduct::class,
@@ -24,8 +24,8 @@ data class TransactionDetail(
     @PrimaryKey(autoGenerate = true)
         @ColumnInfo(name = "tDCloudId")
         var tDCloudId: Long = 0,
-    @ColumnInfo(name="sum_id")
-        var sum_id:Int = 0,
+    @ColumnInfo(name="tSCloudId")
+        var tSCloudId: Long = 0,
     @ColumnInfo(name = "trans_item_name")
         var trans_item_name:String = "",
     @ColumnInfo(name = "qty")

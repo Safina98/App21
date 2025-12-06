@@ -4,7 +4,7 @@ import java.util.Date
 
 data class TracketailWarnaModel (
     var tDCloudId:Long,
-    var sum_id:Int,
+    var tSCloudId:Long,
     var trans_item_name:String,
     var qty:Double,
     var tans_detail_date: Date?,

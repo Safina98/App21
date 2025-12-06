@@ -7,9 +7,6 @@ import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.formatRupiah
 import com.example.app21try6.database.models.PaymentModel
 import java.text.DecimalFormat
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import kotlin.math.abs
 
 class TextGenerator(
@@ -50,7 +47,7 @@ class TextGenerator(
         builder.append("$paddingStoreName $storeName $paddingStoreName\n")
         builder.append("$storeAddress\n")
         builder.append("$storePhone\n")
-        builder.append("Receipt: ${transsum.sum_id}" +" ".repeat(getPadding("Receipt Receipt :${transsum.sum_id} ${transsum.sum_id} Date : $currentDate","Right",50))+ "Date: $currentDate\n")
+        builder.append("Receipt: ${transsum.tSCloudId}" +" ".repeat(getPadding("Receipt Receipt :${transsum.tSCloudId} ${transsum.tSCloudId} Date : $currentDate","Right",50))+ "Date: $currentDate\n")
         builder.append("${transsum?.cust_name}\n")
         builder.append("-".repeat(getPadding("","Left",50))+"\n")
         //builder.append("Barang  Jumlah  Harga  Total\n")
@@ -141,7 +138,7 @@ class TextGenerator(
         builder.append("$storeAddress\n")
         builder.append("$storePhone\n")
         builder.append("Date: $currentDate\n")
-        builder.append("Receipt: ${transsum.sum_id}\n")
+        builder.append("Receipt: ${transsum.tSCloudId}\n")
         builder.append("-".repeat(getPadding("","Left",c))+"\n")
         builder.append("TOKO/BPK/IBU: ${transsum?.cust_name}\n")
         builder.append("Barang  Jumlah  Harga  Total\n")

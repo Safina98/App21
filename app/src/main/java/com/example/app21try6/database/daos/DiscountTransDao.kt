@@ -28,12 +28,12 @@ interface DiscountTransDao {
             "WHERE discTransId = :id")
     fun updateById(id: Int, newValue: Double)
 
-    @Query("SELECT * FROM discout_transaction_table WHERE sum_id=:sumId AND discTransName=:name")
-    fun selectDiscTransBySumIdAndDiscName(sumId:Int,name:String): DiscountTransaction?
+    @Query("SELECT * FROM discout_transaction_table WHERE tSCloudId=:sumId AND discTransName=:name")
+    fun selectDiscTransBySumIdAndDiscName(sumId:Long,name:String): DiscountTransaction?
 
     @Query("SELECT\n" +
             "    d.discTransId as id,\n" +
-            "    d.sum_id as sum_id,\n" +
+            "    d.tSCloudId,\n" +
             "    d.discountAppliedValue as payment_ammount,\n" +
             "    d.discountAppliedValue as paid,\n" +
             "    d.discTransDate as payment_date,\n" +
@@ -46,18 +46,18 @@ interface DiscountTransDao {
             "INNER JOIN\n" +
             "    trans_sum_table t\n" +
             "ON\n" +
-            "    d.sum_id = t.sum_id\n" +
+            "    d.tSCloudId = t.tSCloudId\n" +
             "LEFT JOIN\n" +
             "    discount_table dt ON d.discountId = dt.discountId\n" +
             "WHERE\n" +
-            "    d.sum_id = :sumId")
-    fun selectDiscAsPaymentModel(sumId:Int):LiveData<List<PaymentModel>>
+            "    d.tSCloudId= :sumId")
+    fun selectDiscAsPaymentModel(sumId:Long):LiveData<List<PaymentModel>>
 
-    @Query("SELECT * FROM discout_transaction_table WHERE sum_id =:sumId")
-    fun getDiscountListBySumId(sumId: Int):List<DiscountTransaction>
+    @Query("SELECT * FROM discout_transaction_table WHERE tSCloudId =:sumId")
+    fun getDiscountListBySumId(sumId: Long):List<DiscountTransaction>
 
-    @Query("SELECT SUM(d.discountAppliedValue) FROM discout_transaction_table d WHERE d.sum_id = :sumId")
-    fun getTotalDiscountBySumId(sumId: Int): LiveData<Double>
+    @Query("SELECT SUM(d.discountAppliedValue) FROM discout_transaction_table d WHERE d.tSCloudId = :sumId")
+    fun getTotalDiscountBySumId(sumId: Long): LiveData<Double>
     @Query("""
         UPDATE discout_transaction_table
         SET dTCloudId =:cloudId

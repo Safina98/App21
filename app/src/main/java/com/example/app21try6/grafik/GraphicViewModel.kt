@@ -15,23 +15,12 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.example.app21try6.database.tables.Category
-import com.example.app21try6.database.daos.CategoryDao
-import com.example.app21try6.database.tables.Product
-import com.example.app21try6.database.daos.ProductDao
-import com.example.app21try6.database.daos.SummaryDbDao
-import com.example.app21try6.database.daos.TransDetailDao
-import com.example.app21try6.database.daos.TransSumDao
-import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.getMonthName
-import com.example.app21try6.stock.brandstock.CategoryModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Calendar
@@ -255,13 +244,13 @@ class GraphicViewModel(
     fun getRvData(map: Map<String, Double>) {
         val sortedEntries = map.entries.sortedByDescending { it.value }
         val tsList = mutableListOf<TransactionSummary>()
-        var id = -1
+        var id = -1L
         for ((key, value) in sortedEntries) {
             // Create a new TransactionSummary object for each entry
             val item = TransactionSummary()
             item.cust_name = key
             item.total_trans = value
-            item.sum_id = id
+            item.tSCloudId = id
             tsList.add(item)
 
             id -= 1

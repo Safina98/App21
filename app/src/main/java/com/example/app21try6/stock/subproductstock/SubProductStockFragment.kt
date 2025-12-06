@@ -62,7 +62,7 @@ class SubProductStockFragment : Fragment() {
         Log.i("SUBPROBLEM","id[0] ${id?.get(0)}  id[1] ${id?.get(1)}  id[2] ${id?.get(2)}  id[3] ${id?.get(3)} id[4] ${id?.get(4)} ")
       //  val id_ = id?.map { it.toInt() }?.toTypedArray()
 
-       val viewModelFactory = SubViewModelFactory(stockRepo,transRepo,productId!!,brandId!!,ctgId!!,tDId!!, sPId!!,0,application)
+       val viewModelFactory = SubViewModelFactory(stockRepo,transRepo,productId!!,brandId!!,ctgId!!,tDId!!, sPId!!,0L,application)
         binding.lifecycleOwner =this
         viewModel = ViewModelProvider(this,viewModelFactory).get(SubViewModel::class.java)
         binding.subViewModel = viewModel

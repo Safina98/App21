@@ -14,8 +14,8 @@ import java.util.Date
     foreignKeys = [
         ForeignKey(
             entity = TransactionSummary::class,
-            parentColumns = ["sum_id"],
-            childColumns = ["sum_id"],
+            parentColumns = ["tSCloudId"],
+            childColumns = ["tSCloudId"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
         ),
@@ -32,8 +32,8 @@ import java.util.Date
 data class  Expenses (
     @PrimaryKey(autoGenerate = true)
     var id : Int = 0,
-    @ColumnInfo(name="sum_id")
-    var sum_id:Long? = null,
+    @ColumnInfo(name="tSCloudId")
+    var tSCloudId:Long? = null,
     @ColumnInfo(name="expense_category_id")
     var expense_category_id:Int = 0,
     @ColumnInfo(name="expense_name")

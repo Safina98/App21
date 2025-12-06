@@ -14,8 +14,8 @@ import java.util.Date
             onDelete = ForeignKey.SET_NULL,
             onUpdate = ForeignKey.CASCADE),
         ForeignKey(entity = TransactionSummary::class,
-            parentColumns = ["sum_id"],
-            childColumns = ["sum_id"],
+            parentColumns = ["tSCloudId"],
+            childColumns = ["tSCloudId"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE)])
 
@@ -26,8 +26,8 @@ data class DiscountTransaction(
     var discTransRef:String="",
     @ColumnInfo(name = "discountId" )
     var discountId:Int?=null,//foreign key
-    @ColumnInfo(name = "sum_id")
-    var sum_id:Int=0,//foreign key
+    @ColumnInfo(name = "tSCloudId")
+    var tSCloudId: Long =0,//foreign key
     @ColumnInfo(name = "discTransDate" )
     var discTransDate: Date= Date(),
     @ColumnInfo(name = "discTransName" )

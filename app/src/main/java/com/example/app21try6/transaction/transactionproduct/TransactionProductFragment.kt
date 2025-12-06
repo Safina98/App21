@@ -43,12 +43,12 @@ class TransactionProductFragment : Fragment() {
         val sumAndProductId= arguments?.let { VendibleFragmentArgs.fromBundle(it).date }
         var datee  = sumAndProductId!!.toMutableList()
 
-        viewModel = ViewModelProvider(requireActivity(), TransactionSelectViewModelFactory(stockRepo,transRepo,sumAndProductId[0].toInt()!!,sumAndProductId,application))
+        viewModel = ViewModelProvider(requireActivity(), TransactionSelectViewModelFactory(stockRepo,transRepo,sumAndProductId[0].toLong()!!,sumAndProductId,application))
             .get(TransactionSelectViewModel::class.java)
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        viewModel.setProductSumId(sumAndProductId[0]?.toInt())
+        viewModel.setProductSumId(sumAndProductId[0].toLongOrNull())
 
         val adapter = TransactionProductAdapter(ProductTransListener {
             //viewModel.getTransModel(it.product_id)

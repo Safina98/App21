@@ -8,19 +8,19 @@ import androidx.room.TypeConverters
 import com.example.app21try6.database.DateTypeConverter
 import java.util.Date
 
-
-@Entity(tableName = "paymen_table",
+//was paymen_table
+@Entity(tableName = "payment_table",
     foreignKeys = [ForeignKey(entity = TransactionSummary::class,
-        parentColumns = ["sum_id"],
-        childColumns = ["sum_id"],
+        parentColumns = ["tSCloudId"],
+        childColumns = ["tSCloudId"],
         onDelete = ForeignKey.CASCADE,
         onUpdate = ForeignKey.CASCADE)])
 @TypeConverters(DateTypeConverter::class)
 data class Payment(
     @PrimaryKey(autoGenerate = true)
     var id:Int = 0,
-    @ColumnInfo(name="sum_id")
-    var sum_id:Int = 0,
+    @ColumnInfo(name="tSCloudId")
+    var tSCloudId: Long = 0,
     @ColumnInfo(name="payment_ammount")
     var payment_ammount:Int = 0,
     @ColumnInfo(name="payment_date")

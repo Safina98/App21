@@ -23,7 +23,7 @@ class TransactionDetailViewModelFactory  (private val stockRepos: StockRepositor
                                           private val discountRepo: DiscountRepository,
 
     private val application: Application,
-                                          private val id:Int): ViewModelProvider.Factory{
+                                          private val id: Long): ViewModelProvider.Factory{
     @Suppress("unchecked_cast")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(TransactionDetailViewModel::class.java)) {

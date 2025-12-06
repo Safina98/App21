@@ -45,7 +45,7 @@ class TransactionDetailViewModel (
     val transRepo: TransactionsRepository,
     val discountRepo:DiscountRepository,
     application: Application,
-    var id:Int):AndroidViewModel(application){
+    var id: Long):AndroidViewModel(application){
 
     val transDetail = transRepo.getTransactionDetails(id)
     val transSum = transRepo.getTransactionSummary(id)
@@ -152,8 +152,8 @@ class TransactionDetailViewModel (
 
 
     //Navigations
-    private val _navigateToEdit = MutableLiveData<Int>()
-    val navigateToEdit: LiveData<Int> get() = _navigateToEdit
+    private val _navigateToEdit = MutableLiveData<Long>()
+    val navigateToEdit: LiveData<Long> get() = _navigateToEdit
 
     private val _navigateToSubProduct= MutableLiveData<Array<String>?>()
     val navigateToSubProduct: LiveData<Array<String>?> get() = _navigateToSubProduct
@@ -269,7 +269,7 @@ class TransactionDetailViewModel (
                 discount.discTransDate=Date()
                 discount.discTransName=paymentModel.name?:"Potongan: "
                 discount.discountAppliedValue=paymentModel.payment_ammount?.toDouble() ?: 0.0
-                discount.sum_id=id
+                discount.tSCloudId =id
                 discount.needsSyncs=1
                 discount.dTCloudId= System.currentTimeMillis()
                 discountRepo.insertTransactionDiscount(discount)
@@ -293,7 +293,7 @@ class TransactionDetailViewModel (
     private fun insertPayment(bayar: Payment){
         viewModelScope.launch {
             bayar.payment_date =Date()
-            bayar.sum_id = transSum.value?.sum_id ?:-1
+            bayar.tSCloudId = transSum.value?.tSCloudId ?:-1
             bayar.payment_ref = UUID.randomUUID().toString()
             bayar.paymentCloudId=System.currentTimeMillis()
             bayar.needsSyncs=1
@@ -312,7 +312,7 @@ class TransactionDetailViewModel (
         val bayar = Payment()
         bayar.payment_ammount= paymentModel.payment_ammount!!
         bayar.payment_date =paymentModel.payment_date
-        bayar.sum_id = transSum.value?.sum_id ?:-1
+        bayar.tSCloudId = transSum.value?.tSCloudId ?:-1
         bayar.payment_ref = paymentModel.ref?:""
         return bayar
     }

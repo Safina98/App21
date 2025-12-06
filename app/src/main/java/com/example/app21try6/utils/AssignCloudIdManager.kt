@@ -177,10 +177,10 @@ class AssignCloudIdManager(
 
         val transactionSummaryList = transactionRepository.getTransactionSummariesWithDuplicateCloudIds()
         transactionSummaryList.forEach { transactionSummary ->
-            Log.i("AssignCloudIdManager","${transactionSummary.sum_id}, ${transactionSummary.cust_name} ${transactionSummary.tSCloudId}")
+            Log.i("AssignCloudIdManager","${transactionSummary.tSCloudId}, ${transactionSummary.cust_name} ${transactionSummary.tSCloudId}")
             delay(1)
             val newId = System.currentTimeMillis()
-            transactionRepository.assignCloudIdToTransactionSummaryTable(newId, transactionSummary.sum_id
+            transactionRepository.assignCloudIdToTransactionSummaryTable(newId, transactionSummary.tSCloudId
             )
         }
         // ---------- Transaction Detail ----------

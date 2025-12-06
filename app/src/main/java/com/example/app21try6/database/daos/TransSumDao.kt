@@ -11,8 +11,8 @@ import java.util.Date
 @Dao
 interface TransSumDao {
     //worker
-    @Query("UPDATE trans_sum_table SET total_after_discount = :totalAfterDiscount WHERE sum_id = :sumId")
-    fun updateTotalAfterDiscount(sumId: Int, totalAfterDiscount: Double)
+    @Query("UPDATE trans_sum_table SET total_after_discount = :totalAfterDiscount WHERE tSCloudId = :sumId")
+    fun updateTotalAfterDiscount(sumId: Long, totalAfterDiscount: Double)
 
     @Insert
     fun insertNew(transactionSummary: TransactionSummary):Long
@@ -50,18 +50,18 @@ interface TransSumDao {
     @Query("SELECT * FROM trans_sum_table WHERE  is_taken = :bool")
     fun getActiveSumList(bool:Boolean):List<TransactionSummary>
 
-    @Query("SELECT * FROM trans_sum_table WHERE sum_id = :sum_id_")
-    suspend fun getTrans(sum_id_:Int): TransactionSummary
+    @Query("SELECT * FROM trans_sum_table WHERE tSCloudId = :tSCloudId_")
+    suspend fun getTrans(tSCloudId_:Long): TransactionSummary
 
 
 
     @Query("""
     SELECT DISTINCT ts.* 
     FROM trans_sum_table AS ts
-    LEFT JOIN trans_detail_table td ON ts.sum_id = td.sum_id
+    LEFT JOIN trans_detail_table td ON ts.tSCloudId = td.tSCloudId
     WHERE 
         -- Case 1: Search by sumId (ignore date)
-        (:sumId IS NOT NULL AND ts.sum_id = :sumId)
+        (:sumId IS NOT NULL AND ts.tSCloudId = :sumId)
         
         OR 
         
@@ -83,10 +83,10 @@ interface TransSumDao {
     ORDER BY ts.trans_date DESC
     LIMIT :limit OFFSET :offset
 """)
-    fun getTransactionSummariesByItemName(name: String?, sumId: Int?,startDate: Date?,endDate: Date?,limit:Int,offset: Int): List<TransactionSummary>
+    fun getTransactionSummariesByItemName(name: String?, sumId: Long?,startDate: Date?,endDate: Date?,limit:Int,offset: Int): List<TransactionSummary>
 
-    @Query("SELECT * from trans_sum_table WHERE sum_id = :sum_id_")
-    fun getTransSum(sum_id_: Int):LiveData<TransactionSummary>
+    @Query("SELECT * from trans_sum_table WHERE tSCloudId = :tSCloudId_")
+    fun getTransSum(tSCloudId_: Long):LiveData<TransactionSummary>
 
 
     @Query("""
@@ -96,8 +96,8 @@ interface TransSumDao {
     (
         (:name IS NOT NULL AND (
             t.cust_name LIKE '%' || :name || '%'
-            OR t.sum_id IN (
-                SELECT DISTINCT td.sum_id 
+            OR t.tSCloudId IN (
+                SELECT DISTINCT td.tSCloudId 
                 FROM trans_detail_table td
                 WHERE td.trans_item_name LIKE '%' || :name || '%'
             )
@@ -117,8 +117,8 @@ interface TransSumDao {
     (
         (:name IS NOT NULL AND (
             t.cust_name LIKE '%' || :name || '%'
-            OR t.sum_id IN (
-                SELECT DISTINCT td.sum_id 
+            OR t.tSCloudId IN (
+                SELECT DISTINCT td.tSCloudId 
                 FROM trans_detail_table td
                 WHERE td.trans_item_name LIKE '%' || :name || '%'
             )
@@ -137,8 +137,8 @@ interface TransSumDao {
     (
         (:name IS NOT NULL AND (
             ts.cust_name LIKE '%' || :name || '%' 
-            OR ts.sum_id IN (
-                SELECT td.sum_id FROM trans_detail_table td 
+            OR ts.tSCloudId IN (
+                SELECT td.tSCloudId FROM trans_detail_table td 
                 WHERE td.trans_item_name LIKE '%' || :name || '%'
             )
         ))
@@ -167,9 +167,9 @@ interface TransSumDao {
     @Query("""
         UPDATE trans_sum_table
         SET tSCloudId =:cloudId
-        WHERE sum_id=:id
+        WHERE tSCloudId=:id
     """)
-    fun assignTransactionSummaryCloudID(cloudId:Long,id:Int)
+    fun assignTransactionSummaryCloudID(cloudId:Long,id:Long)
 
     @Query("SELECT * FROM trans_sum_table")
     fun selectAllTransactionSummaryTable(): List<TransactionSummary>

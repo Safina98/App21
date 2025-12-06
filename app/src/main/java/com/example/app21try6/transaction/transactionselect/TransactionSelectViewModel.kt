@@ -27,7 +27,7 @@ import java.util.Locale
 class TransactionSelectViewModel(
     private val stockRepo: StockRepositories,
     private val transRepo:TransactionsRepository,
-    val sum_id:Int,
+    val sum_id: Long,
     val sumAndProductId:Array<String>,
     application: Application): AndroidViewModel(application){
    // val trans_select_model =database6.getSubProduct(date[1].toInt(),sum_id)
@@ -38,7 +38,7 @@ class TransactionSelectViewModel(
     val productId: LiveData<Int?> get() = _productId
 
     val trans_select_modelNew :LiveData<List<TransSelectModel>> = _productId.switchMap { productId ->
-        if (productId == null || productId == -1 || _sumId.value==null || _sumId.value==-1) {
+        if (productId == null || productId == -1 || _sumId.value==null || _sumId.value==-1L) {
             AbsentLiveData.create()
         } else {
             Log.i("LiveDataProbs","TransProductFragment SumId ${sum_id}")
@@ -54,7 +54,7 @@ class TransactionSelectViewModel(
     /////////////////////////////////////////Product////////////////////////////////////////////
     private var _allProduct = MutableLiveData<List<Product>>()
     val allProduct :LiveData<List<Product>> get() = _allProduct
-    private var _sumId = MutableLiveData<Int>(-1)
+    private var _sumId = MutableLiveData<Long>(-1L)
 
     private var expenseId=MutableLiveData (-1)
 
@@ -124,9 +124,9 @@ class TransactionSelectViewModel(
     fun setProductId(id:Int){
         _productId.value = id
     }
-    fun setProductSumId(id:Int?){
+    fun setProductSumId(id:Long?){
         if (id != null) {
-            if (id >= 0) { _sumId.value = id?:0 }else { expenseId.value=id*-1 }
+            if (id >= 0) { _sumId.value = id?:0L }
         }
     }
     fun saveSelectedItemId(itemId: Int) {
@@ -163,7 +163,7 @@ class TransactionSelectViewModel(
 
     fun converter(s:TransSelectModel): TransactionDetail {
         val t = TransactionDetail()
-        t.sum_id = _sumId.value ?: -1
+        t.tSCloudId = _sumId.value ?: 1L
         t.tDCloudId = s.trans_detail_id
         t.qty = s.qty
         t.total_price = s.qty*s.item_price

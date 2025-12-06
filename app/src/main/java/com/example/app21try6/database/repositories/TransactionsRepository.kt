@@ -3,10 +3,8 @@ package com.example.app21try6.database.repositories
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.TracketailWarnaModel
-import com.example.app21try6.database.tables.Summary
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.getDate
@@ -28,7 +26,7 @@ class TransactionsRepository(application: Application) {
             transSumDao.selectAllTransactionSummaryTable()
         }
     }
-    suspend fun assignCloudIdToTransactionSummaryTable(cloudId: Long, id: Int){
+    suspend fun assignCloudIdToTransactionSummaryTable(cloudId: Long, id: Long){
         withContext(Dispatchers.IO){
             transSumDao.assignTransactionSummaryCloudID(cloudId,id)
         }
@@ -59,22 +57,22 @@ class TransactionsRepository(application: Application) {
     fun getStockModel(): LiveData<List<StockModel>> {
         return transDetailDao.getTransactionDetails()
     }
-    fun getTransSelectModelLive(productId: Int, sum_id: Int): LiveData<List<TransSelectModel>> {
+    fun getTransSelectModelLive(productId: Int, sum_id: Long): LiveData<List<TransSelectModel>> {
         Log.i("LiveDataProbs","getTransSelectModelLive sumId: $sum_id")
         return transDetailDao.getSubProductMLive(productId, sum_id)
     }
 
-    fun getTransactionDetails(id:Int): LiveData<List<TransactionDetail>> {
+    fun getTransactionDetails(id:Long): LiveData<List<TransactionDetail>> {
         return transDetailDao.selectATransDetail(id)
     }
 
-    suspend fun getTransactionDetailsWithProductIDList(id:Int): List<TransactionDetailWithProduct>? {
+    suspend fun getTransactionDetailsWithProductIDList(id:Long): List<TransactionDetailWithProduct>? {
         return withContext(Dispatchers.IO){ transDetailDao.getTransactionDetailsWithProductList(id)}
     }
-    fun getTotalTransaction(id:Int): LiveData<Double> {
+    fun getTotalTransaction(id:Long): LiveData<Double> {
         return transDetailDao.getTotalTrans(id)
     }
-    suspend fun getTotalTransactionn(id: Int):Double{
+    suspend fun getTotalTransactionn(id: Long):Double{
         return withContext(Dispatchers.IO){transDetailDao.getTotalTransaction(id)}
     }
 
@@ -84,7 +82,7 @@ class TransactionsRepository(application: Application) {
             transDetailDao.insert(transDetail)
         }
     }
-    suspend fun deleteTransDetail(sum_id:Int,name:String){
+    suspend fun deleteTransDetail(sum_id:Long,name:String){
         withContext(Dispatchers.IO){
            transDetailDao.deteleAnItemTransDetailSub(sum_id,name)
         }
@@ -106,10 +104,10 @@ class TransactionsRepository(application: Application) {
         }
     }
     ///////////////////////////////////TransSum////////////////////////////////////////////////////////
-    fun getTransactionSummary(id:Int): LiveData<TransactionSummary> {
+    fun getTransactionSummary(id:Long): LiveData<TransactionSummary> {
         return transSumDao.getTransSum(id)
     }
-    suspend fun filterTransSum(query: String?,sumId:Int?, limit:Int, offset:Int, startDate:Date?, endDate:Date?):List<TransactionSummary>{
+    suspend fun filterTransSum(query: String?,sumId:Long?, limit:Int, offset:Int, startDate:Date?, endDate:Date?):List<TransactionSummary>{
         return withContext(Dispatchers.IO){
 
             transSumDao.getTransactionSummariesByItemName(query,sumId,startDate,endDate,limit,offset)
@@ -120,7 +118,7 @@ class TransactionsRepository(application: Application) {
             transDetailDao.getTracketailWarnaModels(query,startDate,endDate)
         }
     }
-    suspend fun getTransactionSummaryById(id:Int):TransactionSummary{
+    suspend fun getTransactionSummaryById(id: Long):TransactionSummary{
         return withContext(Dispatchers.IO){
             transSumDao.getTrans(id)
         }
@@ -140,6 +138,7 @@ class TransactionsRepository(application: Application) {
     }
     suspend fun insertNewSumAndGetId(transactionSummary: TransactionSummary):Long{
         return withContext(Dispatchers.IO){
+            transactionSummary.tSCloudId= System.currentTimeMillis()
             transSumDao.insertNew(transactionSummary)
         }
     }

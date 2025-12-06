@@ -36,15 +36,15 @@ interface TransDetailDao {
     FROM trans_detail_table td
     INNER JOIN sub_table sp ON td.sub_id = sp.sub_id
     INNER JOIN product_table p ON sp.product_code = p.product_id
-    WHERE td.sum_id = :transactionSummaryId
+    WHERE td.tSCloudId = :transactionSummaryId
 """)
-    fun getTransactionDetailsWithProductList(transactionSummaryId: Int): List<TransactionDetailWithProduct>?
+    fun getTransactionDetailsWithProductList(transactionSummaryId: Long): List<TransactionDetailWithProduct>?
 
-    @Query("SELECT * FROM trans_detail_table WHERE sum_id =:sum_id_  order BY item_position asc")
-    fun selectATransDetail(sum_id_:Int):LiveData<List<TransactionDetail>>
+    @Query("SELECT * FROM trans_detail_table WHERE tSCloudId =:tSCloudId_  order BY item_position asc")
+    fun selectATransDetail(tSCloudId_:Long):LiveData<List<TransactionDetail>>
     //@Query("INSERT INTO brand_table (brand_name,cath_code) SELECT :brand_name_ as brand_name, (SELECT categoryCloudId FROM category_table WHERE category_name = :caht_name_ limit 1) as cath_code WHERE NOT EXISTS (SELECT 1 FROM brand_table WHERE brand_name = :brand_name_)")
-    @Query("INSERT OR IGNORE INTO trans_detail_table (sum_id, trans_item_name, qty, trans_price, total_price, is_prepared,trans_detail_date,unit,unit_qty,item_position) " +
-            "SELECT sum_id, :transItemName, :qty, :transPrice, :totalPrice, :isPrepared,:trans_detail_date,:unit,:unit_qty,:item_position FROM trans_sum_table WHERE ref = :ref")
+    @Query("INSERT OR IGNORE INTO trans_detail_table (tSCloudId, trans_item_name, qty, trans_price, total_price, is_prepared,trans_detail_date,unit,unit_qty,item_position) " +
+            "SELECT tSCloudId, :transItemName, :qty, :transPrice, :totalPrice, :isPrepared,:trans_detail_date,:unit,:unit_qty,:item_position FROM trans_sum_table WHERE ref = :ref")
     suspend fun insertTransactionDetailWithRef(
         ref: String,
         transItemName: String,
@@ -58,17 +58,17 @@ interface TransDetailDao {
         item_position:Int
     )
 
-    @Query("SELECT  IFNULL(SUM(total_price),0.0)  FROM TRANS_DETAIL_TABLE WHERE sum_id =:sum_id_ ")
-    fun getTotalTrans(sum_id_: Int):LiveData<Double>
-    @Query("SELECT  IFNULL(SUM(total_price),0.0)  FROM TRANS_DETAIL_TABLE WHERE sum_id =:sum_id_ ")
-    fun getTotalTransaction(sum_id_: Int):Double
+    @Query("SELECT  IFNULL(SUM(total_price),0.0)  FROM TRANS_DETAIL_TABLE WHERE tSCloudId =:tSCloudId_ ")
+    fun getTotalTrans(tSCloudId_: Long):LiveData<Double>
+    @Query("SELECT  IFNULL(SUM(total_price),0.0)  FROM TRANS_DETAIL_TABLE WHERE tSCloudId =:tSCloudId_ ")
+    fun getTotalTransaction(tSCloudId_: Long):Double
 
 
     @Query("DELETE FROM trans_detail_table WHERE tDCloudId=:tDCloudId ")
     fun deleteAnItemTransDetail(tDCloudId:Long)
 
-    @Query("DELETE FROM trans_detail_table WHERE sum_id = :sum_id and trans_item_name =:name ")
-    fun deteleAnItemTransDetailSub(sum_id:Int,name:String)
+    @Query("DELETE FROM trans_detail_table WHERE tSCloudId = :tSCloudId and trans_item_name =:name ")
+    fun deteleAnItemTransDetailSub(tSCloudId:Long,name:String)
 
 
     @Query("SELECT s.sub_id AS sub_product_id," +
@@ -80,9 +80,9 @@ interface TransDetailDao {
             "t.qty as qty,t.tDCloudId as trans_detail_id" +
             " FROM sub_table s" +
             " JOIN product_table p ON (S.product_code=P.product_id) " +
-            " LEFT OUTER JOIN trans_detail_table t ON (S.sub_name = T.trans_item_name and T.sum_id =:sum_id_) WHERE s.product_code =:productId" +
+            " LEFT OUTER JOIN trans_detail_table t ON (S.sub_name = T.trans_item_name and T.tSCloudId =:tSCloudId_) WHERE s.product_code =:productId" +
             " ORDER BY s.sub_name ASC,t.tDCloudId ASC")
-    fun getSubProductMLive(productId:Int,sum_id_: Int):LiveData<List<TransSelectModel>>
+    fun getSubProductMLive(productId:Int,tSCloudId_: Long):LiveData<List<TransSelectModel>>
 
 
     @Query("""
@@ -130,7 +130,7 @@ interface TransDetailDao {
     @Query("""
     SELECT 
         d.tDCloudId,
-        d.sum_id,
+        d.tSCloudId,
         d.trans_item_name,
         d.qty,
         d.trans_detail_date AS tans_detail_date,
@@ -140,7 +140,7 @@ interface TransDetailDao {
         s.cust_name,
         s.sum_note
     FROM trans_detail_table AS d
-    INNER JOIN trans_sum_table AS s ON d.sum_id = s.sum_id
+    INNER JOIN trans_sum_table AS s ON d.tSCloudId = s.tSCloudId
     WHERE
      trans_item_name LIKE '%' || :query || '%' 
     AND (:startDate IS NULL OR d.trans_detail_date >= :startDate)

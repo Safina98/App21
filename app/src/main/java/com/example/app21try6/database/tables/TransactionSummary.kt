@@ -20,36 +20,35 @@ import com.example.app21try6.database.DateTypeConverter
         )
 @TypeConverters(DateTypeConverter::class)
 data class TransactionSummary (
-        @PrimaryKey(autoGenerate = true)
-        var sum_id:Int = 0,
-        @ColumnInfo(name = "cust_name")
-        var cust_name:String = "",
-        @ColumnInfo(name = "total_trans")
-        var total_trans:Double=0.0,
-        @ColumnInfo(name = "total_after_discount")
-        var total_after_discount:Double=0.0,
-        @ColumnInfo(name = "paid")
-        var paid:Int=0,
-        @ColumnInfo(name = "trans_date")
-        var trans_date:Date?=Date(),
-        @ColumnInfo(name = "is_taken")
-        var is_taken_:Boolean=false,
-        @ColumnInfo(name = "is_paid_off")
-        var is_paid_off:Boolean=false,
-        @ColumnInfo(name = "is_keeped")
-        var is_keeped:Boolean=false,
-        @ColumnInfo(name="is_logged")
-        var is_logged:Boolean=false, // new column to be added
-        @ColumnInfo(name = "ref")
-        var ref:String="",
-        @ColumnInfo(name = "sum_note")
-        var sum_note:String?=null,
-        @ColumnInfo(name = "custId")
-        var custId:Int?=null,
-        @ColumnInfo(name="is_deleted")
-        var isDeleted: Boolean = false, //newly added cloumn
+    @PrimaryKey
         @ColumnInfo(name = "tSCloudId")
-        var tSCloudId: Long = 0L,//newly added cloumn
-        @ColumnInfo(name="needs_syncs")
-        var needsSyncs:Int=1//newly added cloumn
+        var tSCloudId: Long = 0,
+    @ColumnInfo(name = "cust_name")
+        var cust_name:String = "",
+    @ColumnInfo(name = "total_trans")
+        var total_trans:Double=0.0,
+    @ColumnInfo(name = "total_after_discount")
+        var total_after_discount:Double=0.0,
+    @ColumnInfo(name = "paid")
+        var paid:Int=0,
+    @ColumnInfo(name = "trans_date")
+        var trans_date:Date?=Date(),
+    @ColumnInfo(name = "is_taken")
+        var is_taken_:Boolean=false,
+    @ColumnInfo(name = "is_paid_off")
+        var is_paid_off:Boolean=false,
+    @ColumnInfo(name = "is_keeped")
+        var is_keeped:Boolean=false,
+    @ColumnInfo(name="is_logged")
+        var is_logged:Boolean=false,
+    @ColumnInfo(name = "ref")
+        var ref:String="",
+    @ColumnInfo(name = "sum_note")
+        var sum_note:String?=null,
+    @ColumnInfo(name = "custId")
+        var custId:Int?=null,
+    @ColumnInfo(name="is_deleted")
+        var isDeleted: Boolean = false,
+    @ColumnInfo(name="needs_syncs")
+        var needsSyncs:Int=1
 )

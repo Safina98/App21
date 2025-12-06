@@ -14,7 +14,7 @@ import com.example.app21try6.database.repositories.TransactionsRepository
 class TransactionSelectViewModelFactory(
     val stockRepo:StockRepositories,
     val transRepo:TransactionsRepository,
-    val sum_id:Int,
+    val sum_id:Long,
     val date:Array<String>,
     val application: Application
 ): ViewModelProvider.Factory{

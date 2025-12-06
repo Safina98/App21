@@ -148,7 +148,7 @@ class TransactionActiveFragment : Fragment() {
                     viewModel.onCheckBoxClicked(trans, checkBox.isChecked)
                 } else {
                     viewModel.
-                    onNavigatetoTransDetail(trans.sum_id)
+                    onNavigatetoTransDetail(trans.tSCloudId)
                 }
             },
             CheckBoxListenerTransActive{view, stok ->
@@ -178,7 +178,7 @@ class TransactionActiveFragment : Fragment() {
         //observe recyclerview data
         viewModel.active_trans.observe(viewLifecycleOwner) {
             it?.let {
-                adapter.submitList(it.sortedByDescending { it.sum_id })
+                adapter.submitList(it.sortedByDescending { it.tSCloudId })
                 adapter.notifyDataSetChanged()
             }
         }
@@ -212,7 +212,7 @@ class TransactionActiveFragment : Fragment() {
         viewModel.navigatToAllTrans.observe(viewLifecycleOwner) {
             if (it == true) {
                 this.findNavController()
-                    .navigate(TransactionActiveFragmentDirections.actionTransactionActiveFragmentToAllTransactionsFragment())
+                    .navigate(TransactionActiveFragmentDirections.actionTransactionActiveFragmentToAllTransactionsFragment(0))
                 viewModel.onNavigatedToAllTrans()
             }
         }

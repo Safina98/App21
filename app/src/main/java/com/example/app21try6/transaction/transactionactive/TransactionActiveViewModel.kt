@@ -44,10 +44,10 @@ class TransactionActiveViewModel(
     //todays date
     var todaysdate = Date()
     //Navigation
-    private val _navigateToTransEdit = MutableLiveData<Int>()
-    val navigateToTransEdit: LiveData<Int> get() = _navigateToTransEdit
-    private val _navigateToTransDetail = MutableLiveData<Int>()
-    val navigateToTransDetail: LiveData<Int> get() = _navigateToTransDetail
+    private val _navigateToTransEdit = MutableLiveData<Long>()
+    val navigateToTransEdit: LiveData<Long> get() = _navigateToTransEdit
+    private val _navigateToTransDetail = MutableLiveData<Long>()
+    val navigateToTransDetail: LiveData<Long> get() = _navigateToTransDetail
     private val _navigateToAllTrans = MutableLiveData<Boolean>()
     val navigatToAllTrans: LiveData<Boolean> get() = _navigateToAllTrans
 
@@ -86,8 +86,8 @@ class TransactionActiveViewModel(
             trans.ref =UUID.randomUUID().toString()
             trans.tSCloudId=System.currentTimeMillis()
             trans.needsSyncs=1
-            val id =transRepo.insertNewSumAndGetId(trans).toInt()
-            trans.sum_id = id
+            val id =transRepo.insertNewSumAndGetId(trans)
+            trans.tSCloudId = id
             onNavigatetoTransEdit(id)
         }
     }
@@ -103,9 +103,9 @@ class TransactionActiveViewModel(
     //Suspends
 
     //Navigations
-    fun onNavigatetoTransEdit(id:Int){ _navigateToTransEdit.value=id }
+    fun onNavigatetoTransEdit(id:Long){ _navigateToTransEdit.value=id }
     fun onNavigatedToTransEdit(){ this._navigateToTransEdit.value=null }
-    fun onNavigatetoTransDetail(id:Int){ _navigateToTransDetail.value = id }
+    fun onNavigatetoTransDetail(id:Long){ _navigateToTransDetail.value = id }
     fun onNavigatedToTransDetail(){ this._navigateToTransDetail.value = null }
     fun onNavigateToAllTrans(){ _navigateToAllTrans.value=true }
     fun onNavigatedToAllTrans(){ _navigateToAllTrans.value=false }

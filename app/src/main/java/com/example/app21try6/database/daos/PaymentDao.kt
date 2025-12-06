@@ -7,7 +7,6 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.app21try6.database.tables.Payment
 import com.example.app21try6.database.models.PaymentModel
-import com.example.app21try6.database.tables.DetailWarnaTable
 
 
 @Dao
@@ -18,26 +17,26 @@ interface PaymentDao{
     @Update
     fun update(payment: Payment)
 
-    @Query("DELETE FROM paymen_table WHERE id =:id")
+    @Query("DELETE FROM payment_table WHERE id =:id")
     fun deletePayment(id:Int)
 
 
-    @Query("SELECT SUM(payment_ammount) FROM paymen_table WHERE sum_id =:sumId")
-    fun selectSumFragmentBySumId(sumId:Int):Int
+    @Query("SELECT SUM(payment_ammount) FROM payment_table WHERE tSCloudId =:sumId")
+    fun selectSumFragmentBySumId(sumId:Long):Int
 
     @Query("""
-        UPDATE paymen_table
+        UPDATE payment_table
         SET paymentCloudId =:cloudId
         WHERE id=:id
     """)
     fun assignPaymentCloudID(cloudId:Long,id:Int)
 
-    @Query("SELECT * FROM paymen_table")
+    @Query("SELECT * FROM payment_table")
     fun selectAllPaymentTable(): List<Payment>
 
     @Query("SELECT\n" +
             "    p.id,\n" +
-            "    p.sum_id,\n" +
+            "    p.tSCloudId,\n" +
             "    p.payment_ammount,\n" +
             "    p.payment_date,\n" +
             "    p.ref,\n" +
@@ -45,14 +44,14 @@ interface PaymentDao{
             "    'Bayar: ' as name,\n"+
         "    t.paid\n" +
             "FROM\n" +
-            "    paymen_table p\n" +
+            "    payment_table p\n" +
             "INNER JOIN\n" +
             "    trans_sum_table t\n" +
             "ON\n" +
-            "    p.sum_id = t.sum_id\n" +
+            "    p.tSCloudId = t.tSCloudId\n" +
             "WHERE\n" +
-            "    p.sum_id = :sumId")
-    fun selectPaymentModelBySumId(sumId:Int):LiveData<List<PaymentModel>>
+            "    p.tSCloudId = :sumId")
+    fun selectPaymentModelBySumId(sumId: Long):LiveData<List<PaymentModel>>
 
 
 }

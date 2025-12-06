@@ -47,7 +47,7 @@ class TransactionSelectFragment : Fragment() {
 
         var datee  = date!!.toMutableList()
 
-        viewModel = ViewModelProvider(requireActivity(), TransactionSelectViewModelFactory(stockRepo,transRepo,date[0].toInt()!!,date,application))
+        viewModel = ViewModelProvider(requireActivity(), TransactionSelectViewModelFactory(stockRepo,transRepo,date[0].toLong()!!,date,application))
             .get(TransactionSelectViewModel::class.java)
         var i = date!![1].toInt()
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {

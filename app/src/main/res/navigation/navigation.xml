@@ -137,9 +137,6 @@
         android:id="@+id/transactionEditFragment"
         android:name="com.example.app21try6.transaction.transactionedit.TransactionEditFragment"
         android:label="Edit Nota">
-        <argument
-            android:name="id"
-            app:argType="integer" />
         <action
             android:id="@+id/action_transactionEditFragment_to_transactionDetailFragment"
             app:destination="@id/transactionDetailFragment"
@@ -157,14 +154,14 @@
             app:popExitAnim="@anim/zoom_out"
             app:popUpTo="@id/transactionEditFragment"
             />
+        <argument
+            android:name="id"
+            app:argType="long" />
     </fragment>
     <fragment
         android:id="@+id/transactionDetailFragment"
         android:name="com.example.app21try6.transaction.transactiondetail.TransactionDetailFragment"
         android:label="Detail Nota">
-        <argument
-            android:name="id"
-            app:argType="integer" />
         <action
             android:id="@+id/action_transactionDetailFragment_to_transactionEditFragment"
             app:destination="@id/transactionEditFragment"
@@ -177,6 +174,9 @@
         <action
             android:id="@+id/action_transactionDetailFragment_to_subProductStockFragment"
             app:destination="@id/subProductStockFragment" />
+        <argument
+            android:name="id"
+            app:argType="long" />
     </fragment>
     <fragment
         android:id="@+id/transactionSelectFragment"
@@ -214,6 +214,9 @@
             app:popEnterAnim="@anim/fade_in_pop_up"
             app:popExitAnim="@anim/fade_out_pop_up"
             app:popUpTo="@id/allTransactionsFragment" />
+        <argument
+            android:name="id"
+            app:argType="long" />
     </fragment>
     <fragment
         android:id="@+id/graphicFragment"

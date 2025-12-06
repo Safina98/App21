@@ -17,8 +17,6 @@ import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.database.tables.MerchandiseRetail
 import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.database.tables.TransactionDetail
-import com.example.app21try6.transaction.transactionselect.TransSelectModel
-import com.example.app21try6.utils.AbsentLiveData
 import kotlinx.coroutines.*
 import java.util.Date
 import java.util.UUID
@@ -29,9 +27,9 @@ class SubViewModel (
     private val product_id:Int,
     private val parameterBrandId:Long,
     private val ctgId:Long,
-    private val tDId:Int,
+    private val tDId: Int,
     private val parameterSubId:Int,
-    val sum_id:Int,
+    val sum_id: Long,
     application: Application
 ): AndroidViewModel(application){
 
@@ -81,7 +79,7 @@ class SubViewModel (
     fun onCheckBoxClicked(subProduct: SubProduct, bool:Boolean){
         uiScope.launch {
             val transDetail = TransactionDetail()
-            transDetail.sum_id = tDId
+            transDetail.tSCloudId = sum_id
             transDetail.trans_item_name = subProduct.sub_name
             transDetail.tDCloudId= System.currentTimeMillis()
             transDetail.needsSyncs=1
@@ -91,7 +89,7 @@ class SubViewModel (
             }
             else{
                 checkedItemList.remove(subProduct)
-                transRepository.deleteTransDetail( tDId,subProduct.sub_name)
+                transRepository.deleteTransDetail( sum_id,subProduct.sub_name)
             }
         }
     }

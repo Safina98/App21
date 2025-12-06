@@ -18,7 +18,7 @@ class TransactionEditViewModelFactory(
     private val transRepo: TransactionsRepository,
     private val discountRepo: DiscountRepository,
     private val application: Application,
-    private val id:Int
+    private val id: Long
 ):ViewModelProvider.Factory{
     @Suppress("unchecked_cast")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
