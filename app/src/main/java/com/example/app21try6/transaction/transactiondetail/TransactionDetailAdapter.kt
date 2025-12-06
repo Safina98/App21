@@ -79,7 +79,7 @@ class TransactionDetailAdapter(
 }
 class TransDetailDiffCallBack:DiffUtil.ItemCallback<TransactionDetail>(){
     override fun areItemsTheSame(oldItem: TransactionDetail, newItem: TransactionDetail): Boolean {
-        return oldItem.trans_detail_id == newItem.trans_detail_id
+        return oldItem.tDCloudId == newItem.tDCloudId
     }
 
     override fun areContentsTheSame(oldItem: TransactionDetail, newItem: TransactionDetail): Boolean {

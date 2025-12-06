@@ -87,7 +87,7 @@ class TransactionEditFragment : Fragment() {
            code = Constants.Code.LONGPLUS
            showDialog(it,viewModel,Constants.Code.LONGPLUS)
        }, TransEditDeleteListener {
-           DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as TransactionEditViewModel).delete(it.trans_detail_id) })
+           DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as TransactionEditViewModel).delete(it.tDCloudId) })
        }, TransEditPriceClickListener {
            showDialog(it,viewModel,Constants.Code.TEXTPRICE)
        }, UnitTransTextCliked{ edit_trans ->

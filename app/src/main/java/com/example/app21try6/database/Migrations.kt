@@ -5,7 +5,8 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 object Migrations {
 
-    val MIGRATION_49_50 = object : Migration(49, 50) {
+   /*
+ val MIGRATION_49_50 = object : Migration(49, 50) {
         override fun migrate(database: SupportSQLiteDatabase) {
             // -----------------------------------
             // 1. DiscountTransaction Migration
@@ -211,6 +212,7 @@ object Migrations {
         }
     }
 
+   * */
 
     val MIGRATION_48_49 = object : Migration(48, 49) {
         override fun migrate(database: SupportSQLiteDatabase) {

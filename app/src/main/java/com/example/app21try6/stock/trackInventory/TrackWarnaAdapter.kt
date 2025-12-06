@@ -61,7 +61,7 @@ class TrackWarnaAdapter(
 }
 class TrackWarnaDiffCallback: DiffUtil.ItemCallback<TracketailWarnaModel>(){
     override fun areItemsTheSame(oldItem: TracketailWarnaModel, newItem: TracketailWarnaModel): Boolean {
-        return oldItem.trans_detail_id == newItem.trans_detail_id
+        return oldItem.tDCloudId == newItem.tDCloudId
     }
 
     override fun areContentsTheSame(oldItem: TracketailWarnaModel, newItem: TracketailWarnaModel): Boolean {

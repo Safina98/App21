@@ -169,26 +169,30 @@ class AssignCloudIdManager(
 
 
 
-          // ---------- Transaction Summary ----------
-          val transactionSummaryList = transactionRepository.getAllTransactionSummary()
-          transactionSummaryList.forEach { transactionSummary ->
-              delay(1)
-              val newId = System.currentTimeMillis()
-              transactionRepository.assignCloudIdToTransactionSummaryTable(newId, transactionSummary.sum_id
-              )
-          }
-          Log.i("AssignCloudIdManager", "Finnish Assigning TransactionSummary table")
+
+
 
    */
+        // ---------- Transaction Summary ----------
+
+        val transactionSummaryList = transactionRepository.getTransactionSummariesWithDuplicateCloudIds()
+        transactionSummaryList.forEach { transactionSummary ->
+            Log.i("AssignCloudIdManager","${transactionSummary.sum_id}, ${transactionSummary.cust_name} ${transactionSummary.tSCloudId}")
+            delay(1)
+            val newId = System.currentTimeMillis()
+            transactionRepository.assignCloudIdToTransactionSummaryTable(newId, transactionSummary.sum_id
+            )
+        }
         // ---------- Transaction Detail ----------
+        Log.i("AssignCloudIdManager", "Finnish Assigning TransactionSummary table")
         val transactionDetailList = transactionRepository.getTransactionDetailsWithDuplicateCloudIds()
         transactionDetailList.forEach { transactionDetail ->
-            Log.i("AssignCloudIdManager","${transactionDetail.trans_detail_id}, ${transactionDetail.trans_item_name} ${transactionDetail.tDCloudId}")
+            Log.i("AssignCloudIdManager","${transactionDetail.tDCloudId}, ${transactionDetail.trans_item_name} ${transactionDetail.tDCloudId}")
             delay(1)
             val newId = System.currentTimeMillis()
             transactionRepository.assignCloudIdToTransactionDetailTable(
                 newId,
-                transactionDetail.trans_detail_id
+                transactionDetail.tDCloudId
             )
         }
         Log.i("AssignCloudIdManager", "Finnish Assigning TransactionDetail table")

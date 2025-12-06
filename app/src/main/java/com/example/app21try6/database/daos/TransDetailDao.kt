@@ -64,8 +64,8 @@ interface TransDetailDao {
     fun getTotalTransaction(sum_id_: Int):Double
 
 
-    @Query("DELETE FROM trans_detail_table WHERE trans_detail_id=:trans_detail_id ")
-    fun deleteAnItemTransDetail(trans_detail_id:Long)
+    @Query("DELETE FROM trans_detail_table WHERE tDCloudId=:tDCloudId ")
+    fun deleteAnItemTransDetail(tDCloudId:Long)
 
     @Query("DELETE FROM trans_detail_table WHERE sum_id = :sum_id and trans_item_name =:name ")
     fun deteleAnItemTransDetailSub(sum_id:Int,name:String)
@@ -77,11 +77,11 @@ interface TransDetailDao {
             "p.product_price AS item_price," +
             "p.product_price AS item_default_price," +
 
-            "t.qty as qty,t.trans_detail_id as trans_detail_id" +
+            "t.qty as qty,t.tDCloudId as trans_detail_id" +
             " FROM sub_table s" +
             " JOIN product_table p ON (S.product_code=P.product_id) " +
             " LEFT OUTER JOIN trans_detail_table t ON (S.sub_name = T.trans_item_name and T.sum_id =:sum_id_) WHERE s.product_code =:productId" +
-            " ORDER BY s.sub_name ASC,t.trans_detail_id ASC")
+            " ORDER BY s.sub_name ASC,t.tDCloudId ASC")
     fun getSubProductMLive(productId:Int,sum_id_: Int):LiveData<List<TransSelectModel>>
 
 
@@ -129,7 +129,7 @@ interface TransDetailDao {
 
     @Query("""
     SELECT 
-        d.trans_detail_id,
+        d.tDCloudId,
         d.sum_id,
         d.trans_item_name,
         d.qty,
@@ -151,7 +151,7 @@ interface TransDetailDao {
     @Query("""
         UPDATE trans_detail_table
         SET tDCloudId =:cloudId
-        WHERE trans_detail_id=:id
+        WHERE tDCloudId=:id
     """)
     fun assignTransactionDetailCloudID(cloudId:Long,id:Long)
 

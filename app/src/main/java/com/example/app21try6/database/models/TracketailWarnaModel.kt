@@ -3,7 +3,7 @@ package com.example.app21try6.database.models
 import java.util.Date
 
 data class TracketailWarnaModel (
-    var trans_detail_id:Long,
+    var tDCloudId:Long,
     var sum_id:Int,
     var trans_item_name:String,
     var qty:Double,

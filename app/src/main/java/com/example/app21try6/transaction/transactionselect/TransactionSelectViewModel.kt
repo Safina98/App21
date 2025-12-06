@@ -164,7 +164,7 @@ class TransactionSelectViewModel(
     fun converter(s:TransSelectModel): TransactionDetail {
         val t = TransactionDetail()
         t.sum_id = _sumId.value ?: -1
-        t.trans_detail_id = s.trans_detail_id
+        t.tDCloudId = s.trans_detail_id
         t.qty = s.qty
         t.total_price = s.qty*s.item_price
         t.trans_item_name = s.item_name

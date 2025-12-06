@@ -450,7 +450,7 @@ class TransactionDetailViewModel (
     fun createRetailLog(merchandiseRetail: MerchandiseRetail, remainingQty: Double, trans: TransactionDetail):MerchandiseRetailLog{
             val retailLog=MerchandiseRetailLog()
             retailLog.retailId=merchandiseRetail.id
-            retailLog.transDetailId=trans.trans_detail_id
+            retailLog.transDetailId=trans.tDCloudId
             retailLog.ket="Pembelian"
             retailLog.date=Date()
             retailLog.subId=trans.sub_id!!
@@ -648,7 +648,7 @@ class TransactionDetailViewModel (
             val subId=transdetail.sub_id
             val productId=stockRepo.getProdutId(subId?:0)
             val brandId=stockRepo.getBrandId(productId)
-            val transDetailId=transdetail.trans_detail_id
+            val transDetailId=transdetail.tDCloudId
             val ctgId=stockRepo.getCategoryIdByBrandId(brandId)
             val productName=stockRepo.getProductById(productId?:0).product_name
             val stringArray=arrayOf(productId.toString(),brandId.toString(),ctgId.toString(),transDetailId.toString(),productName,subId.toString())
