@@ -13,6 +13,7 @@ object Constants {
         const val keluar = "KELUAR"
     }
 
+
     // Date formats
     const val DETAILED_DATE_FORMAT = "dd-MM-yyyy HH:mm"
     val DETAILED_DATE_FORMATTER = SimpleDateFormat(DETAILED_DATE_FORMAT, Locale.getDefault())
@@ -39,6 +40,12 @@ object Constants {
         const val BRAND = "Brand"
         const val PRODUCT = "Product"
         const val SUB_PRODUCT = "Sub Product"
+    }
+
+        object TABLENAMES {
+        const val BRAND = "brand_table"
+        const val CATEGORY = "category_table"
+        const val PRODUCT = "product_table"
     }
 
     enum class Code(val text: String) {

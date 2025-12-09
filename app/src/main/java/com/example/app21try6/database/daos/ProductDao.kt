@@ -3,6 +3,7 @@ package com.example.app21try6.database.daos
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
@@ -12,7 +13,7 @@ import com.example.app21try6.database.tables.TransactionDetail
 
 @Dao
 interface ProductDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(product: Product)
     @Update
     fun update(product: Product)

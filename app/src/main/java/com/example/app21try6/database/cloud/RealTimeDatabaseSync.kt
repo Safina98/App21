@@ -3,10 +3,13 @@ package com.example.app21try6.database.cloud
 
 import android.content.Context
 import android.util.Log
+import com.example.app21try6.Constants
 import com.example.app21try6.database.daos.BrandDao
 import com.example.app21try6.database.daos.CategoryDao
+import com.example.app21try6.database.daos.ProductDao
 import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.tables.Category
+import com.example.app21try6.database.tables.Product
 import com.example.app21try6.scheduleImmediateSync
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.*
@@ -22,10 +25,8 @@ object RealtimeDatabaseSync {
     // --------------------------------------------------------------
     fun init(context: Context) {
         if (isInitialized) return
-
         // Enable offline caching BEFORE getInstance()
         FirebaseDatabase.getInstance().setPersistenceEnabled(true)
-
         val correctUrl =
             "https://onlineapp21-2679d-default-rtdb.asia-southeast1.firebasedatabase.app/"
 
@@ -64,7 +65,6 @@ object RealtimeDatabaseSync {
             )
             // If we reach here, Firebase has successfully written the data.
             Log.e("FIREBASE_UPLOAD", "CONFIRMED SUCCESS → $tableName/$cloudId")
-
         } catch (e: Exception) {
             // If Tasks.await() throws an exception (e.g., security denied, or network failure),
             // we log it and throw it again.
@@ -84,43 +84,98 @@ object RealtimeDatabaseSync {
     // --------------------------------------------------------------
     fun startSyncAllTables(
         brandDao: BrandDao,
-        categoryDao: CategoryDao
+        categoryDao: CategoryDao,
+        productDao: ProductDao
     ) {
 
         if (!isInitialized) return
 
         // BRAND TABLE SYNC
         syncTable(
-            tableName = "brand_table",
-            clazz = BrandCloud::class.java
-        ) { cloud, key ->
+            tableName = Constants.TABLENAMES.BRAND,
+            clazz = BrandCloud::class.java,
 
-            val brand = Brand(
-                brandCloudId = key.toLong(),
-                brand_name = cloud.brandName,
-                cath_code = cloud.cathCode
-            )
+            convertAndSave = { cloud, key ->
 
-            Executors.newSingleThreadExecutor().execute {
-                brandDao.insert(brand)  // insert or update
+                val brand = Brand(
+                    brandCloudId = key.toLong(),     // <-- cloud key is primary ID
+                    brand_name = cloud.brandName,    // <-- correct for Brand
+                    cath_code = cloud.cathCode       // <-- if your Brand table has this
+                )
+
+                Executors.newSingleThreadExecutor().execute {
+                    brandDao.insert(brand)           // <-- correct DAO
+                }
+            },
+
+            deleteLocal = { key ->
+                Executors.newSingleThreadExecutor().execute {
+                    brandDao.deleteBrand(key.toLong())   // <-- correct delete
+                }
             }
-        }
+        )
 
         // CATEGORY TABLE SYNC
         syncTable(
-            tableName = "category_table",
-            clazz = CategoryCloud::class.java
-        ) { cloud, key ->
+            tableName = Constants.TABLENAMES.CATEGORY,
+            clazz = CategoryCloud::class.java,
+            convertAndSave = { cloud, key ->
+                val category = Category(
+                    categoryCloudId = key.toLong(),
+                    category_name = cloud.categoryName
+                )
 
-            val category = Category(
-                categoryCloudId = key.toLong(),
-                category_name = cloud.categoryName
-            )
-
-            Executors.newSingleThreadExecutor().execute {
-                categoryDao.insert(category)  // insert or update
+                Executors.newSingleThreadExecutor().execute {
+                    categoryDao.insert(category)
+                }
+            },
+            deleteLocal = { key ->
+                Executors.newSingleThreadExecutor().execute {
+                    categoryDao.delete(key.toLong())
+                }
             }
-        }
+        )
+
+        syncProduct(productDao)
+
+
+    }
+    fun syncProduct(productDao: ProductDao){
+        syncTable(
+            tableName = Constants.TABLENAMES.PRODUCT,
+            clazz = ProductCloud::class.java,
+            convertAndSave = { cloud, key ->
+
+                val product = Product(
+                    productCloudId = key.toLong(),
+                    product_name = cloud.productName,
+                    product_price = cloud.productPrice,
+                    product_capital = cloud.productCapital,
+                    checkBoxBoolean = cloud.checkBoxBoolean,
+                    bestSelling = cloud.bestSelling,
+                    default_net = cloud.defaultNet,
+                    alternate_price = cloud.alternatePrice,
+                    brand_code = cloud.brandCode,
+                    cath_code = cloud.cathCode,
+                    discountId = cloud.discountId,
+                    purchasePrice = cloud.purchasePrice,
+                    puchaseUnit = cloud.puchaseUnit,
+                    alternate_capital = cloud.alternateCapital,
+                    isDeleted = cloud.isDeleted,
+                    needsSyncs = cloud.needsSyncs
+                )
+
+                Executors.newSingleThreadExecutor().execute {
+                    productDao.insert(product) // insert or update
+                }
+            },
+            deleteLocal = { key ->
+                Executors.newSingleThreadExecutor().execute {
+                    productDao.delete(key.toLong())   // delete from Room
+                }
+            }
+        )
+
     }
 
     // --------------------------------------------------------------
@@ -129,7 +184,8 @@ object RealtimeDatabaseSync {
     private fun <T> syncTable(
         tableName: String,
         clazz: Class<T>,
-        convertAndSave: (T, String) -> Unit
+        convertAndSave: (T, String) -> Unit,
+        deleteLocal: (String) -> Unit
     ) {
         database.child(tableName).addChildEventListener(object : ChildEventListener {
 
@@ -146,14 +202,13 @@ object RealtimeDatabaseSync {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
+                //this code didnt worked when one app is not open
                 Log.d("RDBSync", "Deleted from cloud: $tableName → ${snapshot.key}")
-                // Optional: delete locally too if needed
+                snapshot.key?.let { deleteLocal(it) }   // DELETE LOCAL
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-            override fun onCancelled(error: DatabaseError) {
-                Log.e("RDBSync", "Sync cancelled for $tableName", error.toException())
-            }
+            override fun onCancelled(error: DatabaseError) {}
         })
     }
 // 📁 RealtimeDatabaseSync.kt (Updated)

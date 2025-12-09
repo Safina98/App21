@@ -7,6 +7,7 @@ import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.cloud.BrandCloud
 import com.example.app21try6.database.cloud.CategoryCloud
 import com.example.app21try6.database.cloud.RealtimeDatabaseSync
+import com.example.app21try6.database.cloud.UploadInventories
 import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.models.DetailMerchandiseModel
 import com.example.app21try6.database.tables.Brand
@@ -25,6 +26,8 @@ import kotlinx.coroutines.withContext
 class StockRepositories (
    application: Application
                             ){
+
+    private val uploadInventory= UploadInventories()
     private val categoryDao= VendibleDatabase.getInstance(application).categoryDao
     private val brandDao=VendibleDatabase.getInstance(application).brandDao
     private val productDao=VendibleDatabase.getInstance(application).productDao
@@ -69,11 +72,8 @@ class StockRepositories (
     suspend fun insertCategory(category: Category){
         withContext(Dispatchers.IO){
             val newId= categoryDao.insert(category).toInt()
-            val cloudCategory = CategoryCloud(
-                categoryName = category.category_name,
-                lastUpdated = System.currentTimeMillis()
-            ).apply { cloudId=category.categoryCloudId.toString() }
-            RealtimeDatabaseSync.upload("category_table", cloudCategory.cloudId, cloudCategory)
+            uploadInventory.uploadCategory(category)
+
         }
     }
     suspend fun updateCategory(category: Category){
@@ -115,13 +115,7 @@ class StockRepositories (
     suspend fun insertBrand(brand: Brand){
         withContext(Dispatchers.IO){
            val newId= brandDao.insert(brand).toInt()
-            val cloudBrand = BrandCloud(
-                brandName = brand.brand_name,
-                cathCode = brand.cath_code,
-                lastUpdated = System.currentTimeMillis()
-            ).apply {cloudId=brand.brandCloudId.toString() }
-
-            RealtimeDatabaseSync.upload("brand_table", cloudBrand.cloudId, cloudBrand)
+            uploadInventory.uploadBrand(brand)
         }
     }
     // get brand recycler view data by categoryId
@@ -239,7 +233,10 @@ class StockRepositories (
     suspend fun insertProduct(product: Product){
         withContext(Dispatchers.IO){
             product.productCloudId=System.currentTimeMillis()
-            productDao.insert(product) } }
+            productDao.insert(product)
+            uploadInventory.uploadProduct(product)
+        }
+    }
 ////////////////////////////////////////////////SubProduct//////////////////////////////////////////
     fun getSubProductLiveData(id:Long?,brandId: Long?): LiveData<List<SubProduct>> {
         return  subProductDao.getAll(id,brandId)
