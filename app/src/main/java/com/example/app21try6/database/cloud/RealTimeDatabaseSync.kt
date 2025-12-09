@@ -6,13 +6,24 @@ import android.util.Log
 import com.example.app21try6.Constants
 import com.example.app21try6.database.daos.BrandDao
 import com.example.app21try6.database.daos.CategoryDao
+import com.example.app21try6.database.daos.DetailWarnaDao
 import com.example.app21try6.database.daos.ProductDao
+import com.example.app21try6.database.daos.SubProductDao
+import com.example.app21try6.database.daos.SummaryDbDao
+import com.example.app21try6.database.daos.TransDetailDao
+import com.example.app21try6.database.daos.TransSumDao
 import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.tables.Category
+import com.example.app21try6.database.tables.DetailWarnaTable
+import com.example.app21try6.database.tables.MerchandiseRetail
 import com.example.app21try6.database.tables.Product
+import com.example.app21try6.database.tables.SubProduct
+import com.example.app21try6.database.tables.TransactionDetail
+import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.scheduleImmediateSync
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.database.*
+import java.util.Date
 import java.util.concurrent.Executors
 
 object RealtimeDatabaseSync {
@@ -84,12 +95,28 @@ object RealtimeDatabaseSync {
     fun startSyncAllTables(
         brandDao: BrandDao,
         categoryDao: CategoryDao,
-        productDao: ProductDao
+        productDao: ProductDao,
+        sPDao: SubProductDao,
+        dWDao: DetailWarnaDao,
+        tSDao: TransSumDao,
+        tdDao: TransDetailDao,
+        summaryDao: SummaryDbDao
     ) {
         Log.d("SyncManager", "StartSyncAllTablesStarted")
         if (!isInitialized) return
-
+        // category TABLE SYNC
+        syncCategory(categoryDao)
         // BRAND TABLE SYNC
+        syncBrand(brandDao)
+        syncProduct(productDao)
+        syncSubProduct(sPDao)
+        syncDetailWarna(dWDao)
+        syncMerchandiseRetail(dWDao)
+        syncTransactionDetail(tdDao)
+        syncTransactionSummary(tSDao)
+
+    }
+    fun syncBrand(brandDao: BrandDao){
         syncTable(
             tableName = Constants.TABLENAMES.BRAND,
             clazz = BrandCloud::class.java,
@@ -119,6 +146,8 @@ object RealtimeDatabaseSync {
             }
         )
 
+    }
+    fun syncCategory(categoryDao: CategoryDao){
         // CATEGORY TABLE SYNC
         syncTable(
             tableName = Constants.TABLENAMES.CATEGORY,
@@ -144,8 +173,6 @@ object RealtimeDatabaseSync {
                 }
             }
         )
-
-        syncProduct(productDao)
 
 
     }
@@ -192,6 +219,205 @@ object RealtimeDatabaseSync {
         )
 
     }
+    fun syncSubProduct(subProductDao: SubProductDao) {
+        syncTable(
+            tableName = Constants.TABLENAMES.SUB_PRODUCT,
+            clazz = SubProductCloud::class.java,
+
+            convertAndSave = { cloud, key ->
+                if (!cloud.isDeleted) {
+                    val subProduct = SubProduct(
+                        sPCloudId = key.toLong(),
+                        sub_name = cloud.subName,
+                        roll_u = cloud.rollU,
+                        warna = cloud.warna,
+                        ket = cloud.ket,
+                        productCloudId = cloud.productCloudId,
+                        brand_code = cloud.brandCode,
+                        cath_code = cloud.cathCode,
+                        is_checked = cloud.isChecked,
+                        discountId = cloud.discountId,
+                        isDeleted = cloud.isDeleted,
+                        needsSyncs = cloud.needsSyncs
+                    )
+                    Executors.newSingleThreadExecutor().execute {
+                        try {
+                            subProductDao.insert(subProduct)
+                        } catch (ex: Exception) {
+                            Log.e(
+                                "SyncManager",
+                                "Upload failed for subProduct ${subProduct.sPCloudId}: ${ex.message}"
+                            )
+                        }
+                    }
+                }
+            },
+
+            deleteLocal = { key ->
+                Executors.newSingleThreadExecutor().execute {
+                    subProductDao.delete(key.toLong())
+                }
+            }
+        )
+    }
+
+    fun syncDetailWarna(detailWarnaDao: DetailWarnaDao) {
+        syncTable(
+            tableName = Constants.TABLENAMES.DETAIL_WARNA,
+            clazz = DetailWarnaCloud::class.java,
+            convertAndSave = { cloud, key ->
+                if (!cloud.isDeleted) {
+                    val detailWarna = DetailWarnaTable(
+                        dWCloudId = key.toLong(),
+                        sPCloudId = cloud.sPCloudId,
+                        batchCount = cloud.batchCount,
+                        net = cloud.net,
+                        ket = cloud.ket,
+                        ref = cloud.ref,
+                        isDeleted = cloud.isDeleted,
+                        needsSyncs = cloud.needsSyncs
+                    )
+                    Executors.newSingleThreadExecutor().execute {
+                        try {
+                            detailWarnaDao.insert(detailWarna)
+                        } catch (ex: Exception) {
+                            Log.e(
+                                "SyncManager",
+                                "Upload failed for detailWarna ${detailWarna.dWCloudId}: ${ex.message}"
+                            )
+                        }
+                    }
+                }
+            },
+            deleteLocal = { key ->
+                Executors.newSingleThreadExecutor().execute {
+                    detailWarnaDao.delete(key.toLong())
+                }
+            }
+        )
+    }
+
+    fun syncMerchandiseRetail(detailWarnaDao: DetailWarnaDao) {
+        syncTable(
+            tableName = Constants.TABLENAMES.MERCHANDISE_RETAIL,
+            clazz = MerchandiseRetailCloud::class.java,
+            convertAndSave = { cloud, key ->
+                if (!cloud.isDeleted) {
+                    val merchandiseRetail = MerchandiseRetail(
+                        mRCloudId = key.toLong(),
+                        sPCloudId = cloud.sPCloudId,
+                        net = cloud.net,
+                        ref = cloud.ref,
+                        date = Date(cloud.date),
+                        isDeleted = cloud.isDeleted,
+                        needsSyncs = cloud.needsSyncs
+                    )
+                    Executors.newSingleThreadExecutor().execute {
+                        try {
+                            detailWarnaDao.insert(merchandiseRetail)
+                        } catch (ex: Exception) {
+                            Log.e(
+                                "SyncManager",
+                                "Upload failed for merchandiseRetail ${merchandiseRetail.mRCloudId}: ${ex.message}"
+                            )
+                        }
+                    }
+                }
+            },
+            deleteLocal = { key ->
+                Executors.newSingleThreadExecutor().execute {
+                    detailWarnaDao.deleteMerchandise(key.toLong())
+                }
+            }
+        )
+    }
+    fun syncTransactionDetail(transDetailDao: TransDetailDao) {
+        syncTable(
+            tableName = Constants.TABLENAMES.TRANSACTION_DETAIL,
+            clazz = TransactionDetailCloud::class.java,
+            convertAndSave = { cloud, key ->
+                if (!cloud.isDeleted) {
+                    val transactionDetail = TransactionDetail(
+                        tDCloudId = key.toLong(),
+                        tSCloudId = cloud.tSCloudId,
+                        trans_item_name = cloud.transItemName,
+                        qty = cloud.qty,
+                        trans_price = cloud.transPrice,
+                        total_price = cloud.totalPrice,
+                        is_prepared = cloud.isPrepared,
+                        is_cutted = cloud.isCutted,
+                        trans_detail_date = cloud.transDetailDate?.let { Date(it) },
+                        unit = cloud.unit,
+                        unit_qty = cloud.unitQty,
+                        item_position = cloud.itemPosition,
+                        sPCloudId = cloud.sPCloudId,
+                        product_capital = cloud.productCapital,
+                        isDeleted = cloud.isDeleted,
+                        needsSyncs = cloud.needsSyncs
+                    )
+                    Executors.newSingleThreadExecutor().execute {
+                        try {
+                            transDetailDao.insert(transactionDetail)
+                        } catch (ex: Exception) {
+                            Log.e(
+                                "SyncManager",
+                                "Upload failed for transactionDetail ${transactionDetail.tDCloudId}: ${ex.message}"
+                            )
+                        }
+                    }
+                }
+            },
+            deleteLocal = { key ->
+                Executors.newSingleThreadExecutor().execute {
+                    transDetailDao.deleteAnItemTransDetail(key.toLong())
+                }
+            }
+        )
+    }
+
+    fun syncTransactionSummary(transSumDao: TransSumDao) {
+        syncTable(
+            tableName = Constants.TABLENAMES.TRANSACTION_SUMMARY,
+            clazz = TransactionSummaryCloud::class.java,
+            convertAndSave = { cloud, key ->
+                if (!cloud.isDeleted) {
+                    val transactionSummary = TransactionSummary(
+                        tSCloudId = key.toLong(),
+                        cust_name = cloud.custName,
+                        total_trans = cloud.totalTrans,
+                        total_after_discount = cloud.totalAfterDiscount,
+                        paid = cloud.paid,
+                        trans_date = cloud.transDate?.let { Date(it) },
+                        is_taken_ = cloud.isTaken,
+                        is_paid_off = cloud.isPaidOff,
+                        is_keeped = cloud.isKeeped,
+                        is_logged = cloud.isLogged,
+                        ref = cloud.ref,
+                        sum_note = cloud.sumNote,
+                        custId = cloud.custId,
+                        isDeleted = cloud.isDeleted,
+                        needsSyncs = cloud.needsSyncs
+                    )
+                    Executors.newSingleThreadExecutor().execute {
+                        try {
+                            transSumDao.insertNew(transactionSummary)
+                        } catch (ex: Exception) {
+                            Log.e(
+                                "SyncManager",
+                                "Upload failed for transactionSummary ${transactionSummary.tSCloudId}: ${ex.message}"
+                            )
+                        }
+                    }
+                }
+            },
+            deleteLocal = { key ->
+                Executors.newSingleThreadExecutor().execute {
+                    val summaryToDelete = TransactionSummary(tSCloudId = key.toLong())
+                    transSumDao.delete_(summaryToDelete)
+                }
+            }
+        )
+    }
 
     // --------------------------------------------------------------
     // 4️⃣ Generic table listener (cloud → local)
@@ -221,27 +447,17 @@ object RealtimeDatabaseSync {
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 snapshot.getValue(clazz)?.let { data ->
                     val key = snapshot.key!!
-
-                    // **NEW LOGIC FOR SOFT-DELETE CHECK**
-                    // You need to figure out how to check the 'isDeleted' flag in the generic T
-                    // Since this is generic, you'll need to cast or use a common interface/abstract class.
-                    // Assuming T is CategoryCloud (for CATEGORY_TABLE):
+                    Log.w("SyncManager", "OnChildChanged")
                     if (data is CategoryCloud) {
                         if (data.isDeleted) {
                             Log.d("SyncManager", "Soft-deleted in cloud: $tableName → $key. Deleting locally.")
                             deleteLocal(key) // Hard-delete from Room
-                            // OPTIONAL: Clean up the cloud data by REMOVING the node after
-                            // all devices have synced the soft-delete marker.
-                            // This is complex and often skipped. For simplicity, just leave
-                            // the soft-deleted node in the cloud.
 
                         } else {
-                            // Regular update/change
                             convertAndSave(data, key)
                         }
                     } else {
-                        // Fallback for non-soft-delete tables or generic T
-                        //convertAndSave(data, key)
+                        convertAndSave(data, key)
                     }
                 }
             }

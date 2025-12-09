@@ -63,6 +63,9 @@ interface TransDetailDao {
     @Query("SELECT  IFNULL(SUM(total_price),0.0)  FROM TRANS_DETAIL_TABLE WHERE tSCloudId =:tSCloudId_ ")
     fun getTotalTransaction(tSCloudId_: Long):Double
 
+    @Query("DELETE FROM trans_detail_table WHERE is_deleted = 1")
+    fun deteleTheIsDeleted()
+
 
     @Query("DELETE FROM trans_detail_table WHERE tDCloudId=:tDCloudId ")
     fun deleteAnItemTransDetail(tDCloudId:Long)
@@ -169,5 +172,7 @@ interface TransDetailDao {
     ORDER BY tDCloudId
 """)
     fun getTransactionDetailsWithDuplicateCloudIds(): List<TransactionDetail>
+    @Query("UPDATE trans_detail_table SET needs_syncs = 0 WHERE tDCloudId = :cloudId")
+    suspend fun markAsSynced(cloudId: Long)
 
 }

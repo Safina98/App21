@@ -31,10 +31,17 @@ class UniversalSyncWorker(
                 RealtimeDatabaseSync.startSyncAllTables(
                     brandDao    = db.brandDao,
                     categoryDao = db.categoryDao,
-                    productDao = db.productDao
+                    productDao = db.productDao,
+                    sPDao = db.subProductDao,
+                    dWDao = db.detailWarnaDao,
+                    tSDao = db.transSumDao,
+                    tdDao = db.transDetailDao,
+                    summaryDao = db.summaryDbDao
                 )
             }.start()
+
         }.start()
+
 
 
         //  val categries=db.categoryDao.getPendingSync()

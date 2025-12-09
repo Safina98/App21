@@ -3,6 +3,7 @@ package com.example.app21try6.database.daos
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
@@ -12,7 +13,7 @@ import com.example.app21try6.database.tables.SubProduct
 
 @Dao
 interface SubProductDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(subProduct: SubProduct)
     @Update
     fun update(subProduct: SubProduct)
@@ -102,4 +103,7 @@ interface SubProductDao {
     ORDER BY sPCloudId
 """)
     fun getSubProductsWithDuplicateCloudIds(): List<SubProduct>
+
+    @Query("UPDATE sub_table SET needs_syncs = 0 WHERE sPCloudId = :cloudId")
+    suspend fun markAsSynced(cloudId: Long)
 }

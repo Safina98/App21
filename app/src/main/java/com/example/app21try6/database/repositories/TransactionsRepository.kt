@@ -3,7 +3,11 @@ package com.example.app21try6.database.repositories
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
+import com.example.app21try6.Constants
+import com.example.app21try6.Constants.TABLENAMES
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.database.cloud.RealtimeDatabaseSync
+import com.example.app21try6.database.cloud.UploadInventories
 import com.example.app21try6.database.models.TracketailWarnaModel
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
@@ -17,6 +21,7 @@ import kotlinx.coroutines.withContext
 import java.util.Date
 
 class TransactionsRepository(application: Application) {
+    private val uploadInventory= UploadInventories()
     private val transDetailDao= VendibleDatabase.getInstance(application).transDetailDao
     private val transSumDao=VendibleDatabase.getInstance(application).transSumDao
 
@@ -79,7 +84,10 @@ class TransactionsRepository(application: Application) {
     suspend fun insertTransDetail(transDetail: TransactionDetail):Long{
        return withContext(Dispatchers.IO){
            transDetail.tDCloudId= System.currentTimeMillis()
-            transDetailDao.insert(transDetail)
+           val id = transDetailDao.insert(transDetail)
+           val transDetailCloud=uploadInventory.convertTransactionDetailToTransactionDetailCloud(transDetail)
+           RealtimeDatabaseSync.upload(TABLENAMES.TRANSACTION_DETAIL, transDetailCloud.cloudId.toString(), transDetailCloud)
+           id
         }
     }
     suspend fun deleteTransDetail(sum_id:Long,name:String){
@@ -95,6 +103,19 @@ class TransactionsRepository(application: Application) {
     suspend fun updateTransDetail(transdetail: TransactionDetail){
         withContext(Dispatchers.IO){
             transDetailDao.update(transdetail)
+            try {
+                val tDCloud= uploadInventory.convertTransactionDetailToTransactionDetailCloud(transdetail)
+                RealtimeDatabaseSync.uploadSuspended( // <-- Using the new function
+                    tableName = Constants.TABLENAMES.TRANSACTION_DETAIL,
+                    cloudId = transdetail.tDCloudId.toString(),
+                    cloudObject = tDCloud
+                )
+                transDetailDao.markAsSynced(tDCloud.tSCloudId)
+
+
+            } catch (e: Exception) {
+                Log.w("SyncManager", "Upload failed for category ${transdetail.tDCloudId}: ${e.message}")
+            }
         }
     }
 
@@ -127,6 +148,18 @@ class TransactionsRepository(application: Application) {
         withContext(Dispatchers.IO){
             transSum.needsSyncs=1
             transSumDao.update(transSum)
+            try {
+                val tSCloud= uploadInventory.convertTransactionSummaryToTransactionSummaryCloud(transSum)
+                RealtimeDatabaseSync.uploadSuspended( // <-- Using the new function
+                    tableName = Constants.TABLENAMES.TRANSACTION_SUMMARY,
+                    cloudId = transSum.tSCloudId.toString(),
+                    cloudObject = tSCloud
+                )
+               transSumDao.markAsSynced(transSum.tSCloudId)
+
+            } catch (e: Exception) {
+                Log.w("SyncManager", "Upload failed for transaction Summary ${transSum.tSCloudId}: ${e.message}")
+            }
         }
 
     }
@@ -139,7 +172,10 @@ class TransactionsRepository(application: Application) {
     suspend fun insertNewSumAndGetId(transactionSummary: TransactionSummary):Long{
         return withContext(Dispatchers.IO){
             transactionSummary.tSCloudId= System.currentTimeMillis()
-            transSumDao.insertNew(transactionSummary)
+            val id =transSumDao.insertNew(transactionSummary)
+            val tSCloud=uploadInventory.convertTransactionSummaryToTransactionSummaryCloud(transactionSummary)
+            RealtimeDatabaseSync.upload(TABLENAMES.TRANSACTION_SUMMARY, tSCloud.cloudId.toString(), tSCloud)
+            id
         }
     }
 

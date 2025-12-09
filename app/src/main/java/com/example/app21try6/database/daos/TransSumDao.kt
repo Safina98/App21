@@ -186,5 +186,8 @@ interface TransSumDao {
         ORDER BY tSCloudId
     """)
     fun getTransactionSummariesWithDuplicateCloudIds(): List<TransactionSummary>
+
+    @Query("UPDATE trans_sum_table SET needs_syncs = 0 WHERE tSCloudId = :cloudId")
+    suspend fun markAsSynced(cloudId: Long)
 }
 

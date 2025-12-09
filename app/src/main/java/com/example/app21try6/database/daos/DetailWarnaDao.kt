@@ -1,24 +1,20 @@
 package com.example.app21try6.database.daos
 
-import android.util.Log
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.example.app21try6.database.models.DetailMerchandiseModel
-import com.example.app21try6.database.tables.Brand
-import com.example.app21try6.database.tables.CustomerTable
 import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.database.tables.MerchandiseRetail
-import com.example.app21try6.database.tables.Product
-import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.database.tables.TransactionDetail
 
 @Dao
 interface DetailWarnaDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(detailWarnaTable: DetailWarnaTable)
     @Insert
     fun insertLog(inventoryLog: InventoryLog)
@@ -26,8 +22,7 @@ interface DetailWarnaDao {
     fun update(detailWarnaTable: DetailWarnaTable)
     @Update
     fun updateTransDetail(transactionDetail: TransactionDetail)
-
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(merchandiseRetail: MerchandiseRetail)
     @Update
     fun updateRetail(merchandiseRetail: MerchandiseRetail)
@@ -107,10 +102,14 @@ interface DetailWarnaDao {
 
     @Transaction
     fun insertDetailWarnaAndLog(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog) {
-        detailWarnaTable.dWCloudId=System.currentTimeMillis()
+
         insert(detailWarnaTable)
         insertLog(inventoryLog)
     }
+    @Query("UPDATE detail_warna_table SET needs_syncs = 0 WHERE dWCloudId = :cloudId")
+    suspend fun markDetailWarnaAsSynced(cloudId: Long)
+    @Query("UPDATE merchandise_table SET needs_syncs = 0 WHERE mRCloudId = :cloudId")
+    suspend fun markMerhcandiseRetailAsSynced(cloudId: Long)
     @Transaction
     fun updateDetailWarnaAndInsertLog(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog,merchandiseRetail: MerchandiseRetail?) {
         update(detailWarnaTable)
@@ -132,7 +131,7 @@ interface DetailWarnaDao {
     }
     @Transaction
     fun deleteDetailWarnaAndInsertLog(detailWarnaId:Long,inventoryLog: InventoryLog,merchandiseRetail: MerchandiseRetail?){
-        insertLog(inventoryLog)
+//        insertLog(inventoryLog)
         delete(detailWarnaId)
         if (merchandiseRetail!=null) {
             insert(merchandiseRetail)

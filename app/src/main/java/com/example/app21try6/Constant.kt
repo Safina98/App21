@@ -46,6 +46,21 @@ object Constants {
         const val BRAND = "brand_table"
         const val CATEGORY = "category_table"
         const val PRODUCT = "product_table"
+        const val SUB_PRODUCT = "sub_table"
+        const val DETAIL_WARNA = "detail_warna_table"
+        const val MERCHANDISE_RETAIL = "merchandise_table"
+        const val SUMMARY = "summary_table"
+        const val TRANSACTION_DETAIL = "trans_detail_table"
+        const val TRANSACTION_SUMMARY = "trans_sum_table"
+        const val PAYMENT = "paymen_table"
+        const val EXPENSES = "expenses_table"
+        const val EXPENSE_CATEGORY = "expense_category_table"
+        const val DISCOUNT_TRANSACTION = "discout_transaction_table"
+        const val CUSTOMER = "customer_table"
+        const val INVENTORY_LOG = "inventory_log_table"
+        const val INVENTORY_PURCHASE = "inventory_purchase_table"
+        const val SUPPLIER = "suplier_table"
+        const val DISCOUNT = "discount_table"
     }
 
     enum class Code(val text: String) {

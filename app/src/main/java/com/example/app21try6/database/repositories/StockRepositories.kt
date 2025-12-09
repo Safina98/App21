@@ -4,8 +4,8 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import com.example.app21try6.Constants
+import com.example.app21try6.Constants.TABLENAMES
 import com.example.app21try6.database.VendibleDatabase
-import com.example.app21try6.database.cloud.BrandCloud
 import com.example.app21try6.database.cloud.CategoryCloud
 import com.example.app21try6.database.cloud.RealtimeDatabaseSync
 import com.example.app21try6.database.cloud.UploadInventories
@@ -305,6 +305,18 @@ class StockRepositories (
     suspend fun updateSubProduct(subProduct: SubProduct){
         withContext(Dispatchers.IO){
             subProductDao.update(subProduct)
+            try {
+                val sPCloud= uploadInventory.convertSubProductToSubProductCloud(subProduct)
+                RealtimeDatabaseSync.uploadSuspended( // <-- Using the new function
+                    tableName = Constants.TABLENAMES.SUB_PRODUCT,
+                    cloudId = subProduct.sPCloudId.toString(),
+                    cloudObject = sPCloud
+                )
+                productDao.markAsSynced(subProduct.sPCloudId)
+
+            } catch (e: Exception) {
+                Log.w("SyncManager", "Upload failed for sub product ${subProduct.sPCloudId}: ${e.message}")
+            }
         }
     }
     suspend fun deleteSubProduct(subProduct: SubProduct){
@@ -315,6 +327,8 @@ class StockRepositories (
     suspend fun insertSubProduct(subProduct: SubProduct){
         withContext(Dispatchers.IO){
             subProduct.sPCloudId= System.currentTimeMillis()
+            val sPCloud=UploadInventories().convertSubProductToSubProductCloud(subProduct)
+            RealtimeDatabaseSync.upload(TABLENAMES.SUB_PRODUCT, sPCloud.cloudId, sPCloud)
             subProductDao.insert(subProduct)
         }
     }
@@ -348,16 +362,68 @@ class StockRepositories (
     suspend fun insertDetailWarna(detailWarnaTable: DetailWarnaTable, inventoryLog: InventoryLog){
         withContext(Dispatchers.IO){
             detailWarnaDao.insertDetailWarnaAndLog(detailWarnaTable,inventoryLog)
+            val dWCloud=UploadInventories().convertDetailWarnaToDetailWarnaCloud(detailWarnaTable)
+            RealtimeDatabaseSync.upload(TABLENAMES.DETAIL_WARNA, dWCloud.cloudId, dWCloud)
         }
     }
     suspend fun updateDetailWarna(detailWarnaTable: DetailWarnaTable, inventoryLog: InventoryLog,merchandiseRetail: MerchandiseRetail?){
         withContext(Dispatchers.IO){
+            detailWarnaTable.needsSyncs=1
             detailWarnaDao.updateDetailWarnaAndInsertLog(detailWarnaTable,inventoryLog,merchandiseRetail)
+
+            try {
+                val  dWCloud=UploadInventories().convertDetailWarnaToDetailWarnaCloud(detailWarnaTable)
+                RealtimeDatabaseSync.uploadSuspended( // <-- Using the new function
+                    tableName = Constants.TABLENAMES.DETAIL_WARNA,
+                    cloudId = detailWarnaTable.dWCloudId.toString(),
+                    cloudObject = dWCloud
+                )
+                detailWarnaDao.markDetailWarnaAsSynced(detailWarnaTable.dWCloudId)
+                val mRCLoud=UploadInventories().convertMerchandiseRetailToMerchandiseRetailCloud(merchandiseRetail!!)
+                RealtimeDatabaseSync.upload( // <-- Using the new function
+                    tableName = Constants.TABLENAMES.MERCHANDISE_RETAIL,
+                    cloudId = merchandiseRetail.mRCloudId.toString(),
+                    cloudObject = mRCLoud
+                )
+
+                detailWarnaDao.markMerhcandiseRetailAsSynced(merchandiseRetail.mRCloudId)
+
+            } catch (e: Exception) {
+                Log.w("SyncManager", "Upload failed for detailwarna ${detailWarnaTable.dWCloudId}: ${e.message}")
+                Log.w("SyncManager", "Upload failed for merchadise reteil ${merchandiseRetail?.mRCloudId}: ${e.message}")
+            }
+
         }
     }
-    suspend fun updateDetailWarna(detailWarnaTable: DetailWarnaTable, inventoryLog: InventoryLog,merchandiseRetail: List<MerchandiseRetail?>){
+    suspend fun updateDetailWarna(detailWarnaTable: DetailWarnaTable, inventoryLog: InventoryLog,merchandiseRetailList: List<MerchandiseRetail?>){
         withContext(Dispatchers.IO){
-            detailWarnaDao.updateDetailWarnaAndInsertLog(detailWarnaTable,inventoryLog,merchandiseRetail)
+            detailWarnaDao.updateDetailWarnaAndInsertLog(detailWarnaTable,inventoryLog,merchandiseRetailList)
+            try {
+                val  dWCloud=UploadInventories().convertDetailWarnaToDetailWarnaCloud(detailWarnaTable)
+                RealtimeDatabaseSync.uploadSuspended( // <-- Using the new function
+                    tableName = Constants.TABLENAMES.DETAIL_WARNA,
+                    cloudId = detailWarnaTable.dWCloudId.toString(),
+                    cloudObject = dWCloud
+                )
+                detailWarnaDao.markDetailWarnaAsSynced(detailWarnaTable.dWCloudId)
+
+                merchandiseRetailList.forEach {merchandiseRetail ->
+                    val mRCLoud=UploadInventories().convertMerchandiseRetailToMerchandiseRetailCloud(merchandiseRetail!!)
+                    RealtimeDatabaseSync.upload( // <-- Using the new function
+                        tableName = Constants.TABLENAMES.MERCHANDISE_RETAIL,
+                        cloudId = merchandiseRetail.mRCloudId.toString(),
+                        cloudObject = mRCLoud
+                    )
+
+                   // detailWarnaDao.markMerhcandiseRetailAsSynced(merchandiseRetail.mRCloudId)
+                }
+
+
+            } catch (e: Exception) {
+                Log.w("SyncManager", "Upload failed for detailwarna ${detailWarnaTable.dWCloudId}: ${e.message}")
+                Log.w("SyncManager", "Upload failed for merchadise reteil ${merchandiseRetailList}: ${e.message}")
+            }
+
         }
     }
     suspend fun deleteDetailWarna(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog,merchandiseRetail: MerchandiseRetail?){
