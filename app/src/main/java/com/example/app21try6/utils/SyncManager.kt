@@ -43,6 +43,12 @@ class SyncManager(
                     cloudId = category.categoryCloudId.toString(),
                     cloudObject = cloudObject
                 )
+                if (category.isDeleted) {
+                    // LOGIC FOR DELETION (Soft-Delete)
+                    Log.i("SyncManager","SyncManager syncCategory executing delete ${category.categoryCloudId}")
+                    categoryDao.delete(category.categoryCloudId)
+                    Log.d("SyncManager", "Soft-deleting category ${category.categoryCloudId} on cloud.")
+                }
                 // 2. ONLY MARK AS SYNCED IF THE UPLOAD SUCCEEDED
                 categoryDao.markAsSynced(category.categoryCloudId)
 

@@ -3,6 +3,7 @@ package com.example.app21try6.database.repositories
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
+import com.example.app21try6.Constants
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.cloud.BrandCloud
 import com.example.app21try6.database.cloud.CategoryCloud
@@ -47,6 +48,11 @@ class StockRepositories (
             categoryDao.getCategoryNameById(id)
         }
     }
+    suspend fun getCategoryById(id:Long):Category?{
+        return withContext(Dispatchers.IO){
+            categoryDao.getById(id)
+        }
+    }
     //get exported data
     fun getExportedStockData(): LiveData<List<ExportModel>> {
         return brandDao.getExportedData()
@@ -80,7 +86,8 @@ class StockRepositories (
         withContext(Dispatchers.IO){
             categoryDao.update(category)
             try {
-                val cloudObject = CategoryCloud(categoryName = category.category_name)
+                val cloudObject = CategoryCloud(
+                    categoryName = category.category_name)
 
                 // 1. CALL THE SUSPENDING FUNCTION
                 RealtimeDatabaseSync.uploadSuspended( // <-- Using the new function
@@ -102,10 +109,32 @@ class StockRepositories (
         }
     }
     //delete category by id
-    suspend fun deleteCategory(id:Long){
+    suspend fun deleteCategory(id: Long){
         withContext(Dispatchers.IO){
             categoryDao.delete(id)
-            RealtimeDatabaseSync.deleteById("category_table", id)
+           // RealtimeDatabaseSync.deleteById("category_table", id)
+        }
+    }
+    suspend fun deleteCategory(category: Category){
+        withContext(Dispatchers.IO){
+            val softDeletedCategory = category.copy(isDeleted = true, needsSyncs = 1)
+            categoryDao.update(softDeletedCategory)
+            Log.i("SyncManager","Delete Category Repository")
+            Log.i("SyncManager","category ${softDeletedCategory.categoryCloudId},${softDeletedCategory.needsSyncs},${softDeletedCategory.isDeleted}")
+            val cloudObject = CategoryCloud(
+                categoryName = category.category_name,
+                lastUpdated = System.currentTimeMillis(),
+                isDeleted = true // <--- THIS IS THE KEY CHANGE
+            )
+
+            // Use your uploadSuspended method
+            RealtimeDatabaseSync.uploadSuspended(
+                tableName = Constants.TABLENAMES.CATEGORY,
+                cloudId = category.categoryCloudId.toString(), // Assuming localId is used as cloudId
+                cloudObject = cloudObject
+            )
+
+
         }
     }
 
@@ -123,7 +152,24 @@ class StockRepositories (
     suspend fun getAllBrand():List<Brand>{ return withContext(Dispatchers.IO){ brandDao.getAllBrand() } }
     suspend fun getBrandNameListByCategoryName(cat:Long):List<String>{ return withContext(Dispatchers.IO){ brandDao.getBrandNameListByCatName(cat) } }
     //update brand
-    suspend fun updateBrand(brand: Brand){ withContext(Dispatchers.IO){ brandDao.update(brand) } }
+    suspend fun updateBrand(brand: Brand){ withContext(Dispatchers.IO){
+        brandDao.update(brand)
+        try {
+            val brandCloud= uploadInventory.convertBrandtoBrandCloud(brand)
+            RealtimeDatabaseSync.uploadSuspended( // <-- Using the new function
+                tableName = Constants.TABLENAMES.BRAND,
+                cloudId = brand.brandCloudId.toString(),
+                cloudObject = brandCloud
+            )
+            brandDao.markAsSynced(brand.brandCloudId)
+
+        } catch (e: Exception) {
+            Log.w("SyncManager", "Upload failed for category ${brand.brandCloudId}: ${e.message}")
+        }
+
+
+    }
+    }
     //delete brand
     suspend fun deleteBrand(id:Long){ withContext(Dispatchers.IO){ brandDao.deleteBrand(id) } }
     //get brand id by product id
@@ -228,7 +274,22 @@ class StockRepositories (
    suspend fun insertTry(product: Product, brand: String, cath: String){ withContext(Dispatchers.IO){ productDao.inserProduct(product.product_name,product.product_price,product.bestSelling,brand,cath) } }
     //get product id by sub  id
     suspend fun getProdutId(subId:Long):Long?{ return withContext(Dispatchers.IO){ subProductDao.getProductIdBySubId(subId) } }
-    suspend fun updateProduct(product: Product){ withContext(Dispatchers.IO){ productDao.update(product) } }
+    suspend fun updateProduct(product: Product){
+        withContext(Dispatchers.IO){
+            productDao.update(product)
+            try {
+                val productCloud= uploadInventory.convertProductToProcuctClout(product)
+                RealtimeDatabaseSync.uploadSuspended( // <-- Using the new function
+                    tableName = Constants.TABLENAMES.PRODUCT,
+                    cloudId = product.productCloudId.toString(),
+                    cloudObject = productCloud
+                )
+                productDao.markAsSynced(product.productCloudId)
+
+            } catch (e: Exception) {
+                Log.w("SyncManager", "Upload failed for category ${product.productCloudId}: ${e.message}")
+            }
+        } }
     suspend fun deleteProduct(id:Long){ withContext(Dispatchers.IO){ productDao.delete(id) } }
     suspend fun insertProduct(product: Product){
         withContext(Dispatchers.IO){

@@ -19,6 +19,9 @@ interface ProductDao {
     fun update(product: Product)
     @Query("SELECT productCloudId as id,product_name as name,brand_code as parentId from product_table WHERE (:brandCloudId_ IS NULL OR brand_code = :brandCloudId_)")
     fun getAll(brandCloudId_:Long?): List<BrandProductModel>
+
+    @Query("UPDATE product_table SET needs_syncs = 0 WHERE productCloudId = :cloudId")
+    suspend fun markAsSynced(cloudId: Long)
 // todo delete later
 
     @Query("""

@@ -55,7 +55,6 @@ object RealtimeDatabaseSync {
 
     suspend fun <T> uploadSuspended(tableName: String, cloudId: String, cloudObject: T) {
         if (!isInitialized || cloudId.isEmpty()) return
-
         try {
             // Tasks.await() is the key: it suspends the coroutine until the operation completes.
             Tasks.await(
@@ -64,7 +63,7 @@ object RealtimeDatabaseSync {
                     .setValue(cloudObject)
             )
             // If we reach here, Firebase has successfully written the data.
-            Log.e("FIREBASE_UPLOAD", "CONFIRMED SUCCESS → $tableName/$cloudId")
+            Log.e("SyncManager", "CONFIRMED SUCCESS → $tableName/$cloudId")
         } catch (e: Exception) {
             // If Tasks.await() throws an exception (e.g., security denied, or network failure),
             // we log it and throw it again.
@@ -87,7 +86,7 @@ object RealtimeDatabaseSync {
         categoryDao: CategoryDao,
         productDao: ProductDao
     ) {
-
+        Log.d("SyncManager", "StartSyncAllTablesStarted")
         if (!isInitialized) return
 
         // BRAND TABLE SYNC
@@ -96,15 +95,20 @@ object RealtimeDatabaseSync {
             clazz = BrandCloud::class.java,
 
             convertAndSave = { cloud, key ->
+                if(cloud.isDeleted==false){
+                    val brand = Brand(
+                        brandCloudId = key.toLong(),     // <-- cloud key is primary ID
+                        brand_name = cloud.brandName,    // <-- correct for Brand
+                        cath_code = cloud.cathCode.toLong()       // <-- if your Brand table has this
+                    )
+                    Executors.newSingleThreadExecutor().execute {
+                        try {
+                            brandDao.insert(brand)           // <-- correct DAO
+                        }catch (ex:Exception){
+                            Log.e("SyncManager", "Upload failed for brand ${brand.brandCloudId}: ${ex.message}")
+                        }
 
-                val brand = Brand(
-                    brandCloudId = key.toLong(),     // <-- cloud key is primary ID
-                    brand_name = cloud.brandName,    // <-- correct for Brand
-                    cath_code = cloud.cathCode       // <-- if your Brand table has this
-                )
-
-                Executors.newSingleThreadExecutor().execute {
-                    brandDao.insert(brand)           // <-- correct DAO
+                    }
                 }
             },
 
@@ -120,17 +124,22 @@ object RealtimeDatabaseSync {
             tableName = Constants.TABLENAMES.CATEGORY,
             clazz = CategoryCloud::class.java,
             convertAndSave = { cloud, key ->
-                val category = Category(
-                    categoryCloudId = key.toLong(),
-                    category_name = cloud.categoryName
-                )
-
-                Executors.newSingleThreadExecutor().execute {
-                    categoryDao.insert(category)
+                Log.i("SyncManager","StartSync ${cloud.categoryName} ${cloud.isDeleted} ")
+                if (cloud.isDeleted==false){
+                    val category = Category(
+                        categoryCloudId = key.toLong(),
+                        category_name = cloud.categoryName
+                    )
+                    Executors.newSingleThreadExecutor().execute {
+                        categoryDao.insert(category)
+                    }
                 }
+
             },
             deleteLocal = { key ->
+                Log.i("SyncManager","StartSync all table syncCategory")
                 Executors.newSingleThreadExecutor().execute {
+                    Log.i("SyncManager","syncCategory executing delete ${key.toLong()}")
                     categoryDao.delete(key.toLong())
                 }
             }
@@ -145,29 +154,35 @@ object RealtimeDatabaseSync {
             tableName = Constants.TABLENAMES.PRODUCT,
             clazz = ProductCloud::class.java,
             convertAndSave = { cloud, key ->
+        if (cloud.isDeleted==false){
+            val product = Product(
+                productCloudId = key.toLong(),
+                product_name = cloud.productName,
+                product_price = cloud.productPrice,
+                product_capital = cloud.productCapital,
+                checkBoxBoolean = cloud.checkBoxBoolean,
+                bestSelling = cloud.bestSelling,
+                default_net = cloud.defaultNet,
+                alternate_price = cloud.alternatePrice,
+                brand_code = cloud.brandCode,
+                cath_code = cloud.cathCode,
+                discountId = cloud.discountId,
+                purchasePrice = cloud.purchasePrice,
+                puchaseUnit = cloud.puchaseUnit,
+                alternate_capital = cloud.alternateCapital,
+                isDeleted = cloud.isDeleted,
+                needsSyncs = cloud.needsSyncs
+            )
 
-                val product = Product(
-                    productCloudId = key.toLong(),
-                    product_name = cloud.productName,
-                    product_price = cloud.productPrice,
-                    product_capital = cloud.productCapital,
-                    checkBoxBoolean = cloud.checkBoxBoolean,
-                    bestSelling = cloud.bestSelling,
-                    default_net = cloud.defaultNet,
-                    alternate_price = cloud.alternatePrice,
-                    brand_code = cloud.brandCode,
-                    cath_code = cloud.cathCode,
-                    discountId = cloud.discountId,
-                    purchasePrice = cloud.purchasePrice,
-                    puchaseUnit = cloud.puchaseUnit,
-                    alternate_capital = cloud.alternateCapital,
-                    isDeleted = cloud.isDeleted,
-                    needsSyncs = cloud.needsSyncs
-                )
-
-                Executors.newSingleThreadExecutor().execute {
+            Executors.newSingleThreadExecutor().execute {
+                try {
                     productDao.insert(product) // insert or update
-                }
+                }catch (e:Exception){
+                    Log.e("SyncManager", "Upload failed for product ${product.productCloudId}: ${e.message}"    )
+
+            } }
+}
+
             },
             deleteLocal = { key ->
                 Executors.newSingleThreadExecutor().execute {
@@ -181,6 +196,12 @@ object RealtimeDatabaseSync {
     // --------------------------------------------------------------
     // 4️⃣ Generic table listener (cloud → local)
     // --------------------------------------------------------------
+    // Inside RealtimeDatabaseSync.kt
+// --------------------------------------------------------------
+// 4️⃣ Generic table listener (cloud → local)
+// --------------------------------------------------------------
+    // RealtimeDatabaseSync.kt (Modified section)
+
     private fun <T> syncTable(
         tableName: String,
         clazz: Class<T>,
@@ -189,26 +210,57 @@ object RealtimeDatabaseSync {
     ) {
         database.child(tableName).addChildEventListener(object : ChildEventListener {
 
+            // 1. MUST BE IMPLEMENTED
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 snapshot.getValue(clazz)?.let { data ->
                     convertAndSave(data, snapshot.key!!)
                 }
             }
 
+            // 2. MUST BE IMPLEMENTED
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                 snapshot.getValue(clazz)?.let { data ->
-                    convertAndSave(data, snapshot.key!!)
+                    val key = snapshot.key!!
+
+                    // **NEW LOGIC FOR SOFT-DELETE CHECK**
+                    // You need to figure out how to check the 'isDeleted' flag in the generic T
+                    // Since this is generic, you'll need to cast or use a common interface/abstract class.
+                    // Assuming T is CategoryCloud (for CATEGORY_TABLE):
+                    if (data is CategoryCloud) {
+                        if (data.isDeleted) {
+                            Log.d("SyncManager", "Soft-deleted in cloud: $tableName → $key. Deleting locally.")
+                            deleteLocal(key) // Hard-delete from Room
+                            // OPTIONAL: Clean up the cloud data by REMOVING the node after
+                            // all devices have synced the soft-delete marker.
+                            // This is complex and often skipped. For simplicity, just leave
+                            // the soft-deleted node in the cloud.
+
+                        } else {
+                            // Regular update/change
+                            convertAndSave(data, key)
+                        }
+                    } else {
+                        // Fallback for non-soft-delete tables or generic T
+                        //convertAndSave(data, key)
+                    }
                 }
             }
 
+            // 3. MUST BE IMPLEMENTED
             override fun onChildRemoved(snapshot: DataSnapshot) {
-                //this code didnt worked when one app is not open
                 Log.d("RDBSync", "Deleted from cloud: $tableName → ${snapshot.key}")
-                snapshot.key?.let { deleteLocal(it) }   // DELETE LOCAL
+                snapshot.key?.let { deleteLocal(it) }
             }
 
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-            override fun onCancelled(error: DatabaseError) {}
+            // 4. MUST BE IMPLEMENTED (can be empty)
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                // Leave empty if you don't use ordered data
+            }
+
+            // 5. MUST BE IMPLEMENTED (can be empty)
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("RDBSync", "Database sync cancelled for $tableName.", error.toException())
+            }
         })
     }
 // 📁 RealtimeDatabaseSync.kt (Updated)
@@ -219,6 +271,7 @@ object RealtimeDatabaseSync {
 // 5️⃣ Start a Firebase Connection Status Listener (New Function)
 // --------------------------------------------------------------
     fun startConnectionListener(context: Context) {
+        Log.d("SyncManager", "Reconnected to Firebase! Scheduling sync.")
         if (!isInitialized) return
 
         val connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected")
@@ -229,8 +282,6 @@ object RealtimeDatabaseSync {
                 if (connected) {
                     Log.d("RDBSync", "Reconnected to Firebase! Scheduling sync.")
 
-                    // IMPORTANT: You must define 'scheduleImmediateSync' somewhere
-                    // accessible and pass the Application Context (the context parameter).
                     scheduleImmediateSync(context) // <-- Your code snippet is inside here
                 }
             }

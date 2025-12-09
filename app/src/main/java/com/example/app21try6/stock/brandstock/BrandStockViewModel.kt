@@ -143,9 +143,12 @@ class BrandStockViewModel(
         }
     }
 
-    fun deleteCategory(category:StockCategoryModel){
+    fun deleteCategory(ctgModel:StockCategoryModel){
         viewModelScope.launch {
-            repository.deleteCategory(category.id)
+            val category = repository.getCategoryById(ctgModel.id)
+            category?.isDeleted=true
+            if (category!=null)
+                repository.deleteCategory(category)
         }
     }
 
@@ -165,7 +168,6 @@ class BrandStockViewModel(
     fun assignCloudIdToAllData() {
         viewModelScope.launch(Dispatchers.IO) {
             //repository.assignCloudIdToAllData()
-
         }
     }
     fun insertItemCtg(ctgName:String){

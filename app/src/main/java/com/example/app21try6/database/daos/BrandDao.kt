@@ -18,6 +18,8 @@ interface BrandDao {
     fun update(brand: Brand)
     @Query("SELECT * FROM brand_table WHERE brandCloudId = :id LIMIT 1")
     suspend fun getById(id: Long): Brand?
+    @Query("UPDATE brand_table SET needs_syncs = 0 WHERE brandCloudId = :cloudId")
+    suspend fun markAsSynced(cloudId: Long)
     @Query("SELECT * FROM brand_table WHERE needs_syncs = 1")
     fun getPendingSync(): List<Brand>
 
