@@ -36,7 +36,9 @@ import java.util.Locale
 import java.util.UUID
 import com.example.app21try6.Constants
 import com.example.app21try6.database.tables.MerchandiseRetailLog
+import kotlinx.coroutines.delay
 import java.text.NumberFormat
+import kotlin.random.Random
 
 
 class TransactionDetailViewModel (
@@ -410,11 +412,12 @@ class TransactionDetailViewModel (
     fun DetailMerchandiseModel.toMerchandiseRetail():MerchandiseRetail{
         return this.let { model->
             MerchandiseRetail(
-                mRCloudId =model.id,
+                mRCloudId =if (model.id==0L) System.currentTimeMillis() else model.id,
                 sPCloudId =model.sPCloudId,
                 ref=model.ref,
                 net = model.net,
-                date = model.date?: Date()
+                date = model.date?: Date(),
+                needsSyncs = 1
             )
         }
     }
@@ -441,6 +444,7 @@ class TransactionDetailViewModel (
                     }
                     merch.needsSyncs=1
                     trans.needsSyncs=1
+                    delay(1)
                     stockRepo.updateDetaiAndlRetail(merch,trans)
                 }
             }
@@ -472,10 +476,12 @@ class TransactionDetailViewModel (
                     val productId = stockRepo.getProdutId(detailWarnaTable.sPCloudId) ?: return@launch
                     val brandId = stockRepo.getBrandId(productId) ?: return@launch
                     val inventoryLog =createInventoryLog(detailWarnaTable,detailWarnaTable.batchCount,productId,brandId,"Keluar Retail")
+                    delay(1)
                     val merchandiseRetailList= mutableListOf<MerchandiseRetail?>()
                     for (i in 0 until detailWarnaModel!!.selectedQty) {
                         // i goes from 0 until selectedQty - 1
                         Log.i("DWP","$i")
+                        delay(1)
                         val merchandiseRetail = detailWarnaModel?.let { createMerchandiseRetail(it) }
                         merchandiseRetailList.add(merchandiseRetail)
                     }
@@ -517,12 +523,13 @@ class TransactionDetailViewModel (
 
     fun createMerchandiseRetail(dmModel: DetailMerchandiseModel):MerchandiseRetail{
         val merchandiseRetail=MerchandiseRetail()
-        merchandiseRetail.mRCloudId=if (dmModel.id==0L)  System.currentTimeMillis() else dmModel.id
+        merchandiseRetail.mRCloudId=if (dmModel.id==0L)  System.currentTimeMillis()+Random.nextInt().toLong() else dmModel.id
         merchandiseRetail.sPCloudId =dmModel.sPCloudId
         merchandiseRetail.net=dmModel.net
         merchandiseRetail.ref=UUID.randomUUID().toString()
         merchandiseRetail.date=dmModel.date?:Date()
         merchandiseRetail.mRCloudId=System.currentTimeMillis()
+        merchandiseRetail.needsSyncs=1
         return merchandiseRetail
     }
     fun setValuesToNull(){

@@ -175,4 +175,7 @@ interface TransDetailDao {
     @Query("UPDATE trans_detail_table SET needs_syncs = 0 WHERE tDCloudId = :cloudId")
     suspend fun markAsSynced(cloudId: Long)
 
+    @Query("SELECT * FROM trans_detail_table WHERE tDCloudId=:id")
+    fun selectTransDetailById(id:Long):TransactionDetail
+
 }

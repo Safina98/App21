@@ -20,6 +20,9 @@ interface TransSumDao {
     @Update
     fun update(transactionSummary: TransactionSummary)
 
+    @Query("DELETE FROM trans_sum_table WHERE tSCloudId = :id")
+    fun deleteById(id: Long)
+
     @Query("""
         UPDATE trans_sum_table 
         SET custId = (

@@ -28,27 +28,27 @@ class MyApplication: Application()  {
     override fun onCreate() {
         super.onCreate()
 
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
-        RealtimeDatabaseSync.startConnectionListener(applicationContext)
-        // Now safe to initialize everything else
-       RealtimeDatabaseSync.init(this)
-        Thread {
-            Thread {
-                val db = VendibleDatabase.getInstance(this)
-                RealtimeDatabaseSync.startSyncAllTables(
-                    brandDao    = db.brandDao,
-                    categoryDao = db.categoryDao,
-                    productDao = db.productDao,
-                    sPDao = db.subProductDao,
-                    dWDao = db.detailWarnaDao,
-                    tSDao = db.transSumDao,
-                    tdDao = db.transDetailDao,
-                   summaryDao = db.summaryDbDao
-                )
-            }.start()
-        }.start()
-
-
+//        FirebaseDatabase.getInstance().setPersistenceEnabled(true)
+//        RealtimeDatabaseSync.startConnectionListener(applicationContext)
+//        // Now safe to initialize everything else
+//       RealtimeDatabaseSync.init(this)
+//        Thread {
+//            Thread {
+//                val db = VendibleDatabase.getInstance(this)
+//                RealtimeDatabaseSync.startSyncAllTables(
+//                    brandDao    = db.brandDao,
+//                    categoryDao = db.categoryDao,
+//                    productDao = db.productDao,
+//                    sPDao = db.subProductDao,
+//                    dWDao = db.detailWarnaDao,
+//                    tSDao = db.transSumDao,
+//                    tdDao = db.transDetailDao,
+//                   summaryDao = db.summaryDbDao
+//                )
+//            }.start()
+//        }.start()
+//
+//
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
 
@@ -67,15 +67,15 @@ class MyApplication: Application()  {
            // markFirstRunCompleted() // Set the flag after scheduling
         //}
         //runUpdateTotalAfterDiscountWorker()
-        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-        val networkCallback = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                CloudSyncManager.startCloudSync(applicationContext)
-            }
-        }
-
-        connectivityManager.registerDefaultNetworkCallback(networkCallback)
+//        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+//
+//        val networkCallback = object : ConnectivityManager.NetworkCallback() {
+//            override fun onAvailable(network: Network) {
+//                CloudSyncManager.startCloudSync(applicationContext)
+//            }
+//        }
+//
+//        connectivityManager.registerDefaultNetworkCallback(networkCallback)
 
     }
 

@@ -23,6 +23,8 @@ class UniversalSyncWorker(
             .getInstance(correctUrl)
             .reference
         RealtimeDatabaseSync.startConnectionListener(applicationContext)
+
+
         // Now safe to initialize everything else
         RealtimeDatabaseSync.init(context)
         Thread {
@@ -40,9 +42,8 @@ class UniversalSyncWorker(
                 )
             }.start()
 
+
         }.start()
-
-
 
         //  val categries=db.categoryDao.getPendingSync()
 

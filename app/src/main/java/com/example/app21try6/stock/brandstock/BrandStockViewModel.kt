@@ -148,7 +148,7 @@ class BrandStockViewModel(
             val category = repository.getCategoryById(ctgModel.id)
             category?.isDeleted=true
             if (category!=null)
-                repository.deleteCategory(category)
+                repository.deleteCategory(category.categoryCloudId)
         }
     }
 

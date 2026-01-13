@@ -1,5 +1,6 @@
 package com.example.app21try6.database.daos
 
+import android.util.Log
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -73,6 +74,9 @@ interface DetailWarnaDao {
     @Query("DELETE FROM merchandise_table WHERE mRCloudId =:id")
     fun deleteMerchandise(id:Long)
 
+    @Query("SELECT * FROM merchandise_table WHERE mRCloudId=:id")
+    fun selectMerchandiseById(id: Long): MerchandiseRetail
+
     @Query("SELECT \n" +
             "    mRCloudId AS id, \n" +
             "    sPCloudId AS sPCloudId, \n" +
@@ -110,6 +114,8 @@ interface DetailWarnaDao {
     suspend fun markDetailWarnaAsSynced(cloudId: Long)
     @Query("UPDATE merchandise_table SET needs_syncs = 0 WHERE mRCloudId = :cloudId")
     suspend fun markMerhcandiseRetailAsSynced(cloudId: Long)
+    @Query("UPDATE trans_detail_table SET needs_syncs = 0 WHERE tDCloudId = :cloudId")
+    suspend fun markTransactionDetailAsSynced(cloudId: Long)
     @Transaction
     fun updateDetailWarnaAndInsertLog(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog,merchandiseRetail: MerchandiseRetail?) {
         update(detailWarnaTable)
@@ -124,23 +130,26 @@ interface DetailWarnaDao {
         insertLog(inventoryLog)
         merchandiseRetail.forEach {
             if (it!=null){
+                Log.i("MerchandiseRetail","$it")
                 insert(it)
             }
 
             }
     }
     @Transaction
-    fun deleteDetailWarnaAndInsertLog(detailWarnaId:Long,inventoryLog: InventoryLog,merchandiseRetail: MerchandiseRetail?){
+    fun deleteDetailWarnaAndInsertLog(detailWarnaTable: DetailWarnaTable, inventoryLog: InventoryLog, merchandiseRetail: MerchandiseRetail?){
 //        insertLog(inventoryLog)
-        delete(detailWarnaId)
+        delete(detailWarnaTable.dWCloudId)
+        //update(detailWarnaTable)
         if (merchandiseRetail!=null) {
             insert(merchandiseRetail)
         }
     }
     @Transaction
-    fun deleteDetailWarnaAndInsertLog(detailWarnaId:Long,inventoryLog: InventoryLog,merchandiseRetail: List<MerchandiseRetail?>){
-        insertLog(inventoryLog)
-        delete(detailWarnaId)
+    fun deleteDetailWarnaAndInsertLog(detailWarna: DetailWarnaTable, inventoryLog: InventoryLog, merchandiseRetail: List<MerchandiseRetail?>){
+        //insertLog(inventoryLog)
+        //update(detailWarna)
+        delete(detailWarna.dWCloudId)
         merchandiseRetail.forEach {
             if (it!=null) {
                 insert(it)

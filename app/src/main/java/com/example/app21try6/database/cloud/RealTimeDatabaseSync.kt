@@ -68,11 +68,13 @@ object RealtimeDatabaseSync {
         if (!isInitialized || cloudId.isEmpty()) return
         try {
             // Tasks.await() is the key: it suspends the coroutine until the operation completes.
+
             Tasks.await(
                 database.child(tableName)
                     .child(cloudId)
                     .setValue(cloudObject)
             )
+
             // If we reach here, Firebase has successfully written the data.
             Log.e("SyncManager", "CONFIRMED SUCCESS → $tableName/$cloudId")
         } catch (e: Exception) {
@@ -153,15 +155,28 @@ object RealtimeDatabaseSync {
             tableName = Constants.TABLENAMES.CATEGORY,
             clazz = CategoryCloud::class.java,
             convertAndSave = { cloud, key ->
-                Log.i("SyncManager","StartSync ${cloud.categoryName} ${cloud.isDeleted} ")
+                Log.i("SyncManager","StartSync ${cloud.categoryName} ${cloud.isDeleted}  $key} ")
                 if (cloud.isDeleted==false){
                     val category = Category(
                         categoryCloudId = key.toLong(),
-                        category_name = cloud.categoryName
+                        category_name = cloud.categoryName,
+                        isDeleted = cloud.isDeleted
                     )
                     Executors.newSingleThreadExecutor().execute {
                         categoryDao.insert(category)
                     }
+                }else{
+                    Executors.newSingleThreadExecutor().execute {
+                        try {
+                            Log.i("SyncManager","syncCategory convertAndSave executing delete  ${cloud.categoryName} ${key.toLong()}")
+                            categoryDao.delete(key.toLong())
+                        }catch (e: Exception){
+                            Log.i("SyncManager","failed to delete ${cloud.categoryName} ${cloud.isDeleted}  $key} ")
+                            Log.i("SyncManager","because $e} ")
+                        }
+
+                    }
+
                 }
 
             },
@@ -250,6 +265,18 @@ object RealtimeDatabaseSync {
                             )
                         }
                     }
+                }else{
+                    Executors.newSingleThreadExecutor().execute {
+                        try {
+                            Log.i("SyncManager","syncCategory convertAndSave executing delete  ${cloud.subName} ${key.toLong()}")
+                            subProductDao.delete(key.toLong())
+                        }catch (e: Exception){
+                            Log.i("SyncManager","failed to delete ${cloud.subName} ${cloud.isDeleted}  $key} ")
+                            Log.i("SyncManager","because $e} ")
+                        }
+
+                    }
+
                 }
             },
 
@@ -287,6 +314,18 @@ object RealtimeDatabaseSync {
                             )
                         }
                     }
+                }else{
+                    Executors.newSingleThreadExecutor().execute {
+                        try {
+                            Log.i("SyncManager","syncCategory convertAndSave executing delete  ${cloud.batchCount} ${cloud.net} ${key.toLong()}")
+                            detailWarnaDao.delete(key.toLong())
+                        }catch (e: Exception){
+                            Log.i("SyncManager","failed to delete ${cloud.batchCount} ${cloud.net} ${cloud.isDeleted}  $key} ")
+                            Log.i("SyncManager","because $e} ")
+                        }
+
+                    }
+
                 }
             },
             deleteLocal = { key ->
@@ -365,6 +404,18 @@ object RealtimeDatabaseSync {
                             )
                         }
                     }
+                }else{
+                    Executors.newSingleThreadExecutor().execute {
+                        try {
+                            Log.i("SyncManager","syncCategory convertAndSave executing delete  ${cloud.transItemName} ${key.toLong()}")
+                            transDetailDao.deleteAnItemTransDetail(key.toLong())
+                        }catch (e: Exception){
+                            Log.i("SyncManager","failed to delete ${cloud.transItemName} ${cloud.isDeleted}  $key} ")
+                            Log.i("SyncManager","because $e} ")
+                        }
+
+                    }
+
                 }
             },
             deleteLocal = { key ->
@@ -408,6 +459,18 @@ object RealtimeDatabaseSync {
                             )
                         }
                     }
+                }else{
+                    Executors.newSingleThreadExecutor().execute {
+                        try {
+                            Log.i("SyncManager","syncCategory convertAndSave executing delete  ${cloud.custName} ${key.toLong()}")
+                            transSumDao.deleteById(key.toLong())
+                        }catch (e: Exception){
+                            Log.i("SyncManager","failed to delete ${cloud.custName} ${cloud.isDeleted}  $key} ")
+                            Log.i("SyncManager","because $e} ")
+                        }
+
+                    }
+
                 }
             },
             deleteLocal = { key ->

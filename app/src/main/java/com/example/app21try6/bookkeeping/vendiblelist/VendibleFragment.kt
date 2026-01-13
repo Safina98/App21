@@ -111,7 +111,7 @@ class VendibleFragment : Fragment() {
         builder.setView(view)
         builder.setPositiveButton("OK") { dialog, which ->
             product.product_price = textPrice.text.toString().toInt()
-            product.product_name = textProduct.text.toString().toUpperCase()
+            product.product_name = textProduct.text.toString().uppercase()
             //product.brand_code = textBrand.text.toString().toUpperCase()
             product.bestSelling = checkBox.isChecked
             vendibleViewModel.updateVendible(product)
@@ -138,11 +138,11 @@ class VendibleFragment : Fragment() {
         var product = Product()
         builder.setView(view)
         builder.setPositiveButton("OK") { dialog, which ->
-            val cath = textCath.text.toString().toUpperCase().trim()
+            val cath = textCath.text.toString().uppercase().trim()
             if(textPrice.text.toString().toIntOrNull()!=null){
                 product.product_price = textPrice.text.toString().toInt()}
-            product.product_name = textProduct.text.toString().toUpperCase().trim()
-            val brand = textBrand.text.toString().toUpperCase().trim()
+            product.product_name = textProduct.text.toString().uppercase().trim()
+            val brand = textBrand.text.toString().uppercase().trim()
            product.bestSelling = checkBox.isChecked
             //vendibleViewModel.setCathName(cath)
            vendibleViewModel.insertVendible(cath,brand,product)

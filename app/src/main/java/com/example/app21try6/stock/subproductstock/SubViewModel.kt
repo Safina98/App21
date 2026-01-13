@@ -235,6 +235,7 @@ class SubViewModel (
         uiScope.launch {
             val merchandiseRetail = createMerchandiseRetail(detailWarnaModel)
             merchandiseRetail.mRCloudId = detailWarnaModel.id
+            merchandiseRetail.needsSyncs=1
             stockRepo.updateDetailRetail(merchandiseRetail)
             getRetailList(detailWarnaModel.sPCloudId)
         }

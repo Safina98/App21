@@ -22,6 +22,7 @@ import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.stock.brandstock.ExportModel
 import com.example.app21try6.stock.brandstock.StockCategoryModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 class StockRepositories (
@@ -119,22 +120,17 @@ class StockRepositories (
         withContext(Dispatchers.IO){
             val softDeletedCategory = category.copy(isDeleted = true, needsSyncs = 1)
             categoryDao.update(softDeletedCategory)
-            Log.i("SyncManager","Delete Category Repository")
-            Log.i("SyncManager","category ${softDeletedCategory.categoryCloudId},${softDeletedCategory.needsSyncs},${softDeletedCategory.isDeleted}")
             val cloudObject = CategoryCloud(
                 categoryName = category.category_name,
                 lastUpdated = System.currentTimeMillis(),
                 isDeleted = true // <--- THIS IS THE KEY CHANGE
             )
-
             // Use your uploadSuspended method
             RealtimeDatabaseSync.uploadSuspended(
                 tableName = Constants.TABLENAMES.CATEGORY,
                 cloudId = category.categoryCloudId.toString(), // Assuming localId is used as cloudId
                 cloudObject = cloudObject
             )
-
-
         }
     }
 
@@ -398,6 +394,7 @@ class StockRepositories (
     suspend fun updateDetailWarna(detailWarnaTable: DetailWarnaTable, inventoryLog: InventoryLog,merchandiseRetailList: List<MerchandiseRetail?>){
         withContext(Dispatchers.IO){
             detailWarnaDao.updateDetailWarnaAndInsertLog(detailWarnaTable,inventoryLog,merchandiseRetailList)
+
             try {
                 val  dWCloud=UploadInventories().convertDetailWarnaToDetailWarnaCloud(detailWarnaTable)
                 RealtimeDatabaseSync.uploadSuspended( // <-- Using the new function
@@ -408,14 +405,18 @@ class StockRepositories (
                 detailWarnaDao.markDetailWarnaAsSynced(detailWarnaTable.dWCloudId)
 
                 merchandiseRetailList.forEach {merchandiseRetail ->
+                    merchandiseRetail?.mRCloudId= System.currentTimeMillis()
+
                     val mRCLoud=UploadInventories().convertMerchandiseRetailToMerchandiseRetailCloud(merchandiseRetail!!)
                     RealtimeDatabaseSync.upload( // <-- Using the new function
                         tableName = Constants.TABLENAMES.MERCHANDISE_RETAIL,
                         cloudId = merchandiseRetail.mRCloudId.toString(),
                         cloudObject = mRCLoud
                     )
+                    Log.i("MerchandiseRetail","$mRCLoud")
+                    delay(1)
 
-                   // detailWarnaDao.markMerhcandiseRetailAsSynced(merchandiseRetail.mRCloudId)
+                    detailWarnaDao.markMerhcandiseRetailAsSynced(merchandiseRetail.mRCloudId)
                 }
 
 
@@ -424,16 +425,61 @@ class StockRepositories (
                 Log.w("SyncManager", "Upload failed for merchadise reteil ${merchandiseRetailList}: ${e.message}")
             }
 
+
+
         }
     }
     suspend fun deleteDetailWarna(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog,merchandiseRetail: MerchandiseRetail?){
         withContext(Dispatchers.IO){
-            detailWarnaDao.deleteDetailWarnaAndInsertLog(detailWarnaTable.dWCloudId,inventoryLog,merchandiseRetail)
+            val softDeleteddW = detailWarnaTable.copy(isDeleted = true, needsSyncs = 1)
+            detailWarnaDao.deleteDetailWarnaAndInsertLog(softDeleteddW,inventoryLog,merchandiseRetail)
+            val cloudObject = uploadInventory.convertDetailWarnaToDetailWarnaCloud(detailWarnaTable)
+            cloudObject.isDeleted=true
+
+                    // Use your uploadSuspended method
+            RealtimeDatabaseSync.uploadSuspended(
+                tableName = Constants.TABLENAMES.DETAIL_WARNA,
+                cloudId = detailWarnaTable.dWCloudId.toString(), // Assuming localId is used as cloudId
+                cloudObject = cloudObject
+                    )
+            val mRCLoud=uploadInventory.convertMerchandiseRetailToMerchandiseRetailCloud(merchandiseRetail!!)
+            RealtimeDatabaseSync.upload( // <-- Using the new function
+                tableName = Constants.TABLENAMES.MERCHANDISE_RETAIL,
+                cloudId = merchandiseRetail.mRCloudId.toString(),
+                cloudObject = mRCLoud
+            )
+
+            detailWarnaDao.markMerhcandiseRetailAsSynced(merchandiseRetail.mRCloudId)
+
         }
     }
-    suspend fun deleteDetailWarna(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog,merchandiseRetail: List<MerchandiseRetail?>){
+    suspend fun deleteDetailWarna(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog,merchandiseRetailList: List<MerchandiseRetail?>){
         withContext(Dispatchers.IO){
-            detailWarnaDao.deleteDetailWarnaAndInsertLog(detailWarnaTable.dWCloudId,inventoryLog,merchandiseRetail)
+            val softDeleteddW = detailWarnaTable.copy(isDeleted = true, needsSyncs = 1)
+            detailWarnaDao.deleteDetailWarnaAndInsertLog(softDeleteddW,inventoryLog,merchandiseRetailList)
+            val cloudObject = uploadInventory.convertDetailWarnaToDetailWarnaCloud(detailWarnaTable)
+            cloudObject.isDeleted=true
+
+            // Use your uploadSuspended method
+            RealtimeDatabaseSync.uploadSuspended(
+                tableName = Constants.TABLENAMES.DETAIL_WARNA,
+                cloudId = detailWarnaTable.dWCloudId.toString(), // Assuming localId is used as cloudId
+                cloudObject = cloudObject
+            )
+            merchandiseRetailList.forEach {merchandiseRetail->
+                merchandiseRetail?.mRCloudId= System.currentTimeMillis()
+                val mRCLoud=UploadInventories().convertMerchandiseRetailToMerchandiseRetailCloud(merchandiseRetail!!)
+                RealtimeDatabaseSync.upload( // <-- Using the new function
+                    tableName = Constants.TABLENAMES.MERCHANDISE_RETAIL,
+                    cloudId = merchandiseRetail.mRCloudId.toString(),
+                    cloudObject = mRCLoud
+                )
+                detailWarnaDao.markMerhcandiseRetailAsSynced(merchandiseRetail.mRCloudId)
+                delay(1)
+
+            }
+
+
         }
     }
 
@@ -451,17 +497,62 @@ class StockRepositories (
 
     suspend fun deleteRetail(id:Long){
         withContext(Dispatchers.IO){
+            val mRTable=detailWarnaDao.selectMerchandiseById(id)
+            val softDeletedmR = mRTable.copy(isDeleted = true, needsSyncs = 1)
+
+            val cloudObject = uploadInventory.convertMerchandiseRetailToMerchandiseRetailCloud(mRTable)
+            cloudObject.isDeleted=true
             detailWarnaDao.deleteMerchandise(id)
+            //detailWarnaDao.updateRetail(softDeletedmR)
+
+            // Use your uploadSuspended method
+            RealtimeDatabaseSync.uploadSuspended(
+                tableName = Constants.TABLENAMES.MERCHANDISE_RETAIL,
+                cloudId = mRTable.mRCloudId.toString(), // Assuming localId is used as cloudId
+                cloudObject = cloudObject
+            )
+
         }
     }
     suspend fun updateDetailRetail(merchandiseRetail: MerchandiseRetail){
         withContext(Dispatchers.IO){
+            merchandiseRetail.needsSyncs=1
             detailWarnaDao.updateRetail(merchandiseRetail)
+
+            val  mRCLoud=UploadInventories().convertMerchandiseRetailToMerchandiseRetailCloud(merchandiseRetail)
+            RealtimeDatabaseSync.uploadSuspended( // <-- Using the new function
+                tableName = Constants.TABLENAMES.MERCHANDISE_RETAIL,
+                cloudId = merchandiseRetail.mRCloudId.toString(),
+                cloudObject = mRCLoud
+            )
+
+            detailWarnaDao.markMerhcandiseRetailAsSynced(merchandiseRetail.mRCloudId)
+
+
+
         }
     }
     suspend fun updateDetaiAndlRetail(merchandiseRetail: MerchandiseRetail,transactionDetail: TransactionDetail){
         withContext(Dispatchers.IO){
+            merchandiseRetail.needsSyncs=1
+            transactionDetail.needsSyncs=1
             detailWarnaDao.updateTransDetailAndRetail(merchandiseRetail,transactionDetail)
+
+            val  dTCloud=UploadInventories().convertTransactionDetailToTransactionDetailCloud(transactionDetail)
+            RealtimeDatabaseSync.uploadSuspended( // <-- Using the new function
+                tableName = Constants.TABLENAMES.TRANSACTION_DETAIL,
+                cloudId = transactionDetail.tDCloudId.toString(),
+                cloudObject = dTCloud
+            )
+            //detailWarnaDao.markDetailWarnaAsSynced(detailWarnaTable.dWCloudId)
+            detailWarnaDao.markTransactionDetailAsSynced(transactionDetail.tDCloudId)
+            val  mRCLoud=UploadInventories().convertMerchandiseRetailToMerchandiseRetailCloud(merchandiseRetail)
+            RealtimeDatabaseSync.uploadSuspended( // <-- Using the new function
+                tableName = Constants.TABLENAMES.MERCHANDISE_RETAIL,
+                cloudId = merchandiseRetail.mRCloudId.toString(),
+                cloudObject = mRCLoud
+            )
+            detailWarnaDao.markMerhcandiseRetailAsSynced(merchandiseRetail.mRCloudId)
         }
     }
 

@@ -97,7 +97,23 @@ class TransactionsRepository(application: Application) {
     }
     suspend fun deleteTransDetail(id:Long){
         withContext(Dispatchers.IO){
+            val tDTable=transDetailDao.selectTransDetailById(id)
             transDetailDao.deleteAnItemTransDetail(id)
+
+            val softDeletedtD = tDTable.copy(isDeleted = true, needsSyncs = 1)
+
+            val cloudObject = uploadInventory.convertTransactionDetailToTransactionDetailCloud(tDTable)
+            //detailWarnaDao.deleteMerchandise(id)
+            //detailWarnaDao.updateRetail(softDeletedmR)
+            transDetailDao.update(softDeletedtD)
+            cloudObject.isDeleted=true
+
+            // Use your uploadSuspended method
+            RealtimeDatabaseSync.uploadSuspended(
+                tableName = Constants.TABLENAMES.TRANSACTION_DETAIL,
+                cloudId = tDTable.tDCloudId.toString(), // Assuming localId is used as cloudId
+                cloudObject = cloudObject
+            )
         }
     }
     suspend fun updateTransDetail(transdetail: TransactionDetail){
@@ -181,7 +197,24 @@ class TransactionsRepository(application: Application) {
 
     suspend fun deleteTransSummaries(list: MutableList<TransactionSummary>){
         withContext(Dispatchers.IO){
-            transSumDao.delete_(*list.toTypedArray())
+            //transSumDao.delete_(*list.toTypedArray())
+            list.forEach {tSTable->
+
+                val softDeletedtS = tSTable.copy(isDeleted = true, needsSyncs = 1)
+
+                val cloudObject = uploadInventory.convertTransactionSummaryToTransactionSummaryCloud(tSTable)
+                cloudObject.isDeleted=true
+                //detailWarnaDao.deleteMerchandise(id)
+                transSumDao.update(softDeletedtS)
+                transSumDao.deleteById(tSTable.tSCloudId)
+
+                // Use your uploadSuspended method
+                RealtimeDatabaseSync.uploadSuspended(
+                    tableName = Constants.TABLENAMES.TRANSACTION_SUMMARY,
+                    cloudId = tSTable.tSCloudId.toString(), // Assuming localId is used as cloudId
+                    cloudObject = cloudObject
+                )
+            }
         }
     }
     suspend fun getActiveTransFromDb():List<TransactionSummary>{
