@@ -115,6 +115,59 @@ interface SummaryDbDao {
     """)
     fun assignSumamryCloudID(cloudId:Long,id:Int)
 
+    //update december 2025 to january 2027
+    @Query("UPDATE summary_table\n" +
+            "SET month = 'TEMP_DEC', year = 9999\n" +
+            "WHERE month = 'Desember' AND year = 2025")
+    fun assignDecemberTemp()
+
+    @Query("SELECT * FROM summary_table")
+    fun selectDecember2025(): List<Summary>
+
+    //update january 2026 to december 2025
+    @Query("UPDATE summary_table\n" +
+            "SET \n" +
+            "    year = 2025,\n" +
+            "    month = 'Desember',\n" +
+            "    month_number = 12,\n" +
+            "    date = strftime('%Y-%m-%d %H:%M', date, '-1 month'),\n" +
+            "    day_name = CASE strftime('%w', date, '-1 month')\n" +
+            "        WHEN '0' THEN 'Minggu'\n" +
+            "        WHEN '1' THEN 'Senin'\n" +
+            "        WHEN '2' THEN 'Selasa'\n" +
+            "        WHEN '3' THEN 'Rabu'\n" +
+            "        WHEN '4' THEN 'Kamis'\n" +
+            "        WHEN '5' THEN 'Jumat'\n" +
+            "        WHEN '6' THEN 'Sabtu'\n" +
+            "    END,\n" +
+            "    day = CAST(strftime('%d', date, '-1 month') AS INTEGER)\n" +
+            "WHERE month = 'Januari' AND year = 2026" +
+            "")
+    fun januaryToDecember()
+
+    //update december 2027 to january 2025
+
+    @Query("UPDATE summary_table\n" +
+            "SET \n" +
+            "    year = 2026,\n" +
+            "    month = 'Januari',\n" +
+            "    month_number = 1,\n" +
+            "    date = strftime('%Y-%m-%d %H:%M', date, '+1 month'),\n" +
+            "    day_name = CASE strftime('%w', date, '+1 month')\n" +
+            "        WHEN '0' THEN 'Minggu'\n" +
+            "        WHEN '1' THEN 'Senin'\n" +
+            "        WHEN '2' THEN 'Selasa'\n" +
+            "        WHEN '3' THEN 'Rabu'\n" +
+            "        WHEN '4' THEN 'Kamis'\n" +
+            "        WHEN '5' THEN 'Jumat'\n" +
+            "        WHEN '6' THEN 'Sabtu'\n" +
+            "    END,\n" +
+            "    day = CAST(strftime('%d', date, '+1 month') AS INTEGER)\n" +
+            "WHERE month = 'TEMP_DEC' AND year = 9999" +
+            "")
+    fun decemberToJanuary()
+
     @Query("SELECT * FROM summary_table")
     fun selectAllSummaryTable(): List<Summary>
 }
+

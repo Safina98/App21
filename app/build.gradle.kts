@@ -7,20 +7,17 @@ plugins {
     id("com.google.devtools.ksp")
     id("androidx.navigation.safeargs.kotlin")
     kotlin("kapt")
-
 }
 
 android {
     namespace = "com.example.app21try6"
     compileSdk = 35
-
     defaultConfig {
         applicationId = "com.example.app21try6"
         minSdk = 28
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
         multiDexEnabled = true
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -35,21 +32,17 @@ android {
             )
         }
     }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-
     kotlinOptions {
         jvmTarget = "17"
     }
-
     buildFeatures {
         compose = true
         dataBinding = true
     }
-
 
 //    composeOptions {
 //        kotlinCompilerExtensionVersion = "1.5.10" // Perfect match for Kotlin 2.0 + Compose

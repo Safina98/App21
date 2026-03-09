@@ -17,14 +17,10 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.app21try6.bookkeeping.summary.ListModel
-import com.example.app21try6.database.*
-import com.example.app21try6.database.daos.ProductDao
-import com.example.app21try6.database.daos.SummaryDbDao
 import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.tables.Summary
 import com.example.app21try6.formatRupiah
-import com.example.app21try6.getDateFromComponents
 import kotlinx.coroutines.*
 import java.io.BufferedWriter
 import java.io.File
@@ -42,10 +38,10 @@ val database: SummaryDbDao,
  */
 
 class BookkeepingViewModel(
-                            private val bookRepo:BookkeepingRepository,
-                            private val stockRepo:StockRepositories,
-                           application: Application,
-                           ): AndroidViewModel(application) {
+    private val bookRepo:BookkeepingRepository,
+    private val stockRepo:StockRepositories,
+    val myApplication: Application,
+                           ): AndroidViewModel(myApplication) {
 private val tagg="ProfitProbs"
 
     private val months = arrayOf("all","Januari", "Februari", "Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember")
@@ -98,6 +94,12 @@ private val tagg="ProfitProbs"
     private val _navigateBookKeeping = MutableLiveData<Array<String>>()
     val navigateBookKeeping get() = _navigateBookKeeping
 
+    //delete later
+
+    // Result state
+    private val _swapResult = MutableLiveData<Result<Unit>>()
+    val swapResult: LiveData<Result<Unit>> = _swapResult
+
 
     //////////////////////////////////////BookKeeping funtions////////////////////////////////////////////////
     //Get Best Selling
@@ -121,6 +123,26 @@ private val tagg="ProfitProbs"
                         bookRepo.insertItemToSummary(summary)
                         }
                 }
+            }
+        }
+    }
+
+    fun switchDecemberJanuary(){
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                Log.i("SwapProbs","SwitchDecemberJanuaryViewModel")
+                val result = bookRepo.swapDecemberAndJanuary()
+                result.onSuccess {
+                    Toast.makeText(myApplication,"Success", Toast.LENGTH_SHORT).show()
+                }.onFailure {
+                    Toast.makeText(myApplication,"Failed", Toast.LENGTH_SHORT).show()
+                    Log.i("SwapProbs","Failed. ${it.message}")
+                }
+                Log.i("SwapProbs","is result success ${result.isSuccess}")
+                _swapResult.value = result
+            } finally {
+                _isLoading.value = false
             }
         }
     }

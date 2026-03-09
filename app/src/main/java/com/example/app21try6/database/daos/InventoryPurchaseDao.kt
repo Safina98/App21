@@ -8,7 +8,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.example.app21try6.database.models.StringDateModel
 import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.Expenses
 import com.example.app21try6.database.tables.InventoryLog
@@ -146,10 +145,10 @@ interface InventoryPurchaseDao {
 
 
 
-    @Query("SELECT id as id,subProductName as nama,purchaseDate as date FROM inventory_purchase_table")
-    fun selectNameAndDate(): List<StringDateModel?>?
-    @Query("SELECT id as id,subProductName as nama,purchaseDate as date FROM inventory_purchase_table where id=:id")
-    fun selectADataNameAndDate(id:Int):StringDateModel
+//    @Query("SELECT id as id,subProductName as nama,purchaseDate as date FROM inventory_purchase_table")
+//    fun selectNameAndDate(): List<StringDateModel?>?
+//    @Query("SELECT id as id,subProductName as nama,purchaseDate as date FROM inventory_purchase_table where id=:id")
+//    fun selectADataNameAndDate(id:Int):StringDateModel
 
     @Query("""
         UPDATE inventory_purchase_table

@@ -2,7 +2,7 @@ package com.example.app21try6.database.repositories
 
 import android.app.Application
 import com.example.app21try6.database.VendibleDatabase
-import com.example.app21try6.database.models.StringDateModel
+
 import com.example.app21try6.database.tables.ExpenseCategory
 import com.example.app21try6.database.tables.Expenses
 import com.example.app21try6.database.tables.InventoryPurchase

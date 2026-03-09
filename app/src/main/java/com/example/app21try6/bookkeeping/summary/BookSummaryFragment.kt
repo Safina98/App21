@@ -100,6 +100,7 @@ class BookSummaryFragment : Fragment(){
                 })
         binding.recyclerViewSumary.adapter = adapter
 
+
         summaryViewModel.allItemFromSummary.observe(viewLifecycleOwner, Observer {
             //Log.i("ProfitProbs","alltemsummary: $it")
         })
@@ -108,6 +109,9 @@ class BookSummaryFragment : Fragment(){
 
         val adapterMonth = ArrayAdapter(requireContext(), R.layout.simple_dropdown_item_1line, summaryViewModel.months_list)
         binding.spinnerM.adapter = adapterMonth
+//        binding.btnSwapMonths.setOnClickListener {
+//            summaryViewModel.switchDecemberJanuary()
+//        }
         val catname = summaryViewModel.selectedMonth.value
         val defaultPosition =summaryViewModel.months_list.indexOf(catname)
         binding.spinnerM.setSelection(defaultPosition)

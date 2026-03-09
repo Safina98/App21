@@ -29,6 +29,19 @@ class BookkeepingRepository(
         }
     }
 
+    suspend fun swapDecemberAndJanuary(): Result<Unit> {
+        return try {
+            withContext(Dispatchers.IO){
+                summaryDbDao.assignDecemberTemp()
+                summaryDbDao.januaryToDecember()
+                summaryDbDao.decemberToJanuary()
+                Result.success(Unit)
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     fun getAllYear():LiveData<List<Int>>{
         return summaryDbDao.getAllYear()
     }
