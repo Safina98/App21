@@ -61,10 +61,6 @@ class BrandStockFragment : Fragment() {
         val expensesRepository= ExpensesRepository(application)
         val logRepository= LogsRepository(application)
 
-
-       // val viewModelFactory = BrandStockViewModelFactory(repository,discountRepository,application)
-        // val viewModel = ViewModelProvider(this,viewModelFactory).get(BrandStockViewModel::class.java)
-        // val viewModel = ViewModelProvider(this,viewModelFactory).get(BrandStockViewModel::class.java)
         //todo delete bookkeeping repositories and transaction repository and expenses repository and log repository
 
         viewModel = ViewModelProvider(requireActivity(), BrandStockViewModelFactory(repository,discountRepository,bookKeepingRepository,transactionsRepository,expensesRepository,

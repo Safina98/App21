@@ -55,7 +55,7 @@ class SubAdapter (val code: Long,
             binding.subProductListener = subProductListener
             // binding.cvSub.setBackgroundColor(if (isSelected) Color.LTGRAY else Color.WHITE)
             binding.cvSub.setBackgroundColor(
-                if (isSelected) ContextCompat.getColor(context, R.color.dialogbtncolor) else ContextCompat.getColor(context, R.color.logrvbg)
+                if (isSelected) ContextCompat.getColor(context, R.color.primaryColor) else ContextCompat.getColor(context, R.color.logrvbg)
             )
             /*
             if (code==0){

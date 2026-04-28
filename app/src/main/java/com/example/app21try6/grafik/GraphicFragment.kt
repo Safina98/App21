@@ -100,12 +100,9 @@ class GraphicFragment : Fragment() {
         }
         viewModel.transDetailModel.observe(viewLifecycleOwner){list->
             list?.forEach {
-
             }
-
         }
 
-       // viewModel.modelList.observe(viewLifecycleOwner) {}
         viewModel.combinedStockLiveData.observe(viewLifecycleOwner){
             if (it!=null){
                 viewModel.getCurrentYearAndMothData()
@@ -142,6 +139,7 @@ class GraphicFragment : Fragment() {
             viewModel.getRvData(value)
         }
         viewModel.rvData.observe(viewLifecycleOwner){value->
+
             rvAdapter.submitList(value)
         }
         viewModel.topEightMap.observe(viewLifecycleOwner) { value ->

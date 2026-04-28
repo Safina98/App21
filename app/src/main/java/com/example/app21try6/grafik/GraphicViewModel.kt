@@ -35,8 +35,6 @@ class GraphicViewModel(
                       ): AndroidViewModel(application) {
 
     val summariesLiveData = bookRepo.getAllSummary()
-    //val productsLiveData: LiveData<List<Product>> = stockRepo.getAllProduct()
-    //val categoriesLiveData: LiveData<List<CategoryModel>> = stockRepo.getCategoryModelLiveData()
 
     private val _combinedStockLiveData = MediatorLiveData<List<StockModel>?>()
     val combinedStockLiveData: LiveData<List<StockModel>?> get() = _combinedStockLiveData
@@ -44,7 +42,6 @@ class GraphicViewModel(
     private val _summarycombinedLiveData = MediatorLiveData<List<StockModel>?>()
 
     val transDetailModel = transRepo.getStockModel()
-
 
     private val _unFilteredmodelList = MutableLiveData<List<StockModel>>()
 
@@ -54,6 +51,7 @@ class GraphicViewModel(
     //live data untuk map
     private val _mapModel = MutableLiveData<Map<String,Double>>()
     val mapModel: LiveData<Map<String, Double>> get() = _mapModel
+
     //live data untuk top 8 map
     val _topEightMap = MutableLiveData<Map<String,Double>>()
     val topEightMap: LiveData<Map<String, Double>> get() = _topEightMap
@@ -65,29 +63,34 @@ class GraphicViewModel(
     //spinner category entries
     private var _categoryEntries = MutableLiveData<List<String>>()
     val categoryEntries : LiveData<List<String>> get() = _categoryEntries
+
     //spinner product entries
     private var _productEntries = MutableLiveData<List<String>>()
     val productEntries : LiveData<List<String>> get() = _productEntries
+
     // selected category on category spinner
     private val _selectedStockCategorySpinner = MutableLiveData<String>()
     val selectedStockCategorySpinner: LiveData<String> get() = _selectedStockCategorySpinner
+
     // selected product on product spinner
     private val _selectedStockProductSpinner = MutableLiveData<String>("Off")
     val selectedStockProductSpinner: LiveData<String> get() = _selectedStockProductSpinner
+
     //selected year on Stok year spinner
     private val _selectedStockYearSpinner = MutableLiveData<String>()
     val selectedStockYearSpinner: LiveData<String> get() = _selectedStockYearSpinner
+
     //selected month on Stok month spinner
     private val _selectedStockMonthSpinner = MutableLiveData<String>()
     val selectedStockMonthSpinner: LiveData<String> get() = _selectedStockMonthSpinner
 
     //Year spinner entries for profit
     val yearProfitEntries = bookRepo.getAllYear()
-    //SummaryModel
-    //val summaryModel = summarySource.getSummaryWithProduct()
+
     //selected year on Profit year spinner
     private val _selectedProfitYearSpinner = MutableLiveData<String>()
     val selectedProfitYearSpinner: LiveData<String> get() = _selectedProfitYearSpinner
+
     //selected month on Stok month spinner
     private val _selectedProfitMonthSpinner = MutableLiveData<String>()
     val selectedProfitMonthSpinner: LiveData<String> get() = _selectedProfitMonthSpinner
@@ -96,14 +99,12 @@ class GraphicViewModel(
     val filteredmodelListProfit: LiveData<List<StockModel>> get() = _filteredmodelListProfit
 
     val monthIncomeMap: LiveData<Map<String, Double>> = transDetailModel.map { list ->
-
         list.groupBy { it.month }
             .mapValues { entry ->
                 entry.value.sumOf { it.total_income ?: 0.0 }
             }
     }
     init {
-
         getKategoriEntries()
         getCombinedStockLiveData()
     }
@@ -149,7 +150,6 @@ class GraphicViewModel(
         if (filteredList!=null){
             _filteredmodelList.value=filteredList!!
         }
-
     }
     //set selected spinner tahun
     fun setSelectedYearValueStok(selectedItem:String){
@@ -236,10 +236,10 @@ class GraphicViewModel(
         }
         _mapModel.value = itemCountMap
         Log.i("LINE","itemcountmap: $itemCountMap")
-
         //mau dihapus
         return _mapModel.value!!
     }
+
     //fungsi untuk load recyclerview
     fun getRvData(map: Map<String, Double>) {
         val sortedEntries = map.entries.sortedByDescending { it.value }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="primaryColor">#706233</color>
-    <color name="dialogbtncolor">#808693A5</color>
+    <color name="primaryColor">#A9B6AD</color>
+    <color name="dialogbtncolor">#000000</color>
     <color name="primaryLightColor">#082946</color>
     <color name="primaryDarkColor">#082946</color>
     <color name="secondaryColor">#C9C63C51</color>

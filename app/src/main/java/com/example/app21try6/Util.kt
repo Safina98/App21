@@ -117,6 +117,12 @@ fun getMonthNumber(month: String?): String? {
         else -> null
     }
 }
+private val bulanMap = mapOf(
+    "ALL" to null, "Januari" to "01", "Februari" to "02", "Maret" to "03",
+    "April" to "04", "Mei" to "05", "Juni" to "06", "Juli" to "07",
+    "Agustus" to "08", "September" to "09", "Oktober" to "10",
+    "November" to "11", "Desember" to "12"
+)
 //trans detail and trans sum csv
 fun parseDate(dateString: String): Date? {
     // Specify the format pattern

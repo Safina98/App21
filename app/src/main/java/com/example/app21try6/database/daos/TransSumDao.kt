@@ -2,6 +2,7 @@ package com.example.app21try6.database.daos
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.example.app21try6.database.models.CustomerWithTotalTransModel
 import com.example.app21try6.database.models.TransSumModel
 import com.example.app21try6.database.tables.CustomerTable
 import com.example.app21try6.database.tables.DiscountTable
@@ -177,6 +178,22 @@ interface TransSumDao {
     @Query("SELECT * FROM trans_sum_table")
     fun selectAllTransactionSummaryTable(): List<TransactionSummary>
 
+
+    @Query("""
+    SELECT 
+        c.customerName,
+        c.customerBussinessName,
+        strftime('%m', ts.trans_date) AS month,
+        strftime('%Y', ts.trans_date) AS year,
+        SUM(ts.total_after_discount) AS totalAfterDiscount
+    FROM trans_sum_table ts
+    INNER JOIN customer_table c ON ts.custId = c.custId
+    WHERE (:month IS NULL OR substr(ts.trans_date, 6, 2) = :month)
+      AND (:year IS NULL OR substr(ts.trans_date, 1, 4) = :year)
+    GROUP BY c.custId
+    ORDER BY totalAfterDiscount DESC
+""")
+    fun getCustomerWithTotalTrans(month:String?,year:String?): List<CustomerWithTotalTransModel>
     @Query("""
         SELECT *
         FROM trans_sum_table
@@ -192,5 +209,6 @@ interface TransSumDao {
 
     @Query("UPDATE trans_sum_table SET needs_syncs = 0 WHERE tSCloudId = :cloudId")
     suspend fun markAsSynced(cloudId: Long)
+
 }
 

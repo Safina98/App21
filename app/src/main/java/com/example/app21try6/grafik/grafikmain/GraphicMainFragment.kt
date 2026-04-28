@@ -24,19 +24,16 @@ class GraphicMainFragment : Fragment() {
         binding = FragmentGraphicMainBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
-
         val pagerAdapter = MainPagerAdapter(this)
         binding.viewPager.adapter = pagerAdapter
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = when (position) {
                 0 -> "Stok"
-                else -> "Profit"
+                1-> "Profit"
+                else -> "Customer"
             }
         }.attach()
-
         return binding.root
     }
-
-
 }

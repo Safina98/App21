@@ -26,7 +26,7 @@ class BrandStockAdapter(
             binding.clickListener = brandListener
             binding.longListener = longListener
             binding.brandCv.setBackgroundColor(
-                if (isSelected) ContextCompat.getColor(context, R.color.dialogbtncolor) else ContextCompat.getColor(context, R.color.logrvbg)
+                if (isSelected) ContextCompat.getColor(context, R.color.primaryColor) else ContextCompat.getColor(context, R.color.logrvbg)
             )
             binding.executePendingBindings()
         }
@@ -38,31 +38,26 @@ class BrandStockAdapter(
             }
         }
     }
-
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): BrandStockAdapter.MyViewHolder {
        return MyViewHolder.from(parent)
     }
-
     override fun onBindViewHolder(holder: BrandStockAdapter.MyViewHolder, position: Int) {
         val item = getItem(position)
         val isSelected = item.id == selectedItemId
 
         holder.bind(getItem(position),brandListener,longListener,isSelected,context)
     }
-
 }
 class BrandStockDiffCallback:DiffUtil.ItemCallback<BrandProductModel>(){
     override fun areItemsTheSame(oldItem: BrandProductModel, newItem: BrandProductModel): Boolean {
         return oldItem.id== newItem.id
     }
-
     override fun areContentsTheSame(oldItem: BrandProductModel, newItem: BrandProductModel): Boolean {
         return oldItem == newItem
     }
-
 }
 class BrandStockListener(val clickListener: (brandProductModel_id: BrandProductModel) -> Unit) {
     fun onClick(brandProductModel: BrandProductModel) = clickListener(brandProductModel)
@@ -71,6 +66,5 @@ class  BrandStockLongListener(val longListener: (brandProductModel: BrandProduct
     fun onLongClick(v: View, brandProductModel: BrandProductModel): Boolean {
         //logic goes here
         longListener(brandProductModel)
-
         return true}
 }

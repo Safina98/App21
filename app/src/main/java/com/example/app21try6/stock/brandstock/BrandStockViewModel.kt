@@ -122,7 +122,6 @@ class BrandStockViewModel(
     }
     fun updateRv(){
         viewModelScope.launch {
-
             val brandlist = repository.getBrandByCategoryId(ctgId.value?.toLong() ?:0L)
             val allbrand = repository.getAllBrand()
             Log.i("brandList","view mode update rv $allbrand")

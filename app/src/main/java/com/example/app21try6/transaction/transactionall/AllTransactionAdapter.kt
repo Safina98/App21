@@ -17,16 +17,14 @@ import com.example.app21try6.databinding.ItemListTransactionAllBinding
 import com.example.app21try6.formatRupiah
 import java.util.Locale
 
-class AllTransactionAdapter(val clickListener:AllTransClickListener,
-                            val checkBoxListener: CheckBoxListenerTransAll,
-                            var selectedItemId:Long?
-
-)
-    :ListAdapter<TransactionSummary,AllTransactionAdapter.MyViewHolder>(AllTransDiffCallBack()) {
+class AllTransactionAdapter(
+    val clickListener:AllTransClickListener,
+    val checkBoxListener: CheckBoxListenerTransAll,
+    var selectedItemId:Long?
+) :ListAdapter<TransactionSummary,AllTransactionAdapter.MyViewHolder>(AllTransDiffCallBack()) {
     private var is_active = MutableLiveData<Boolean>(false)
     private var unfilteredList = listOf<TransactionSummary>()
     var selectedPosition: Int = RecyclerView.NO_POSITION
-
 
     class MyViewHolder private constructor(val binding: ItemListTransactionAllBinding):RecyclerView.ViewHolder(binding.root){
         fun bind(
@@ -46,22 +44,26 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
             val cardView = binding.cardViewAllTrans
 
             val color = when {
-                isIdSelected -> R.color.dialogbtncolor
+                isIdSelected -> R.color.primaryColor
                 item.is_keeped -> R.color.transActiveBgColor
                 else -> R.color.logrvbg
             }
             cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, color))
             //binding.txtTglTrans.text = item.trans_date
             if (item.tSCloudId <0){
-                val i = String.format(Locale.US,"%.2f", item.total_trans)
-                binding.txtTglTrans.text=i.toString()
+                if (item.total_trans>10000){
+                    binding.txtTglTrans.text=formatRupiah(item.total_trans)
+                }else{
+                    val i = String.format(Locale.US,"%.2f", item.total_trans)
+                    binding.txtTglTrans.text=i.toString()
+                }
                 binding.txtTotalTrans.visibility=View.GONE
-            }else{
+            }
+            else{
                 binding.txtTotalTrans.text = formatRupiah(item.total_after_discount.toDouble()).toString()
                 val formattedDate = Constants.DETAILED_DATE_FORMATTER.format(item.trans_date)
                 binding.txtTglTrans.text = formattedDate
             }
-
             binding.clickListener = clickListener
             binding.checkboxListener = checkBoxListener
 
@@ -74,20 +76,6 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
                 return MyViewHolder(binding)
             }
         }
-    }
-
-    fun deActivate() {
-        val list = mutableListOf<TransactionSummary>()
-        val l = unfilteredList.toMutableList()
-        this.is_active.value  = false
-        l.filter { it.is_paid_off.equals(true)}.forEach { it.is_paid_off=false }
-        submitList(l)
-        notifyDataSetChanged()
-    }
-
-    fun isActive(is_active:Boolean){
-        this.is_active.value  = is_active
-        //  notifyDataSetChanged()
     }
 
 
@@ -108,11 +96,8 @@ class AllTransactionAdapter(val clickListener:AllTransClickListener,
             isIdSelected
         )
 
-
         // Handle click events to update the selected position
         holder.itemView.setOnClickListener {
-            Log.i("ClickProbs","selectedPosition: $selectedPosition")
-            Log.i("ClickProbs","position: $position")
             val previousPosition = selectedPosition
             selectedPosition = position
             notifyItemChanged(previousPosition) // Update the old selected item
@@ -134,7 +119,6 @@ class AllTransDiffCallBack: DiffUtil.ItemCallback<TransactionSummary>(){
 class AllTransClickListener(val clickListener:(active_trans: TransactionSummary)->Unit){
     fun onClick(active_trans: TransactionSummary) = clickListener(active_trans)
 }
-
 
 class CheckBoxListenerTransAll(val checkBoxListener:(view: View, stok: TransactionSummary)->Unit){
     fun onCheckBoxClick(view: View, stok: TransactionSummary)= checkBoxListener(view,stok)

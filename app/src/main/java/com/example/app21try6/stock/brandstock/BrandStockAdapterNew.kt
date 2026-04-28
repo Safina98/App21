@@ -24,7 +24,7 @@ class BrandStockAdapterNew(
             binding.clickListener = brandListener
             binding.longListener = longListener
             binding.brandCv.setBackgroundColor(
-                if (isSelected) ContextCompat.getColor(context, R.color.dialogbtncolor) else ContextCompat.getColor(context, R.color.logrvbg)
+                if (isSelected) ContextCompat.getColor(context, R.color.primaryColor) else ContextCompat.getColor(context, R.color.logrvbg)
             )
             binding.executePendingBindings()
         }

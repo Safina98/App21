@@ -45,7 +45,6 @@ class InputUpdateProduct : Fragment() {
             .get(BrandStockViewModel::class.java)
         binding.viewModel=viewModel
 
-
         // Observe the ViewModel LiveData and update the adapter
 
         viewModel.discountList.observe(viewLifecycleOwner, Observer { discounts ->
@@ -89,8 +88,6 @@ class InputUpdateProduct : Fragment() {
                 viewModel.onNavigatedBackToBrandStock()
             }
         })
-
         return binding.root
     }
-
 }

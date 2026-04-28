@@ -8,6 +8,7 @@ import com.example.app21try6.Constants.TABLENAMES
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.cloud.RealtimeDatabaseSync
 import com.example.app21try6.database.cloud.UploadInventories
+import com.example.app21try6.database.models.CustomerWithTotalTransModel
 import com.example.app21try6.database.models.TracketailWarnaModel
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
@@ -18,6 +19,7 @@ import com.example.app21try6.transaction.transactiondetail.TransactionDetailWith
 import com.example.app21try6.transaction.transactionselect.TransSelectModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.time.Month
 import java.util.Date
 
 class TransactionsRepository(application: Application) {
@@ -61,6 +63,14 @@ class TransactionsRepository(application: Application) {
 
     fun getStockModel(): LiveData<List<StockModel>> {
         return transDetailDao.getTransactionDetails()
+    }
+
+    suspend fun getCustomerWithTotalTrans(month: String?,year:String?): List<CustomerWithTotalTransModel> {
+        return  withContext(Dispatchers.IO){
+            transSumDao.getCustomerWithTotalTrans(
+                month,year
+            )
+        }
     }
     fun getTransSelectModelLive(productId: Long, sum_id: Long): LiveData<List<TransSelectModel>> {
         Log.i("LiveDataProbs","getTransSelectModelLive sumId: $sum_id")
