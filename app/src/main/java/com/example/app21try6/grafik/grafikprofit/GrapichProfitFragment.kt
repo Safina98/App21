@@ -77,6 +77,8 @@ class GrapichProfitFragment : Fragment() {
 
         }}
 
+
+
         viewModel.selectedProfitYearSpinner.observe(viewLifecycleOwner){ value->
             viewModel.filterModelListProfit()
         }

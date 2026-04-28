@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import com.example.app21try6.R
 import com.example.app21try6.databinding.FragmentGraphicCustomerBinding
 import com.example.app21try6.formatRupiah
+import com.example.app21try6.grafik.BarChartUtils
 import com.example.app21try6.transaction.transactionall.AllTransClickListener
 import com.example.app21try6.transaction.transactionall.AllTransactionAdapter
 import com.example.app21try6.transaction.transactionall.CheckBoxListenerTransAll
@@ -56,9 +57,20 @@ class GraphicCustomerFragment : Fragment() {
         }
         viewModel.rvData.observe(viewLifecycleOwner){value->
             value.forEach {item->
-                Log.i("CustWithTotalTrans","${item.cust_name} ${formatRupiah(item.total_after_discount)}")
+
             }
             rvAdapter.submitList(value)
+        }
+
+        viewModel.barChartModel.observe(viewLifecycleOwner){value->
+            BarChartUtils.setup(
+                barChart = binding.barChart,
+                data = value,
+                chartLabel = "Omzet"
+            )
+            value.forEach {item->
+                Log.i("BarChartModel","${item.label} ${formatRupiah(item.value)}")
+            }
         }
         return binding.root
     }

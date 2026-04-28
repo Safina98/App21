@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.example.app21try6.database.models.BarChartModel
 import com.example.app21try6.database.models.CustomerWithTotalTransModel
 import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.StockRepositories
@@ -24,14 +25,17 @@ class GraphicCustomerViewModel (
     application: Application
 ): AndroidViewModel(application){
 
-    val _custWithTotalTrans= MutableLiveData<List<CustomerWithTotalTransModel>>()
+    private val _custWithTotalTrans= MutableLiveData<List<CustomerWithTotalTransModel>>()
     val custWithTotalTrans : LiveData<List<CustomerWithTotalTransModel>> get() = _custWithTotalTrans
-    val _rvData=MutableLiveData<List<TransactionSummary>>()
+
+    private val _barChartModel= MutableLiveData<List<BarChartModel>>()
+    val barChartModel: LiveData<List<BarChartModel>>  get() = _barChartModel
+
+    private val _rvData=MutableLiveData<List<TransactionSummary>>()
     val rvData:LiveData<List<TransactionSummary>> get() = _rvData
+
     private val _selectedYearSpinner = MutableLiveData<String>("ALL")
-
     private val _selectedBulanSpinner = MutableLiveData<String>("ALL")
-
 
     fun setSelectedYearValueStok(selectedItem:String){
         _selectedYearSpinner.value = selectedItem
@@ -46,8 +50,8 @@ class GraphicCustomerViewModel (
         _selectedBulanSpinner.value = bulan
         filterCustomer(bulan, _selectedYearSpinner.value ?: "ALL")
     }
-    fun getRvData(list: List<CustomerWithTotalTransModel>) {
 
+    fun getRvData(list: List<CustomerWithTotalTransModel>) {
         val tsList = mutableListOf<TransactionSummary>()
         var id = -1L
         list.forEach {
@@ -67,10 +71,18 @@ class GraphicCustomerViewModel (
         viewModelScope.launch {
             val month = getMonthNumber(_selectedBulanSpinner.value)            // null if "ALL"
             val year = selectedTahun.takeIf { it != "ALL" } // null if "ALL"
-            _custWithTotalTrans.value = transRepo.getCustomerWithTotalTrans(month, year)
+            val result = transRepo.getCustomerWithTotalTrans(month, year)
+            _custWithTotalTrans.value = result
+            _barChartModel.value=result.take(10).toBarChartModelList()
         }
 
     }
+    fun CustomerWithTotalTransModel.toBarChartModel() = BarChartModel(
+        label = this.customerBussinessName,
+        value = this.totalAfterDiscount
+    )
+
+    fun List<CustomerWithTotalTransModel>.toBarChartModelList() = this.map { it.toBarChartModel() }
 
     companion object {
         @JvmStatic
