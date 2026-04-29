@@ -8,6 +8,8 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.example.app21try6.bookkeeping.summary.MonthlyProfit
+import com.example.app21try6.database.models.BarChartModel
+import com.example.app21try6.database.models.ProductWithTotalItemCount
 import com.example.app21try6.database.models.TracketailWarnaModel
 import com.example.app21try6.database.tables.DiscountTable
 import com.example.app21try6.database.tables.MerchandiseRetail
@@ -108,26 +110,43 @@ interface TransDetailDao {
     """)
     fun getTransactionDetails(): LiveData<List<StockModel>>
 
+
+
     @Query("""
         SELECT
-            COALESCE(strftime('%Y', trans_detail_table.trans_detail_date), '1990') AS year,
-            COALESCE(strftime('%m', trans_detail_table.trans_detail_date), '05') AS month,
-            trans_detail_table.trans_item_name AS item_name,
-            (trans_detail_table.qty * trans_detail_table.unit_qty) AS itemCount,
-            category_table.category_name AS category_name,
-            product_table.product_name AS product_name,
-            sub_table.sub_name AS sub_name,
-            product_table.productCloudId AS productCloudId,
-            trans_detail_table.sPCloudId AS sPCloudId,
-            trans_detail_table.product_capital AS product_capital,
-            trans_detail_table.trans_price AS price,
-            trans_detail_table.total_price AS total_income
-        FROM trans_detail_table
-        JOIN sub_table ON trans_detail_table.sPCloudId = sub_table.sPCloudId
-        JOIN category_table ON sub_table.cath_code = category_table.categoryCloudId
-        JOIN product_table ON sub_table.productCloudId = product_table.productCloudId
+            p.product_name AS label,
+            SUM(td.qty * td.unit_qty) AS value
+        FROM trans_detail_table td
+        JOIN sub_table s ON td.sPCloudId = s.sPCloudId
+        JOIN category_table c ON s.cath_code = c.categoryCloudId
+        JOIN product_table p ON s.productCloudId = p.productCloudId
+        WHERE
+        (:month IS NULL OR substr(td.trans_detail_date, 6, 2) = :month)
+      AND (:year IS NULL OR substr(td.trans_detail_date, 1, 4) = :year)
+      AND (:product IS NULL OR p.product_name = :product)
+      AND (:category IS NULL OR c.category_name = :category)
+      GROUP BY p.product_name
+    ORDER BY value DESC
     """)
-    fun getTransactionDetailsList(): List<StockModel>
+    fun getFilteredProductBarChartList(year:String?,month:String?,product:String?,category:String?): List<BarChartModel>
+
+    @Query("""
+        SELECT
+            s.sub_name AS label,
+            SUM(td.qty * td.unit_qty) AS value
+        FROM trans_detail_table td
+        JOIN sub_table s ON td.sPCloudId = s.sPCloudId
+        JOIN category_table c ON s.cath_code = c.categoryCloudId
+        JOIN product_table p ON s.productCloudId = p.productCloudId
+        WHERE
+        (:month IS NULL OR substr(td.trans_detail_date, 6, 2) = :month)
+      AND (:year IS NULL OR substr(td.trans_detail_date, 1, 4) = :year)
+      AND (:product IS NULL OR p.product_name = :product)
+      AND (:category IS NULL OR c.category_name = :category)
+      GROUP BY s.sub_name
+    ORDER BY value DESC
+    """)
+    fun getFilteredSubBarChartList(year:String?,month:String?,product:String?,category:String?): List<BarChartModel>
 
     @Query("""
     SELECT 

@@ -34,12 +34,12 @@ object BarChartUtils {
         val dataSet = BarDataSet(entries, chartLabel).apply {
             color = ContextCompat.getColor(barChart.context, R.color.pastel_green_dark)
             valueTextSize = 10f
-            setDrawValues(false) // hide values on top of bars
+           // setDrawValues(false) // hide values on top of bars
         }
 
         val barData = BarData(dataSet).apply {
             setValueTextSize(10f)
-            barWidth = 0.7f
+            barWidth = 0.8f
         }
 
         barChart.apply {

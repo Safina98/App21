@@ -12,7 +12,7 @@
         android:layout_height="match_parent">
 
         <Spinner
-            android:id="@+id/spinner_tahun"
+            android:id="@+id/spinner_tahun_sg"
             android:layout_width="638dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -20,7 +20,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Spinner
-            android:id="@+id/spinner_bulan"
+            android:id="@+id/spinner_bulan_sg"
             android:layout_width="639dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -28,30 +28,30 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Spinner
-            android:id="@+id/spinner_category"
+            android:id="@+id/spinner_category_sg"
             android:layout_width="638dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/spinner_tahun" />
+            app:layout_constraintTop_toBottomOf="@id/spinner_tahun_sg" />
 
         <Spinner
-            android:id="@+id/spinner_product"
+            android:id="@+id/spinner_product_sg"
             android:layout_width="639dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/spinner_tahun" />
+            app:layout_constraintTop_toBottomOf="@id/spinner_tahun_sg" />
 
         <com.github.mikephil.charting.charts.BarChart
-            android:id="@+id/barChart"
+            android:id="@+id/bar_chart_sg"
             android:layout_width="0dp"
             android:layout_height="500dp"
             android:layout_marginEnd="3dp"
             android:layout_weight="1"
             app:layout_constraintEnd_toStartOf="@+id/rv_chart"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/spinner_category" />
+            app:layout_constraintTop_toBottomOf="@id/spinner_category_sg" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_chart"
@@ -63,7 +63,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/barChart"
-            app:layout_constraintTop_toBottomOf="@id/spinner_category" />
+            app:layout_constraintTop_toBottomOf="@id/spinner_category_sg" />
 
 
 

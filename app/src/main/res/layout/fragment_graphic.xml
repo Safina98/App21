@@ -25,13 +25,13 @@
                 android:layout_height="wrap_content">
 
                 <Spinner
-                    android:id="@+id/spinner_tahun"
+                    android:id="@+id/spinner_tahun_sg"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content" />
 
                 <Spinner
-                    android:id="@+id/spinner_bulan"
+                    android:id="@+id/spinner_bulan_sg"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content" />
@@ -40,18 +40,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <Spinner
-                    android:id="@+id/spinner_category"
+                    android:id="@+id/spinner_category_sg"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content" />
                 <Spinner
-                    android:id="@+id/spinner_product"
+                    android:id="@+id/spinner_product_sg"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content" />
             </LinearLayout>
             <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/barChart"
+                android:id="@+id/bar_chart_sg"
                 android:layout_width="match_parent"
                 android:layout_height="500dp"
                 android:layout_weight="1" />

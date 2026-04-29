@@ -68,9 +68,7 @@ class GraphicCustomerFragment : Fragment() {
                 data = value,
                 chartLabel = "Omzet"
             )
-            value.forEach {item->
-                Log.i("BarChartModel","${item.label} ${formatRupiah(item.value)}")
-            }
+
         }
         return binding.root
     }

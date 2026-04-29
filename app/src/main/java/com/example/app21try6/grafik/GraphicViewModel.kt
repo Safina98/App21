@@ -15,11 +15,14 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.example.app21try6.database.models.BarChartModel
+import com.example.app21try6.database.models.ProductWithTotalItemCount
 import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.getMonthName
+import com.example.app21try6.getMonthNumber
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.TextStyle
@@ -39,7 +42,7 @@ class GraphicViewModel(
     private val _combinedStockLiveData = MediatorLiveData<List<StockModel>?>()
     val combinedStockLiveData: LiveData<List<StockModel>?> get() = _combinedStockLiveData
 
-    private val _summarycombinedLiveData = MediatorLiveData<List<StockModel>?>()
+
 
     val transDetailModel = transRepo.getStockModel()
 
@@ -48,13 +51,8 @@ class GraphicViewModel(
     private val _filteredmodelList = MutableLiveData<List<StockModel>>()
     val filteredmodelList: LiveData<List<StockModel>> get() = _filteredmodelList
 
-    //live data untuk map
-    private val _mapModel = MutableLiveData<Map<String,Double>>()
-    val mapModel: LiveData<Map<String, Double>> get() = _mapModel
-
-    //live data untuk top 8 map
-    val _topEightMap = MutableLiveData<Map<String,Double>>()
-    val topEightMap: LiveData<Map<String, Double>> get() = _topEightMap
+    private val _newFilteredmodelList = MutableLiveData<List<BarChartModel>>()
+    val newFilteredmodelList: LiveData<List<BarChartModel>> get() = _newFilteredmodelList
 
     //live data untuk recyclerview
     val _rvData=MutableLiveData<List<TransactionSummary>>()
@@ -69,16 +67,16 @@ class GraphicViewModel(
     val productEntries : LiveData<List<String>> get() = _productEntries
 
     // selected category on category spinner
-    private val _selectedStockCategorySpinner = MutableLiveData<String>()
-    val selectedStockCategorySpinner: LiveData<String> get() = _selectedStockCategorySpinner
+    private val _selectedStockCategorySpinner = MutableLiveData<String?>()
+    val selectedStockCategorySpinner: LiveData<String?> get() = _selectedStockCategorySpinner
 
     // selected product on product spinner
     private val _selectedStockProductSpinner = MutableLiveData<String>("Off")
     val selectedStockProductSpinner: LiveData<String> get() = _selectedStockProductSpinner
 
     //selected year on Stok year spinner
-    private val _selectedStockYearSpinner = MutableLiveData<String>()
-    val selectedStockYearSpinner: LiveData<String> get() = _selectedStockYearSpinner
+    private val _selectedStockYearSpinner = MutableLiveData<String?>()
+    val selectedStockYearSpinner: LiveData<String?> get() = _selectedStockYearSpinner
 
     //selected month on Stok month spinner
     private val _selectedStockMonthSpinner = MutableLiveData<String>()
@@ -106,20 +104,11 @@ class GraphicViewModel(
     }
     init {
         getKategoriEntries()
-        getCombinedStockLiveData()
+
+        newFilterModelList()
     }
     @RequiresApi(Build.VERSION_CODES.O)
-    fun getCombinedStockLiveData(){
-        viewModelScope.launch {
-            val stockList = transRepo.getStockModelList()
-            val list=stockList.map { stock ->
-                stock.copy(month = getMonthName(stock.month.toInt())) // Replace numeric month with its name
-            }
-            _unFilteredmodelList.value=list
-            _combinedStockLiveData.value = list
-            _summarycombinedLiveData.value =list
-        }
-    }
+
 
 
     // populate category entries
@@ -136,27 +125,15 @@ class GraphicViewModel(
             _productEntries.value = newData
         }
     }
-    //populate _fileredModelList
-    fun populateListModelStok(){
-        _filteredmodelList.value = combinedStockLiveData.value
-    }
-    fun getCurrentYearAndMothData(){
-        val year = Calendar.getInstance().get(Calendar.YEAR).toString()
-        val currentMonth = LocalDate.now().month.getDisplayName(TextStyle.FULL, Locale("id", "ID"))
-        val filteredList = combinedStockLiveData.value?.filter { model ->
-            model.year.toString() == year &&
-                    model.month.toString()==currentMonth
-        }
-        if (filteredList!=null){
-            _filteredmodelList.value=filteredList!!
-        }
-    }
+
+
     //set selected spinner tahun
     fun setSelectedYearValueStok(selectedItem:String){
         _selectedStockYearSpinner.value = selectedItem
     }
     //set selecter month spinner
     fun setSelectedMonthValueStok(selectedItem:String){
+        Log.i("SpinnerProbs","setSelecterMonth: $selectedItem")
         _selectedStockMonthSpinner.value = selectedItem
     }
     //set selected category spinner
@@ -165,114 +142,30 @@ class GraphicViewModel(
     }
     //set selected product spinner
     fun setSelectedProductValueStok(selectedItem: String){
-
-        if(selectedItem =="Off"){
-            val updatedStockList = _summarycombinedLiveData.value?.map { stock ->
-                stock.copy(item_name = stock.product_name ?: stock.item_name) // Use `product_name` if available, otherwise keep `item_name`
-            }
-            _combinedStockLiveData.value = updatedStockList
-        }else {
-            val updatedStockList = _summarycombinedLiveData.value?.map { stock ->
-                stock.copy(item_name = stock.sub_name ?: stock.item_name) // Use `product_name` if available, otherwise keep `item_name`
-            }
-            _combinedStockLiveData.value = updatedStockList
-        }
         _selectedStockProductSpinner.value = selectedItem
     }
 
-    fun filterModelListStok() {
-        if (_filteredmodelList.value != null) {
-            populateListModelStok()
+    fun newFilterModelList(){
+        viewModelScope.launch {
+            val month = getMonthNumber(_selectedStockMonthSpinner.value)            // null if "ALL"
+            val year = _selectedStockYearSpinner.value.takeIf { it != "ALL" } // null if "ALL"
+            val category=_selectedStockCategorySpinner.value.takeIf { it != "ALL" } // null if "ALL"
+            val product=_selectedStockProductSpinner.value.takeIf { it!="Off" }
 
-            if (selectedStockYearSpinner.value != "ALL") {
-                filterModelListByYearStok()
-            }
-            if (selectedStockMonthSpinner.value != "ALL") {
-                filterModelListByMonthStok()
-            }
-            if (selectedStockCategorySpinner.value != "ALL") {
-                filterModelListByCategoryStok()
 
+            val list = if (product ==null){
+                transRepo.getFilteredProductBarChart(month,year,product,category)
+            }else{
+                //transRepo.getFilteredSubBarChart(month,year,product,category)
+                transRepo.getFilteredSubBarChart(month,year,product,category)
             }
-            if(selectedStockProductSpinner.value !="ALL" && selectedStockProductSpinner.value!="Off"){
-                filteredmodelListByProductStok()
-            }
+
+            _newFilteredmodelList.value=list
         }
     }
-    fun filteredmodelListByProductStok(){
-        val filteredList = _filteredmodelList.value?.filter { model -> model.product_name == selectedStockProductSpinner.value }
-        filteredList?.forEach {
-            Log.i("GRAPHICPROBS","$it")
-        }
-        _filteredmodelList.value = filteredList!!
-    }
-    fun filterModelListByCategoryStok() {
-        val filteredList = _filteredmodelList.value?.filter { model -> model.category_name == selectedStockCategorySpinner.value }
-        _filteredmodelList.value = filteredList!!
-    }
 
-    fun filterModelListByYearStok() {
-        val filteredList = _filteredmodelList.value?.filter { model -> model.year.toString() == selectedStockYearSpinner.value }
-        // _filteredmodelList.postValue(filteredList!!)
-        _filteredmodelList.value = filteredList!!
-    }
-    fun filterModelListByMonthStok() {
-        val filteredList = _filteredmodelList.value?.filter { model -> model.month == selectedStockMonthSpinner.value }
-        _filteredmodelList.value = filteredList!!
-    }
 
-    //fungsi untuk map
-    fun calculateTotalItemCountStok(stockModels: List<StockModel>, tahun:String, bulan:String): Map<String, Double> {
-        val itemCountMap = mutableMapOf<String, Double>()
-        // Log.i("LINE","models: "+models.toString())
-        for (model in _filteredmodelList.value!!) {
-            val itemName = model.item_name
-            try {
-                val doubleValue = model.itemCount
-                itemCountMap[itemName] = itemCountMap.getOrDefault(itemName, 0.0) + doubleValue
 
-            } catch (e: NumberFormatException) {
-            }
-        }
-        _mapModel.value = itemCountMap
-        Log.i("LINE","itemcountmap: $itemCountMap")
-        //mau dihapus
-        return _mapModel.value!!
-    }
-
-    //fungsi untuk load recyclerview
-    fun getRvData(map: Map<String, Double>) {
-        val sortedEntries = map.entries.sortedByDescending { it.value }
-        val tsList = mutableListOf<TransactionSummary>()
-        var id = -1L
-        for ((key, value) in sortedEntries) {
-            // Create a new TransactionSummary object for each entry
-            val item = TransactionSummary()
-            item.cust_name = key
-            item.total_trans = value
-            item.tSCloudId = id
-            tsList.add(item)
-
-            id -= 1
-        }
-        _rvData.value = tsList
-    }
-
-    //fungsi untuk top 8 map
-    fun getTopEightItemsStok(map: Map<String, Double>) {
-        // Sort the map by values in descending order
-        val sortedEntries = map.entries.sortedByDescending { it.value }
-        // Take the top eight entries
-        val topEightEntries = sortedEntries.take(8)
-        // Convert the top eight entries to a map
-        val topEightMap = mutableMapOf<String, Double>()
-        for ((key, value) in topEightEntries) {
-            topEightMap[key] = value
-        }
-        _topEightMap.value = topEightMap
-        // Log the top eight items
-
-    }
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     fun populateListModelProfit(){

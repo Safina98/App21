@@ -8,6 +8,7 @@ import com.example.app21try6.Constants.TABLENAMES
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.cloud.RealtimeDatabaseSync
 import com.example.app21try6.database.cloud.UploadInventories
+import com.example.app21try6.database.models.BarChartModel
 import com.example.app21try6.database.models.CustomerWithTotalTransModel
 import com.example.app21try6.database.models.TracketailWarnaModel
 import com.example.app21try6.database.tables.TransactionDetail
@@ -19,7 +20,6 @@ import com.example.app21try6.transaction.transactiondetail.TransactionDetailWith
 import com.example.app21try6.transaction.transactionselect.TransSelectModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.time.Month
 import java.util.Date
 
 class TransactionsRepository(application: Application) {
@@ -144,10 +144,14 @@ class TransactionsRepository(application: Application) {
             }
         }
     }
-
-    suspend fun getStockModelList():List<StockModel>{
-        return withContext(Dispatchers.IO){
-            transDetailDao.getTransactionDetailsList()
+    suspend fun getFilteredProductBarChart(month: String?, year:String?, product:String?, category:String?): List<BarChartModel> {
+        return  withContext(Dispatchers.IO){
+            transDetailDao.getFilteredProductBarChartList(year,month,product,category)
+        }
+    }
+    suspend fun getFilteredSubBarChart(month: String?, year:String?, product:String?, category:String?): List<BarChartModel> {
+        return  withContext(Dispatchers.IO){
+            transDetailDao.getFilteredSubBarChartList(year,month,product,category)
         }
     }
     ///////////////////////////////////TransSum////////////////////////////////////////////////////////
