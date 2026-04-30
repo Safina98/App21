@@ -13,6 +13,8 @@ import androidx.fragment.app.activityViewModels
 import com.example.app21try6.R
 import com.example.app21try6.databinding.FragmentGraphicCustomerBinding
 import com.example.app21try6.formatRupiah
+import com.example.app21try6.grafik.BarChartModelRVAdapter
+import com.example.app21try6.grafik.BarChartModelRvListener
 import com.example.app21try6.grafik.BarChartUtils
 import com.example.app21try6.transaction.transactionall.AllTransClickListener
 import com.example.app21try6.transaction.transactionall.AllTransactionAdapter
@@ -29,9 +31,9 @@ class GraphicCustomerFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding= DataBindingUtil.inflate(inflater,R.layout.fragment_graphic_customer,container,false)
-        val rvAdapter=AllTransactionAdapter(AllTransClickListener {
-        }, CheckBoxListenerTransAll{view, stok ->
-        },null)
+        val rvAdapter= BarChartModelRVAdapter(BarChartModelRvListener{
+
+        })
         val adapter_year = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, resources.getStringArray(R.array.tahun))
         val adapter_month = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, resources.getStringArray(R.array.bulan))
 
@@ -53,19 +55,17 @@ class GraphicCustomerFragment : Fragment() {
         binding.spinnerBulanCg.onItemSelectedListener = spinnerListener
 
         viewModel.custWithTotalTrans.observe(viewLifecycleOwner){
-            viewModel.getRvData(it)
+            //viewModel.getRvData(it)
         }
         viewModel.rvData.observe(viewLifecycleOwner){value->
-            value.forEach {item->
 
-            }
-            rvAdapter.submitList(value)
         }
 
         viewModel.barChartModel.observe(viewLifecycleOwner){value->
+            rvAdapter.submitList(value)
             BarChartUtils.setup(
                 barChart = binding.barChart,
-                data = value,
+                data = value.take(10),
                 chartLabel = "Omzet"
             )
 

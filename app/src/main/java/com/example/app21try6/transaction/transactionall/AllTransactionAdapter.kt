@@ -32,7 +32,6 @@ class AllTransactionAdapter(
             clickListener: AllTransClickListener,
             checkBoxListener: CheckBoxListenerTransAll,
             bool:Boolean,
-            isSelected: Boolean,
             isIdSelected:Boolean,
         ){
             binding.checkboxTransActive.visibility = when(bool){
@@ -49,21 +48,10 @@ class AllTransactionAdapter(
                 else -> R.color.logrvbg
             }
             cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, color))
-            //binding.txtTglTrans.text = item.trans_date
-            if (item.tSCloudId <0){
-                if (item.total_trans>10000){
-                    binding.txtTglTrans.text=formatRupiah(item.total_trans)
-                }else{
-                    val i = String.format(Locale.US,"%.2f", item.total_trans)
-                    binding.txtTglTrans.text=i.toString()
-                }
-                binding.txtTotalTrans.visibility=View.GONE
-            }
-            else{
-                binding.txtTotalTrans.text = formatRupiah(item.total_after_discount.toDouble()).toString()
-                val formattedDate = Constants.DETAILED_DATE_FORMATTER.format(item.trans_date)
-                binding.txtTglTrans.text = formattedDate
-            }
+            binding.txtTotalTrans.text = formatRupiah(item.total_after_discount.toDouble()).toString()
+            val formattedDate = Constants.DETAILED_DATE_FORMATTER.format(item.trans_date)
+            binding.txtTglTrans.text = formattedDate
+
             binding.clickListener = clickListener
             binding.checkboxListener = checkBoxListener
 
@@ -92,7 +80,6 @@ class AllTransactionAdapter(
             clickListener,
             checkBoxListener,
             is_active.value!!,
-            position == selectedPosition,
             isIdSelected
         )
 

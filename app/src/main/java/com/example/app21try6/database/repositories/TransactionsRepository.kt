@@ -65,7 +65,7 @@ class TransactionsRepository(application: Application) {
         return transDetailDao.getTransactionDetails()
     }
 
-    suspend fun getCustomerWithTotalTrans(month: String?,year:String?): List<CustomerWithTotalTransModel> {
+    suspend fun getCustomerWithTotalTrans(month: String?,year:String?): List<BarChartModel> {
         return  withContext(Dispatchers.IO){
             transSumDao.getCustomerWithTotalTrans(
                 month,year

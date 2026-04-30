@@ -2,7 +2,7 @@ package com.example.app21try6.grafik.grafikmain
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.example.app21try6.grafik.GraphicFragment
+import com.example.app21try6.grafik.grafikproduct.GraphicFragment
 import com.example.app21try6.grafik.grafikcustomer.GraphicCustomerFragment
 import com.example.app21try6.grafik.grafikprofit.GrapichProfitFragment
 

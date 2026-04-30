@@ -1,9 +1,8 @@
-package com.example.app21try6.grafik
+package com.example.app21try6.grafik.grafikproduct
 
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,9 +10,16 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.app21try6.R
 import com.example.app21try6.databinding.FragmentGraphicBinding
+import com.example.app21try6.grafik.BarChartModelRVAdapter
+import com.example.app21try6.grafik.BarChartModelRvListener
+import com.example.app21try6.grafik.BarChartUtils
+import com.example.app21try6.grafik.ChartRenderer
+import com.example.app21try6.grafik.GraphicViewModel
+import com.example.app21try6.grafik.StockModel
 import com.example.app21try6.transaction.transactionall.AllTransClickListener
 import com.example.app21try6.transaction.transactionall.AllTransactionAdapter
 import com.example.app21try6.transaction.transactionall.CheckBoxListenerTransAll
@@ -23,11 +29,10 @@ import java.time.format.TextStyle
 import java.util.Calendar
 import java.util.Locale
 
-
 @RequiresApi(Build.VERSION_CODES.O)
 class GraphicFragment : Fragment() {
 
-    private val viewModel: GraphicViewModel by  activityViewModels { GraphicViewModel.Factory }
+    private val viewModel: GraphicViewModel by  activityViewModels { GraphicViewModel.Companion.Factory }
     private var listStockModel = mutableListOf<StockModel>()
     private lateinit var layout: View
     private lateinit var binding: FragmentGraphicBinding
@@ -40,17 +45,25 @@ class GraphicFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding  = DataBindingUtil.inflate(inflater,R.layout.fragment_graphic,container,false)
+        binding  = DataBindingUtil.inflate(inflater, R.layout.fragment_graphic,container,false)
         //layout = binding.mainLayout
         barChart = binding.barChartSg
         chartRenderer = ChartRenderer(requireContext())
 
-        val adapter_year = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, resources.getStringArray(R.array.tahun))
-        val adapter_month = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, resources.getStringArray(R.array.bulan))
+        val adapter_year = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            resources.getStringArray(R.array.tahun)
+        )
+        val adapter_month = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            resources.getStringArray(R.array.bulan)
+        )
 
-        val rvAdapter=AllTransactionAdapter(AllTransClickListener {
-        }, CheckBoxListenerTransAll{view, stok ->
-        },null)
+        val rvAdapter= BarChartModelRVAdapter(BarChartModelRvListener{
+
+        })
 
         binding.spinnerTahunSg.adapter = adapter_year
         val year = Calendar.getInstance().get(Calendar.YEAR).toString()
@@ -90,19 +103,20 @@ class GraphicFragment : Fragment() {
         viewModel.setSelectedMonthValueStok(currentMonth)
 
         viewModel.categoryEntries.observe(viewLifecycleOwner){it?.let {
-            val adapterCategory = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
+            val adapterCategory =
+                ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
             binding.spinnerCategorySg.adapter = adapterCategory }
         }
 
         viewModel.productEntries.observe(viewLifecycleOwner){
-            val adapterProduct = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
+            val adapterProduct =
+                ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
             binding.spinnerProductSg.adapter = adapterProduct
         }
         viewModel.selectedStockYearSpinner.observe(viewLifecycleOwner){ value->
             viewModel.newFilterModelList()
         }
         viewModel.selectedStockMonthSpinner.observe(viewLifecycleOwner){ value->
-            Log.i("SpinnerProbs","Observer setSelecterMonth: $value")
             viewModel.newFilterModelList()
         }
         viewModel.selectedStockCategorySpinner.observe(viewLifecycleOwner){ value->
@@ -114,14 +128,12 @@ class GraphicFragment : Fragment() {
         }
 
         viewModel.newFilteredmodelList.observe(viewLifecycleOwner) { value ->
+            rvAdapter.submitList(value)
             BarChartUtils.setup(
                 barChart = binding.barChartSg,
                 data = value.take(10),
                 chartLabel = "terjual"
             )
-            value?.forEach {
-                Log.i("StockBarChart","${it.label} ${it.value}")
-            }
         }
 
         return binding.root

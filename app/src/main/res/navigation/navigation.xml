@@ -220,7 +220,7 @@
     </fragment>
     <fragment
         android:id="@+id/graphicFragment"
-        android:name="com.example.app21try6.grafik.GraphicFragment"
+        android:name="com.example.app21try6.grafik.grafikproduct.GraphicFragment"
         android:label="Grafik" />
     <fragment
         android:id="@+id/graphicMainFragment"

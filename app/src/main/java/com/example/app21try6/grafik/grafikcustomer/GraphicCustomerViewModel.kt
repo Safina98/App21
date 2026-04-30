@@ -72,8 +72,8 @@ class GraphicCustomerViewModel (
             val month = getMonthNumber(_selectedBulanSpinner.value)            // null if "ALL"
             val year = selectedTahun.takeIf { it != "ALL" } // null if "ALL"
             val result = transRepo.getCustomerWithTotalTrans(month, year)
-            _custWithTotalTrans.value = result
-            _barChartModel.value=result.take(10).toBarChartModelList()
+            //_custWithTotalTrans.value = result
+            _barChartModel.value=result
         }
 
     }

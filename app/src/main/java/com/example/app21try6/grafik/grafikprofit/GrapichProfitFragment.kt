@@ -14,10 +14,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import com.example.app21try6.R
 import com.example.app21try6.databinding.FragmentGrapichProfitBinding
-import com.example.app21try6.formatRupiah
 import com.example.app21try6.grafik.GraphicViewModel
 import com.example.app21try6.grafik.StockModel
-import com.example.app21try6.grafik.MonthValueFormatter
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -51,41 +49,41 @@ class GrapichProfitFragment : Fragment() {
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
-        viewModel.summariesLiveData.observe(viewLifecycleOwner){
-        }
-        viewModel.combinedStockLiveData.observe(viewLifecycleOwner){
-            if (it!=null){
-                viewModel.populateListModelProfit()
-            }
-        }
-
-        viewModel.filteredmodelListProfit.observe(viewLifecycleOwner){mapped->let {
-            mapped.forEach {
-                Log.i("ChartProb","${it.year}")
-            }
-
-            val monthlyIncome = viewModel.calculateTotalItemCountProfit(mapped)
-            monthlyIncome.forEach {
-
-
-            }
-                //viewModel.mapAndSumByMonth(it)
-           // Log.i("ChartProb","monhtly income: $it")
-            setupLineChart(monthlyIncome)
-        } }
-        viewModel.monthIncomeMap.observe(viewLifecycleOwner){mapped->let {
-
-        }}
-
-
-
-        viewModel.selectedProfitYearSpinner.observe(viewLifecycleOwner){ value->
-            viewModel.filterModelListProfit()
-        }
-        viewModel.yearProfitEntries.observe(viewLifecycleOwner){it?.let {
-            val adapterYear = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it.sortedBy { it })
-            binding.spinnerTahun.adapter = adapterYear }
-        }
+//        viewModel.summariesLiveData.observe(viewLifecycleOwner){
+//        }
+//        viewModel.combinedStockLiveData.observe(viewLifecycleOwner){
+//            if (it!=null){
+//                viewModel.populateListModelProfit()
+//            }
+//        }
+//
+//        viewModel.filteredmodelListProfit.observe(viewLifecycleOwner){mapped->let {
+//            mapped?.forEach {
+//                Log.i("ChartProb","${it.year}")
+//            }
+//
+//            val monthlyIncome = viewModel.calculateTotalItemCountProfit(mapped)
+//            monthlyIncome?.forEach {
+//
+//
+//            }
+//                //viewModel.mapAndSumByMonth(it)
+//           // Log.i("ChartProb","monhtly income: $it")
+//            setupLineChart(monthlyIncome)
+//        } }
+//        viewModel.monthIncomeMap.observe(viewLifecycleOwner){mapped->let {
+//
+//        }}
+//
+//
+//
+//        viewModel.selectedProfitYearSpinner.observe(viewLifecycleOwner){ value->
+//            viewModel.filterModelListProfit()
+//        }
+//        viewModel.yearProfitEntries.observe(viewLifecycleOwner){it?.let {
+//            val adapterYear = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it.sortedBy { it })
+//            binding.spinnerTahun.adapter = adapterYear }
+//        }
 
         return binding.root
     }
@@ -110,7 +108,7 @@ class GrapichProfitFragment : Fragment() {
         xAxis.granularity = 1f
         xAxis.setDrawGridLines(false)
         xAxis.textSize = 12f
-        xAxis.valueFormatter = MonthValueFormatter() // Use the custom formatter
+       // xAxis.valueFormatter = MonthValueFormatter() // Use the custom formatter
 
         val yAxisLeft = lineChart.axisLeft
         yAxisLeft.granularity = 1f
