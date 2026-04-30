@@ -137,8 +137,6 @@ class TransactionsRepository(application: Application) {
                     cloudObject = tDCloud
                 )
                 transDetailDao.markAsSynced(tDCloud.tSCloudId)
-
-
             } catch (e: Exception) {
                 Log.w("SyncManager", "Upload failed for category ${transdetail.tDCloudId}: ${e.message}")
             }
@@ -154,13 +152,17 @@ class TransactionsRepository(application: Application) {
             transDetailDao.getFilteredSubBarChartList(year,month,product,category)
         }
     }
+    suspend fun getFilteredProfitBarChart(year:String?): List<BarChartModel> {
+        return  withContext(Dispatchers.IO){
+            transDetailDao.getFilteredProfitBarChartList(year)
+        }
+    }
     ///////////////////////////////////TransSum////////////////////////////////////////////////////////
     fun getTransactionSummary(id:Long): LiveData<TransactionSummary> {
         return transSumDao.getTransSum(id)
     }
     suspend fun filterTransSum(query: String?,sumId:Long?, limit:Int, offset:Int, startDate:Date?, endDate:Date?):List<TransactionSummary>{
         return withContext(Dispatchers.IO){
-
             transSumDao.getTransactionSummariesByItemName(query,sumId,startDate,endDate,limit,offset)
         }
     }
@@ -213,15 +215,12 @@ class TransactionsRepository(application: Application) {
         withContext(Dispatchers.IO){
             //transSumDao.delete_(*list.toTypedArray())
             list.forEach {tSTable->
-
                 val softDeletedtS = tSTable.copy(isDeleted = true, needsSyncs = 1)
-
                 val cloudObject = uploadInventory.convertTransactionSummaryToTransactionSummaryCloud(tSTable)
                 cloudObject.isDeleted=true
                 //detailWarnaDao.deleteMerchandise(id)
                 transSumDao.update(softDeletedtS)
                 transSumDao.deleteById(tSTable.tSCloudId)
-
                 // Use your uploadSuspended method
                 RealtimeDatabaseSync.uploadSuspended(
                     tableName = Constants.TABLENAMES.TRANSACTION_SUMMARY,

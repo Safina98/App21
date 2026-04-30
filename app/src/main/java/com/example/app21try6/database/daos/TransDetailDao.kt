@@ -130,6 +130,19 @@ interface TransDetailDao {
     """)
     fun getFilteredProductBarChartList(year:String?,month:String?,product:String?,category:String?): List<BarChartModel>
 
+
+    @Query("""
+        SELECT
+            substr(ts.trans_date, 6, 2) AS label,
+            SUM(ts.total_after_discount) AS value
+        FROM trans_sum_table ts
+        WHERE
+       (:year IS NULL OR substr(ts.trans_date, 1, 4) = :year)
+      GROUP BY substr(ts.trans_date, 6, 2)
+    ORDER BY substr(ts.trans_date, 6, 2) ASC
+    """)
+    fun getFilteredProfitBarChartList(year:String?): List<BarChartModel>
+
     @Query("""
         SELECT
             s.sub_name AS label,

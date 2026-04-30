@@ -37,9 +37,6 @@ class GraphicCustomerViewModel (
     private val _selectedYearSpinner = MutableLiveData<String>("ALL")
     private val _selectedBulanSpinner = MutableLiveData<String>("ALL")
 
-    fun setSelectedYearValueStok(selectedItem:String){
-        _selectedYearSpinner.value = selectedItem
-    }
 
     fun setSelectedYear(year: String) {
         _selectedYearSpinner.value = year
@@ -51,29 +48,14 @@ class GraphicCustomerViewModel (
         filterCustomer(bulan, _selectedYearSpinner.value ?: "ALL")
     }
 
-    fun getRvData(list: List<CustomerWithTotalTransModel>) {
-        val tsList = mutableListOf<TransactionSummary>()
-        var id = -1L
-        list.forEach {
-            // Create a new TransactionSummary object for each entry
-            val item = TransactionSummary()
-            item.cust_name = it.customerBussinessName
-            item.total_trans = it.totalAfterDiscount
-            item.total_after_discount=it.totalAfterDiscount
-            item.tSCloudId = id
-            tsList.add(item)
-            id -= 1
-        }
-        _rvData.value = tsList
-    }
-
     fun filterCustomer(selectedBulan: String, selectedTahun: String) {
         viewModelScope.launch {
             val month = getMonthNumber(_selectedBulanSpinner.value)            // null if "ALL"
             val year = selectedTahun.takeIf { it != "ALL" } // null if "ALL"
             val result = transRepo.getCustomerWithTotalTrans(month, year)
+            val devidedList=result.map { it.copy(value = it.value/1000000) }
             //_custWithTotalTrans.value = result
-            _barChartModel.value=result
+            _barChartModel.value=devidedList
         }
 
     }

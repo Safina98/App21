@@ -22,12 +22,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <Spinner
-                    android:id="@+id/spinner_tahun"
+                    android:id="@+id/spinner_tahun_pg"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content" />
                 <Spinner
-                    android:id="@+id/spinner_bulan"
+                    android:id="@+id/spinner_bulan_pg"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content" />
@@ -36,12 +36,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <Spinner
-                    android:id="@+id/spinner_category"
+                    android:id="@+id/spinner_category_pg"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content" />
                 <Spinner
-                    android:id="@+id/spinner_product"
+                    android:id="@+id/spinner_product_pg"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content" />

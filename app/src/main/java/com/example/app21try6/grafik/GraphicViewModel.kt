@@ -16,20 +16,12 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.app21try6.database.models.BarChartModel
-import com.example.app21try6.database.models.ProductWithTotalItemCount
 import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
-import com.example.app21try6.database.tables.TransactionSummary
-import com.example.app21try6.getMonthName
 import com.example.app21try6.getMonthNumber
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.format.TextStyle
-import java.util.Calendar
-import java.util.Locale
 
-@RequiresApi(Build.VERSION_CODES.O)
 class GraphicViewModel(
     private val stockRepo:StockRepositories,
     private val bookRepo: BookkeepingRepository,
@@ -37,26 +29,18 @@ class GraphicViewModel(
     application: Application
                       ): AndroidViewModel(application) {
 
-    val summariesLiveData = bookRepo.getAllSummary()
-
     private val _combinedStockLiveData = MediatorLiveData<List<StockModel>?>()
     val combinedStockLiveData: LiveData<List<StockModel>?> get() = _combinedStockLiveData
 
 
-
     val transDetailModel = transRepo.getStockModel()
 
-    private val _unFilteredmodelList = MutableLiveData<List<StockModel>>()
+    private val _productBCModel = MutableLiveData<List<BarChartModel>>()
+    val productBCModel: LiveData<List<BarChartModel>> get() = _productBCModel
 
-    private val _filteredmodelList = MutableLiveData<List<StockModel>>()
-    val filteredmodelList: LiveData<List<StockModel>> get() = _filteredmodelList
+    private val _profitBCModel = MutableLiveData<List<BarChartModel>>()
+    val profitBCModel: LiveData<List<BarChartModel>> get() = _profitBCModel
 
-    private val _newFilteredmodelList = MutableLiveData<List<BarChartModel>>()
-    val newFilteredmodelList: LiveData<List<BarChartModel>> get() = _newFilteredmodelList
-
-    //live data untuk recyclerview
-    val _rvData=MutableLiveData<List<TransactionSummary>>()
-    val rvData:LiveData<List<TransactionSummary>> get() = _rvData
 
     //spinner category entries
     private var _categoryEntries = MutableLiveData<List<String>>()
@@ -82,12 +66,10 @@ class GraphicViewModel(
     private val _selectedStockMonthSpinner = MutableLiveData<String>()
     val selectedStockMonthSpinner: LiveData<String> get() = _selectedStockMonthSpinner
 
-    //Year spinner entries for profit
-    val yearProfitEntries = bookRepo.getAllYear()
 
     //selected year on Profit year spinner
-    private val _selectedProfitYearSpinner = MutableLiveData<String>()
-    val selectedProfitYearSpinner: LiveData<String> get() = _selectedProfitYearSpinner
+    private val _selectedProfitYearSpinner = MutableLiveData<String?>("2026")
+    val selectedProfitYearSpinner: LiveData<String?> get() = _selectedProfitYearSpinner
 
     //selected month on Stok month spinner
     private val _selectedProfitMonthSpinner = MutableLiveData<String>()
@@ -160,7 +142,7 @@ class GraphicViewModel(
                 transRepo.getFilteredSubBarChart(month,year,product,category)
             }
 
-            _newFilteredmodelList.value=list
+            _productBCModel.value=list
         }
     }
 
@@ -168,8 +150,18 @@ class GraphicViewModel(
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
+    fun filterProfitModelList(){
+        viewModelScope.launch {
+            val year = _selectedProfitYearSpinner.value.takeIf { it != "ALL" } // null if "ALL"
+            val list=   transRepo.getFilteredProfitBarChart(year)
+            val dividedList = list.map { it.copy(value = it.value / 1000000.0) }
+            _profitBCModel.value=dividedList
+        }
+    }
+
+
     fun populateListModelProfit(){
-        _filteredmodelList.value = combinedStockLiveData.value
+        //_filteredmodelList.value = combinedStockLiveData.value
     }
     fun mapAndSumByMonth(summaries: List<StockModel>): Map<String, Double> {
         return summaries.groupBy { it.month!! }

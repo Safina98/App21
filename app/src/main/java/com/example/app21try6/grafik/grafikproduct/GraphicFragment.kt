@@ -2,7 +2,6 @@ package com.example.app21try6.grafik.grafikproduct
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,9 +19,6 @@ import com.example.app21try6.grafik.BarChartUtils
 import com.example.app21try6.grafik.ChartRenderer
 import com.example.app21try6.grafik.GraphicViewModel
 import com.example.app21try6.grafik.StockModel
-import com.example.app21try6.transaction.transactionall.AllTransClickListener
-import com.example.app21try6.transaction.transactionall.AllTransactionAdapter
-import com.example.app21try6.transaction.transactionall.CheckBoxListenerTransAll
 import com.github.mikephil.charting.charts.BarChart
 import java.time.LocalDate
 import java.time.format.TextStyle
@@ -76,10 +72,11 @@ class GraphicFragment : Fragment() {
         val currentMonth = LocalDate.now().month.getDisplayName(TextStyle.FULL, Locale("id", "ID"))
         viewModel.setSelectedMonthValueStok(currentMonth)
         val positionM = (binding.spinnerBulanSg.adapter as ArrayAdapter<String>).getPosition(currentMonth)
+
         binding.spinnerBulanSg.setSelection(positionM)
         viewModel.setSelectedYearValueStok(year)
 
-        binding.rvChart.adapter=rvAdapter
+        binding.rvChartSg.adapter=rvAdapter
 
 
         val spinnerListener = object : AdapterView.OnItemSelectedListener {
@@ -127,7 +124,7 @@ class GraphicFragment : Fragment() {
             viewModel.newFilterModelList()
         }
 
-        viewModel.newFilteredmodelList.observe(viewLifecycleOwner) { value ->
+        viewModel.productBCModel.observe(viewLifecycleOwner) { value ->
             rvAdapter.submitList(value)
             BarChartUtils.setup(
                 barChart = binding.barChartSg,

@@ -10,11 +10,14 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import com.example.app21try6.R
 import com.example.app21try6.databinding.FragmentGrapichProfitBinding
+import com.example.app21try6.formatRupiah
 import com.example.app21try6.grafik.GraphicViewModel
+import com.example.app21try6.grafik.LineChartHelper
 import com.example.app21try6.grafik.StockModel
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -22,6 +25,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.utils.ColorTemplate
+import java.util.Calendar
 
 @RequiresApi(Build.VERSION_CODES.O)
 class GrapichProfitFragment : Fragment() {
@@ -41,14 +45,47 @@ class GrapichProfitFragment : Fragment() {
         layout = binding.mainLayout
         lineChart = binding.lineChart
         binding.lifecycleOwner = this
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
+        val adapter_year = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, resources.getStringArray(R.array.tahun))
+        binding.spinnerTahunPg.adapter=adapter_year
+        val positionY = (binding.spinnerTahunPg.adapter as ArrayAdapter<String>).getPosition(currentYear)
+        binding.spinnerTahunPg.setSelection(positionY)
+        viewModel.filterProfitModelList()
+        val chart=binding.lineChart
+        LineChartHelper.setupChart(
+            chart = chart,
+            context = requireContext(),
+            showLegend = true
+        )
 
-        binding.spinnerTahun.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+        val spinnerListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                val selectedItem = parent.getItemAtPosition(position).toString()
-                viewModel.setSelectedYearValueProfit(selectedItem)
+                val selected = parent.getItemAtPosition(position).toString()
+                when (parent.id) {
+                    R.id.spinner_tahun_pg -> viewModel.setSelectedYearValueProfit(selected)
+
+                }
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
+        binding.spinnerTahunPg.onItemSelectedListener = spinnerListener
+        viewModel.setSelectedMonthValueProfit(currentYear)
+        viewModel.selectedProfitYearSpinner.observe(viewLifecycleOwner){ value->
+           viewModel.filterProfitModelList()
+        }
+        viewModel.profitBCModel.observe(viewLifecycleOwner){value->
+           //use this data to create line chart
+            LineChartHelper.setData(
+                chart = chart,
+                entries =value,
+                lineLabel = "Profit",
+                lineColor = ContextCompat.getColor(requireContext(), R.color.black),
+                fillColor = ContextCompat.getColor(requireContext(), R.color.grey_green)
+            )
+        }
+
+
 //        viewModel.summariesLiveData.observe(viewLifecycleOwner){
 //        }
 //        viewModel.combinedStockLiveData.observe(viewLifecycleOwner){

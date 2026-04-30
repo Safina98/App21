@@ -19,6 +19,10 @@ import com.example.app21try6.grafik.BarChartUtils
 import com.example.app21try6.transaction.transactionall.AllTransClickListener
 import com.example.app21try6.transaction.transactionall.AllTransactionAdapter
 import com.example.app21try6.transaction.transactionall.CheckBoxListenerTransAll
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Calendar
+import java.util.Locale
 import kotlin.getValue
 
 
@@ -32,14 +36,18 @@ class GraphicCustomerFragment : Fragment() {
         // Inflate the layout for this fragment
         binding= DataBindingUtil.inflate(inflater,R.layout.fragment_graphic_customer,container,false)
         val rvAdapter= BarChartModelRVAdapter(BarChartModelRvListener{
-
         })
         val adapter_year = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, resources.getStringArray(R.array.tahun))
         val adapter_month = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, resources.getStringArray(R.array.bulan))
-
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
+        val currentMonth = LocalDate.now().month.getDisplayName(TextStyle.FULL, Locale("id", "ID"))
         binding.spinnerTahunCg.adapter=adapter_year
         binding.spinnerBulanCg.adapter=adapter_month
         binding.rvChartCg.adapter=rvAdapter
+        val positionM = (binding.spinnerBulanCg.adapter as ArrayAdapter<String>).getPosition(currentMonth)
+        binding.spinnerBulanCg.setSelection(positionM)
+        val positionY = (binding.spinnerTahunCg.adapter as ArrayAdapter<String>).getPosition(currentYear)
+        binding.spinnerTahunCg.setSelection(positionY)
         val spinnerListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selected = parent.getItemAtPosition(position).toString()
@@ -53,6 +61,8 @@ class GraphicCustomerFragment : Fragment() {
 
         binding.spinnerTahunCg.onItemSelectedListener = spinnerListener
         binding.spinnerBulanCg.onItemSelectedListener = spinnerListener
+        viewModel.setSelectedYear(currentYear)
+        viewModel.setSelectedBulan(currentMonth)
 
         viewModel.custWithTotalTrans.observe(viewLifecycleOwner){
             //viewModel.getRvData(it)
@@ -64,7 +74,7 @@ class GraphicCustomerFragment : Fragment() {
         viewModel.barChartModel.observe(viewLifecycleOwner){value->
             rvAdapter.submitList(value)
             BarChartUtils.setup(
-                barChart = binding.barChart,
+                barChart = binding.barChartCg,
                 data = value.take(10),
                 chartLabel = "Omzet"
             )
