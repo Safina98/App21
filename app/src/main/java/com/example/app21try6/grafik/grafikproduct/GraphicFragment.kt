@@ -18,7 +18,6 @@ import com.example.app21try6.grafik.BarChartModelRvListener
 import com.example.app21try6.grafik.BarChartUtils
 import com.example.app21try6.grafik.ChartRenderer
 import com.example.app21try6.grafik.GraphicViewModel
-import com.example.app21try6.grafik.StockModel
 import com.github.mikephil.charting.charts.BarChart
 import java.time.LocalDate
 import java.time.format.TextStyle
@@ -29,7 +28,7 @@ import java.util.Locale
 class GraphicFragment : Fragment() {
 
     private val viewModel: GraphicViewModel by  activityViewModels { GraphicViewModel.Companion.Factory }
-    private var listStockModel = mutableListOf<StockModel>()
+
     private lateinit var layout: View
     private lateinit var binding: FragmentGraphicBinding
     private lateinit var barChart: BarChart

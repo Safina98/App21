@@ -45,14 +45,20 @@ class AllTransactionsFragment : Fragment() {
         //////////////////////////////////Custom Back Pressed////////////////////////////////////////////
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (binding.transactionDetailFragmentContainer?.visibility==View.VISIBLE&& viewModel.selectedTransSum.value!=null) {
-                    viewModel.getSelectedTransSumId(null)
+                // If edit fragment is in back stack, pop it first
+                if (childFragmentManager.backStackEntryCount > 0) {
+                    childFragmentManager.popBackStack()
                     return
                 }
-                else {
-                    Log.i("CustomBackProbs","else condition met")
-                    isEnabled = false // Disable callback temporarily
-                    requireActivity().onBackPressed() // Trigger default back behavior
+                // Your existing logic
+                if (binding.transactionDetailFragmentContainer?.visibility == View.VISIBLE
+                    && viewModel.selectedTransSum.value != null) {
+                    viewModel.getSelectedTransSumId(null)
+                    return
+                } else {
+                    Log.i("CustomBackProbs", "else condition met")
+                    isEnabled = false
+                    requireActivity().onBackPressed()
                 }
             }
         })
@@ -169,6 +175,8 @@ class AllTransactionsFragment : Fragment() {
         return binding.root
 
     }
+
+
 
     private fun showDatePickerDialog() {
         //clearSearchQuery()

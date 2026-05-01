@@ -9,12 +9,10 @@ import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.cloud.RealtimeDatabaseSync
 import com.example.app21try6.database.cloud.UploadInventories
 import com.example.app21try6.database.models.BarChartModel
-import com.example.app21try6.database.models.CustomerWithTotalTransModel
 import com.example.app21try6.database.models.TracketailWarnaModel
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.getDate
-import com.example.app21try6.grafik.StockModel
 import com.example.app21try6.parseDate
 import com.example.app21try6.transaction.transactiondetail.TransactionDetailWithProduct
 import com.example.app21try6.transaction.transactionselect.TransSelectModel
@@ -28,22 +26,14 @@ class TransactionsRepository(application: Application) {
     private val transSumDao=VendibleDatabase.getInstance(application).transSumDao
 
 
-    suspend fun getAllTransactionSummary():List<TransactionSummary>{
-        return withContext(Dispatchers.IO){
-            transSumDao.selectAllTransactionSummaryTable()
-        }
-    }
+
     suspend fun assignCloudIdToTransactionSummaryTable(cloudId: Long, id: Long){
         withContext(Dispatchers.IO){
             transSumDao.assignTransactionSummaryCloudID(cloudId,id)
         }
     }
 
-    suspend fun getAllTransactionDetail():List<TransactionDetail>{
-        return withContext(Dispatchers.IO){
-            transDetailDao.selectAllTransactionDetailTable()
-        }
-    }
+
     suspend fun assignCloudIdToTransactionDetailTable(cloudId: Long, id: Long){
         withContext(Dispatchers.IO){
             transDetailDao.assignTransactionDetailCloudID(cloudId,id)
@@ -61,9 +51,7 @@ class TransactionsRepository(application: Application) {
         }
     }
 
-    fun getStockModel(): LiveData<List<StockModel>> {
-        return transDetailDao.getTransactionDetails()
-    }
+
 
     suspend fun getCustomerWithTotalTrans(month: String?,year:String?): List<BarChartModel> {
         return  withContext(Dispatchers.IO){
@@ -73,7 +61,6 @@ class TransactionsRepository(application: Application) {
         }
     }
     fun getTransSelectModelLive(productId: Long, sum_id: Long): LiveData<List<TransSelectModel>> {
-        Log.i("LiveDataProbs","getTransSelectModelLive sumId: $sum_id")
         return transDetailDao.getSubProductMLive(productId, sum_id)
     }
 

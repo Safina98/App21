@@ -42,6 +42,8 @@ import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.databinding.FragmentTransactionDetailBinding
 import com.example.app21try6.databinding.PopUpListDialogBinding
+import com.example.app21try6.transaction.transactionall.AllTransactionsFragment
+import com.example.app21try6.transaction.transactionedit.TransactionEditFragment
 import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -67,7 +69,7 @@ class TransactionDetailFragment : Fragment() {
            R.layout.fragment_transaction_detail,container,false)
         val application= requireNotNull(this.activity).application
         Log.d("DetailFragment", "onCreateView called")
-        val id = arguments?.let { TransactionDetailFragmentArgs.fromBundle(it).id }
+        val id = arguments?.getLong("id")
             ?: throw IllegalArgumentException("ID argument is missing")
 
         val stockRepositories=StockRepositories(application)
@@ -223,9 +225,24 @@ class TransactionDetailFragment : Fragment() {
 
         viewModel.navigateToEdit.observe(viewLifecycleOwner) {
             it?.let {
-                this.findNavController().navigate(
-                    TransactionDetailFragmentDirections.actionTransactionDetailFragmentToTransactionEditFragment(id)
-                )
+                if (parentFragment is AllTransactionsFragment) {
+                    // LANDSCAPE: we are a child fragment, replace container manually
+                    parentFragmentManager.beginTransaction()
+                        .replace(
+                            R.id.transaction_detail_fragment_container,
+                            TransactionEditFragment().apply {
+                                arguments = Bundle().apply { putLong("id", id) }
+                            }
+                        )
+                        .addToBackStack("edit")
+                        .commit()
+                } else {
+                    // PORTRAIT: normal NavController navigation
+                    this.findNavController().navigate(
+                        TransactionDetailFragmentDirections
+                            .actionTransactionDetailFragmentToTransactionEditFragment(id)
+                    )
+                }
                 viewModel.onNavigatedToEdit()
             }
         }

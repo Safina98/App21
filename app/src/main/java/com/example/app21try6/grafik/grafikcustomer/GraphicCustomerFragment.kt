@@ -64,9 +64,7 @@ class GraphicCustomerFragment : Fragment() {
         viewModel.setSelectedYear(currentYear)
         viewModel.setSelectedBulan(currentMonth)
 
-        viewModel.custWithTotalTrans.observe(viewLifecycleOwner){
-            //viewModel.getRvData(it)
-        }
+
         viewModel.rvData.observe(viewLifecycleOwner){value->
 
         }

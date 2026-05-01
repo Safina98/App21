@@ -3,10 +3,6 @@ package com.example.app21try6.database.daos
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.app21try6.database.models.BarChartModel
-import com.example.app21try6.database.models.CustomerWithTotalTransModel
-import com.example.app21try6.database.models.TransSumModel
-import com.example.app21try6.database.tables.CustomerTable
-import com.example.app21try6.database.tables.DiscountTable
 import com.example.app21try6.database.tables.TransactionSummary
 import java.util.Date
 

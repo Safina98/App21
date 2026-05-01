@@ -8,11 +8,8 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.example.app21try6.bookkeeping.summary.ListModel
 import com.example.app21try6.bookkeeping.summary.MonthlyProfit
-import com.example.app21try6.bookkeeping.summary.ProductProfit
-import com.example.app21try6.database.tables.CustomerTable
-import com.example.app21try6.database.tables.DiscountTable
 import com.example.app21try6.database.tables.Summary
-import com.example.app21try6.grafik.StockModel
+
 
 @Dao
 interface SummaryDbDao {

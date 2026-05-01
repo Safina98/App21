@@ -24,16 +24,11 @@ import kotlinx.coroutines.launch
 
 class GraphicViewModel(
     private val stockRepo:StockRepositories,
-    private val bookRepo: BookkeepingRepository,
     private val transRepo:TransactionsRepository,
     application: Application
                       ): AndroidViewModel(application) {
 
-    private val _combinedStockLiveData = MediatorLiveData<List<StockModel>?>()
-    val combinedStockLiveData: LiveData<List<StockModel>?> get() = _combinedStockLiveData
 
-
-    val transDetailModel = transRepo.getStockModel()
 
     private val _productBCModel = MutableLiveData<List<BarChartModel>>()
     val productBCModel: LiveData<List<BarChartModel>> get() = _productBCModel
@@ -75,15 +70,7 @@ class GraphicViewModel(
     private val _selectedProfitMonthSpinner = MutableLiveData<String>()
     val selectedProfitMonthSpinner: LiveData<String> get() = _selectedProfitMonthSpinner
 
-    private val _filteredmodelListProfit = MutableLiveData<List<StockModel>>()
-    val filteredmodelListProfit: LiveData<List<StockModel>> get() = _filteredmodelListProfit
 
-    val monthIncomeMap: LiveData<Map<String, Double>> = transDetailModel.map { list ->
-        list.groupBy { it.month }
-            .mapValues { entry ->
-                entry.value.sumOf { it.total_income ?: 0.0 }
-            }
-    }
     init {
         getKategoriEntries()
 
@@ -160,30 +147,7 @@ class GraphicViewModel(
     }
 
 
-    fun populateListModelProfit(){
-        //_filteredmodelList.value = combinedStockLiveData.value
-    }
-    fun mapAndSumByMonth(summaries: List<StockModel>): Map<String, Double> {
-        return summaries.groupBy { it.month!! }
-            .mapValues { entry -> entry.value.sumOf { it.total_income!!} }
-    }
-    fun calculateTotalItemCountProfit(stockModels: List<StockModel>): Map<String, Double> {
-        val itemCountMap = mutableMapOf<String, Double>()
-        // Log.i("LINE","models: "+models.toString())
-        for (model in stockModels) {
-            val itemName = model.month
-            try {
-                //Log.i("ChartProb","${model.year}")
-                val doubleValue = model.total_income?:0.0
-                itemCountMap[itemName] = itemCountMap.getOrDefault(itemName, 0.0) + doubleValue
 
-            } catch (e: NumberFormatException) {
-            }
-        }
-
-        //mau dihapus
-        return itemCountMap
-    }
     //set selected spinner tahun
     fun setSelectedYearValueProfit(selectedItem:String){
         _selectedProfitYearSpinner.value = selectedItem
@@ -192,19 +156,8 @@ class GraphicViewModel(
     fun setSelectedMonthValueProfit(selectedItem:String){
         _selectedProfitMonthSpinner.value = selectedItem
     }
-    fun filterModelListProfit(){
-        _filteredmodelListProfit.value = combinedStockLiveData.value
-        filterModelListByYearProfit()
-    }
-    fun filterModelListByYearProfit() {
-        val filteredList = _filteredmodelListProfit.value?.filter { model -> model.year.toString() == selectedProfitYearSpinner.value }
-        // _filteredmodelList.postValue(filteredList!!)
-        Log.i("ChartProb","selected spinner${selectedProfitYearSpinner.value}")
-        filteredList?.forEach {
-            //Log.i("ChartProb","${it.year}")
-        }
-        _filteredmodelListProfit.value = filteredList!!
-    }
+
+
 
     companion object {
 
@@ -224,7 +177,6 @@ class GraphicViewModel(
                 val savedStateHandle = extras.createSavedStateHandle()
                 return GraphicViewModel(
                     stockRepo,
-                    bookRepo,
                     transRepo,
                     application
                 ) as T

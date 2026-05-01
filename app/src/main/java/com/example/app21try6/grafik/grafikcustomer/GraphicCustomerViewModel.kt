@@ -10,7 +10,6 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.app21try6.database.models.BarChartModel
-import com.example.app21try6.database.models.CustomerWithTotalTransModel
 import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
@@ -25,8 +24,7 @@ class GraphicCustomerViewModel (
     application: Application
 ): AndroidViewModel(application){
 
-    private val _custWithTotalTrans= MutableLiveData<List<CustomerWithTotalTransModel>>()
-    val custWithTotalTrans : LiveData<List<CustomerWithTotalTransModel>> get() = _custWithTotalTrans
+
 
     private val _barChartModel= MutableLiveData<List<BarChartModel>>()
     val barChartModel: LiveData<List<BarChartModel>>  get() = _barChartModel
@@ -59,12 +57,7 @@ class GraphicCustomerViewModel (
         }
 
     }
-    fun CustomerWithTotalTransModel.toBarChartModel() = BarChartModel(
-        label = this.customerBussinessName,
-        value = this.totalAfterDiscount
-    )
 
-    fun List<CustomerWithTotalTransModel>.toBarChartModelList() = this.map { it.toBarChartModel() }
 
     companion object {
         @JvmStatic

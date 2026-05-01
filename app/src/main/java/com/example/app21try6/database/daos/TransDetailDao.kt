@@ -5,18 +5,10 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
-import com.example.app21try6.bookkeeping.summary.MonthlyProfit
 import com.example.app21try6.database.models.BarChartModel
-import com.example.app21try6.database.models.ProductWithTotalItemCount
 import com.example.app21try6.database.models.TracketailWarnaModel
-import com.example.app21try6.database.tables.DiscountTable
-import com.example.app21try6.database.tables.MerchandiseRetail
 import com.example.app21try6.database.tables.TransactionDetail
-import com.example.app21try6.database.tables.TransactionSummary
-import com.example.app21try6.grafik.StockModel
-import com.example.app21try6.transaction.transactionactive.TransExportModel
 import com.example.app21try6.transaction.transactiondetail.TransactionDetailWithProduct
 import com.example.app21try6.transaction.transactionselect.TransSelectModel
 import java.util.Date
@@ -88,27 +80,6 @@ interface TransDetailDao {
             " ORDER BY s.sub_name ASC,t.tDCloudId ASC")
     fun getSubProductMLive(productId:Long,tSCloudId_: Long):LiveData<List<TransSelectModel>>
 
-
-    @Query("""
-        SELECT
-           COALESCE(strftime('%Y', trans_detail_table.trans_detail_date), '1990') AS year,
-            COALESCE(strftime('%m', trans_detail_table.trans_detail_date), '05') AS month,
-            trans_detail_table.trans_item_name AS item_name,
-            (trans_detail_table.qty * trans_detail_table.unit_qty) AS itemCount,
-            category_table.category_name AS category_name,
-            product_table.product_name AS product_name,
-            sub_table.sub_name AS sub_name,
-            product_table.productCloudId AS productCloudId,
-            trans_detail_table.sPCloudId AS sPCloudId,
-            trans_detail_table.product_capital AS product_capital,
-            trans_detail_table.trans_price AS price,
-            trans_detail_table.total_price AS total_income
-        FROM trans_detail_table
-        JOIN sub_table ON trans_detail_table.sPCloudId = sub_table.sPCloudId
-        JOIN category_table ON sub_table.cath_code = category_table.categoryCloudId
-        JOIN product_table ON sub_table.productCloudId = product_table.productCloudId
-    """)
-    fun getTransactionDetails(): LiveData<List<StockModel>>
 
 
 
