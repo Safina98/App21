@@ -21,6 +21,8 @@ import com.example.app21try6.bookkeeping.vendiblelist.VendibleFragmentArgs
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentTransactionProductBinding
+import com.example.app21try6.transaction.transactionall.AllTransactionsFragment
+import com.example.app21try6.transaction.transactionselect.TransactionSelectFragment
 import com.example.app21try6.transaction.transactionselect.TransactionSelectViewModel
 import com.example.app21try6.transaction.transactionselect.TransactionSelectViewModelFactory
 
@@ -93,8 +95,6 @@ class TransactionProductFragment : Fragment() {
 
         viewModel.selectedKategoriSpinner.observe(viewLifecycleOwner) { selectedCategory ->
             selectedCategory?.let {
-                //val position = (binding.spinnerCategory.adapter as ArrayAdapter<String>).getPosition(it)
-                //binding.spinnerCategory.setSelection(position)
                 viewModel.updateRv(selectedCategory)
             }
         }
@@ -112,7 +112,22 @@ class TransactionProductFragment : Fragment() {
         viewModel.navigateToTransSelect.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 clearSearchQuery()
-                this.findNavController().navigate(TransactionProductFragmentDirections.actionTransactionProductFragmentToTransactionSelectFragment(it))
+                if (parentFragment is AllTransactionsFragment) {
+                    // LANDSCAPE: we are a child fragment, replace container manually
+                    parentFragmentManager.beginTransaction()
+                        .replace(
+                            R.id.transaction_detail_fragment_container,
+                            TransactionSelectFragment().apply {
+                                arguments = Bundle().apply {
+                                    putStringArray("date", it)
+                                }
+                            }
+                        )
+                        .addToBackStack("select")
+                        .commit()
+                } else {
+                    this.findNavController().navigate(TransactionProductFragmentDirections.actionTransactionProductFragmentToTransactionSelectFragment(it))
+                }
                 viewModel.onNavigatedtoTransSelect()
 
             }
@@ -124,9 +139,13 @@ class TransactionProductFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            // Navigate up using NavController
             viewModel.resetSelectedSpinnerValue()
-            findNavController().navigateUp()
+            if (parentFragment is AllTransactionsFragment) {
+                // LANDSCAPE: pop the fragment back stack instead of nav controller
+                parentFragmentManager.popBackStack()
+            } else {
+                findNavController().navigateUp()
+            }
         }
     }
     // Handle the navigate up button in the app bar
@@ -136,7 +155,11 @@ class TransactionProductFragment : Fragment() {
             //viewModel.cancelUiScope()
             //Toast.makeText(requireContext(),"BackPressed",Toast.LENGTH_SHORT).show()
             viewModel.resetSelectedSpinnerValue()
-            findNavController().navigateUp()
+            if (parentFragment is AllTransactionsFragment) {
+                parentFragmentManager.popBackStack()
+            } else {
+                findNavController().navigateUp()
+            }
             true
         } else {
             super.onOptionsItemSelected(item)
@@ -147,5 +170,6 @@ class TransactionProductFragment : Fragment() {
         binding.searchBarProduct.setQuery("", false)
         binding.searchBarProduct.clearFocus()
     }
+
 
 }

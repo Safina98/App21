@@ -25,6 +25,7 @@ import com.example.app21try6.bookkeeping.vendiblelist.VendibleFragmentArgs
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentTransactionSelectBinding
+import com.example.app21try6.transaction.transactionall.AllTransactionsFragment
 import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 import java.util.Locale
@@ -52,7 +53,12 @@ class TransactionSelectFragment : Fragment() {
         var i = date!![1].toLong()
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             viewModel.resetTransModel()
-            findNavController().popBackStack()
+            if (parentFragment is AllTransactionsFragment) {
+                // LANDSCAPE: pop the fragment back stack instead of nav controller
+                parentFragmentManager.popBackStack()
+            } else {
+                findNavController().navigateUp()
+            }
         }
         //viewModel.setProductId(i)
         var code: Constants.Code = Constants.Code.ZERO
@@ -173,58 +179,5 @@ class TransactionSelectFragment : Fragment() {
         super.onDestroyView()
         adapter.submitList(emptyList()) // Clear existing data
     }
-
-    /*
-        private fun showDialog(transSelectModel: TransSelectModel, viewModel: TransactionSelectViewModel, code: Code) {
-            val builder = AlertDialog.Builder(context)
-            if (code==Code.ZERO) builder.setTitle(transSelectModel.item_name) else builder.setTitle(code.text)
-            val inflater = LayoutInflater.from(context)
-            val view = inflater.inflate(R.layout.pop_up_update, null)
-            val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
-            textKet.requestFocus()
-            when (code) {
-                Code.TEXTITEM -> {
-                    textKet.setText(transSelectModel.item_name)
-                }
-                else->{
-                    textKet.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-                    textKet.keyListener = DigitsKeyListener.getInstance("-0123456789.")
-                }
-            }
-            builder.setView(view)
-            builder.setPositiveButton("OK") { dialog, which ->
-                val v = textKet.text.toString().uppercase().trim()
-                when (code) {
-                    Code.LONGSUBS -> {
-                        transSelectModel.qty = transSelectModel.qty -v.toDouble()
-                        viewModel.updateTransDetail(transSelectModel)
-                    }
-                    Code.LONGPLUS -> {
-                        transSelectModel.qty = transSelectModel.qty +v.toDouble()
-                        viewModel.updateTransDetail(transSelectModel)
-                    }
-                    Code.DUPLICATE -> {
-                        transSelectModel.qty  = v.toDouble()
-                        viewModel.insertDuplicateSubProduct(transSelectModel)
-                    }
-                    else -> {}
-                }
-
-                viewModel.onCloseDialog()
-            }
-            builder.setNegativeButton("No") { dialog, which ->
-                viewModel.onCloseDialog()
-            }
-            builder.setOnCancelListener {
-                viewModel.onCloseDialog()
-            }
-            val alert = builder.create()
-            alert.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
-            alert.show()
-            alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
-            alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
-        }
-
-     */
 
 }

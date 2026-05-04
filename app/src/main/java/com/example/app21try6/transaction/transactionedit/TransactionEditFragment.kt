@@ -33,6 +33,9 @@ import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentTransactionEditBinding
 import com.example.app21try6.databinding.PopUpUnitBinding
+import com.example.app21try6.transaction.transactionall.AllTransactionsFragment
+import com.example.app21try6.transaction.transactiondetail.TransactionDetailFragment
+import com.example.app21try6.transaction.transactionproduct.TransactionProductFragment
 import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 
@@ -176,24 +179,49 @@ class TransactionEditFragment : Fragment() {
             it?.let {
             }
         }
-        viewModel.navigateToDetail.observe(viewLifecycleOwner) {
-            it?.let {
-                this.findNavController().navigate(
-                    TransactionEditFragmentDirections.actionTransactionEditFragmentToTransactionDetailFragment(
-                        it
+        viewModel.navigateToDetail.observe(viewLifecycleOwner) { value ->
+            value?.let { id ->
+                if (parentFragment is AllTransactionsFragment) {
+                    parentFragmentManager.beginTransaction()
+                        .replace(
+                            R.id.transaction_detail_fragment_container,
+                            TransactionDetailFragment().apply {
+                                arguments = Bundle().apply { putLong("id", id) } // ✅ key + value
+                            }
+                        )
+                        .addToBackStack("detail")
+                        .commit()
+                } else {
+                    this.findNavController().navigate(
+                        TransactionEditFragmentDirections.actionTransactionEditFragmentToTransactionDetailFragment(id)
                     )
-                )
+                }
                 viewModel.onNavigatedtoDetail()
             }
         }
 
-        viewModel.navigateToVendible.observe(viewLifecycleOwner) {
-            if (it != null) {
+        viewModel.navigateToVendible.observe(viewLifecycleOwner) {arrayValue->
+            if (arrayValue != null) {
+                if (parentFragment is AllTransactionsFragment) {
+                    // LANDSCAPE: we are a child fragment, replace container manually
+                    parentFragmentManager.beginTransaction()
+                        .replace(
+                            R.id.transaction_detail_fragment_container,
+                            TransactionProductFragment().apply {
+                                arguments = Bundle().apply {
+                                    putStringArray("date", arrayValue) // ✅ String[]
+                                }
+                            }
+                        )
+                        .addToBackStack("product")
+                        .commit()
+                } else {
                 this.findNavController().navigate(
                     TransactionEditFragmentDirections.actionTransactionEditFragmentToTransactionProductFragment(
-                        it
+                        arrayValue
                     )
                 )
+                    }
                 viewModel.onNavigatedtoVendible()
             }
         }
