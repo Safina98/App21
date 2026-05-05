@@ -146,6 +146,18 @@ class GraphicViewModel(
         }
     }
 
+    fun filterProductTrend(){
+        viewModelScope.launch {
+            val year = _selectedProfitYearSpinner.value.takeIf { it != "ALL" } // null if "ALL"
+            val product=_selectedStockProductSpinner.value.takeIf { it != "ALL" }
+            val category=_selectedStockCategorySpinner.value
+
+            val list=   transRepo.getMonthlyProductTrend(year,product)
+            //val dividedList = list.map { it.copy(value = it.value / 1000000.0) }
+            _profitBCModel.value=list
+        }
+    }
+
 
 
     //set selected spinner tahun

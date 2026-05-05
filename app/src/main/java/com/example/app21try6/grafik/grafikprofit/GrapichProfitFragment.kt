@@ -26,8 +26,8 @@ class GrapichProfitFragment : Fragment() {
 
     private lateinit var layout: View
     private lateinit var binding: FragmentGrapichProfitBinding
-    private lateinit var topfivemap :Map<String,Double>
-    private lateinit var lineChart:LineChart
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,7 +36,6 @@ class GrapichProfitFragment : Fragment() {
         // Inflate the layout for this fragment
         binding  = DataBindingUtil.inflate(inflater,R.layout.fragment_grapich_profit,container,false)
         layout = binding.mainLayout
-        lineChart = binding.lineChart
         binding.lifecycleOwner = this
         val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
         val adapter_year = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, resources.getStringArray(R.array.tahun))
@@ -63,7 +62,7 @@ class GrapichProfitFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
         binding.spinnerTahunPg.onItemSelectedListener = spinnerListener
-        viewModel.setSelectedMonthValueProfit(currentYear)
+       // viewModel.setSelectedYearValueProfit(currentYear)
         viewModel.selectedProfitYearSpinner.observe(viewLifecycleOwner){ value->
            viewModel.filterProfitModelList()
         }

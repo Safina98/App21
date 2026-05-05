@@ -144,6 +144,17 @@ class TransactionsRepository(application: Application) {
             transDetailDao.getFilteredProfitBarChartList(year)
         }
     }
+    suspend fun getMonthlyProductTrend(year:String?,product:String?): List<BarChartModel> {
+        return  withContext(Dispatchers.IO){
+            transDetailDao.getMonthlyProductTrendList(year,product)
+        }
+    }
+    suspend fun getYearlyProductTrend(): List<BarChartModel> {
+        return  withContext(Dispatchers.IO){
+            transDetailDao.getYearlyProductTrendList()
+        }
+    }
+
     ///////////////////////////////////TransSum////////////////////////////////////////////////////////
     fun getTransactionSummary(id:Long): LiveData<TransactionSummary> {
         return transSumDao.getTransSum(id)

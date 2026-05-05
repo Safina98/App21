@@ -30,7 +30,8 @@ class GraphicMainFragment : Fragment() {
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = when (position) {
                 0 -> "Stok"
-                1-> "Profit"
+                1 -> "Product Trend"
+                2-> "Profit"
                 else -> "Customer"
             }
         }.attach()

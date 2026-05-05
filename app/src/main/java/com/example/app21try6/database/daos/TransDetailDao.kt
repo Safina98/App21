@@ -133,6 +133,33 @@ interface TransDetailDao {
     fun getFilteredSubBarChartList(year:String?,month:String?,product:String?,category:String?): List<BarChartModel>
 
     @Query("""
+       SELECT
+            substr(td.trans_detail_date, 6, 2) AS label,
+            SUM(td.qty*td.unit_qty) AS value
+        FROM trans_detail_table td
+         JOIN sub_table s ON td.sPCloudId = s.sPCloudId
+        JOIN category_table c ON s.cath_code = c.categoryCloudId
+        JOIN product_table p ON s.productCloudId = p.productCloudId
+        WHERE
+       (:year IS NULL OR substr(td.trans_detail_date, 1, 4) = :year)
+       AND (:product IS NULL OR p.product_name= :product)
+      GROUP BY substr(td.trans_detail_date, 6, 2)
+    ORDER BY substr(td.trans_detail_date, 6, 2) ASC
+    """)
+    fun getMonthlyProductTrendList(year:String?,product: String?): List<BarChartModel>
+
+    @Query("""
+       SELECT
+            substr(td.trans_detail_date, 1, 4) AS label,
+            SUM(td.qty*td.unit_qty) AS value
+        FROM trans_detail_table td
+
+      GROUP BY substr(td.trans_detail_date, 1, 4)
+    ORDER BY substr(td.trans_detail_date, 1, 4) ASC
+    """)
+    fun getYearlyProductTrendList(): List<BarChartModel>
+
+    @Query("""
     SELECT 
         d.tDCloudId,
         d.tSCloudId,
