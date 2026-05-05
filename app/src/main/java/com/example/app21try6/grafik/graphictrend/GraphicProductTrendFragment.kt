@@ -1,6 +1,7 @@
 package com.example.app21try6.grafik.graphictrend
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +33,7 @@ class GraphicProductTrendFragment : Fragment() {
         val spinnerTahun=binding.spinnerTahunPt
         val spinnerProduct=binding.spinnerProductPt
         val spinnerCategory=binding.spinnerCategoryPt
+        val spinnerSp=binding.spinnerSpPt
         spinnerTahun.adapter=adapter_year
         val positionY = (spinnerTahun.adapter as ArrayAdapter<String>).getPosition(currentYear)
         spinnerTahun.setSelection(positionY)
@@ -49,6 +51,7 @@ class GraphicProductTrendFragment : Fragment() {
                     R.id.spinner_tahun_pt -> viewModel.setSelectedYearValueProfit(selected)
                     R.id.spinner_category_pt-> viewModel.setSelectedCategoryValueStok(selected)
                     R.id.spinner_product_pt-> viewModel.setSelectedProductValueStok(selected)
+                    R.id.spinner_sp_pt-> viewModel.setSelectedSPValue(selected)
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -57,6 +60,7 @@ class GraphicProductTrendFragment : Fragment() {
         spinnerTahun.onItemSelectedListener=spinnerListener
         spinnerProduct.onItemSelectedListener=spinnerListener
         spinnerCategory.onItemSelectedListener=spinnerListener
+        spinnerSp.onItemSelectedListener=spinnerListener
 
         viewModel.categoryEntries.observe(viewLifecycleOwner){it?.let {
             val adapterCategory =
@@ -64,10 +68,17 @@ class GraphicProductTrendFragment : Fragment() {
             spinnerCategory.adapter = adapterCategory }
         }
         viewModel.productEntries.observe(viewLifecycleOwner){
+
             val adapterProduct =
                 ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
             spinnerProduct.adapter = adapterProduct
         }
+        viewModel.spEntries.observe(viewLifecycleOwner){
+            val adapterProduct =
+                ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
+            spinnerSp.adapter = adapterProduct
+        }
+
         viewModel.selectedProfitYearSpinner.observe(viewLifecycleOwner){ value->
             viewModel.filterProductTrend()
         }
@@ -76,8 +87,13 @@ class GraphicProductTrendFragment : Fragment() {
             viewModel.filterProductTrend()
         }
         viewModel.selectedStockProductSpinner.observe(viewLifecycleOwner){value->
+            viewModel.getSPEntriesStok()
             viewModel.filterProductTrend()
         }
+        viewModel.selectedSPpinner.observe(viewLifecycleOwner){value->
+            viewModel.filterProductTrend()
+        }
+
         viewModel.profitBCModel.observe(viewLifecycleOwner){value->
             //use this data to create line chart
             LineChartHelper.setData(

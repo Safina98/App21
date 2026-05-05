@@ -238,7 +238,6 @@ class StockRepositories (
         }
     }
 
-
     suspend fun getProductById(id:Long):Product{
         return withContext(Dispatchers.IO){productDao.getProductById(id)}
     }
@@ -259,7 +258,14 @@ class StockRepositories (
     suspend fun getProductNameListByCategoryName(name:String):List<String>{
         return withContext(Dispatchers.IO) {
             val list = productDao.getProductNameByCategoryName(name)
-            val modifiedList = listOf("Off","ALL") + list // Create a new list with the added value
+            val modifiedList = listOf("ALL","Off") + list // Create a new list with the added value
+            modifiedList // Return the modified list
+        }
+    }
+    suspend fun getSPNameListByProductName(name:String):List<String>{
+        return withContext(Dispatchers.IO) {
+            val list = subProductDao.getSpNameListByProductName(name)
+            val modifiedList = listOf("ALL") + list // Create a new list with the added value
             modifiedList // Return the modified list
         }
     }

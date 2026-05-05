@@ -142,22 +142,30 @@ interface TransDetailDao {
         JOIN product_table p ON s.productCloudId = p.productCloudId
         WHERE
        (:year IS NULL OR substr(td.trans_detail_date, 1, 4) = :year)
-       AND (:product IS NULL OR p.product_name= :product)
+       AND (:category IS NULL OR c.category_name= :category)
+        AND (:product IS NULL OR p.product_name= :product)
+        AND (:sp IS NULL OR s.sub_name= :sp)
       GROUP BY substr(td.trans_detail_date, 6, 2)
     ORDER BY substr(td.trans_detail_date, 6, 2) ASC
     """)
-    fun getMonthlyProductTrendList(year:String?,product: String?): List<BarChartModel>
+    fun getMonthlyProductTrendList(year:String?,category: String?,product: String?,sp:String?): List<BarChartModel>
 
     @Query("""
        SELECT
-            substr(td.trans_detail_date, 1, 4) AS label,
+            COALESCE(substr(td.trans_detail_date, 1, 4), 'Unknown') AS label,
             SUM(td.qty*td.unit_qty) AS value
         FROM trans_detail_table td
-
+            JOIN sub_table s ON td.sPCloudId = s.sPCloudId
+            JOIN category_table c ON s.cath_code = c.categoryCloudId
+            JOIN product_table p ON s.productCloudId = p.productCloudId
+             WHERE
+        (:category IS NULL OR c.category_name= :category)
+        AND (:product IS NULL OR p.product_name= :product)
+        AND (:sp IS NULL OR s.sub_name= :sp)
       GROUP BY substr(td.trans_detail_date, 1, 4)
     ORDER BY substr(td.trans_detail_date, 1, 4) ASC
     """)
-    fun getYearlyProductTrendList(): List<BarChartModel>
+    fun getYearlyProductTrendList(category: String?,product: String?,sp:String?): List<BarChartModel>
 
     @Query("""
     SELECT 

@@ -13,20 +13,31 @@
         android:orientation="vertical"
         tools:context=".BlankFragment">
 
-        <Spinner
-            android:id="@+id/spinner_tahun_pt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content">/
+            <Spinner
+                android:id="@+id/spinner_tahun_pt"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
             <Spinner
                 android:id="@+id/spinner_category_pt"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
             <Spinner
                 android:id="@+id/spinner_product_pt"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
+            <Spinner
+                android:id="@+id/spinner_sp_pt"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content" />
