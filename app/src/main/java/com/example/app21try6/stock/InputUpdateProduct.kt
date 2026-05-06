@@ -6,9 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.app21try6.R
 import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.DiscountRepository
@@ -19,6 +22,7 @@ import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentInputUpdateProductBinding
 import com.example.app21try6.stock.brandstock.BrandStockViewModel
 import com.example.app21try6.stock.brandstock.BrandStockViewModelFactory
+import com.example.app21try6.transaction.transactionall.AllTransactionsFragment
 
 class InputUpdateProduct : Fragment() {
 
@@ -32,6 +36,18 @@ class InputUpdateProduct : Fragment() {
         // Inflate the layout for this fragment
         binding=DataBindingUtil.inflate(inflater,R.layout.fragment_input_update_product,container,false)
         val application = requireNotNull(this.activity).application
+
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    viewModel.clearMutable()
+                    findNavController().popBackStack()
+                }
+            }
+        )
+
         val repository = StockRepositories(application)
         val discountRepository= DiscountRepository(application)
 
@@ -85,9 +101,15 @@ class InputUpdateProduct : Fragment() {
         viewModel.navigateBackToBrandStok.observe(viewLifecycleOwner, Observer {
             if (it==true){
                 requireActivity().onBackPressedDispatcher.onBackPressed()
+                viewModel.clearMutable()
                 viewModel.onNavigatedBackToBrandStock()
             }
         })
         return binding.root
+    }
+    fun handleBackPress(): Boolean {
+        viewModel.clearMutable()
+        findNavController().popBackStack()
+        return true
     }
 }

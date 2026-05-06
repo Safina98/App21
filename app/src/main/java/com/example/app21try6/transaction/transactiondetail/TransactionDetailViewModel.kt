@@ -356,35 +356,50 @@ class TransactionDetailViewModel (
     }
     fun updateRetailOnClick(item:TransactionDetail){
         viewModelScope.launch {
-
             transdetail=item//transDetail untuk update retail net
+
             val subId=item.sPCloudId
+
             val retailList = stockRepo.selectRetailBySumId(subId ?: -1)
+
             val totalNet = retailList?.sumOf { it.net }
+
             var trans=item.copy()
             var unitQty:Double=0.0
             if (trans.unit==Constants.ITEMUNIT.LSN) {
                 trans = trans.copy(unit_qty = trans.unit_qty*12)
             }
+            if (trans.unit==Constants.ITEMUNIT.DOS) {
+                val product=stockRepo.getProductBySubId(subId?:0L)
+                val defaultNet =product?.default_net.takeIf { it != 0.0 } ?:1.0
+                trans = trans.copy(unit_qty = trans.unit_qty*defaultNet)
+            }
 
             val totalQty= trans.qty*trans.unit_qty
             if (item.is_cutted==false){
                 if (totalQty <= (totalNet?:0.0)){
-                    if (trans.unit== null || trans.unit==Constants.ITEMUNIT.LSN || trans.unit==Constants.ITEMUNIT.ROLL){
+                    Log.i("MERCHPROBS","total qty<=total net")
+                    if (trans.unit== null || trans.unit==Constants.ITEMUNIT.LSN || trans.unit==Constants.ITEMUNIT.ROLL|| trans.unit==Constants.ITEMUNIT.DOS){
+
                         _multipleMerch.value = Pair(
                             item.copy(),
                             if (item.unit == Constants.ITEMUNIT.LSN) item.qty * 12
                             else if( item.unit==Constants.ITEMUNIT.ROLL) item.qty*item.unit_qty
                             else item.qty
                         )
+                        Log.i("MERCHPROBS","trans unit null trans unit lsn, trans unit roll")
                         _retailMerchList.value = retailList!!.toList()
                         val merchAndExtra=waitForMerchSelection()
                         val (merch,extra) = merchAndExtra?: Pair(null, null)
                         val merchandiseRetailList = merch.toMerchandiseRetailList()
                         updateMerchValue(merchandiseRetailList,totalQty,item.copy(),extra)
+
+                    }else {
+
                     }
                 }else{
                     //pop up dialog
+                    Log.i("MERCHPROBS","total qty > total net")
                     val detailWarnaList = stockRepo.getDetailWarnaList(subId?:-1)
                     _pickNewItem.value=trans.trans_item_name
                     _retailMerchList.value = detailWarnaList!!.toList()
@@ -425,7 +440,6 @@ class TransactionDetailViewModel (
         viewModelScope.launch {
             val merc=model.toMerchandiseRetail()
             stockRepo.updateDetailRetail(merc)
-            Log.i("multipleMerch","updateMerchNet ${_multipleMerch.value?.first}")
             updateRetailOnClick(transdetail)
         }
     }
@@ -480,7 +494,6 @@ class TransactionDetailViewModel (
                     val merchandiseRetailList= mutableListOf<MerchandiseRetail?>()
                     for (i in 0 until detailWarnaModel!!.selectedQty) {
                         // i goes from 0 until selectedQty - 1
-                        Log.i("DWP","$i")
                         delay(1)
                         val merchandiseRetail = detailWarnaModel?.let { createMerchandiseRetail(it) }
                         merchandiseRetailList.add(merchandiseRetail)

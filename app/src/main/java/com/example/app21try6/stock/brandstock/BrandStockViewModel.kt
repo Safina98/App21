@@ -337,8 +337,25 @@ fun updateSubTable(){
             }else{
                 Toast.makeText(getApplication(),"kategori atau brand tidak valid",Toast.LENGTH_SHORT).show()
             }
+            clearMutable()
 
         }
+    }
+    fun clearMutable(){
+        productName.value=""
+        //selectedBrandBpModel.value=null
+        productPice.value=0
+        ctgId.value=0L
+        productCapital.value=0
+        discountName.value=""
+        alternateCapital.value =0.0
+        defaultNet.value = 0.0
+        purchasePrice.value = 0
+        puchaseUnit.value=null
+        alternatePrice.value = 0.0
+        ctgName.value = ""
+        branName.value=""
+        _product.value==null
     }
     fun updateProduct(product: Product, discName:String){
         uiScope.launch{
