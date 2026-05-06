@@ -6,11 +6,15 @@
         <variable
             name="item"
             type="com.example.app21try6.database.models.TracketailWarnaModel" />
+        <variable
+            name="clickListener"
+            type="com.example.app21try6.stock.trackInventory.TrackDetailWarnaClickListener" />
 
     </data>
 
     <androidx.cardview.widget.CardView
         android:layout_margin="@dimen/small_margin"
+        android:onClick="@{()->clickListener.onClick(item)}"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <androidx.constraintlayout.widget.ConstraintLayout

@@ -10,21 +10,24 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.Constants
 import com.example.app21try6.R
 import com.example.app21try6.database.models.TracketailWarnaModel
+import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.databinding.ItemListTrackDetailWarnaBinding
 
 
 class TrackWarnaAdapter(
-    val context: Context
+    val context: Context,
+    val clickListener: TrackDetailWarnaClickListener
 ): ListAdapter<TracketailWarnaModel, TrackWarnaAdapter.MyViewHolder>(TrackWarnaDiffCallback()){
     class MyViewHolder private constructor(val binding: ItemListTrackDetailWarnaBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(item: TracketailWarnaModel, context: Context){
+        fun bind(item: TracketailWarnaModel, context: Context,clickListener: TrackDetailWarnaClickListener){
             binding.item=item
+            binding.clickListener=clickListener
             if (item.unit_qty!=1.0){
                 binding.txtItemQty.text=String.format("%.2f Roll (%.1f)",item.qty,item.unit_qty)
             }else{
                 binding.txtItemQty.text=String.format("Qty: %.2f",item.qty)
             }
-            binding.txtDate.text= Constants.DETAILED_DATE_FORMATTER.format(item.tans_detail_date)
+            binding.txtDate.text=item.tans_detail_date?.let {  Constants.DETAILED_DATE_FORMATTER.format(item.tans_detail_date) }
             if (item.is_cutted==false){
                 (binding.root as? androidx.cardview.widget.CardView)?.setCardBackgroundColor(
                     ContextCompat.getColor(context, R.color.unCuttedBgColor)
@@ -49,13 +52,13 @@ class TrackWarnaAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): TrackWarnaAdapter.MyViewHolder {
+    ): MyViewHolder {
         return MyViewHolder.from(parent)
     }
 
-    override fun onBindViewHolder(holder: TrackWarnaAdapter.MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val item = getItem(position)
-        holder.bind(getItem(position),context)
+        holder.bind(getItem(position),context, clickListener)
     }
 
 }
@@ -67,5 +70,9 @@ class TrackWarnaDiffCallback: DiffUtil.ItemCallback<TracketailWarnaModel>(){
     override fun areContentsTheSame(oldItem: TracketailWarnaModel, newItem: TracketailWarnaModel): Boolean {
         return oldItem == newItem
     }
+
+}
+class TrackDetailWarnaClickListener(val clickListener:(model: TracketailWarnaModel)->Unit){
+    fun onClick(model: TracketailWarnaModel) = clickListener(model)
 
 }

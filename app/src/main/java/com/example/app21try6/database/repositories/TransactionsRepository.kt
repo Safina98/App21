@@ -164,9 +164,13 @@ class TransactionsRepository(application: Application) {
             transSumDao.getTransactionSummariesByItemName(query,sumId,startDate,endDate,limit,offset)
         }
     }
-    suspend fun getSubProductTrans(query: String, startDate:Date?, endDate:Date?):List<TracketailWarnaModel>{
+    suspend fun getSubProductTrans(query: String,
+                                   startDate:Date?,
+                                   endDate:Date?,
+                                   limit: Int = 20,
+                                   offset: Int = 0):List<TracketailWarnaModel>{
         return withContext(Dispatchers.IO){
-            transDetailDao.getTracketailWarnaModels(query,startDate,endDate)
+            transDetailDao.getTracketailWarnaModels(query,startDate,endDate,limit,offset)
         }
     }
     suspend fun getTransactionSummaryById(id: Long):TransactionSummary{

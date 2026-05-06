@@ -28,9 +28,12 @@ class TrackViewModel(
     private val _trackWarnaList = MutableLiveData<List<TracketailWarnaModel>>()
     val trackWarnaList:LiveData<List<TracketailWarnaModel>> get() = _trackWarnaList
 
-    val _unFilteredrecyclerViewData=MutableLiveData<List<TracketailWarnaModel>>()
+    private var currentOffset = 0
+    private val pageSize = 20
+    private var isLoading = false
+    private var lastQuery = ""
 
-    val _dateRangeString = MutableLiveData<String>()
+    val _dateRangeString = MutableLiveData<String>("Pilih Tanggal")
     private val _selectedStartDate = MutableLiveData<Date?>()
     val selectedStartDate: LiveData<Date?> get() = _selectedStartDate
     //selected end date
@@ -39,6 +42,10 @@ class TrackViewModel(
 
     private var _isStartDatePickerClicked = MutableLiveData<Boolean>()
     val isStartDatePickerClicked :LiveData<Boolean>get() = _isStartDatePickerClicked
+
+    private var _navigateToTransDetail = MutableLiveData<Long?>()
+    val navigateToTransDetail :LiveData<Long?>get() = _navigateToTransDetail
+
 
     fun updateDateRangeString(startDate: Date?, endDate: Date?) {
         _dateRangeString.value = formatDateRange(startDate, endDate)
@@ -51,47 +58,45 @@ class TrackViewModel(
             //resetLogs()
         }
     }
-    //Filter data based on search query
     fun filterData(query: String?) {
         viewModelScope.launch {
-            resetLogs()
+            lastQuery = query ?: ""
+            currentOffset = 0
+            _trackWarnaList.value = emptyList()
+            if (lastQuery!="")
+            loadMore()
+        }
+    }
 
-            val list = mutableListOf<TransactionSummary>()
-            if(!query.isNullOrEmpty()) {
-               val filteredList=transRepo.getSubProductTrans(query!!,_selectedStartDate.value,_selectedEndDate.value)
-               // val listFilterByTransName= transRepo.filterTransSum(query, limit, offset,_selectedStartDate.value,_selectedEndDate.value)
-                //getTransactionCount(selectedStartDate.value,selectedEndDate.value,query)
-                //getTotalTransactionAfterDiscount(selectedStartDate.value,selectedEndDate.value,query)
-                //val distinctList =  listFilterByTransName.distinctBy { it.sum_id }
-                _trackWarnaList.value =filteredList
-            } else {
-
-                resetLogs()
-                //list.addAll(_unFilteredrecyclerViewData.value!!)
-                //_allTransactionSummary.value =list
-            }
-            Log.i("SearchBarProbs","Query: $query")
+    fun loadMore() {
+        if (isLoading) return
+        viewModelScope.launch {
+            isLoading = true
+            val newItems = transRepo.getSubProductTrans(
+                lastQuery,
+                _selectedStartDate.value,
+                _selectedEndDate.value,
+                limit = pageSize,
+                offset = currentOffset
+            )
+            val current = _trackWarnaList.value ?: emptyList()
+            _trackWarnaList.value = current + newItems
+            currentOffset += newItems.size
+            isLoading = false
         }
     }
 
     fun updateRv(){
         viewModelScope.launch {
-
-            //performDataFiltering(selectedStartDate.value, selectedEndDate.value)
-            //getTransactionCount(selectedStartDate.value, selectedEndDate.value,null)
-            //getTotalTransactionAfterDiscount(selectedStartDate.value, selectedEndDate.value,null)
+            filterData(lastQuery)
         }
     }
-    fun resetLogs() {
 
-        _trackWarnaList.value = emptyList()
-        _unFilteredrecyclerViewData.value= emptyList()
-
-    }
     //show hide date picker dialog
     fun onStartDatePickerClick(){ _isStartDatePickerClicked.value = true }
     fun onStartDatePickerClicked(){ _isStartDatePickerClicked.value = false }
-
+    fun onNavigateToTransDetail(id:Long){_navigateToTransDetail.value=id}
+    fun onNavigatedToTransDetail(){_navigateToTransDetail.value=null}
     companion object {
 
         @JvmStatic

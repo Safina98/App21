@@ -12,6 +12,9 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.R
 import com.example.app21try6.Constants
 import com.example.app21try6.databinding.FragmentTrackBinding
@@ -24,12 +27,16 @@ class TrackFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_track,container,false)
         binding.viewModel= viewModel
         binding.lifecycleOwner=this
-        val adapter = TrackWarnaAdapter(requireContext())
+        val adapter = TrackWarnaAdapter(
+            requireContext(),
+            TrackDetailWarnaClickListener{
+                viewModel.onNavigateToTransDetail(it.tSCloudId)
+            })
         viewModel.selectedStartDate.observe(viewLifecycleOwner) {}
         viewModel.selectedEndDate.observe(viewLifecycleOwner) {}
 
@@ -39,10 +46,7 @@ class TrackFragment : Fragment() {
             it?.let {
                 adapter.submitList(it)
                 adapter.notifyDataSetChanged()
-                it.forEach {
-                    Log.i("SubTrans","itemName: ${it.trans_item_name}, net:${it.qty}, date:${Constants.SIMPLE_DATE_FORMATTER.format(it.tans_detail_date)}")
-                    Log.i("SubTrans","note: ${it.sum_note},")
-                }
+
             }
         }
         viewModel.isStartDatePickerClicked.observe(viewLifecycleOwner) {
@@ -61,6 +65,25 @@ class TrackFragment : Fragment() {
                 return true
             }
         })
+        binding.trackRv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val lastVisible = layoutManager.findLastVisibleItemPosition()
+                val total = layoutManager.itemCount
+
+                // Load more when within 3 items of the bottom
+                if (dy > 0 && lastVisible >= total - 3) {
+                    viewModel.loadMore()
+                }
+            }
+        })
+        viewModel.navigateToTransDetail.observe(viewLifecycleOwner){
+            it?.let{
+                this.findNavController().navigate(TrackFragmentDirections.actionTrackFragmentToTransactionDetailFragment(it))
+                viewModel.onNavigatedToTransDetail()
+            }
+        }
         return binding.root
     }
     private fun showDatePickerDialog() {

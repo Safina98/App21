@@ -11,7 +11,8 @@ class DateTypeConverter {
     companion object {
         private const val fullDateFormat = "yyyy-MM-dd HH:mm"
         private const val simpleDateFormat = "yyyy-MM-dd"
-        private val fullFormatter = SimpleDateFormat(fullDateFormat, Locale.getDefault()).apply { isLenient = false }
+        private val fullFormatter =
+            SimpleDateFormat(fullDateFormat, Locale.getDefault()).apply { isLenient = false }
         private val simpleFormatter = SimpleDateFormat(simpleDateFormat, Locale.getDefault()).apply { isLenient = false }
 
         @JvmStatic

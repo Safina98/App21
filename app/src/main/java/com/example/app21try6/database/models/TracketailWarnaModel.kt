@@ -8,7 +8,6 @@ data class TracketailWarnaModel (
     var trans_item_name:String,
     var qty:Double,
     var tans_detail_date: Date?,
-    val sPCloudId: Long,
     var unit_qty:Double,
     var cust_name:String,
     var sum_note:String?=null,

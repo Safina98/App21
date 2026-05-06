@@ -170,11 +170,10 @@ interface TransDetailDao {
     @Query("""
     SELECT 
         d.tDCloudId,
-        d.tSCloudId,
+        d.tsCloudId,
         d.trans_item_name,
         d.qty,
         d.trans_detail_date AS tans_detail_date,
-        d.sPCloudId,
         d.unit_qty,
         d.is_cutted,
         s.cust_name,
@@ -185,8 +184,9 @@ interface TransDetailDao {
      trans_item_name LIKE '%' || :query || '%' 
     AND (:startDate IS NULL OR d.trans_detail_date >= :startDate)
              AND (:endDate IS NULL OR d.trans_detail_date <= :endDate)
+              LIMIT :limit OFFSET :offset
     """)
-    fun getTracketailWarnaModels(query: String,startDate:Date?,endDate:Date?): List<TracketailWarnaModel>
+    fun getTracketailWarnaModels(query: String,startDate:Date?,endDate:Date?,limit: Int, offset: Int): List<TracketailWarnaModel>
 
     @Query("""
         UPDATE trans_detail_table
