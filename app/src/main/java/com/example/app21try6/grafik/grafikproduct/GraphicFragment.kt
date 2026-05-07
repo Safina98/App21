@@ -117,7 +117,7 @@ class GraphicFragment : Fragment() {
         }
         viewModel.selectedStockCategorySpinner.observe(viewLifecycleOwner){ value->
             viewModel.newFilterModelList()
-            viewModel.getProductEntriesStok()
+            viewModel.getProductEntriesStok(value)
         }
         viewModel.selectedStockProductSpinner.observe(viewLifecycleOwner){
             viewModel.newFilterModelList()

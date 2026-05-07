@@ -168,6 +168,26 @@ interface TransDetailDao {
     fun getYearlyProductTrendList(category: String?,product: String?,sp:String?): List<BarChartModel>
 
     @Query("""
+       SELECT
+            COALESCE(substr(td.trans_detail_date, 1, 4), 'Unknown') AS label,
+            SUM(td.qty*td.unit_qty) AS value
+        FROM trans_detail_table td
+        JOIN trans_sum_table ts  ON td.tSCloudId = ts.tSCloudId
+        INNER JOIN customer_table cs ON ts.custId = cs.custId
+            JOIN sub_table s ON td.sPCloudId = s.sPCloudId
+            JOIN category_table c ON s.cath_code = c.categoryCloudId
+            JOIN product_table p ON s.productCloudId = p.productCloudId
+             WHERE
+              (:year IS NULL OR substr(td.trans_detail_date, 1, 4) = :year) 
+        AND (:category IS NULL OR c.category_name= :category)
+        AND (:product IS NULL OR p.product_name= :product)
+        AND (:sp IS NULL OR s.sub_name= :sp)
+      GROUP BY substr(td.trans_detail_date, 1, 4)
+    ORDER BY substr(td.trans_detail_date, 1, 4) ASC
+    """)
+    fun getCustomerCountList(year:String?,category: String?,product: String?,sp:String?): List<BarChartModel>
+
+    @Query("""
     SELECT 
         d.tDCloudId,
         d.tsCloudId,

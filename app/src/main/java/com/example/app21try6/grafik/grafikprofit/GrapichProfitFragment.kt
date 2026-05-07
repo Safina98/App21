@@ -42,7 +42,7 @@ class GrapichProfitFragment : Fragment() {
         binding.spinnerTahunPg.adapter=adapter_year
         val positionY = (binding.spinnerTahunPg.adapter as ArrayAdapter<String>).getPosition(currentYear)
         binding.spinnerTahunPg.setSelection(positionY)
-        viewModel.filterProfitModelList()
+        //viewModel.filterProfitModelList()
         val chart=binding.lineChart
         LineChartHelper.setupChart(
             chart = chart,

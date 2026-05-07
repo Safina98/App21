@@ -13,6 +13,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import com.example.app21try6.R
 import com.example.app21try6.databinding.FragmentGraphicProductTrendBinding
+import com.example.app21try6.grafik.BarChartModelRVAdapter
+import com.example.app21try6.grafik.BarChartModelRvListener
 import com.example.app21try6.grafik.GraphicViewModel
 import com.example.app21try6.grafik.LineChartHelper
 import java.util.Calendar
@@ -38,6 +40,11 @@ class GraphicProductTrendFragment : Fragment() {
         val positionY = (spinnerTahun.adapter as ArrayAdapter<String>).getPosition(currentYear)
         spinnerTahun.setSelection(positionY)
 
+        val adapter = BarChartModelRVAdapter(BarChartModelRvListener{
+
+        })
+        binding.rvChartPt.adapter=adapter
+
         val chart=binding.lineChartPt
         LineChartHelper.setupChart(
             chart = chart,
@@ -48,10 +55,10 @@ class GraphicProductTrendFragment : Fragment() {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selected = parent.getItemAtPosition(position).toString()
                 when (parent.id) {
-                    R.id.spinner_tahun_pt -> viewModel.setSelectedYearValueProfit(selected)
-                    R.id.spinner_category_pt-> viewModel.setSelectedCategoryValueStok(selected)
-                    R.id.spinner_product_pt-> viewModel.setSelectedProductValueStok(selected)
-                    R.id.spinner_sp_pt-> viewModel.setSelectedSPValue(selected)
+                    R.id.spinner_tahun_pt -> viewModel.setSelectedYearPt(selected)
+                    R.id.spinner_category_pt-> viewModel.setSelectedCategoryPt(selected)
+                    R.id.spinner_product_pt-> viewModel.setSelectedProductPt(selected)
+                    R.id.spinner_sp_pt-> viewModel.setSelectedSP(selected)
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -68,7 +75,6 @@ class GraphicProductTrendFragment : Fragment() {
             spinnerCategory.adapter = adapterCategory }
         }
         viewModel.productEntries.observe(viewLifecycleOwner){
-
             val adapterProduct =
                 ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
             spinnerProduct.adapter = adapterProduct
@@ -79,22 +85,30 @@ class GraphicProductTrendFragment : Fragment() {
             spinnerSp.adapter = adapterProduct
         }
 
-        viewModel.selectedProfitYearSpinner.observe(viewLifecycleOwner){ value->
+        viewModel.selectedYearSpinnerPt.observe(viewLifecycleOwner){ value->
             viewModel.filterProductTrend()
         }
-        viewModel.selectedStockCategorySpinner.observe(viewLifecycleOwner){value->
-            viewModel.getProductEntriesStok()
+        viewModel.selectedCategorySpinnerPt.observe(viewLifecycleOwner){value->
+            viewModel.getProductEntriesStok(value)
             viewModel.filterProductTrend()
         }
-        viewModel.selectedStockProductSpinner.observe(viewLifecycleOwner){value->
-            viewModel.getSPEntriesStok()
+        viewModel.selectedProductSpinnerPt.observe(viewLifecycleOwner){value->
+            viewModel.getSPEntriesStok(value)
             viewModel.filterProductTrend()
+            if (value!="ALL"){
+                binding.rvChartPt.visibility= View.VISIBLE
+            }
         }
-        viewModel.selectedSPpinner.observe(viewLifecycleOwner){value->
+        viewModel.selectedSPpinnerPt.observe(viewLifecycleOwner){value->
             viewModel.filterProductTrend()
         }
 
-        viewModel.profitBCModel.observe(viewLifecycleOwner){value->
+        viewModel.custCountProductLit.observe(viewLifecycleOwner){value->
+            value?.let {
+                adapter.submitList(it)
+            }
+        }
+        viewModel.productTrendBCModel.observe(viewLifecycleOwner){value->
             //use this data to create line chart
             LineChartHelper.setData(
                 chart = chart,

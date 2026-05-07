@@ -154,6 +154,11 @@ class TransactionsRepository(application: Application) {
             transDetailDao.getYearlyProductTrendList(category,product,sp)
         }
     }
+    suspend fun getCustomerProductCount(year:String?,category:String?,product:String?,sp:String?): List<BarChartModel> {
+        return  withContext(Dispatchers.IO){
+            transDetailDao.getCustomerCountList(year,category,product,sp)
+        }
+    }
 
     ///////////////////////////////////TransSum////////////////////////////////////////////////////////
     fun getTransactionSummary(id:Long): LiveData<TransactionSummary> {
