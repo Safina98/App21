@@ -169,7 +169,7 @@ interface TransDetailDao {
 
     @Query("""
        SELECT
-            COALESCE(substr(td.trans_detail_date, 1, 4), 'Unknown') AS label,
+            cs.customerBussinessName AS label,
             SUM(td.qty*td.unit_qty) AS value
         FROM trans_detail_table td
         JOIN trans_sum_table ts  ON td.tSCloudId = ts.tSCloudId
@@ -182,8 +182,8 @@ interface TransDetailDao {
         AND (:category IS NULL OR c.category_name= :category)
         AND (:product IS NULL OR p.product_name= :product)
         AND (:sp IS NULL OR s.sub_name= :sp)
-      GROUP BY substr(td.trans_detail_date, 1, 4)
-    ORDER BY substr(td.trans_detail_date, 1, 4) ASC
+      GROUP BY cs.customerBussinessName
+    ORDER BY value DESC
     """)
     fun getCustomerCountList(year:String?,category: String?,product: String?,sp:String?): List<BarChartModel>
 

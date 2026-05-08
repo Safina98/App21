@@ -95,6 +95,7 @@ class GraphicProductTrendFragment : Fragment() {
         viewModel.selectedProductSpinnerPt.observe(viewLifecycleOwner){value->
             viewModel.getSPEntriesStok(value)
             viewModel.filterProductTrend()
+            Log.i("chartprobs","product trend $value")
             if (value!="ALL"){
                 binding.rvChartPt.visibility= View.VISIBLE
             }
@@ -105,6 +106,10 @@ class GraphicProductTrendFragment : Fragment() {
 
         viewModel.custCountProductLit.observe(viewLifecycleOwner){value->
             value?.let {
+                value.forEach {
+                    Log.i("chartprobs","customer count $it")
+                }
+
                 adapter.submitList(it)
             }
         }

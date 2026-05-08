@@ -7,59 +7,66 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-            <Spinner
-                android:id="@+id/spinner_tahun_pt"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
-            <Spinner
-                android:id="@+id/spinner_category_pt"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
 
-            <Spinner
-                android:id="@+id/spinner_product_pt"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/spinner_tahun_pt"/>
-            <Spinner
-                android:id="@+id/spinner_sp_pt"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/spinner_tahun_pt"/>
+        <LinearLayout
+            android:id="@+id/main_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            tools:context=".BlankFragment">
 
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/line_chart_pt"
-        android:layout_width="match_parent"
-        android:layout_height="500dp"
-        android:layout_weight="1"
-        app:layout_constraintEnd_toStartOf="@id/rv_chart_pt"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/spinner_product_pt"
-        />
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_chart_pt"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="3dp"
-            android:visibility="invisible"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/line_chart_pt"
-            app:layout_constraintTop_toBottomOf="@id/spinner_product_pt" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Spinner
+                    android:id="@+id/spinner_tahun_pt"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+                <Spinner
+                    android:id="@+id/spinner_category_pt"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    tools:layout_editor_absoluteX="292dp" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <Spinner
+                    android:id="@+id/spinner_product_pt"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    tools:layout_editor_absoluteY="24dp" />
+                <Spinner
+                    android:id="@+id/spinner_sp_pt"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    tools:layout_editor_absoluteX="292dp"
+                    tools:layout_editor_absoluteY="24dp" />
+            </LinearLayout>
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/line_chart_pt"
+                android:layout_width="match_parent"
+                android:layout_height="500dp"
+                android:layout_weight="1"
+                tools:layout_editor_absoluteY="48dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_chart_pt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        </LinearLayout>
+
+    </ScrollView>
 
 </layout>
