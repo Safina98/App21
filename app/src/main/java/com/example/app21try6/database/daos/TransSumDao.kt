@@ -63,9 +63,7 @@ interface TransSumDao {
     WHERE 
         -- Case 1: Search by sumId (ignore date)
         (:sumId IS NOT NULL AND ts.tSCloudId = :sumId)
-        
-        OR 
-        
+        OR
         -- Case 2: Search by name (with date filter)
         (:name IS NOT NULL AND (
             ts.cust_name LIKE '%' || :name || '%'
@@ -73,7 +71,6 @@ interface TransSumDao {
         )
         AND (:startDate IS NULL OR ts.trans_date >= :startDate)
         AND (:endDate IS NULL OR ts.trans_date <= :endDate))
-        
         OR 
        
         -- Case 3: No name and no sumId → return all within date range
@@ -188,6 +185,8 @@ interface TransSumDao {
     ORDER BY value DESC
 """)
     fun getCustomerWithTotalTrans(month:String?,year:String?): List<BarChartModel>
+
+
     @Query("""
         SELECT *
         FROM trans_sum_table
@@ -200,6 +199,11 @@ interface TransSumDao {
         ORDER BY tSCloudId
     """)
     fun getTransactionSummariesWithDuplicateCloudIds(): List<TransactionSummary>
+
+
+
+
+
 
     @Query("UPDATE trans_sum_table SET needs_syncs = 0 WHERE tSCloudId = :cloudId")
     suspend fun markAsSynced(cloudId: Long)

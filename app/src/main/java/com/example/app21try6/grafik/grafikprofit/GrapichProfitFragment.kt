@@ -37,11 +37,17 @@ class GrapichProfitFragment : Fragment() {
         binding  = DataBindingUtil.inflate(inflater,R.layout.fragment_grapich_profit,container,false)
         layout = binding.mainLayout
         binding.lifecycleOwner = this
+        //getCustomerSpinnerEntries
+
+
+        val spinnerTahun = binding.spinnerTahunPg
+        val spinnerCustomer = binding.spinnerCustomerPg
+
         val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
         val adapter_year = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, resources.getStringArray(R.array.tahun))
-        binding.spinnerTahunPg.adapter=adapter_year
-        val positionY = (binding.spinnerTahunPg.adapter as ArrayAdapter<String>).getPosition(currentYear)
-        binding.spinnerTahunPg.setSelection(positionY)
+        spinnerTahun.adapter=adapter_year
+        val positionY = (spinnerTahun.adapter as ArrayAdapter<String>).getPosition(currentYear)
+        spinnerTahun.setSelection(positionY)
         //viewModel.filterProfitModelList()
         val chart=binding.lineChart
         LineChartHelper.setupChart(
@@ -56,16 +62,30 @@ class GrapichProfitFragment : Fragment() {
                 val selected = parent.getItemAtPosition(position).toString()
                 when (parent.id) {
                     R.id.spinner_tahun_pg -> viewModel.setSelectedYearValueProfit(selected)
+                    R.id.spinner_customer_pg -> viewModel.setSelectedCustomerValueProfit(selected)
 
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
-        binding.spinnerTahunPg.onItemSelectedListener = spinnerListener
+        spinnerTahun.onItemSelectedListener = spinnerListener
+        spinnerCustomer.onItemSelectedListener=spinnerListener
        // viewModel.setSelectedYearValueProfit(currentYear)
+
+        viewModel.customerEntries.observe(viewLifecycleOwner){
+
+                val adapterCustomer =
+                    ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
+               spinnerCustomer.adapter = adapterCustomer
+
+        }
         viewModel.selectedProfitYearSpinner.observe(viewLifecycleOwner){ value->
            viewModel.filterProfitModelList()
         }
+        viewModel.selectedCustomerProfit.observe(viewLifecycleOwner){
+            viewModel.filterProfitModelList()
+        }
+
         viewModel.profitBCModel.observe(viewLifecycleOwner){value->
            //use this data to create line chart
             LineChartHelper.setData(

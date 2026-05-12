@@ -1,7 +1,6 @@
 package com.example.app21try6.grafik.grafikcustomer
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,13 +11,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import com.example.app21try6.R
 import com.example.app21try6.databinding.FragmentGraphicCustomerBinding
-import com.example.app21try6.formatRupiah
 import com.example.app21try6.grafik.BarChartModelRVAdapter
 import com.example.app21try6.grafik.BarChartModelRvListener
 import com.example.app21try6.grafik.BarChartUtils
-import com.example.app21try6.transaction.transactionall.AllTransClickListener
-import com.example.app21try6.transaction.transactionall.AllTransactionAdapter
-import com.example.app21try6.transaction.transactionall.CheckBoxListenerTransAll
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Calendar
@@ -52,8 +47,8 @@ class GraphicCustomerFragment : Fragment() {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selected = parent.getItemAtPosition(position).toString()
                 when (parent.id) {
-                    R.id.spinner_bulan_cg -> viewModel.setSelectedBulan(selected)
-                    R.id.spinner_tahun_cg -> viewModel.setSelectedYear(selected)
+                    R.id.spinner_bulan_cg -> viewModel.setSelectedBulanC(selected)
+                    R.id.spinner_tahun_cg -> viewModel.setSelectedYearC(selected)
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -61,15 +56,15 @@ class GraphicCustomerFragment : Fragment() {
 
         binding.spinnerTahunCg.onItemSelectedListener = spinnerListener
         binding.spinnerBulanCg.onItemSelectedListener = spinnerListener
-        viewModel.setSelectedYear(currentYear)
-        viewModel.setSelectedBulan(currentMonth)
+        viewModel.setSelectedYearC(currentYear)
+        viewModel.setSelectedBulanC(currentMonth)
 
 
         viewModel.rvData.observe(viewLifecycleOwner){value->
 
         }
 
-        viewModel.barChartModel.observe(viewLifecycleOwner){value->
+        viewModel.customerBarChartModel.observe(viewLifecycleOwner){ value->
             rvAdapter.submitList(value)
             BarChartUtils.setup(
                 barChart = binding.barChartCg,

@@ -108,11 +108,12 @@ interface TransDetailDao {
             SUM(ts.total_after_discount) AS value
         FROM trans_sum_table ts
         WHERE
-       (:year IS NULL OR substr(ts.trans_date, 1, 4) = :year)
+        (:year IS NULL OR substr(ts.trans_date, 1, 4) = :year)
+        AND (:customerName is null OR ts.cust_name= :customerName)
       GROUP BY substr(ts.trans_date, 6, 2)
     ORDER BY substr(ts.trans_date, 6, 2) ASC
     """)
-    fun getFilteredProfitBarChartList(year:String?): List<BarChartModel>
+    fun getFilteredProfitBarChartList(year:String?,customerName:String?): List<BarChartModel>
 
     @Query("""
         SELECT

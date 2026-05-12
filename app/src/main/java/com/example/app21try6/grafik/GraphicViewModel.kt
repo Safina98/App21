@@ -17,6 +17,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.app21try6.database.models.BarChartModel
 import com.example.app21try6.database.repositories.BookkeepingRepository
+import com.example.app21try6.database.repositories.DiscountRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.getMonthNumber
@@ -24,6 +25,7 @@ import kotlinx.coroutines.launch
 
 class GraphicViewModel(
     private val stockRepo:StockRepositories,
+    private val custRepo: DiscountRepository,
     private val transRepo:TransactionsRepository,
     application: Application
                       ): AndroidViewModel(application) {
@@ -36,6 +38,11 @@ class GraphicViewModel(
 
     private val _productTrendBCModel = MutableLiveData<List<BarChartModel>>()
     val productTrendBCModel: LiveData<List<BarChartModel>> get() = _productTrendBCModel
+
+    private val _customerTrendBCModel = MutableLiveData<List<BarChartModel>>()
+    val customerTrendBCModel: LiveData<List<BarChartModel>> get() = _customerTrendBCModel
+
+
 
     private val _custCountProductList = MutableLiveData<List<BarChartModel>>()
     val custCountProductLit: LiveData<List<BarChartModel>> get() = _custCountProductList
@@ -95,10 +102,23 @@ class GraphicViewModel(
 
 
 
+    //selected customer
+    private val _selectedCustomerProfit= MutableLiveData<String>("ALL")
+    val selectedCustomerProfit: LiveData<String> get() = _selectedCustomerProfit
+    //customer list for spinner
+    private val  _customerEntries = MutableLiveData<List<String>>()
+    val customerEntries: LiveData<List<String>> get() = _customerEntries
+
+
+
+
+
+
     init {
         getKategoriEntries()
 
         newFilterModelList()
+        getCustomerEntries()
     }
     @RequiresApi(Build.VERSION_CODES.O)
 
@@ -111,6 +131,13 @@ class GraphicViewModel(
             _categoryEntries.value = newData
         }
     }
+    fun getCustomerEntries(){
+        viewModelScope.launch {
+            val newData = custRepo.getAllCustomerNameList()
+            _customerEntries.value = newData
+        }
+    }
+
     // populate product entries
     fun getProductEntriesStok(value:String?){
         viewModelScope.launch {
@@ -171,7 +198,8 @@ class GraphicViewModel(
         viewModelScope.launch {
             Log.i("chartprobs","profit")
             val year = _selectedProfitYearSpinner.value.takeIf { it != "ALL" } // null if "ALL"
-            val list=   transRepo.getFilteredProfitBarChart(year)
+            val customer=_selectedCustomerProfit.value.takeIf { it  != "ALL"}
+            val list=   transRepo.getFilteredProfitBarChart(year,customer)
             val dividedList = list.map { it.copy(value = it.value / 1000000.0) }
             _profitBCModel.value=dividedList
         }
@@ -203,19 +231,17 @@ class GraphicViewModel(
                 val list= transRepo.getCustomerProductCount(year,category,product,sp)
                _custCountProductList.value=list
            }
-
-
         }
     }
-
 
     //set selected spinner tahun
     fun setSelectedYearValueProfit(selectedItem:String){
         _selectedProfitYearSpinner.value = selectedItem
     }
+
     //set selecter month spinner
-    fun setSelectedMonthValueProfit(selectedItem:String){
-        _selectedProfitMonthSpinner.value = selectedItem
+    fun setSelectedCustomerValueProfit(selectedItem:String){
+        _selectedCustomerProfit.value = selectedItem
     }
 
     fun setSelectedSP(selectedItem: String){
@@ -231,8 +257,6 @@ class GraphicViewModel(
         _selectedYearSpinnerPt.value = selectedItem
     }
 
-
-
     companion object {
 
         @JvmStatic
@@ -247,10 +271,12 @@ class GraphicViewModel(
                 // Create a SavedStateHandle for this ViewModel from extras
                 val stockRepo=StockRepositories(application)
                 val transRepo=TransactionsRepository(application)
+                val custRepo= DiscountRepository(application)
                 val bookRepo=BookkeepingRepository(application)
                 val savedStateHandle = extras.createSavedStateHandle()
                 return GraphicViewModel(
                     stockRepo,
+                    custRepo,
                     transRepo,
                     application
                 ) as T

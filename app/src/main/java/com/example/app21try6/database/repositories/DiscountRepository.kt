@@ -154,6 +154,13 @@ class DiscountRepository(
             customerDao.selectAllCustomerTable()
         }
     }
+    suspend fun getAllCustomerNameList(): List<String> {
+        return withContext(Dispatchers.IO) {
+           val list= customerDao.selectAllCustomerNameList()
+            val modifiedList = listOf("ALL") + list // Create a new list with the added value
+            modifiedList // Return the modified lis
+        }
+    }
     suspend fun getCustomersWithDuplicateId(): List<CustomerTable> {
         return withContext(Dispatchers.IO) {
             customerDao.getCustomersWithDuplicateCloudId()

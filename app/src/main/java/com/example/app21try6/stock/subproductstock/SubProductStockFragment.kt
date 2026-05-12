@@ -48,17 +48,12 @@ class SubProductStockFragment : Fragment() {
         val transRepo=TransactionsRepository(application)
         val id = arguments?.let { SubProductStockFragmentArgs.fromBundle(it).productId }
         (activity as AppCompatActivity).supportActionBar?.title = id?.get(4)
-        //id?.set(4,"0")
         val productId=id?.get(0)?.toLong()
         val brandId=id?.get(1)?.toLong()
         val ctgId=id?.get(2)?.toLong()
         val tSId=id?.get(3)?.toLong()
-        val productName=id?.get(4).toString()
         val sPId=id?.get(5)?.toLong()
 
-
-        Log.i("SUBPROBLEM","id[0] ${id?.get(0)}  id[1] ${id?.get(1)}  id[2] ${id?.get(2)}  id[3] ${id?.get(3)} id[4] ${id?.get(4)} ")
-      //  val id_ = id?.map { it.toInt() }?.toTypedArray()
 
        val viewModelFactory = SubViewModelFactory(stockRepo,transRepo,productId!!,brandId!!,ctgId!!,tSId!!, sPId!!,0L,application)
         binding.lifecycleOwner =this
@@ -67,7 +62,6 @@ class SubProductStockFragment : Fragment() {
         binding.reset.setOnClickListener {
             DialogUtils.showDeleteDialog(requireContext(),this, viewModel, SubProduct(), { vm, item -> (vm as SubViewModel).resetAllSubProductStock() })
         }
-
         val isSubIdExist = sPId
         if (isSubIdExist!=-1L){
             if (binding.rvSubDetail.visibility==View.GONE){
@@ -160,13 +154,11 @@ class SubProductStockFragment : Fragment() {
         }
         viewModel.subProductFromDb.observe(viewLifecycleOwner){
             it?.let {
-                Log.i("SubList","$it")
                 adapter.submitList(it.sortedBy { it.sub_name })
                 adapter.notifyDataSetChanged()
             }
         }
         viewModel.brandId.observe(viewLifecycleOwner){
-            Log.i("ShowSubProbs","BrandId: $it")
         }
 
         viewModel.selectedSubProduct.observe(viewLifecycleOwner){
@@ -178,7 +170,6 @@ class SubProductStockFragment : Fragment() {
 
         viewModel.detailWarnaList.observe(viewLifecycleOwner){it?.let {
             detailWarnaAdapter.submitList(it)
-
             }
         }
 
@@ -230,15 +221,10 @@ class SubProductStockFragment : Fragment() {
             if (binding.rvSubProduct.visibility==View.GONE) {
                 viewModel.toggleSelectedSubProductId(null)
                 setDetailRvVisibility(false)
-
             }
         }
-        // Inflate the layout for this fragment
-
         return binding.root
     }
-
-
 
     private fun showDialog(subProduct: SubProduct, i: Int, viewModel: SubViewModel) {
         val builder = AlertDialog.Builder(context)
@@ -316,6 +302,8 @@ class SubProductStockFragment : Fragment() {
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
 
         dialog.show()
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }
     fun setDetailRvVisibility(isVisible:Boolean){
         if (isVisible){

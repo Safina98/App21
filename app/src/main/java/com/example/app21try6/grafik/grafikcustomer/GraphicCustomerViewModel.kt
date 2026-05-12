@@ -26,8 +26,8 @@ class GraphicCustomerViewModel (
 
 
 
-    private val _barChartModel= MutableLiveData<List<BarChartModel>>()
-    val barChartModel: LiveData<List<BarChartModel>>  get() = _barChartModel
+    private val _customerBarChartModel= MutableLiveData<List<BarChartModel>>()
+    val customerBarChartModel: LiveData<List<BarChartModel>>  get() = _customerBarChartModel
 
     private val _rvData=MutableLiveData<List<TransactionSummary>>()
     val rvData:LiveData<List<TransactionSummary>> get() = _rvData
@@ -36,15 +36,18 @@ class GraphicCustomerViewModel (
     private val _selectedBulanSpinner = MutableLiveData<String>("ALL")
 
 
-    fun setSelectedYear(year: String) {
+
+
+    fun setSelectedYearC(year: String) {
         _selectedYearSpinner.value = year
         filterCustomer(_selectedBulanSpinner.value ?: "ALL", year)
     }
 
-    fun setSelectedBulan(bulan: String) {
+    fun setSelectedBulanC(bulan: String) {
         _selectedBulanSpinner.value = bulan
         filterCustomer(bulan, _selectedYearSpinner.value ?: "ALL")
     }
+
 
     fun filterCustomer(selectedBulan: String, selectedTahun: String) {
         viewModelScope.launch {
@@ -53,9 +56,15 @@ class GraphicCustomerViewModel (
             val result = transRepo.getCustomerWithTotalTrans(month, year)
             val devidedList=result.map { it.copy(value = it.value/1000000) }
             //_custWithTotalTrans.value = result
-            _barChartModel.value=devidedList
+            _customerBarChartModel.value=devidedList
         }
 
+    }
+
+    fun filterCustomerTrend(selectedTahun:String){
+        viewModelScope.launch {
+
+        }
     }
 
 

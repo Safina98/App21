@@ -31,6 +31,9 @@ interface CustomerDao {
     @Query("SELECT * FROM customer_table")
     fun selectAllCustomerTable(): List<CustomerTable>
 
+    @Query("SELECT customerBussinessName FROM customer_table")
+    fun selectAllCustomerNameList(): List<String>
+
 
     @Query("SELECT custId FROM customer_table WHERE customerBussinessName=:name")
     fun getIdByName(name:String):Int?
