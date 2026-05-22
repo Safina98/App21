@@ -118,9 +118,8 @@ class StatementHsFragment : Fragment() {
         binding.ilPrice.hint="Lokasi"
         binding.ilCapital.hint="Alamat"
         binding.textDiscount.visibility=View.GONE
-        binding.textCapital2.visibility=View.GONE
-        binding.defaultNet.visibility=View.GONE
-        binding.purchaseUnit.visibility=View.GONE
+
+
         // Create the dialog using AlertDialog.Builder
         if (customerTable!=null){
             tvName.setText( customerTable.customerBussinessName)

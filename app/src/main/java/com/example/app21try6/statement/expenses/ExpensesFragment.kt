@@ -253,14 +253,7 @@ class ExpensesFragment : Fragment() {
         val textExpenseAmmount = dialogBinding.textUpdatePrice
         val textExpensesDate = dialogBinding.textCapital
         val textExpensesCategory = dialogBinding.textDiscount
-        dialogBinding.lblId.visibility = View.GONE
-        dialogBinding.textCapital2.visibility = View.GONE
-        dialogBinding.defaultNet.visibility = View.GONE
-        dialogBinding.ilCapital2.visibility = View.GONE
-        dialogBinding.ilDefaultNet.visibility = View.GONE
-        dialogBinding.ilPurchaseUnit.visibility=View.GONE
-        dialogBinding.ilPurchasePrice.visibility=View.GONE
-        dialogBinding.ilAlternatePrice.visibility=View.GONE
+
         dialogBinding.ilKet.hint = "Nama Pengeluaran"
         dialogBinding.ilPrice.hint = "Jumlah"
         dialogBinding.ilCapital.hint = "Tanggal"
@@ -318,6 +311,7 @@ class ExpensesFragment : Fragment() {
             expenses?.expense_ammount = expenseAmmount
             expenses?.date = SimpleDateFormat(Constants.DETAILED_DATE_FORMAT, Locale.getDefault()).parse(expensesDate) ?: Date()
             val expenseCatName = textExpensesCategory.text.toString().uppercase().trim()
+            expenses?.expense_category_name = expenseCatName
             if (expenses == null) {
                 viewModel.insertExpense(expenseName, expenseAmmount, SimpleDateFormat(
                     Constants.DETAILED_DATE_FORMAT, Locale.getDefault()).parse(expensesDate)?: Date(), expenseCatName)
