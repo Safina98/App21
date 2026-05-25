@@ -2,54 +2,32 @@ package com.example.app21try6.statement
 
 import android.app.Application
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.app21try6.database.daos.CustomerDao
 import com.example.app21try6.database.tables.CustomerTable
-import com.example.app21try6.database.daos.DiscountDao
 import com.example.app21try6.database.tables.DiscountTable
-import com.example.app21try6.database.tables.ExpenseCategory
-import com.example.app21try6.database.daos.ExpenseCategoryDao
-import com.example.app21try6.database.daos.ExpenseDao
-import com.example.app21try6.database.tables.Expenses
-import com.example.app21try6.database.daos.TransDetailDao
-import com.example.app21try6.database.daos.TransSumDao
-import com.example.app21try6.database.tables.Product
-import com.example.app21try6.formatRupiah
-import com.example.app21try6.getMonthNumber
-import com.example.app21try6.statement.expenses.tagg
-import com.example.app21try6.stock.brandstock.CategoryModel
-import kotlinx.coroutines.Dispatchers
+import com.example.app21try6.database.repositories.DiscountRepository
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import java.util.UUID
+
 @RequiresApi(Build.VERSION_CODES.O)
 class StatementHSViewModel(application: Application,
-                           val discountDao: DiscountDao,
-                           val customerDao: CustomerDao,
-                           val expenseDao: ExpenseDao,
-                           val expenseCategoryDao: ExpenseCategoryDao,
-                           val transDetailDao: TransDetailDao,
-                           val transSumDao: TransSumDao
+                           val discountRepo: DiscountRepository
 
     ):AndroidViewModel(application) {
 
-    val allDiscountFromDB= discountDao.getAllDiscount()
-    val allCustomerFromDb=customerDao.allCustomer()
+    val allDiscountFromDB= discountRepo.getAllDiscount()
+
+    val allCustomerFromDb=discountRepo.getAllCustomers()
+
+    val allCustomer=discountRepo.getAllCustomersFlow()
 
     var id = 0
-
-
-
     val isAddExpense=MutableLiveData<Boolean>(true)
 
    ////////////////////////////////////Expenses/////////////////////////////////////////////////
@@ -73,14 +51,22 @@ class StatementHSViewModel(application: Application,
     fun insertCustomer(name:String?,businessName:String,location:String?,address:String?,level:String?,tag1:String?){
         viewModelScope.launch {
             val customerTable=populateCustomer(null,name, businessName, location, address, level, tag1)
-            insertCustomerToDB(customerTable)
+            discountRepo.insertCustomerToDB(customerTable)
+
+
         }
     }
     fun updateCustomer(id:Int?,name:String?,businessName:String,location:String?,address:String?,level:String?,tag1:String?){
         viewModelScope.launch {
             val customerTable=populateCustomer(id, name, businessName, location, address, level, tag1)
-            Log.i("CUSTPROBS","$customerTable")
-            udpateCustomerToDB(customerTable)
+            discountRepo.updateCustomerToDB(customerTable)
+
+        }
+    }
+    fun updateCustomer(customerTable: CustomerTable){
+        viewModelScope.launch {
+            discountRepo.updateCustomerToDB(customerTable)
+
         }
     }
     fun populateCustomer(id:Int?,name:String?,businessName:String,location:String?,address:String?,level:String?,tag1:String?): CustomerTable {
@@ -100,14 +86,14 @@ class StatementHSViewModel(application: Application,
     fun insertDiscount(value:Double,name:String,minQty:Double?,tipe:String,location:String){
         viewModelScope.launch {
             val discountTable=populateDiscount(null,value,name, minQty, tipe, location)
-            insertDiscountToDB(discountTable)
-            Log.i("Disc","$allDiscountFromDB")
+            discountRepo.insertDiscount(discountTable)
+
         }
     }
     fun updateDiscount(id:Int,value:Double,name:String,minQty:Double?,tipe:String,location:String){
         viewModelScope.launch {
             val discountTable=populateDiscount(id,value,name, minQty, tipe, location)
-            updateDiscountFromDB(discountTable)
+           discountRepo.updateDiscountFromDB(discountTable)
         }
     }
     fun populateDiscount(id:Int?,value:Double,name:String,minQty:Double?,tipe:String,location:String): DiscountTable {
@@ -124,51 +110,10 @@ class StatementHSViewModel(application: Application,
         return discountTable
     }
     fun deleteDiscountTable(id:Int){viewModelScope.launch {
-        deleteDiscountFromDB(id) }
+        discountRepo.deleteDiscountFromDB(id) }
     }
     fun deleteCustomerTable(customerTable: CustomerTable){viewModelScope.launch {
-        deleteCustomerToDB(customerTable) }
-    }
-    private suspend fun insertDiscountToDB(discountTable: DiscountTable){
-        withContext(Dispatchers.IO){
-            discountDao.insert(discountTable)
-        }
-    }
-    private suspend fun deleteDiscountFromDB(id:Int){
-        withContext(Dispatchers.IO){
-            discountDao.delete(id)
-        }
-    }
-    private suspend fun updateDiscountFromDB(discountTable: DiscountTable){
-        withContext(Dispatchers.IO){
-            discountDao.update(discountTable)
-        }
-    }
-    private suspend fun insertCustomerToDB(customerTable: CustomerTable){
-        withContext(Dispatchers.IO){
-            customerDao.insert(customerTable)
-        }
-    }
-    private suspend fun udpateCustomerToDB(customerTable: CustomerTable){
-        withContext(Dispatchers.IO){
-            customerDao.update(customerTable)
-        }
-    }
-    private suspend fun deleteCustomerToDB(customerTable: CustomerTable){
-        withContext(Dispatchers.IO){
-            customerDao.delete(customerTable)
-        }
-    }
-    private suspend fun insertExpense(expenses: Expenses){
-        withContext(Dispatchers.IO){
-            expenseDao.insert(expenses)
-        }
-    }
-    //moved
-    private suspend fun updateExpenseToDao(expenses: Expenses){
-        withContext(Dispatchers.IO){
-            expenseDao.update(expenses)
-        }
+        discountRepo.deleteCustomerToDB(customerTable) }
     }
 
 }

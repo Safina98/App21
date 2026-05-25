@@ -18,6 +18,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.app21try6.R
 import com.example.app21try6.database.tables.CustomerTable
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.database.repositories.DiscountRepository
+import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentStatementHsBinding
 import com.example.app21try6.databinding.PopUpDiscBinding
 import com.example.app21try6.databinding.PopUpUpdateProductDialogBinding
@@ -34,13 +36,11 @@ class StatementHsFragment : Fragment() {
         // Inflate the layout for this fragment
         binding =DataBindingUtil.inflate(inflater,R.layout.fragment_statement_hs,container,false)
         val application= requireNotNull(this.activity).application
-        val dataSource1 = VendibleDatabase.getInstance(application).discountDao
-        val dataSource2 = VendibleDatabase.getInstance(application).customerDao
-        val dataSource3 = VendibleDatabase.getInstance(application).expenseDao
-        val dataSource4 = VendibleDatabase.getInstance(application).expenseCategoryDao
-        val dataSource5 = VendibleDatabase.getInstance(application).transDetailDao
-        val dataSource6 = VendibleDatabase.getInstance(application).transSumDao
-        val viewModelFactory = StatementHSViewModelFactory(application,dataSource1,dataSource2,dataSource3,dataSource4,dataSource5,dataSource6)
+
+        val discountRepo= DiscountRepository(application)
+        val viewModelFactory = StatementHSViewModelFactory(application,
+            discountRepo)
+
         viewModel = ViewModelProvider(this,viewModelFactory).get(StatementHSViewModel::class.java)
         binding.viewModel=viewModel
         val adapter = DiscountAdapter(
@@ -52,17 +52,17 @@ class StatementHsFragment : Fragment() {
                 DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as StatementHSViewModel).deleteDiscountTable(it.id!!) })
             })
 
-        val adapterCustomer = CustomerAdapter(
-            CustomerListener {
-                showCustomerDialog(it)
-            },
-            CustomerLongListener {
-
-            },
-            CustomerDelListener {
-                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as StatementHSViewModel).deleteCustomerTable(item as CustomerTable) })
-            }
-        )
+//        val adapterCustomer = CustomerAdapter(
+//            CustomerListener {
+//                showCustomerDialog(it)
+//            },
+//            CustomerLongListener {
+//
+//            },
+//            CustomerDelListener {
+//                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as StatementHSViewModel).deleteCustomerTable(item as CustomerTable) })
+//            }
+//        )
         binding.btnAddDiscount.setOnClickListener {
             showDiscountDialog(null)
         }
@@ -71,7 +71,7 @@ class StatementHsFragment : Fragment() {
         }
         val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
         binding.rvDisc.adapter = adapter
-        binding.rvCust.adapter=adapterCustomer
+       // binding.rvCust.adapter=adapterCustomer
         binding.rvDisc.addItemDecoration(dividerItemDecoration)
         binding.rvCust.addItemDecoration(dividerItemDecoration)
         viewModel.allDiscountFromDB.observe(viewLifecycleOwner, Observer {
@@ -79,8 +79,8 @@ class StatementHsFragment : Fragment() {
             adapter.notifyDataSetChanged()
         })
         viewModel.allCustomerFromDb.observe(viewLifecycleOwner, Observer {
-            adapterCustomer.submitList(it.sortedBy { it.customerBussinessName })
-            adapter.notifyDataSetChanged()
+          //  adapterCustomer.submitList(it.sortedBy { it.customerBussinessName })
+           // adapter.notifyDataSetChanged()
         })
         binding.searchCustomer?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -93,7 +93,7 @@ class StatementHsFragment : Fragment() {
                             val filteredList = items.filter { item ->
                                 item.customerBussinessName.contains(query, ignoreCase = true)
                             }
-                            adapterCustomer.submitList(filteredList)
+                            //adapterCustomer.submitList(filteredList)
                         }
                     })
                 }

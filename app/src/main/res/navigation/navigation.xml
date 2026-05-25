@@ -277,5 +277,9 @@
         android:id="@+id/inputUpdateProduct"
         android:name="com.example.app21try6.stock.InputUpdateProduct"
         android:label="InputUpdateProduct" />
+    <fragment
+        android:id="@+id/customerFragment"
+        android:name="com.example.app21try6.statement.customer.CustomerFragment"
+        android:label="Pelanggan" />
 
 </navigation>

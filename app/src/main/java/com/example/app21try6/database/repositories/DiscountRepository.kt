@@ -8,7 +8,9 @@ import com.example.app21try6.database.tables.CustomerTable
 import com.example.app21try6.database.tables.DiscountTable
 import com.example.app21try6.database.tables.DiscountTransaction
 import com.example.app21try6.database.tables.Payment
+import com.example.app21try6.statement.DiscountAdapterModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 class DiscountRepository(
@@ -20,12 +22,30 @@ class DiscountRepository(
     private val discountDao=VendibleDatabase.getInstance(application).discountDao
     private val paymentDao=VendibleDatabase.getInstance(application).paymentDao
 
+    suspend fun insertDiscount(discountTable: DiscountTable){
+        withContext(Dispatchers.IO){
+            discountDao.insert(discountTable)
+        }
+    }
+    suspend fun deleteDiscountFromDB(id:Int){
+        withContext(Dispatchers.IO){
+            discountDao.delete(id)
+        }
+    }
+
+    suspend fun updateDiscountFromDB(discountTable: DiscountTable){
+        withContext(Dispatchers.IO){
+            discountDao.update(discountTable)
+        }
+    }
     fun getAllDicountName(): LiveData<List<String>> {
         return discountDao.getAllDiscountName()
     }
     suspend fun getAllDicountNameList(): List<DiscountTable> {
         return withContext(Dispatchers.IO){ discountDao.getAllDiscountList()}
     }
+
+    fun getAllDiscount(): LiveData<List<DiscountAdapterModel>> { return discountDao.getAllDiscount()}
 
     suspend fun getDiscountNameById(id:Int?):String?{
         return withContext(Dispatchers.IO){discountDao.getDiscountNameById(id)}
@@ -115,6 +135,7 @@ class DiscountRepository(
         }
     }
 
+
     suspend fun assignCloudIdToPaymentTable(cloudId: Long, id: Int){
         withContext(Dispatchers.IO){
             paymentDao.assignPaymentCloudID(cloudId, id)
@@ -131,6 +152,9 @@ class DiscountRepository(
     //..................................CustomerDao.............................................../
     fun getAllCustomers():LiveData<List<CustomerTable>>{
         return customerDao.allCustomer()
+    }
+    fun getAllCustomersFlow(): Flow<List<CustomerTable>>{
+        return customerDao.allCustomerFlow()
     }
 
     suspend fun getCustomerByName(name:String):CustomerTable?{
@@ -164,6 +188,22 @@ class DiscountRepository(
     suspend fun getCustomersWithDuplicateId(): List<CustomerTable> {
         return withContext(Dispatchers.IO) {
             customerDao.getCustomersWithDuplicateCloudId()
+        }
+    }
+
+    suspend fun insertCustomerToDB(customerTable: CustomerTable){
+        withContext(Dispatchers.IO){
+            customerDao.insert(customerTable)
+        }
+    }
+    suspend fun updateCustomerToDB(customerTable: CustomerTable){
+        withContext(Dispatchers.IO){
+            customerDao.update(customerTable)
+        }
+    }
+    suspend fun deleteCustomerToDB(customerTable: CustomerTable){
+        withContext(Dispatchers.IO){
+            customerDao.delete(customerTable)
         }
     }
 

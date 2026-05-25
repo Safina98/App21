@@ -9,21 +9,20 @@ import com.example.app21try6.database.daos.ExpenseCategoryDao
 import com.example.app21try6.database.daos.ExpenseDao
 import com.example.app21try6.database.daos.TransDetailDao
 import com.example.app21try6.database.daos.TransSumDao
+import com.example.app21try6.database.repositories.DiscountRepository
+import com.example.app21try6.database.repositories.TransactionsRepository
 
 class StatementHSViewModelFactory(private val application: Application,
-                                  private val discountDao: DiscountDao,
-                                  private val customerDao: CustomerDao,
-                                  private val expenseDao: ExpenseDao,
-                                  private val expenseCategoryDao: ExpenseCategoryDao,
-                                  val transDetailDao: TransDetailDao,
-                                  val transSumDao: TransSumDao
+
+                                  private val discountRepository: DiscountRepository
 
 
                                           ): ViewModelProvider.Factory{
     @Suppress("unchecked_cast")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(StatementHSViewModel::class.java)) {
-            return StatementHSViewModel(application,discountDao,customerDao,expenseDao,expenseCategoryDao,transDetailDao,transSumDao) as T
+            return StatementHSViewModel(application,
+                discountRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

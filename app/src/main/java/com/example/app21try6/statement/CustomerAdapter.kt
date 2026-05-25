@@ -3,31 +3,45 @@ package com.example.app21try6.statement
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.database.tables.CustomerTable
 import com.example.app21try6.databinding.ItemListCustomerBinding
+import com.example.app21try6.statement.customer.CustomerItemView
 
 class CustomerAdapter(
     val customerListener:CustomerListener,
     val longListener: CustomerLongListener,
     val delListener: CustomerDelListener
 ): ListAdapter<CustomerTable, CustomerAdapter.MyViewHolder>(CustomerDiffCallback()){
-    class MyViewHolder private constructor(val binding: ItemListCustomerBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(item: CustomerTable, customerListener: CustomerListener, longListener: CustomerLongListener, delListener: CustomerDelListener){
-            binding.item=item
-            binding.delListener=delListener
-            binding.clickListener=customerListener
-            
-            binding.executePendingBindings()
-        }
+//    class MyViewHolder private constructor(val binding: ItemListCustomerBinding): RecyclerView.ViewHolder(binding.root){
+//        fun bind(item: CustomerTable, customerListener: CustomerListener, longListener: CustomerLongListener, delListener: CustomerDelListener){
+//            binding.item=item
+//            binding.delListener=delListener
+//            binding.clickListener=customerListener
+//
+//            binding.executePendingBindings()
+//        }
+//        companion object{
+//            fun from(parent: ViewGroup): MyViewHolder {
+//                val layoutInflater = LayoutInflater.from(parent.context)
+//                val binding = ItemListCustomerBinding.inflate(layoutInflater,parent,false)
+//                return MyViewHolder(binding)
+//            }
+//        }
+//    }
+    class MyViewHolder(
+    val composeView: ComposeView
+    ) : RecyclerView.ViewHolder(
+    composeView
+    )
+    {
         companion object{
-            fun from(parent: ViewGroup): MyViewHolder {
-                val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = ItemListCustomerBinding.inflate(layoutInflater,parent,false)
-                return MyViewHolder(binding)
-            }
+
         }
     }
 
@@ -35,11 +49,25 @@ class CustomerAdapter(
         parent: ViewGroup,
         viewType: Int
     ): CustomerAdapter.MyViewHolder {
-        return MyViewHolder.from(parent)
+        return MyViewHolder(ComposeView(parent.context).apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+        })
     }
 
+
     override fun onBindViewHolder(holder: CustomerAdapter.MyViewHolder, position: Int) {
-        holder.bind(getItem(position),customerListener,longListener,delListener)
+       // holder.bind(getItem(position),customerListener,longListener,delListener)
+        holder.composeView.setContent {
+            MaterialTheme {
+                CustomerItemView(
+                    item = getItem(position),
+                    customerListener,
+                     delListener
+                )
+            }
+        }
     }
 
 }

@@ -9,6 +9,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.app21try6.database.tables.CustomerTable
 import com.example.app21try6.database.tables.Product
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CustomerDao {
@@ -43,6 +44,9 @@ interface CustomerDao {
 
     @Query("SELECT * FROM customer_table")
     fun allCustomer():LiveData<List<CustomerTable>>
+
+    @Query("SELECT * FROM customer_table")
+    fun allCustomerFlow(): Flow<List<CustomerTable>>
 
     @Query("""
     SELECT *

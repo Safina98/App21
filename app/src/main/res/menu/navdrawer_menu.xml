@@ -28,6 +28,10 @@
         android:icon="@drawable/manage"
         android:title="Manage"/>
     <item
+        android:id="@+id/customerFragment"
+        android:icon="@drawable/outline_person_24"
+        android:title="Pelanggan" />
+    <item
         android:id="@+id/expensesFragment"
         android:icon="@drawable/pengeluaran"
         android:title="Pengeluaran"/>

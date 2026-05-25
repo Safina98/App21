@@ -176,12 +176,15 @@ class GraphicViewModel(
             val month = getMonthNumber(_selectedStockMonthSpinner.value)            // null if "ALL"
             val year = _selectedStockYearSpinner.value.takeIf { it != "ALL" } // null if "ALL"
             val category=_selectedStockCategorySpinner.value.takeIf { it != "ALL" } // null if "ALL"
-            val product=_selectedStockProductSpinner.value.takeIf { it!="Off" }
+            val product=_selectedStockProductSpinner.value.takeIf { it!="ALL" }
 
 
             val list = if (product ==null){
                 transRepo.getFilteredProductBarChart(month,year,product,category)
-            }else{
+            }else if(product=="Sub Product"){
+                transRepo.getFilteredSubBarChart(month,year,category)
+            }
+            else{
                 //transRepo.getFilteredSubBarChart(month,year,product,category)
                 transRepo.getFilteredSubBarChart(month,year,product,category)
             }

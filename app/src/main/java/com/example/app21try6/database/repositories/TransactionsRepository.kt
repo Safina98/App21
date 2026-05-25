@@ -139,6 +139,11 @@ class TransactionsRepository(application: Application) {
             transDetailDao.getFilteredSubBarChartList(year,month,product,category)
         }
     }
+    suspend fun getFilteredSubBarChart(month: String?, year:String?,  category:String?): List<BarChartModel> {
+        return  withContext(Dispatchers.IO){
+            transDetailDao.getFilteredSubBarChartList(year,month,category)
+        }
+    }
     suspend fun getFilteredProfitBarChart(year:String?,customerName:String?): List<BarChartModel> {
         return  withContext(Dispatchers.IO){
             transDetailDao.getFilteredProfitBarChartList(year,customerName)

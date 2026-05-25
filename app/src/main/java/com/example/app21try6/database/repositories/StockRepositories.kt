@@ -258,7 +258,7 @@ class StockRepositories (
     suspend fun getProductNameListByCategoryName(name:String):List<String>{
         return withContext(Dispatchers.IO) {
             val list = productDao.getProductNameByCategoryName(name)
-            val modifiedList = listOf("ALL","Off") + list // Create a new list with the added value
+            val modifiedList = listOf("ALL","Sub Product") + list // Create a new list with the added value
             modifiedList // Return the modified list
         }
     }
