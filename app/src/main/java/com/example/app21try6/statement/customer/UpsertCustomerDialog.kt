@@ -24,15 +24,15 @@ import com.example.app21try6.database.tables.CustomerTable
 
 @Composable
 fun UpsertCostumerDialog(
-    item: CustomerTable,
+    item: CustomerTable?,
     onConfirm: (CustomerTable) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var customerName by remember { mutableStateOf(item.customerName) }
-    var businessName by remember { mutableStateOf(item.customerBussinessName) }
-    var address by remember { mutableStateOf(item.customerAddress) }
-    var location by remember { mutableStateOf(item.customerLocation) }
-    var phoneNumber by remember { mutableStateOf(item.customerPhoneNumber) }
+    var customerName by remember { mutableStateOf(item?.customerName) }
+    var businessName by remember { mutableStateOf(item?.customerBussinessName) }
+    var address by remember { mutableStateOf(item?.customerAddress) }
+    var location by remember { mutableStateOf(item?.customerLocation) }
+    var phoneNumber by remember { mutableStateOf(item?.customerPhoneNumber) }
 
 
 
@@ -41,18 +41,18 @@ fun UpsertCostumerDialog(
         title = { Text("Update Customer") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+//                OutlinedTextField(
+//                    value = customerName ?:"",
+//                    onValueChange = { customerName = it },
+//                    label = { Text("Name") }
+//                )
                 OutlinedTextField(
-                    value = customerName,
-                    onValueChange = { customerName = it },
-                    label = { Text("Name") }
-                )
-                OutlinedTextField(
-                    value = businessName,
+                    value = businessName ?:"",
                     onValueChange = { businessName = it },
                     label = { Text("Business Name") }
                 )
                 OutlinedTextField(
-                    value = address,
+                    value = address ?:"",
                     onValueChange = { address = it },
                     label = { Text("Address") }
                 )
@@ -71,12 +71,21 @@ fun UpsertCostumerDialog(
         confirmButton = {
             TextButton(onClick = {
                 onConfirm(
-                    item.copy(
-                        customerName = customerName,
-                        customerBussinessName = businessName,
-                        customerAddress = address,
-                        customerPhoneNumber = phoneNumber
-                    )
+                    if (item != null) {
+                        item.copy(
+                            customerName = customerName ?: "",
+                            customerBussinessName = businessName ?: "",
+                            customerAddress = address ?: "",
+                            customerPhoneNumber = phoneNumber ?: ""
+                        )
+                    } else {
+                        CustomerTable().apply {
+                            this.customerName = customerName ?: ""
+                            this.customerBussinessName = businessName ?: ""
+                            this.customerAddress = address ?: ""
+                            this.customerPhoneNumber = phoneNumber ?: ""
+                        }
+                    }
                 )
             }) {
                 Text("Update")

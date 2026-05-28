@@ -1,6 +1,7 @@
 package com.example.app21try6.database.repositories
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.PaymentModel
@@ -198,7 +199,14 @@ class DiscountRepository(
     }
     suspend fun updateCustomerToDB(customerTable: CustomerTable){
         withContext(Dispatchers.IO){
-            customerDao.update(customerTable)
+            if (customerTable.custId!=0){
+                Log.i("InsertProbs","Update")
+                customerDao.update(customerTable)
+            }else{
+                Log.i("InsertProbs","Insert")
+                customerDao.insert(customerTable)
+            }
+
         }
     }
     suspend fun deleteCustomerToDB(customerTable: CustomerTable){

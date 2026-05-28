@@ -25,9 +25,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.app21try6.R
 import com.example.app21try6.database.tables.CustomerTable
 import com.example.app21try6.statement.CustomerDelListener
 import com.example.app21try6.statement.CustomerListener
@@ -43,22 +45,27 @@ fun CustomerItemView(
         modifier = Modifier
             .fillMaxWidth()
             .height(100.dp)
-            .padding(2.dp),
+            .padding(2.dp)
+            ,colors = CardDefaults.cardColors(
+            containerColor =Color.Transparent
 
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(12.dp)
-        // Note: Card uses 'colors = CardDefaults.cardColors(...)' for background normally
+
     ) {
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
-              //  .background(brush = getPocketBrush(tabunganModel.pocketTable.color))
+                .background(color = Color.Transparent)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .background(color = Color.Transparent)
                     .padding(12.dp), // Add padding so text doesn't touch the edges
+
                 horizontalAlignment = Alignment.Start
             ) {
                 // Header: Word and Definition
@@ -68,19 +75,20 @@ fun CustomerItemView(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
-
-
+                    color = colorResource(id = R.color.mainTextColor)
                     )
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
                     modifier = Modifier,
                     text = "${item.customerAddress}",
                     style = MaterialTheme.typography.titleSmall,
+                    color = colorResource(id = R.color.mainTextColor)
                 )
                 Text(
                     modifier = Modifier,
                     text = "${item.customerLocation}",
                     style = MaterialTheme.typography.titleSmall,
+                    color = colorResource(id = R.color.mainTextColor)
                 )
 
             }

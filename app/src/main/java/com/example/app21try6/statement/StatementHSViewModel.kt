@@ -2,13 +2,20 @@ package com.example.app21try6.statement
 
 import android.app.Application
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.app21try6.database.tables.CustomerTable
 import com.example.app21try6.database.tables.DiscountTable
 import com.example.app21try6.database.repositories.DiscountRepository
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -26,6 +33,15 @@ class StatementHSViewModel(application: Application,
     val allCustomerFromDb=discountRepo.getAllCustomers()
 
     val allCustomer=discountRepo.getAllCustomersFlow()
+
+    var searchQuery = mutableStateOf("")
+    val filtered = snapshotFlow { searchQuery.value }
+        .flatMapLatest { query ->
+            allCustomer.map { list ->
+                list.filter { it.customerBussinessName.contains(query, ignoreCase = true) }
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     var id = 0
     val isAddExpense=MutableLiveData<Boolean>(true)
@@ -65,10 +81,12 @@ class StatementHSViewModel(application: Application,
     }
     fun updateCustomer(customerTable: CustomerTable){
         viewModelScope.launch {
+            Log.i("InsertProbs","$customerTable")
             discountRepo.updateCustomerToDB(customerTable)
 
         }
     }
+
     fun populateCustomer(id:Int?,name:String?,businessName:String,location:String?,address:String?,level:String?,tag1:String?): CustomerTable {
         val customerTable = CustomerTable()
         if (id!=null) customerTable.custId=id
@@ -80,6 +98,9 @@ class StatementHSViewModel(application: Application,
         if (id==null) customerTable.customerCloudId=System.currentTimeMillis()
         customerTable.needsSyncs= 1
         return customerTable
+    }
+    fun onSearchQueryChange(query: String) {
+        searchQuery.value = query
     }
 
 //////////////////////////////////Discount////////////////////////////////////////////////////////
