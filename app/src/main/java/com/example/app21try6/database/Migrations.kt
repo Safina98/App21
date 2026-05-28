@@ -4,6 +4,13 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 object Migrations {
+    val MIGRATION_54_55 = object : Migration(54, 55) { // replace X, Y with your version numbers
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL(
+                "ALTER TABLE customer_table ADD COLUMN customerPhoneNumber TEXT NOT NULL DEFAULT ''"
+            )
+        }
+    }
 
    /*
  val MIGRATION_49_50 = object : Migration(49, 50) {

@@ -17,6 +17,8 @@ data class CustomerTable(
     var customerLocation:String?=null,
     @ColumnInfo(name = "customerAddress")
     var customerAddress:String="",
+    @ColumnInfo(name = "customerPhoneNumber")//new column
+    var customerPhoneNumber:String="",//new column
     @ColumnInfo(name = "customerLevel")
     var customerLevel:String?=null,
     @ColumnInfo(name = "customerTag1")
@@ -26,9 +28,9 @@ data class CustomerTable(
     @ColumnInfo(name = "customerPoint")
     var customerPoint:Double=0.0,
     @ColumnInfo(name="is_deleted")
-    var isDeleted: Boolean = false, //newly added cloumn
+    var isDeleted: Boolean = false,
     @ColumnInfo(name = "customerCloudId")
-    var customerCloudId: Long = 0L,//newly added cloumn
+    var customerCloudId: Long = 0L,
     @ColumnInfo(name="needs_syncs")
-    var needsSyncs:Int=1//newly added cloumn
+    var needsSyncs:Int=1
 )

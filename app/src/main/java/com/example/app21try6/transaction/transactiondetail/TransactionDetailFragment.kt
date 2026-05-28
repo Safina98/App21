@@ -13,6 +13,7 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.media.AudioManager
 import android.media.ToneGenerator
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -168,6 +169,7 @@ class TransactionDetailFragment : Fragment() {
 
         viewModel.transSum.observe(viewLifecycleOwner){it?.let{
             viewModel.setTxtNoteValue(it.sum_note)
+            viewModel.setCustomerPhoneNumber(it.custId)
         } }
 
         viewModel.isn.observe(viewLifecycleOwner) { isNoteActive -> }
@@ -186,7 +188,8 @@ class TransactionDetailFragment : Fragment() {
         viewModel.sendReceipt.observe(viewLifecycleOwner){
             if (it==true){
                 val exportedString=viewModel.generateReceiptTextWa()
-                exportTextToWhatsApp(exportedString)
+                val phoneNumber=viewModel._customerPhoneNumber.value
+                exportTextToWhatsApp(exportedString,phoneNumber)
                 viewModel.onKirimBtnClicked()
             }
         }
@@ -355,18 +358,37 @@ class TransactionDetailFragment : Fragment() {
     }
 
 
-    private fun exportTextToWhatsApp(text: String) {
-        val sendIntent = Intent().apply {
-            action = Intent.ACTION_SEND
+    private fun exportTextToWhatsApp(text: String,phoneNumber:String?) {
+//        val sendIntent = Intent().apply {
+//            action = Intent.ACTION_SEND
+//            putExtra(Intent.EXTRA_TEXT, text)
+//            // Set the MIME type
+//            type = "text/plain"
+//            // Set the package name of WhatsApp
+//            setPackage("com.whatsapp")
+//        }
+        val phone = phoneNumber // country code + number
+        val message = text
+        val intent = if (phone!=null){
+            Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse("https://wa.me/$phone?text=${Uri.encode(message)}")
+        }
+        }else{
+            Intent().apply {
+           action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, text)
             // Set the MIME type
             type = "text/plain"
             // Set the package name of WhatsApp
             setPackage("com.whatsapp")
         }
-        sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+        }
+
+        //sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         try {
-            startActivity(sendIntent)
+            startActivity(intent)
+           // startActivity(sendIntent)
         }catch (e : Exception){
             Toast.makeText(requireContext(), e.toString(), Toast.LENGTH_SHORT).show()
         }

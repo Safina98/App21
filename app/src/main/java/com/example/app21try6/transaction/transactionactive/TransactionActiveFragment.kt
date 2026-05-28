@@ -131,7 +131,7 @@ class TransactionActiveFragment : Fragment() {
             }
             btn_del.setOnClickListener {
                 toolbar.visibility = View.VISIBLE
-                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, TransactionSummary(), { vm, item -> (vm as TransactionActiveViewModel).delete() })
+                DialogUtils.showDeleteDialog(requireContext(), viewModel, TransactionSummary(), { vm, item -> (vm as TransactionActiveViewModel).delete() })
                 btn_linear.visibility = View.GONE
             }
             btn_cancel.setOnClickListener {

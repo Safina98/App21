@@ -53,7 +53,7 @@ class BookKeepeingFragment : Fragment() {
             updateDialog(it,3,bookKeepingViewModel)
             //Toast.makeText(context,i.toString(),Toast.LENGTH_SHORT).show()
         }, DelLongListener {
-            DialogUtils.showDeleteDialog(requireContext(),this, bookKeepingViewModel,it, { vm, item -> (vm as BookkeepingViewModel).deleteItemSummary(item as Summary) })
+            DialogUtils.showDeleteDialog(requireContext(), bookKeepingViewModel,it, { vm, item -> (vm as BookkeepingViewModel).deleteItemSummary(item as Summary) })
         })
         binding.recyclerViewBook.adapter = adapter
 

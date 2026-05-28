@@ -32,6 +32,7 @@ fun UpsertCostumerDialog(
     var businessName by remember { mutableStateOf(item.customerBussinessName) }
     var address by remember { mutableStateOf(item.customerAddress) }
     var location by remember { mutableStateOf(item.customerLocation) }
+    var phoneNumber by remember { mutableStateOf(item.customerPhoneNumber) }
 
 
 
@@ -60,6 +61,11 @@ fun UpsertCostumerDialog(
                     onValueChange = { location = it },
                     label = { Text("Lokasi") }
                 )
+                OutlinedTextField(
+                    value = phoneNumber?:"",
+                    onValueChange = { phoneNumber = it },
+                    label = { Text("No telp") }
+                )
             }
         },
         confirmButton = {
@@ -68,7 +74,8 @@ fun UpsertCostumerDialog(
                     item.copy(
                         customerName = customerName,
                         customerBussinessName = businessName,
-                        customerAddress = address
+                        customerAddress = address,
+                        customerPhoneNumber = phoneNumber
                     )
                 )
             }) {

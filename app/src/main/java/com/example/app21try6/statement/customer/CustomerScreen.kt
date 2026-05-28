@@ -13,8 +13,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.R
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.database.tables.CustomerTable
@@ -29,6 +31,7 @@ import com.example.app21try6.utils.DialogUtils
 fun CustomerScreen (
     viewModel: StatementHSViewModel
 ){
+    val context = LocalContext.current
     var showUpdateDialog by remember { mutableStateOf(false) }
     var selectedItem by remember { mutableStateOf<CustomerTable?>(null) }
     val list= viewModel.allCustomer.collectAsState(listOf())
@@ -44,6 +47,15 @@ fun CustomerScreen (
         },
         CustomerDelListener {
             Log.i("Customer Screen","deleted")
+            DialogUtils.showDeleteDialog(
+                context,
+
+                viewModel,
+                it,
+                { vm, item ->
+                    (vm as StatementHSViewModel).deleteCustomerTable(item as CustomerTable)
+                }
+            )
            // DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as StatementHSViewModel).deleteCustomerTable(item as CustomerTable) })
         }
     ) }

@@ -52,6 +52,7 @@ class TransactionDetailViewModel (
     val transDetail = transRepo.getTransactionDetails(id)
     val transSum = transRepo.getTransactionSummary(id)
     val transTotalDouble = transRepo.getTotalTransaction(id)
+
     val transTotal: LiveData<String> = transTotalDouble.map { formatRupiahVM(it).toString() }
     private var _uiMode = MutableLiveData<Int>(16)
     val uiMode :LiveData<Int> get() =_uiMode
@@ -75,6 +76,8 @@ class TransactionDetailViewModel (
     private var merchSelectionDeferred:CompletableDeferred <Pair<List<DetailMerchandiseModel?>?, Double?>?>? = null
 
     private var transdetail=TransactionDetail()
+
+    var _customerPhoneNumber= MutableLiveData<String?>()
 
 
     // Get the total discount from the database
@@ -152,7 +155,6 @@ class TransactionDetailViewModel (
         if(item?.sum_note.isNullOrEmpty()) false else true
     }
 
-
     //Navigations
     private val _navigateToEdit = MutableLiveData<Long>()
     val navigateToEdit: LiveData<Long> get() = _navigateToEdit
@@ -177,11 +179,8 @@ class TransactionDetailViewModel (
             val simpleFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
             val date = simpleFormatter.parse("2024-11-27 00:00")
             val dateEnd = simpleFormatter.parse("2024-11-27 23:59")
-
             val startDate = simpleFormatter.parse("2024-01-01 00:00")!!
             val endDate = simpleFormatter.parse("2024-12-01 00:00")!! // Exclusive end date
-
-
 
         }
     }
@@ -199,7 +198,6 @@ class TransactionDetailViewModel (
            transSum?.let { transRepo.updateTransactionSummary(it) }
        }
     }
-
 
     //Set mutable txt Note value after trans_sum.value updated
     fun setTxtNoteValue(note:String?){
@@ -223,8 +221,6 @@ class TransactionDetailViewModel (
             transRepo.updateTransactionSummary(transum!!)
         }
     }
-
-
 
     //Hide and show card view on click
     fun onBtnNoteClick(){
@@ -632,12 +628,19 @@ class TransactionDetailViewModel (
             transRepo.updateTransDetail(transdetail)
         }
     }
+    fun setCustomerPhoneNumber(id:Int?){
+        viewModelScope.launch {
+            val phoneNumber =discountRepo.getCustomerPhoneNumber(id)
+            _customerPhoneNumber.value=phoneNumber
+        }
+    }
     /******************************************** Suspend **************************************/
 
     fun generateReceiptTextWa(): String {
         textGenerator = TextGenerator(transDetail.value,transSum.value,paymentModel.value,discountTransBySumId.value?.filter { it.discountType!=Constants.DISCTYPE.CASHBACK_NOT_PRINTED })
         return textGenerator.generateReceiptTextWa()
     }
+
 
     fun generateReceiptTextNew(): String {
         textGenerator = TextGenerator(transDetail.value,transSum.value,paymentModel.value,discountTransBySumId.value?.filter { it.discountType!=Constants.DISCTYPE.CASHBACK_NOT_PRINTED })

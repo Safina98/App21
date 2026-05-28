@@ -206,5 +206,11 @@ class DiscountRepository(
             customerDao.delete(customerTable)
         }
     }
+    suspend fun getCustomerPhoneNumber(id:Int?):String?{
+        return withContext(Dispatchers.IO){
+            customerDao.getCustomerPhoneNumber(id)
+        }
+
+    }
 
 }

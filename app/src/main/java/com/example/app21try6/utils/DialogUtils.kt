@@ -25,7 +25,6 @@ import com.google.android.material.textfield.TextInputEditText
 
 object DialogUtils{
     fun showDeleteDialog(context:Context,
-                         fragment: Fragment,
                          viewModel: ViewModel,
                          item: Any,
                          onDelete: (ViewModel, Any) -> Unit

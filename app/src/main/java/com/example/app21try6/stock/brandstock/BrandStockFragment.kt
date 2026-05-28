@@ -147,7 +147,7 @@ class BrandStockFragment : Fragment() {
                     insertFunction = { vm, name -> (vm as BrandStockViewModel).insertItemCtg(name as String) }
                 )
             },DeleteListener {
-                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as BrandStockViewModel).deleteCategory(item as StockCategoryModel) })
+                DialogUtils.showDeleteDialog(requireContext(),viewModel, it, { vm, item -> (vm as BrandStockViewModel).deleteCategory(item as StockCategoryModel) })
             })
 
         //Product adapter
@@ -329,7 +329,7 @@ class BrandStockFragment : Fragment() {
             .setNegativeButton("Delete") { dialog, id ->
                 DialogUtils.showDeleteDialog(
                     requireContext(),
-                    this,
+
                     viewModel,
                     vendible, { vm, item ->
                         if(modelType==Constants.MODELTYPE.BRAND)

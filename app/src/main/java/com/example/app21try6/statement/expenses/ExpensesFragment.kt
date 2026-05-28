@@ -101,7 +101,7 @@ class ExpensesFragment : Fragment() {
                 val id=item.id
                 DialogUtils.showDeleteDialog(
                     requireContext(),
-                    this,
+
                     viewModel,
                     item, { vm, item ->
                             (vm as  PurchaseViewModel).deleteExpense(item as DiscountAdapterModel)
@@ -112,7 +112,7 @@ class ExpensesFragment : Fragment() {
         val categoryAdapter = ExpenseCategoryAdapter(UpdateListener{
             showsAddExpenseCategoryDialog(it)
         }, DeleteListener{
-            DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as PurchaseViewModel).deleteExpenseCategory(item as CategoryModel) })
+            DialogUtils.showDeleteDialog(requireContext(),viewModel, it, { vm, item -> (vm as PurchaseViewModel).deleteExpenseCategory(item as CategoryModel) })
         }
        /*
         UpdateListener {

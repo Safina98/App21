@@ -49,7 +49,7 @@ class StatementHsFragment : Fragment() {
             }, DiscountLongListener {
             },
             DiscountDelListener {
-                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as StatementHSViewModel).deleteDiscountTable(it.id!!) })
+                DialogUtils.showDeleteDialog(requireContext(), viewModel, it, { vm, item -> (vm as StatementHSViewModel).deleteDiscountTable(it.id!!) })
             })
 
 //        val adapterCustomer = CustomerAdapter(

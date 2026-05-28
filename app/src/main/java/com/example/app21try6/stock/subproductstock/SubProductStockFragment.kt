@@ -60,7 +60,7 @@ class SubProductStockFragment : Fragment() {
         viewModel = ViewModelProvider(this,viewModelFactory).get(SubViewModel::class.java)
         binding.subViewModel = viewModel
         binding.reset.setOnClickListener {
-            DialogUtils.showDeleteDialog(requireContext(),this, viewModel, SubProduct(), { vm, item -> (vm as SubViewModel).resetAllSubProductStock() })
+            DialogUtils.showDeleteDialog(requireContext(),viewModel, SubProduct(), { vm, item -> (vm as SubViewModel).resetAllSubProductStock() })
         }
         val isSubIdExist = sPId
         if (isSubIdExist!=-1L){
@@ -103,7 +103,7 @@ class SubProductStockFragment : Fragment() {
 
         val detailWarnaAdapter=DetailWarnaAdapter(DetailWarnaLongListener {
             }, DeleteDetailWarnaListener {
-                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as SubViewModel).deleteDetailWarna(item as DetailMerchandiseModel) })
+                DialogUtils.showDeleteDialog(requireContext(), viewModel, it, { vm, item -> (vm as SubViewModel).deleteDetailWarna(item as DetailMerchandiseModel) })
 
             }, EditDetailWarnaListener {
                 Toast.makeText(context,"edited",Toast.LENGTH_SHORT).show()
@@ -115,7 +115,7 @@ class SubProductStockFragment : Fragment() {
 
         }, DeleteDetailWarnaListener {
             //delete, show pop up delete
-            DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as SubViewModel).deleteRetail(item as DetailMerchandiseModel) })
+            DialogUtils.showDeleteDialog(requireContext(),viewModel, it, { vm, item -> (vm as SubViewModel).deleteRetail(item as DetailMerchandiseModel) })
         }, EditDetailWarnaListener {
             //add show pop up
             showUpdateQtyDialog(it,Constants.Code.LONGPLUS.text,Constants.Code.LONGPLUS)
@@ -234,7 +234,7 @@ class SubProductStockFragment : Fragment() {
                 updateDialog(subProduct,i,viewModel)
             }
             .setNegativeButton("Delete") { dialog, id ->
-                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, subProduct, { vm, item -> (vm as SubViewModel).deleteSubProduct(item as SubProduct) })
+                DialogUtils.showDeleteDialog(requireContext(),viewModel, subProduct, { vm, item -> (vm as SubViewModel).deleteSubProduct(item as SubProduct) })
             }
         val alert = builder.create()
         alert.show()
