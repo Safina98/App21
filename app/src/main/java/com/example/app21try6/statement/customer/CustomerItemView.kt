@@ -46,10 +46,7 @@ fun CustomerItemView(
             .fillMaxWidth()
             .height(100.dp)
             .padding(2.dp)
-            ,colors = CardDefaults.cardColors(
-            containerColor =Color.Transparent
-
-        ),
+            ,
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(12.dp)
 

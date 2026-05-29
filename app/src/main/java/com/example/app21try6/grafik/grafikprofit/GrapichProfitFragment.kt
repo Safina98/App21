@@ -1,5 +1,6 @@
 package com.example.app21try6.grafik.grafikprofit
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
@@ -39,9 +41,27 @@ class GrapichProfitFragment : Fragment() {
         binding.lifecycleOwner = this
         //getCustomerSpinnerEntries
 
-
+        var isItemSelected = false
         val spinnerTahun = binding.spinnerTahunPg
-        val spinnerCustomer = binding.spinnerCustomerPg
+        var isKeyboardOpen = false
+       // val spinnerCustomer = binding.spinnerCustomerPg
+        binding.customerAutoComplete.threshold = 1
+
+        binding.customerAutoComplete.setOnClickListener {
+            binding.customerAutoComplete.showDropDown()
+        }
+
+        binding.customerAutoComplete.setOnFocusChangeListener { _, hasFocus ->
+            isItemSelected = false
+            if (hasFocus) binding.customerAutoComplete.showDropDown()
+        }
+        binding.root.viewTreeObserver.addOnGlobalLayoutListener {
+            val rect = android.graphics.Rect()
+            binding.root.getWindowVisibleDisplayFrame(rect)
+            val screenHeight = binding.root.rootView.height
+            val keypadHeight = screenHeight - rect.bottom
+            isKeyboardOpen = keypadHeight > screenHeight * 0.15
+        }
 
         val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
         val adapter_year = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, resources.getStringArray(R.array.tahun))
@@ -62,21 +82,52 @@ class GrapichProfitFragment : Fragment() {
                 val selected = parent.getItemAtPosition(position).toString()
                 when (parent.id) {
                     R.id.spinner_tahun_pg -> viewModel.setSelectedYearValueProfit(selected)
-                    R.id.spinner_customer_pg -> viewModel.setSelectedCustomerValueProfit(selected)
+                   // R.id.spinner_customer_pg -> viewModel.setSelectedCustomerValueProfit(selected)
+
 
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
+
         spinnerTahun.onItemSelectedListener = spinnerListener
-        spinnerCustomer.onItemSelectedListener=spinnerListener
+        binding.customerAutoComplete.dropDownVerticalOffset = 0
+
+
+        binding.customerAutoComplete.setOnItemClickListener { parent, _, position, _ ->
+            val selected = parent.getItemAtPosition(position).toString()
+            viewModel.setSelectedCustomerValueProfit(selected)
+            isItemSelected = true
+            // hide keyboard
+            binding.customerAutoComplete.dismissDropDown()
+            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(binding.customerAutoComplete.windowToken, 0)
+            binding.customerAutoComplete.clearFocus()
+
+        }
+        binding.customerAutoComplete.setOnDismissListener {
+            if (isItemSelected) return@setOnDismissListener
+            if (isKeyboardOpen) {
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(binding.customerAutoComplete.windowToken, 0)
+                binding.customerAutoComplete.postDelayed({
+                    binding.customerAutoComplete.showDropDown()
+                }, 300)
+            }
+        }
+        //spinnerCustomer.onItemSelectedListener=spinnerListener
        // viewModel.setSelectedYearValueProfit(currentYear)
 
-        viewModel.customerEntries.observe(viewLifecycleOwner){
+        viewModel.customerEntries.observe(viewLifecycleOwner){it?.let {
+            val adapter = ArrayAdapter(requireContext(), R.layout.item_list, it)
+            binding.customerAutoComplete.setAdapter(adapter)
+        }
 
-                val adapterCustomer =
-                    ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
-               spinnerCustomer.adapter = adapterCustomer
+//                val adapterCustomer =
+//                    ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
+//               spinnerCustomer.adapter = adapterCustomer
+
+
 
         }
         viewModel.selectedProfitYearSpinner.observe(viewLifecycleOwner){ value->
