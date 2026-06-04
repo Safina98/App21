@@ -4,8 +4,15 @@ import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -18,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.zIndex
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.DraggableFloatingActionButton
@@ -52,7 +60,7 @@ fun CustomerScreen (
 
         },
         CustomerDelListener {
-            Log.i("Customer Screen","deleted")
+
             DialogUtils.showDeleteDialog(
                 context,
                 hsViewModel,
@@ -61,7 +69,7 @@ fun CustomerScreen (
                     (vm as StatementHSViewModel).deleteCustomerTable(item as CustomerTable)
                 }
             )
-           // DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as StatementHSViewModel).deleteCustomerTable(item as CustomerTable) })
+
         }
     ) }
 
@@ -77,12 +85,17 @@ fun CustomerScreen (
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            SearchBar(
-                query = query,
-                onQueryChange = { newvalue->hsViewModel.onSearchQueryChange(newvalue) }
+            OutlinedTextField(
+                value = query,
+                onValueChange = { hsViewModel.onSearchQueryChange(it) },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Search...") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp)
             )
             AndroidView(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.padding(top = 72.dp, start = 16.dp, end = 16.dp),
                 factory = { context ->
                     RecyclerView(context).apply {
                         this.adapter = adapter
@@ -90,7 +103,6 @@ fun CustomerScreen (
                     }
                 }
             )
-
         }
         DraggableFloatingActionButtonCompose(
             onClick = { showUpdateDialog = true },
@@ -113,5 +125,4 @@ fun CustomerScreen (
             }
         )
     }
-
 }

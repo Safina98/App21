@@ -18,6 +18,7 @@ import com.example.app21try6.grafik.BarChartModelRvListener
 import com.example.app21try6.grafik.BarChartUtils
 import com.example.app21try6.grafik.ChartRenderer
 import com.example.app21try6.grafik.GraphicViewModel
+import com.example.app21try6.utils.setupDropdown
 import com.github.mikephil.charting.charts.BarChart
 import java.time.LocalDate
 import java.time.format.TextStyle
@@ -55,10 +56,11 @@ class GraphicFragment : Fragment() {
             android.R.layout.simple_spinner_dropdown_item,
             resources.getStringArray(R.array.bulan)
         )
+        val adapter_product = ArrayAdapter(requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            mutableListOf<String>())
 
-        val rvAdapter= BarChartModelRVAdapter(BarChartModelRvListener{
-
-        })
+        val rvAdapter= BarChartModelRVAdapter(BarChartModelRvListener{})
 
         binding.spinnerTahunSg.adapter = adapter_year
         val year = Calendar.getInstance().get(Calendar.YEAR).toString()
@@ -75,6 +77,9 @@ class GraphicFragment : Fragment() {
         binding.spinnerBulanSg.setSelection(positionM)
         viewModel.setSelectedYearValueStok(year)
 
+        binding.actProductSg.setAdapter(adapter_product)
+        binding.actProductSg.threshold=1
+
         binding.rvChartSg.adapter=rvAdapter
 
 
@@ -85,7 +90,7 @@ class GraphicFragment : Fragment() {
                     R.id.spinner_bulan_sg -> viewModel.setSelectedMonthValueStok(selected)
                     R.id.spinner_tahun_sg -> viewModel.setSelectedYearValueStok(selected)
                     R.id.spinner_category_sg->viewModel.setSelectedCategoryValueStok(selected)
-                    R.id.spinner_product_sg->viewModel.setSelectedProductValueStok(selected)
+                   // R.id.spinner_product_sg->viewModel.setSelectedProductValueStok(selected)
 
                 }
             }
@@ -94,7 +99,7 @@ class GraphicFragment : Fragment() {
         binding.spinnerTahunSg.onItemSelectedListener = spinnerListener
         binding.spinnerBulanSg.onItemSelectedListener = spinnerListener
         binding.spinnerCategorySg.onItemSelectedListener = spinnerListener
-        binding.spinnerProductSg.onItemSelectedListener = spinnerListener
+        //binding.spinnerProductSg.onItemSelectedListener = spinnerListener
 
         viewModel.setSelectedMonthValueStok(currentMonth)
 
@@ -103,11 +108,19 @@ class GraphicFragment : Fragment() {
                 ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
             binding.spinnerCategorySg.adapter = adapterCategory }
         }
+        binding.actProductSg.setupDropdown { selected ->
+            viewModel.setSelectedProductValueStok(selected)
+        }
+
+        viewModel.setSelectedProductValueStok("Sub Product")
 
         viewModel.productEntries.observe(viewLifecycleOwner){
-            val adapterProduct =
-                ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
-            binding.spinnerProductSg.adapter = adapterProduct
+           // val adapterProduct =
+             //   ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
+            //binding.spinnerProductSg.adapter = adapterProduct
+            adapter_product.clear()
+            adapter_product.addAll(it)
+            adapter_product.notifyDataSetChanged()
         }
         viewModel.selectedStockYearSpinner.observe(viewLifecycleOwner){ value->
             viewModel.newFilterModelList()

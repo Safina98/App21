@@ -15,8 +15,8 @@
 
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
         <!--<item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>-->
-        <!-- brown <item name="android:statusBarColor" tools:targetApi="l">#543A14</item>-->
-        <item name="android:statusBarColor" tools:targetApi="l">#123524</item>
+       <!-- pink <item name="android:statusBarColor" tools:targetApi="l">#c87d87</item>-->
+       <item name="android:statusBarColor" tools:targetApi="l">#123524</item>
         <!-- Customize your theme here. -->
     </style>
     <!--

@@ -37,12 +37,18 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <Spinner
+                <!--<Spinner
                     android:id="@+id/spinner_product_pt"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    tools:layout_editor_absoluteY="24dp" />
+                    tools:layout_editor_absoluteY="24dp" />-->
+                <AutoCompleteTextView
+                    android:id="@+id/act_product_pt"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    tools:layout_editor_absoluteY="24dp"/>
                 <Spinner
                     android:id="@+id/spinner_sp_pt"
                     android:layout_width="0dp"

@@ -17,6 +17,7 @@ import com.example.app21try6.grafik.BarChartModelRVAdapter
 import com.example.app21try6.grafik.BarChartModelRvListener
 import com.example.app21try6.grafik.GraphicViewModel
 import com.example.app21try6.grafik.LineChartHelper
+import com.example.app21try6.utils.setupDropdown
 import java.util.Calendar
 import kotlin.getValue
 
@@ -33,7 +34,7 @@ class GraphicProductTrendFragment : Fragment() {
         val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
         val adapter_year = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, resources.getStringArray(R.array.tahun))
         val spinnerTahun=binding.spinnerTahunPt
-        val spinnerProduct=binding.spinnerProductPt
+        //val spinnerProduct=binding.spinnerProductPt
         val spinnerCategory=binding.spinnerCategoryPt
         val spinnerSp=binding.spinnerSpPt
         spinnerTahun.adapter=adapter_year
@@ -43,6 +44,9 @@ class GraphicProductTrendFragment : Fragment() {
         val adapter = BarChartModelRVAdapter(BarChartModelRvListener{
 
         })
+        val adapterAtc = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, mutableListOf<String>())
+        binding.actProductPt.setAdapter(adapterAtc)
+        binding.actProductPt.threshold = 1
         binding.rvChartPt.adapter=adapter
 
         val chart=binding.lineChartPt
@@ -57,7 +61,7 @@ class GraphicProductTrendFragment : Fragment() {
                 when (parent.id) {
                     R.id.spinner_tahun_pt -> viewModel.setSelectedYearPt(selected)
                     R.id.spinner_category_pt-> viewModel.setSelectedCategoryPt(selected)
-                    R.id.spinner_product_pt-> viewModel.setSelectedProductPt(selected)
+                   // R.id.spinner_product_pt-> viewModel.setSelectedProductPt(selected)
                     R.id.spinner_sp_pt-> viewModel.setSelectedSP(selected)
                 }
             }
@@ -65,19 +69,25 @@ class GraphicProductTrendFragment : Fragment() {
         }
 
         spinnerTahun.onItemSelectedListener=spinnerListener
-        spinnerProduct.onItemSelectedListener=spinnerListener
+       // spinnerProduct.onItemSelectedListener=spinnerListener
         spinnerCategory.onItemSelectedListener=spinnerListener
         spinnerSp.onItemSelectedListener=spinnerListener
-
+        binding.actProductPt.setupDropdown { selected ->
+            viewModel.setSelectedProductPt(selected)
+        }
+        viewModel.setSelectedProductPt("ALL")
         viewModel.categoryEntries.observe(viewLifecycleOwner){it?.let {
             val adapterCategory =
                 ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
             spinnerCategory.adapter = adapterCategory }
         }
         viewModel.productEntries.observe(viewLifecycleOwner){
-            val adapterProduct =
-                ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
-            spinnerProduct.adapter = adapterProduct
+//            val adapterProduct =
+//                ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
+//            spinnerProduct.adapter = adapterProduct
+            adapterAtc.clear()
+            adapterAtc.addAll(it)
+            adapterAtc.notifyDataSetChanged()
         }
         viewModel.spEntries.observe(viewLifecycleOwner){
             val adapterProduct =

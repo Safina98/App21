@@ -13,7 +13,7 @@
 
         <Spinner
             android:id="@+id/spinner_tahun_sg"
-            android:layout_width="638dp"
+            android:layout_width="364dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             app:layout_constraintStart_toStartOf="parent"
@@ -21,7 +21,7 @@
 
         <Spinner
             android:id="@+id/spinner_bulan_sg"
-            android:layout_width="639dp"
+            android:layout_width="364dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             app:layout_constraintEnd_toEndOf="parent"
@@ -29,15 +29,22 @@
 
         <Spinner
             android:id="@+id/spinner_category_sg"
-            android:layout_width="638dp"
+            android:layout_width="364dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/spinner_tahun_sg" />
 
-        <Spinner
+        <!--<Spinner
             android:id="@+id/spinner_product_sg"
             android:layout_width="639dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spinner_tahun_sg" />-->
+        <AutoCompleteTextView
+            android:id="@+id/act_product_sg"
+            android:layout_width="364dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             app:layout_constraintEnd_toEndOf="parent"

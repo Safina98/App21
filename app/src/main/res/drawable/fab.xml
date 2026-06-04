@@ -4,15 +4,17 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
     <solid android:color="#199fff"/>
-    <!--center color #105575-->
-    <!--start color #082946-->
-    <!--end color #06545C-->
+   <!--
+   pink
 
-    <!-- Brown-->
-    <!-- android:centerColor="#543A14"
-    android:startColor="#481E14"
-    android:endColor="#706233"-->
-
+        <gradient
+        android:angle="45"
+        android:centerX="40%"
+        android:centerColor="#e5bca9"
+        android:startColor="#c87d87"
+        android:endColor="#f0c4cb"
+        android:type="linear" />
+   -->
     <gradient
         android:angle="45"
         android:centerX="40%"
@@ -20,6 +22,7 @@
         android:startColor="#27391C"
         android:endColor="#3D5300"
         android:type="linear" />
+
     <size
         android:width="72dp"
         android:height="72dp"/>

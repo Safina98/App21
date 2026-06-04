@@ -5,10 +5,15 @@
     <!--start color #082946-->
     <!--end color #06545C-->
     <!--
-    brown
-     android:centerColor="#FFCF50"
-        android:endColor="#706233"
-        android:startColor="#481E14"
+pink
+
+         <gradient
+        android:angle="45"
+        android:centerX="70%"
+        android:centerColor="#F0C4CB"
+        android:endColor="#530019"
+        android:startColor="#391C23"
+        android:type="linear" />
     -->
     <gradient
         android:angle="45"

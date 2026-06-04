@@ -42,11 +42,8 @@ class GraphicViewModel(
     private val _customerTrendBCModel = MutableLiveData<List<BarChartModel>>()
     val customerTrendBCModel: LiveData<List<BarChartModel>> get() = _customerTrendBCModel
 
-
-
     private val _custCountProductList = MutableLiveData<List<BarChartModel>>()
     val custCountProductLit: LiveData<List<BarChartModel>> get() = _custCountProductList
-
 
     //spinner category entries
     private var _categoryEntries = MutableLiveData<List<String>>()
@@ -64,9 +61,8 @@ class GraphicViewModel(
     val selectedStockCategorySpinner: LiveData<String?> get() = _selectedStockCategorySpinner
 
     // selected product on product spinner
-    private val _selectedStockProductSpinner = MutableLiveData<String>("Off")
+    private val _selectedStockProductSpinner = MutableLiveData<String>("ALL")
     val selectedStockProductSpinner: LiveData<String> get() = _selectedStockProductSpinner
-
 
     //selected year on Stok year spinner
     private val _selectedStockYearSpinner = MutableLiveData<String?>()
@@ -76,7 +72,6 @@ class GraphicViewModel(
     private val _selectedStockMonthSpinner = MutableLiveData<String>()
     val selectedStockMonthSpinner: LiveData<String> get() = _selectedStockMonthSpinner
 
-
     //selected year on Profit year spinner
     private val _selectedProfitYearSpinner = MutableLiveData<String?>("2026")
     val selectedProfitYearSpinner: LiveData<String?> get() = _selectedProfitYearSpinner
@@ -84,7 +79,6 @@ class GraphicViewModel(
     //selected month on Stok month spinner
     private val _selectedProfitMonthSpinner = MutableLiveData<String>()
     val selectedProfitMonthSpinner: LiveData<String> get() = _selectedProfitMonthSpinner
-
 
     private val _selectedCategorySpinnerPt = MutableLiveData<String?>()
     val selectedCategorySpinnerPt: LiveData<String?> get() = _selectedCategorySpinnerPt
@@ -100,8 +94,6 @@ class GraphicViewModel(
     private val _selectedYearSpinnerPt = MutableLiveData<String?>()
     val selectedYearSpinnerPt: LiveData<String?> get() = _selectedYearSpinnerPt
 
-
-
     //selected customer
     private val _selectedCustomerProfit= MutableLiveData<String>("ALL")
     val selectedCustomerProfit: LiveData<String> get() = _selectedCustomerProfit
@@ -110,20 +102,13 @@ class GraphicViewModel(
     val customerEntries: LiveData<List<String>> get() = _customerEntries
 
 
-
-
-
-
     init {
         getKategoriEntries()
-
         newFilterModelList()
         getCustomerEntries()
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
-
-
-
     // populate category entries
     fun getKategoriEntries(){
         viewModelScope.launch {
@@ -145,13 +130,13 @@ class GraphicViewModel(
             _productEntries.value = newData
         }
     }
+
     fun getSPEntriesStok(value: String?){
         viewModelScope.launch {
             val newData = stockRepo.getSPNameListByProductName(value ?:"")
             _spEntries.value = newData
         }
     }
-
 
     //set selected spinner tahun
     fun setSelectedYearValueStok(selectedItem:String){
@@ -178,17 +163,20 @@ class GraphicViewModel(
             val category=_selectedStockCategorySpinner.value.takeIf { it != "ALL" } // null if "ALL"
             val product=_selectedStockProductSpinner.value.takeIf { it!="ALL" }
 
-
+            Log.i("ProductAtcProbs","year $year, month $month, category:$category, product:$product")
             val list = if (product ==null){
+                Log.i("ProductAtcProbs","vm product null")
                 transRepo.getFilteredProductBarChart(month,year,product,category)
             }else if(product=="Sub Product"){
+                Log.i("ProductAtcProbs","vm product Sub Product")
                 transRepo.getFilteredSubBarChart(month,year,category)
             }
             else{
-                //transRepo.getFilteredSubBarChart(month,year,product,category)
+                Log.i("ProductAtcProbs","vm product else")
                 transRepo.getFilteredSubBarChart(month,year,product,category)
-            }
 
+            }
+            Log.i("ProductAtcProbs","vm list size ${list.size}")
             _productBCModel.value=list
         }
     }
@@ -210,7 +198,6 @@ class GraphicViewModel(
 
     fun filterProductTrend(){
         viewModelScope.launch {
-            Log.i("chartprobs","trend")
             val year = _selectedYearSpinnerPt.value.takeIf { it != "ALL" } // null if "ALL"
             val sp=_selectedSPSpinnerPt.value.takeIf { it!="ALL" }
             val product=_selectedProductSpinnerPt.value.takeIf { it != "ALL" }
@@ -275,8 +262,7 @@ class GraphicViewModel(
                 val stockRepo=StockRepositories(application)
                 val transRepo=TransactionsRepository(application)
                 val custRepo= DiscountRepository(application)
-                val bookRepo=BookkeepingRepository(application)
-                val savedStateHandle = extras.createSavedStateHandle()
+
                 return GraphicViewModel(
                     stockRepo,
                     custRepo,

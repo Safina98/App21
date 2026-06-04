@@ -44,11 +44,16 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content" />
-                <Spinner
+                <!--<Spinner
                     android:id="@+id/spinner_product_sg"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content" />-->
+                <AutoCompleteTextView
+                    android:id="@+id/act_product_sg"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
             <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/bar_chart_sg"

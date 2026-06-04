@@ -11,22 +11,23 @@ original
         android:startColor="@color/startToolbar"
         android:type="linear" />-->
 <!--#9B3922 -->
-    <!--
-    kurma
-    <gradient
-        android:angle="45"
-        android:centerX="70%"
-        android:centerColor="#543A14"
-        android:endColor="#706233"
-        android:startColor="#481E14"
-        android:type="linear" />
+<!--
+green
 
-    -->
-    <gradient
+          <gradient
         android:angle="45"
         android:centerX="70%"
-        android:centerColor="#41644A"
-        android:endColor="#3D5300"
-        android:startColor="#27391C"
+        android:centerColor="#e5bca9"
+        android:endColor="#f0c4cb"
+        android:startColor="#c87d87"
         android:type="linear" />
+        -->
+    <gradient
+    android:angle="45"
+    android:centerX="70%"
+    android:centerColor="#41644A"
+    android:endColor="#3D5300"
+    android:startColor="#27391C"
+    android:type="linear" />
+
 </shape>
