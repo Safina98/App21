@@ -52,105 +52,24 @@ class StatementHsFragment : Fragment() {
                 DialogUtils.showDeleteDialog(requireContext(), viewModel, it, { vm, item -> (vm as StatementHSViewModel).deleteDiscountTable(it.id!!) })
             })
 
-//        val adapterCustomer = CustomerAdapter(
-//            CustomerListener {
-//                showCustomerDialog(it)
-//            },
-//            CustomerLongListener {
-//
-//            },
-//            CustomerDelListener {
-//                DialogUtils.showDeleteDialog(requireContext(),this, viewModel, it, { vm, item -> (vm as StatementHSViewModel).deleteCustomerTable(item as CustomerTable) })
-//            }
-//        )
         binding.btnAddDiscount.setOnClickListener {
             showDiscountDialog(null)
         }
-        binding.btnAddCustomer.setOnClickListener {
-            showCustomerDialog(null)
-        }
+
         val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
         binding.rvDisc.adapter = adapter
        // binding.rvCust.adapter=adapterCustomer
         binding.rvDisc.addItemDecoration(dividerItemDecoration)
-        binding.rvCust.addItemDecoration(dividerItemDecoration)
+
         viewModel.allDiscountFromDB.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it)
             adapter.notifyDataSetChanged()
         })
-        viewModel.allCustomerFromDb.observe(viewLifecycleOwner, Observer {
-          //  adapterCustomer.submitList(it.sortedBy { it.customerBussinessName })
-           // adapter.notifyDataSetChanged()
-        })
-        binding.searchCustomer?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return true
-            }
-            override fun onQueryTextChange(newText: String?): Boolean {
-                newText?.let { query ->
-                    viewModel.allCustomerFromDb.observe(viewLifecycleOwner, Observer { list ->
-                        list?.let { items ->
-                            val filteredList = items.filter { item ->
-                                item.customerBussinessName.contains(query, ignoreCase = true)
-                            }
-                            //adapterCustomer.submitList(filteredList)
-                        }
-                    })
-                }
-                return true
-            }
-        })
+
 
         return binding.root
     }
-    private fun showCustomerDialog(customerTable: CustomerTable?) {
-        // Inflate the layout using data binding
-        val spinnerItems = resources.getStringArray(R.array.disc_Tipe)
-        val binding: PopUpUpdateProductDialogBinding = DataBindingUtil.inflate(LayoutInflater.from(requireContext()),
-            R.layout.pop_up_update_product_dialog, // Replace with your dialog layout file
-            null,
-            false
-        )
-        val tvName= binding.textUpdateKet
-        val tvLocation= binding.textUpdatePrice
-        val tvTag1=binding.textCapital
-        binding.ilKet.hint="Nama"
-        binding.ilPrice.hint="Lokasi"
-        binding.ilCapital.hint="Alamat"
-        binding.textDiscount.visibility=View.GONE
 
-
-        // Create the dialog using AlertDialog.Builder
-        if (customerTable!=null){
-            tvName.setText( customerTable.customerBussinessName)
-            tvLocation.setText( customerTable.customerLocation)
-            tvTag1.setText(customerTable.customerAddress)
-        }
-        val dialogBuilder = AlertDialog.Builder(requireContext())
-            .setView(binding.root)
-            .setTitle("Tambah Customer")
-            .setPositiveButton("OK") { dialog, _ ->
-                // Get values from the input fields
-                val bussinessNmae= tvName.text.toString().uppercase().trim()
-                val location = tvLocation.text.toString().uppercase().trim()
-                val address = tvLocation.text.toString().uppercase().trim()
-                if (customerTable==null){
-                    viewModel.insertCustomer(null,bussinessNmae,location,address,null,null)
-                }else{
-                    viewModel.updateCustomer(customerTable.custId,null,bussinessNmae,location,address,null,null)
-                }
-                dialog.dismiss()
-            }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                dialog.dismiss()
-            }
-
-        // Show the dialog
-        val dialog = dialogBuilder.create()
-        dialog.show()
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
-        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
-    }
     private fun showDiscountDialog(discountTable: DiscountAdapterModel?) {
         // Inflate the layout using data binding
         val spinnerItems = resources.getStringArray(R.array.disc_Tipe)

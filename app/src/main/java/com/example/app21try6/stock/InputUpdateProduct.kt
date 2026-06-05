@@ -49,13 +49,9 @@ class InputUpdateProduct : Fragment() {
         val repository = StockRepositories(application)
         val discountRepository= DiscountRepository(application)
 
-        //todo delete later
-        val bookKeepingRepository= BookkeepingRepository(application)
-        val transactionsRepository= TransactionsRepository(application)
-        val expensesRepository= ExpensesRepository(application)
-        val logRepository= LogsRepository(application)
 
-        viewModel = ViewModelProvider(requireActivity(), BrandStockViewModelFactory(repository,discountRepository,bookKeepingRepository,transactionsRepository,expensesRepository,logRepository,application))
+
+        viewModel = ViewModelProvider(requireActivity(), BrandStockViewModelFactory(repository,discountRepository,application))
             .get(BrandStockViewModel::class.java)
         binding.viewModel=viewModel
 

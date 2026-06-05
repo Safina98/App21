@@ -32,14 +32,12 @@ import com.example.app21try6.databinding.FragmentBrandStockBinding
 import com.example.app21try6.utils.CsvHandler
 import com.example.app21try6.utils.DatabaseBackupHelper
 import com.example.app21try6.utils.DialogUtils
-import kotlin.math.log
-
 
 class BrandStockFragment : Fragment() {
     private lateinit var binding: FragmentBrandStockBinding
     private val PERMISSION_REQUEST_CODE = 200
     private lateinit var csvHandler: CsvHandler
-    val requestcode = 1
+
     private lateinit var viewModel: BrandStockViewModel
     private var list= mutableListOf<String>()
     private val resultLauncher =
@@ -55,16 +53,9 @@ class BrandStockFragment : Fragment() {
         val application = requireNotNull(this.activity).application
         val repository = StockRepositories(application)
         val discountRepository=DiscountRepository(application)
-        //todo delete later
-        val bookKeepingRepository= BookkeepingRepository(application)
-        val transactionsRepository= TransactionsRepository(application)
-        val expensesRepository= ExpensesRepository(application)
-        val logRepository= LogsRepository(application)
 
-        //todo delete bookkeeping repositories and transaction repository and expenses repository and log repository
-
-        viewModel = ViewModelProvider(requireActivity(), BrandStockViewModelFactory(repository,discountRepository,bookKeepingRepository,transactionsRepository,expensesRepository,
-            logRepository,application))
+        viewModel = ViewModelProvider(requireActivity(),
+            BrandStockViewModelFactory(repository,discountRepository, application))
             .get(BrandStockViewModel::class.java)
         binding.lifecycleOwner =this
         val layoutOneViews = listOf(
@@ -75,8 +66,7 @@ class BrandStockFragment : Fragment() {
         csvHandler = CsvHandler(requireContext())
 
         binding.brandStockViewModel = viewModel
-        viewModel.assignCloudIdtoALlData()
-        viewModel.checkDuplicateIds()
+
 
                 ////////////////////////////////////////////////////////////////////////////////////////////////
                 //////////////////////////Exporting CSV////////////////////////////////////////////////////////////////////////////
@@ -217,12 +207,9 @@ class BrandStockFragment : Fragment() {
                 adapter.notifyDataSetChanged()
             }
         })
-        viewModel.ctgId.observe(viewLifecycleOwner, Observer{
-            Log.i("brandList","ctg id fragment observer $it")
-        })
+        viewModel.ctgId.observe(viewLifecycleOwner, Observer{})
         //Brand adapter
         viewModel.brandBpModelList.observe(viewLifecycleOwner){
-            Log.i("brandList","$it")
             adapter.submitList(it.sortedBy { it.name})
             adapter.notifyDataSetChanged()
         }
@@ -290,14 +277,12 @@ class BrandStockFragment : Fragment() {
             if (it==true){
                 val list=viewModel.discountList.value
                 this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct())
-                //DialogUtils.updateDialog(requireContext(),viewModel,list)
                 viewModel.onProductAdded()
             }
         })
 
         viewModel.navigateProduct.observe(viewLifecycleOwner, Observer {id ->
             id?.let {
-                //ToolbarUtil.hideToolbarButtons(requireActivity())
                 this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToSubProductStockFragment(id))
                 viewModel.onBrandNavigated()
             } })
@@ -323,7 +308,7 @@ class BrandStockFragment : Fragment() {
                     )
                 }else{
                     this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct())
-                //DialogUtils.updateDialog(requireContext(),viewModel,list)
+
                 }
             }
             .setNegativeButton("Delete") { dialog, id ->

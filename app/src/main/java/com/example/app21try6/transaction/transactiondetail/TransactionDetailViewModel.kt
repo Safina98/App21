@@ -483,8 +483,8 @@ class TransactionDetailViewModel (
                 if (detailWarnaModel!=null){
                     val detailWarnaTable=detailWarnaModel.toDetailWarnaTable()
                     detailWarnaTable.batchCount -=detailWarnaModel.selectedQty
-                    val productId = stockRepo.getProdutId(detailWarnaTable.sPCloudId) ?: return@launch
-                    val brandId = stockRepo.getBrandId(productId) ?: return@launch
+                    val productId = stockRepo.getProdutIdBySubId(detailWarnaTable.sPCloudId) ?: return@launch
+                    val brandId = stockRepo.getBrandIdByProductId(productId) ?: return@launch
                     val inventoryLog =createInventoryLog(detailWarnaTable,detailWarnaTable.batchCount,productId,brandId,"Keluar Retail")
                     delay(1)
                     val merchandiseRetailList= mutableListOf<MerchandiseRetail?>()
@@ -670,8 +670,8 @@ class TransactionDetailViewModel (
     fun onNavigateToSubProduct(){
         viewModelScope.launch {
             val subId=transdetail.sPCloudId
-            val productId=stockRepo.getProdutId(subId?:0)
-            val brandId=stockRepo.getBrandId(productId)
+            val productId=stockRepo.getProdutIdBySubId(subId?:0)
+            val brandId=stockRepo.getBrandIdByProductId(productId)
             val transDetailId=transdetail.tDCloudId
             val ctgId=stockRepo.getCategoryIdByBrandId(brandId)
             val productName=stockRepo.getProductById(productId?:0).product_name

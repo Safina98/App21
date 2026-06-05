@@ -24,6 +24,9 @@ import com.example.app21try6.Constants
 import com.example.app21try6.R
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.BrandProductModel
+import com.example.app21try6.database.repositories.ExpensesRepository
+import com.example.app21try6.database.repositories.LogsRepository
+import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.databinding.FragmentExpensesBinding
 import com.example.app21try6.databinding.PopUpUpdateProductDialogBinding
 import com.example.app21try6.formatRupiah
@@ -72,16 +75,12 @@ class ExpensesFragment : Fragment() {
             binding.lblTotal,
             binding.txtTotal
         )
-        val dataSource3 = VendibleDatabase.getInstance(application).expenseDao
-        val dataSource4 = VendibleDatabase.getInstance(application).expenseCategoryDao
-        val dataSource5 = VendibleDatabase.getInstance(application).subProductDao
-        val dataSource6 = VendibleDatabase.getInstance(application).productDao
-        val dataSource7 = VendibleDatabase.getInstance(application).inventoryPurchaseDao
-        val dataSource8 = VendibleDatabase.getInstance(application).inventoryLogDao
-        val dataSource9 = VendibleDatabase.getInstance(application).detailWarnaDao
-        val dataSource10 = VendibleDatabase.getInstance(application).suplierDao
 
-        val viewModelFactory = PurchaseViewModelFactory(application,id,dataSource3,dataSource4,dataSource5,dataSource6,dataSource7,dataSource8,dataSource9,dataSource10)
+        val stockRepo = StockRepositories(application)
+        val expenseRepo= ExpensesRepository(application)
+        val logsRepo= LogsRepository(application)
+
+        val viewModelFactory = PurchaseViewModelFactory(application,id,stockRepo,expenseRepo,logsRepo)
         viewModel = ViewModelProvider(this,viewModelFactory).get(PurchaseViewModel::class.java)
         binding.viewModel=viewModel
 
@@ -114,14 +113,7 @@ class ExpensesFragment : Fragment() {
         }, DeleteListener{
             DialogUtils.showDeleteDialog(requireContext(),viewModel, it, { vm, item -> (vm as PurchaseViewModel).deleteExpenseCategory(item as CategoryModel) })
         }
-       /*
-        UpdateListener {
 
-        }, DeleteListener {
-
-            }
-
-        */
         )
         val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
         binding.rvCat.addItemDecoration(dividerItemDecoration)
@@ -206,24 +198,20 @@ class ExpensesFragment : Fragment() {
         viewModel.selectedECSpinner.observe(viewLifecycleOwner) {
             viewModel.updateRv4()
         }
-        viewModel.selectedYearSpinner.observe(viewLifecycleOwner){
-            Log.i(tagg,"selectedYearObserver: $it")
-        }
+        viewModel.selectedYearSpinner.observe(viewLifecycleOwner){}
         viewModel.selectedMonthSpinner.observe(viewLifecycleOwner){
-            Log.i(tagg,"selectedMonthObserver: $it")
         }
 
         viewModel.allExpenseCategoryName.observe(viewLifecycleOwner, Observer {
-           //Log.i(tagg,"category $it")
+
         })
         viewModel.allExpensesFromDB.observe(viewLifecycleOwner, Observer {
-          //  Log.i(tagg,"expense $it")
+
             adapter.submitList(it)
             adapter.notifyDataSetChanged()
         })
 
         viewModel.expenseSum.observe(viewLifecycleOwner, Observer {
-           // Log.i(tagg, "expensedum:$it")
         })
         viewModel.isNavigateToPurchase.observe(viewLifecycleOwner,Observer{
             it?.let {

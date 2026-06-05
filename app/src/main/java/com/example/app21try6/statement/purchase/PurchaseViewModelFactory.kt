@@ -15,25 +15,24 @@ import com.example.app21try6.database.daos.SubProductDao
 import com.example.app21try6.database.daos.SuplierDao
 import com.example.app21try6.database.daos.TransDetailDao
 import com.example.app21try6.database.daos.TransSumDao
+import com.example.app21try6.database.repositories.ExpensesRepository
+import com.example.app21try6.database.repositories.LogsRepository
+import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.statement.StatementHSViewModel
 
 class PurchaseViewModelFactory(private val application: Application,
                                private val id:Int,
-                               private val expenseDao: ExpenseDao,
-                               private val expenseCategoryDao: ExpenseCategoryDao,
-                               private val subProductDao: SubProductDao,
-                               private val productDao: ProductDao,
-                               private val invetoryPurchaseDao: InventoryPurchaseDao,
-                               private val inventoryLogDao: InventoryLogDao,
-                               private val detailWarnaDao: DetailWarnaDao,
-                                private val suplierDao:SuplierDao
+
+                                private val stockRepo: StockRepositories,
+                                private val expenseRepo: ExpensesRepository,
+                                private val logRepo: LogsRepository
 
 
 ): ViewModelProvider.Factory{
     @Suppress("unchecked_cast")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PurchaseViewModel::class.java)) {
-            return PurchaseViewModel(application,id,expenseDao,expenseCategoryDao,subProductDao,productDao,invetoryPurchaseDao,inventoryLogDao,detailWarnaDao,suplierDao) as T
+            return PurchaseViewModel(application,id,stockRepo,expenseRepo,logRepo) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

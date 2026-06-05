@@ -192,15 +192,11 @@ class DiscountRepository(
         }
     }
 
-    suspend fun insertCustomerToDB(customerTable: CustomerTable){
-        withContext(Dispatchers.IO){
-            customerDao.insert(customerTable)
-        }
-    }
+
     suspend fun updateCustomerToDB(customerTable: CustomerTable){
         withContext(Dispatchers.IO){
             if (customerTable.custId!=0){
-                Log.i("InsertProbs","Update")
+                customerTable.customerCloudId= System.currentTimeMillis()
                 customerDao.update(customerTable)
             }else{
                 Log.i("InsertProbs","Insert")

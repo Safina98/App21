@@ -28,14 +28,9 @@ import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 
-//todo delete bookkeeping repositories and transaction repository
 class BrandStockViewModel(
     private val repository: StockRepositories,
     private val discountRepository:DiscountRepository,
-    private val bookKeepingRepository: BookkeepingRepository,
-    private val transactionsRepository: TransactionsRepository,
-    private val expensesRepository: ExpensesRepository,
-    private val logsRepository: LogsRepository,
     application: Application): AndroidViewModel(application){
     private var viewModelJob = Job()
     //ui scope for coroutines
@@ -78,7 +73,7 @@ class BrandStockViewModel(
     val _product=MutableLiveData<Product?>()
 
     //TODO DELETE LATER
-    private val assignManager= AssignCloudIdManager(bookKeepingRepository,discountRepository,expensesRepository,logsRepository,repository,transactionsRepository)
+    //private val assignManager= AssignCloudIdManager(bookKeepingRepository,discountRepository,expensesRepository,logsRepository,repository,transactionsRepository)
 
 
 
@@ -110,16 +105,7 @@ class BrandStockViewModel(
         }
     }
 
-    fun assignCloudIdtoALlData(){
-        viewModelScope.launch {
-          assignManager.assignCloudIdForAllTables()
-        }
-    }
-    fun checkDuplicateIds(){
-        viewModelScope.launch {
-            assignManager.getDuplicateIds()
-        }
-    }
+
     fun updateRv(){
         viewModelScope.launch {
             val brandlist = repository.getBrandByCategoryId(ctgId.value?.toLong() ?:0L)

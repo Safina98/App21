@@ -167,8 +167,8 @@ class SubViewModel (
     fun insertDetailWarna(batchCount: Double, net: Double) {
         uiScope.launch {
             val subId = _selectedSubProduct.value?.sPCloudId ?: return@launch
-            val productId = stockRepo.getProdutId(subId) ?: return@launch
-            val brandId = stockRepo.getBrandId(productId) ?: return@launch
+            val productId = stockRepo.getProdutIdBySubId(subId) ?: return@launch
+            val brandId = stockRepo.getBrandIdByProductId(productId) ?: return@launch
             val existingDetailWarna = stockRepo.isDetailWarnaExist(subId, net)
             if (existingDetailWarna == null) {
                 // Insert new record
@@ -194,8 +194,8 @@ class SubViewModel (
     fun deleteDetailWarna(detailWarnaModel: DetailMerchandiseModel){
         uiScope.launch {
             var detailWarnaTable=detailWarnaModel.toDetailWarnaTable()
-            val productId = stockRepo.getProdutId(detailWarnaTable.sPCloudId) ?: return@launch
-            val brandId = stockRepo.getBrandId(productId) ?: return@launch
+            val productId = stockRepo.getProdutIdBySubId(detailWarnaTable.sPCloudId) ?: return@launch
+            val brandId = stockRepo.getBrandIdByProductId(productId) ?: return@launch
             stockRepo.deleteDetailWarna(detailWarnaTable,createInventoryLog(detailWarnaTable, detailWarnaTable.batchCount,productId, brandId,"Dihapus"),null)
             getDetailWarnaList(detailWarnaTable.sPCloudId)
         }
@@ -204,8 +204,8 @@ class SubViewModel (
         uiScope.launch {
             val detailWarnaTable=detailWarnaModel.toDetailWarnaTable()
             detailWarnaTable.batchCount -=1
-            val productId = stockRepo.getProdutId(detailWarnaTable.sPCloudId) ?: return@launch
-            val brandId = stockRepo.getBrandId(productId) ?: return@launch
+            val productId = stockRepo.getProdutIdBySubId(detailWarnaTable.sPCloudId) ?: return@launch
+            val brandId = stockRepo.getBrandIdByProductId(productId) ?: return@launch
             val inventoryLog =createInventoryLog(detailWarnaTable,detailWarnaTable.batchCount,productId,brandId,"Keluar Retail")
             val merchandiseRetail=createMerchandiseRetail(detailWarnaModel)
             merchandiseRetail.mRCloudId=System.currentTimeMillis()

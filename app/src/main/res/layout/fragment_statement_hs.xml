@@ -29,29 +29,11 @@
             android:visibility="visible"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintTop_toBottomOf="@+id/btn_add_discount"
-            app:layout_constraintBottom_toTopOf="@+id/btn_add_customer"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
-            android:id="@+id/btn_add_customer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add Customer"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_add_discount" /> <!-- Centers the button vertically -->
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_cust"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="visible"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@+id/btn_add_customer"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

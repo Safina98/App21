@@ -11,6 +11,7 @@ import com.example.app21try6.database.cloud.RealtimeDatabaseSync
 import com.example.app21try6.database.cloud.UploadInventories
 import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.models.DetailMerchandiseModel
+import com.example.app21try6.database.models.SubWithPriceModel
 import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.tables.Category
 import com.example.app21try6.database.tables.DetailWarnaTable
@@ -35,6 +36,7 @@ class StockRepositories (
     private val productDao=VendibleDatabase.getInstance(application).productDao
     private val subProductDao=VendibleDatabase.getInstance(application).subProductDao
     private val detailWarnaDao=VendibleDatabase.getInstance(application).detailWarnaDao
+
 
     //category rv data
     fun getCategoryModelLiveData(): LiveData<List<StockCategoryModel>> {
@@ -169,7 +171,7 @@ class StockRepositories (
     //delete brand
     suspend fun deleteBrand(id:Long){ withContext(Dispatchers.IO){ brandDao.deleteBrand(id) } }
     //get brand id by product id
-    suspend fun getBrandId(productId: Long?):Long?{ return withContext(Dispatchers.IO){ productDao.getBrandIdByProductId(productId) } }
+    suspend fun getBrandIdByProductId(productId: Long?):Long?{ return withContext(Dispatchers.IO){ productDao.getBrandIdByProductId(productId) } }
     suspend fun getBrandIdByName(name:String,catCode:Long):Long?{return withContext(Dispatchers.IO){brandDao.getBrandIdbyName(name,catCode)} }
     suspend fun getBrandNameyId(id:Long):String{return withContext(Dispatchers.IO){brandDao.getBrandNameById(id)} }
 
@@ -275,7 +277,7 @@ class StockRepositories (
     }
    suspend fun insertTry(product: Product, brand: String, cath: String){ withContext(Dispatchers.IO){ productDao.inserProduct(product.product_name,product.product_price,product.bestSelling,brand,cath) } }
     //get product id by sub  id
-    suspend fun getProdutId(subId:Long):Long?{ return withContext(Dispatchers.IO){ subProductDao.getProductIdBySubId(subId) } }
+    suspend fun getProdutIdBySubId(subId:Long):Long?{ return withContext(Dispatchers.IO){ subProductDao.getProductIdBySubId(subId) } }
     suspend fun updateProduct(product: Product){
         withContext(Dispatchers.IO){
             productDao.update(product)
@@ -304,6 +306,11 @@ class StockRepositories (
     fun getSubProductLiveData(id:Long?,brandId: Long?): LiveData<List<SubProduct>> {
         return  subProductDao.getAll(id,brandId)
     }
+    fun getSubProductWithPrice(query:String): LiveData<List<SubWithPriceModel>?> {
+        return  subProductDao.getSubProductWithPrice(query)
+    }
+
+
     suspend fun updateSubProduct(subProduct: SubProduct){
         withContext(Dispatchers.IO){
             subProductDao.update(subProduct)

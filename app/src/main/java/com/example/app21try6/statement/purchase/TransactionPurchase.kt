@@ -26,6 +26,9 @@ import com.example.app21try6.R
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.PaymentModel
 import com.example.app21try6.database.models.SubWithPriceModel
+import com.example.app21try6.database.repositories.ExpensesRepository
+import com.example.app21try6.database.repositories.LogsRepository
+import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.tables.InventoryPurchase
 import com.example.app21try6.databinding.FragmentTransactionPurchaseBinding
 import com.example.app21try6.utils.DialogUtils
@@ -47,16 +50,12 @@ class TransactionPurchase : Fragment() {
         val application= requireNotNull(this.activity).application
         binding.lifecycleOwner=this
         val id= arguments?.let { TransactionPurchaseArgs.fromBundle(it).exId }?:-1
-        val dataSource3 = VendibleDatabase.getInstance(application).expenseDao
-        val dataSource4 = VendibleDatabase.getInstance(application).expenseCategoryDao
-        val dataSource5 = VendibleDatabase.getInstance(application).subProductDao
-        val dataSource6 = VendibleDatabase.getInstance(application).productDao
-        val dataSource7 = VendibleDatabase.getInstance(application).inventoryPurchaseDao
-        val dataSource8 = VendibleDatabase.getInstance(application).inventoryLogDao
-        val dataSource9 = VendibleDatabase.getInstance(application).detailWarnaDao
-        val dataSource10 = VendibleDatabase.getInstance(application).suplierDao
 
-        val viewModelFactory = PurchaseViewModelFactory(application,id,dataSource3,dataSource4,dataSource5,dataSource6,dataSource7,dataSource8,dataSource9,dataSource10)
+        val stockRepo = StockRepositories(application)
+        val expenseRepo= ExpensesRepository(application)
+        val logsRepo= LogsRepository(application)
+
+        val viewModelFactory = PurchaseViewModelFactory(application,id,stockRepo,expenseRepo,logsRepo)
         viewModel = ViewModelProvider(this,viewModelFactory).get(PurchaseViewModel::class.java)
         binding.viewModel=viewModel
 

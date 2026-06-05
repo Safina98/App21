@@ -30,8 +30,6 @@ class StatementHSViewModel(application: Application,
 
     val allDiscountFromDB= discountRepo.getAllDiscount()
 
-    val allCustomerFromDb=discountRepo.getAllCustomers()
-
     val allCustomer=discountRepo.getAllCustomersFlow()
 
     var searchQuery = mutableStateOf("")
@@ -46,59 +44,19 @@ class StatementHSViewModel(application: Application,
     var id = 0
     val isAddExpense=MutableLiveData<Boolean>(true)
 
-   ////////////////////////////////////Expenses/////////////////////////////////////////////////
 
-    private fun formatDate(date: Date?): String? {
-        if (date != null) {
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            return dateFormat.format(date)
-        }
-        return null
-    }
-    private fun constructMonthDate(isStart: Boolean): String? {
-        val calendar = Calendar.getInstance()
-        calendar.set(Calendar.DAY_OF_MONTH, if (isStart) 1 else calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
-        return formatDate(calendar.time)
-    }
-
-    //filter data from database by date
 
  ////////////////////////////////////////////Customer////////////////////////////////////////////
-    fun insertCustomer(name:String?,businessName:String,location:String?,address:String?,level:String?,tag1:String?){
-        viewModelScope.launch {
-            val customerTable=populateCustomer(null,name, businessName, location, address, level, tag1)
-            discountRepo.insertCustomerToDB(customerTable)
 
 
-        }
-    }
-    fun updateCustomer(id:Int?,name:String?,businessName:String,location:String?,address:String?,level:String?,tag1:String?){
-        viewModelScope.launch {
-            val customerTable=populateCustomer(id, name, businessName, location, address, level, tag1)
-            discountRepo.updateCustomerToDB(customerTable)
-
-        }
-    }
     fun updateCustomer(customerTable: CustomerTable){
         viewModelScope.launch {
-            Log.i("InsertProbs","$customerTable")
             discountRepo.updateCustomerToDB(customerTable)
 
         }
     }
 
-    fun populateCustomer(id:Int?,name:String?,businessName:String,location:String?,address:String?,level:String?,tag1:String?): CustomerTable {
-        val customerTable = CustomerTable()
-        if (id!=null) customerTable.custId=id
-        customerTable.customerName=name ?: ""
-        customerTable.customerBussinessName=businessName
-        customerTable.customerLocation=location
-        customerTable.customerAddress=address ?:""
-        customerTable.customerTag1=tag1
-        if (id==null) customerTable.customerCloudId=System.currentTimeMillis()
-        customerTable.needsSyncs= 1
-        return customerTable
-    }
+
     fun onSearchQueryChange(query: String) {
         searchQuery.value = query
     }
