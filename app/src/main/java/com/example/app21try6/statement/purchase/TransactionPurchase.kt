@@ -93,15 +93,11 @@ class TransactionPurchase : Fragment() {
 
             if (subProductList != null) {
                 setAutoCompleteSubNameAdapter(subProductList,autoCompleteSubName)
-                //subNameAdapter.clear()
-                //val subNames = subProductList.map { it.subProduct.sub_name }
-               // subNameAdapter.updateData(subNames)
             }
 
         }
         viewModel.isAddItemClick.observe(viewLifecycleOwner){
             if (it==true){
-               // adapter.notifyDataSetChanged()
                 viewModel.onItemAdded()
             }
         }
@@ -182,7 +178,6 @@ class TransactionPurchase : Fragment() {
         if (!subProductList.isNullOrEmpty()) {
             val subNames = subProductList.map { it.subProduct.sub_name.trim()
             }
-
 
             val adapterSub = SpaceInsensitiveArrayAdapter(
                 requireContext(),

@@ -38,8 +38,7 @@ class StatementHsFragment : Fragment() {
         val application= requireNotNull(this.activity).application
 
         val discountRepo= DiscountRepository(application)
-        val viewModelFactory = StatementHSViewModelFactory(application,
-            discountRepo)
+        val viewModelFactory = StatementHSViewModelFactory(application, discountRepo)
 
         viewModel = ViewModelProvider(this,viewModelFactory).get(StatementHSViewModel::class.java)
         binding.viewModel=viewModel

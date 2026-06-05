@@ -4,7 +4,7 @@
     <data>
         <variable
             name="summary"
-            type="com.example.app21try6.bookkeeping.summary.ListModel" />
+            type="com.example.app21try6.database.models.ListModel" />
         <variable
             name="clickListener"
             type="com.example.app21try6.bookkeeping.summary.SummaryListener" />

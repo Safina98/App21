@@ -2,14 +2,9 @@ package com.example.app21try6.database.repositories
 
 import android.app.Application
 import androidx.lifecycle.LiveData
-import com.example.app21try6.bookkeeping.summary.ListModel
-import com.example.app21try6.bookkeeping.summary.MonthlyProfit
+import com.example.app21try6.database.models.ListModel
 import com.example.app21try6.database.VendibleDatabase
-import com.example.app21try6.database.daos.SummaryDbDao
-import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.database.tables.Summary
-import com.example.app21try6.database.tables.TransactionSummary
-import com.example.app21try6.getDateFromComponents
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -18,11 +13,6 @@ class BookkeepingRepository(
 ) {
     private val summaryDbDao= VendibleDatabase.getInstance(application).summaryDbDao
 
-    suspend fun getAllSummaryTable():List<Summary>{
-        return withContext(Dispatchers.IO){
-            summaryDbDao.selectAllSummaryTable()
-        }
-    }
     suspend fun assignCloudIdToSummaryTable(cloudId: Long, id: Int){
         withContext(Dispatchers.IO){
             summaryDbDao.assignSumamryCloudID(cloudId,id)
@@ -80,11 +70,7 @@ class BookkeepingRepository(
             summaryDbDao.insert(summary)
         }
     }
-    suspend fun getMothlyProfit():List<MonthlyProfit>{
-        return withContext(Dispatchers.IO){
-            summaryDbDao.getMonthlyProfitN()
-        }
-    }
+
     suspend fun getMonthlyData(year:Int): List<ListModel> {
         return withContext(Dispatchers.IO) {
             summaryDbDao.getMonthlyData( year)
@@ -99,35 +85,5 @@ class BookkeepingRepository(
     }
 
     //....................................................CSV......................................................................
-    suspend fun insertCSVBatch(tokensList: List<List<String>>) {
-        summaryDbDao.performTransaction {
-            val batchSize = 100 // Define batch size
-            for (i in 0 until tokensList.size step batchSize) {
-                val batch = tokensList.subList(i, minOf(i + batchSize, tokensList.size))
-                insertBatch(batch)
-            }
-        }
-    }
-    private suspend fun insertBatch(batch: List<List<String>>) {
-        batch.forEach { tokens ->
-            insertCSVN(tokens)
-        }
-    }
-    private suspend fun insertCSVN(token: List<String>) {
-        val summary = Summary().apply {
-            year = token[0].toInt()
-            month = token[1]
-            month_number = token[2].toInt()
-            day_name= token[4]
-            day = token[3].toInt()
-            date = getDateFromComponents(year, month, month_number, day, day_name)
-            item_name = token[5]
-            item_sold = token[7].toDouble()
-            price = token[6].toDouble()
-            total_income = token[8].toDouble()
-        }
-        summaryDbDao.insert(summary)
-    }
-
 
 }

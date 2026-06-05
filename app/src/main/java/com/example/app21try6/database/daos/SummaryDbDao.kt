@@ -6,8 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.example.app21try6.bookkeeping.summary.ListModel
-import com.example.app21try6.bookkeeping.summary.MonthlyProfit
+import com.example.app21try6.database.models.ListModel
 import com.example.app21try6.database.tables.Summary
 
 
@@ -69,17 +68,19 @@ interface SummaryDbDao {
     @Query("SELECT SUM(total_income) FROM SUMMARY_TABLE  WHERE year = :year_ AND month = :month_ AND day = :day_ ")
     fun getTotalToday(year_: Int,month_: String,day_:Int):LiveData<Double>
 
-    @Query("SELECT year as year_n,month as month_n,month_number as month_nbr, month as nama,day as day_n,day_name as day_name,SUM(total_income) as total,SUM((price - product_capital) * item_sold) AS monthly_profit FROM SUMMARY_TABLE  WHERE year = :year_  GROUP BY month ORDER BY month_nbr ASC")
+    @Query("SELECT year as year_n," +
+            "month as month_n," +
+            "month_number as month_nbr," +
+            " month as nama," +
+            "day as day_n," +
+            "day_name as day_name," +
+            "SUM(total_income) as total," +
+            "SUM((price - product_capital) * item_sold) AS monthly_profit " +
+            "FROM SUMMARY_TABLE  WHERE year = :year_  GROUP BY month ORDER BY month_nbr ASC")
     fun getMonthlyData(year_: Int):List<ListModel>
 
 
-    @Query("""
-        SELECT year, month, SUM((price - product_capital) * item_sold) AS monthly_profit
-        FROM summary_table 
-        GROUP BY year, month
-        ORDER BY year, month
-    """)
-    fun getMonthlyProfitN(): List<MonthlyProfit>
+
 
 
     @Query("SELECT " +
@@ -164,7 +165,6 @@ interface SummaryDbDao {
             "")
     fun decemberToJanuary()
 
-    @Query("SELECT * FROM summary_table")
-    fun selectAllSummaryTable(): List<Summary>
+
 }
 

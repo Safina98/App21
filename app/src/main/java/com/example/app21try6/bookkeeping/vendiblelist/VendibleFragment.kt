@@ -18,6 +18,8 @@ import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.databinding.FragmentVendibleBinding
+import com.example.app21try6.transaction.transactionedit.TransactionEditViewModel
+import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 
 class VendibleFragment : Fragment() {
@@ -31,8 +33,8 @@ class VendibleFragment : Fragment() {
         val repository = StockRepositories(application)
         val sumRepo = BookkeepingRepository(application)
         val date= arguments?.let { VendibleFragmentArgs.fromBundle(it).date }
-        val datee  = date!!.toMutableList()
-        val viewModelFactory = VendibleViewModelFactory(sumRepo,repository, date,application)
+
+        val viewModelFactory = VendibleViewModelFactory(sumRepo,repository, date!!,application)
         binding.lifecycleOwner =this
         val vendibleViewModel =ViewModelProvider(this,viewModelFactory)
             .get(VendibleViewModel::class.java)
@@ -45,16 +47,9 @@ class VendibleFragment : Fragment() {
             vendibleViewModel.onCheckBoxClicked(product, cb.isChecked)
         }, TextListener { view, vendible ->
 
-            datee.add(0, vendible.productCloudId.toString())
-            Toast.makeText(context, vendible.productCloudId.toString() + " " + vendible.product_name + " date[0] " + datee[0], Toast.LENGTH_SHORT).show()
-            datee.add(1, vendible.brand_code.toString())
-            datee.add(2, vendible.cath_code.toString())
-            datee.add(3, date[0])
-            datee.add(4, date[1])
-            //vendibleViewModel.onNavigateToSub(date)
-            showUpdateDialog(vendible,vendibleViewModel)
         }, DelLongListenerV {
-            deleteDialog(it, vendibleViewModel)
+           // deleteDialog(it, vendibleViewModel)
+            DialogUtils.showDeleteDialog(requireContext(), vendibleViewModel, it, { vm, item -> (vm as VendibleViewModel).deleteItemVendible(it.productCloudId) })
         })
 
 
@@ -78,97 +73,9 @@ class VendibleFragment : Fragment() {
                 vendibleViewModel.onNavigatedToEditThings()
             }
         })
-        vendibleViewModel.navigateToSub.observe(viewLifecycleOwner, Observer {
-            it?.let{
-                this.findNavController().navigate(VendibleFragmentDirections.actionVendibleFragmentToSubProductStockFragment(datee.toTypedArray()))
-               vendibleViewModel.onNavigatedToSub()
-                //requireActivity().onBackPressed()
-                //vendibleViewModel.onNavigatedToEditThings()
-            }
-        })
-        vendibleViewModel.addItem.observe(viewLifecycleOwner, Observer {
-            if (it==true){
-                showAddDialog(vendibleViewModel)
-                vendibleViewModel.onItemAdded()
-            }
-        })
+
+
         return binding.root
     }
 
-    private fun showUpdateDialog(product: Product, vendibleViewModel: VendibleViewModel) {
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle("Tambah Item")
-        val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.pop_up_add_vendible, null)
-        val textPrice = view.findViewById<TextInputEditText>(R.id.textaddPrice)
-        val textProduct = view.findViewById<TextInputEditText>(R.id.textaddProduct)
-        val textBrand = view.findViewById<TextInputEditText>(R.id.textaddBrand)
-        val checkBox = view.findViewById<CheckBox>(R.id.checkBox2)
-
-        textProduct.setText(product.product_name.toString())
-        textPrice.setText(product.product_price.toString())
-        checkBox.isChecked = product.bestSelling
-        builder.setView(view)
-        builder.setPositiveButton("OK") { dialog, which ->
-            product.product_price = textPrice.text.toString().toInt()
-            product.product_name = textProduct.text.toString().uppercase()
-            //product.brand_code = textBrand.text.toString().toUpperCase()
-            product.bestSelling = checkBox.isChecked
-            vendibleViewModel.updateVendible(product)
-
-        }
-        builder.setNegativeButton("No") { dialog, which ->
-        }
-        val alert = builder.create()
-        alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
-    }
-
-    fun showAddDialog(vendibleViewModel: VendibleViewModel){
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle("Tambah Item")
-        val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.pop_up_add_vendible, null)
-        val textPrice = view.findViewById<TextInputEditText>(R.id.textaddPrice)
-        val textProduct = view.findViewById<TextInputEditText>(R.id.textaddProduct)
-        val textBrand = view.findViewById<TextInputEditText>(R.id.textaddBrand)
-        val checkBox = view.findViewById<CheckBox>(R.id.checkBox2)
-        val textCath  = view.findViewById<TextInputEditText>(R.id.textaddCath)
-        var product = Product()
-        builder.setView(view)
-        builder.setPositiveButton("OK") { dialog, which ->
-            val cath = textCath.text.toString().uppercase().trim()
-            if(textPrice.text.toString().toIntOrNull()!=null){
-                product.product_price = textPrice.text.toString().toInt()}
-            product.product_name = textProduct.text.toString().uppercase().trim()
-            val brand = textBrand.text.toString().uppercase().trim()
-           product.bestSelling = checkBox.isChecked
-            //vendibleViewModel.setCathName(cath)
-           vendibleViewModel.insertVendible(cath,brand,product)
-        }
-        builder.setNegativeButton("No") { dialog, which ->
-        }
-        val alert = builder.create()
-        alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
-    }
-    private fun deleteDialog(product: Product, vendibleViewModel: VendibleViewModel) {
-        val builder = AlertDialog.Builder(context)
-        builder.setMessage("Are you sure you want to Delete?")
-                .setCancelable(true)
-                .setPositiveButton("Yes") { dialog, id ->
-                    vendibleViewModel.deleteItemVendible(product.productCloudId)
-                    Toast.makeText(context, "Deleted!!", Toast.LENGTH_SHORT).show()
-                }
-                .setNegativeButton("No") { dialog, id ->
-                    // Dismiss the dialog
-                    dialog.dismiss()
-                }
-        val alert = builder.create()
-        alert.show()
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
-    }
 }

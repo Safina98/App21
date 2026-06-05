@@ -32,31 +32,18 @@
             <Button
                 android:id="@+id/finnish_select"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:onClick="@{() -> vendibleViewModel.onAddClicked()}"
                 android:text="Selesai"
-                app:layout_constraintBottom_toBottomOf="@+id/btn_add_new_brand_"
-                app:layout_constraintEnd_toStartOf="@+id/btn_add_new_brand_"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/btn_add_new_brand_" />
+                app:layout_constraintStart_toStartOf="parent"/>
             <!-- android:onClick="@{() -> vendibleViewModel.onAddClicked()}"-->
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/btn_add_new_brand_"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end|bottom"
-                android:layout_margin="16dp"
-                android:onClick="@{() -> vendibleViewModel.onAddItem()}"
-                android:src="@drawable/fab"
-                app:fabCustomSize="56dp"
-                app:maxImageSize="56dp"
-                android:scaleType="center"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+
             <!--android:onClick="@{() -> vendibleViewModel.onAddItem()}"-->
 <!--android:tint="@color/dark_green2"-->
             <Spinner

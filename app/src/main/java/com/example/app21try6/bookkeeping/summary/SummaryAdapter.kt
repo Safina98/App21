@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.app21try6.database.models.ListModel
 
 import com.example.app21try6.databinding.ItemListSumaryBinding
 

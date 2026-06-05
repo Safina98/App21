@@ -20,7 +20,7 @@ class TransactionEditAdapter(
     val plusTransClickListener: PlusTransClickListener,
     val subslongListener: SubsTransLongListener,
     val plusLongListener: PlusTransLongListener,
-    val longListener: TransEditDeleteListener,
+    val deleteListener: TransEditDeleteListener,
     val priceLongListener:TransEditPriceClickListener,
     val selectedSpinnerListener: UnitTransTextCliked,
     val unitQtyLongListener: TransEditUnitQtyClickListener,
@@ -71,7 +71,7 @@ class TransactionEditAdapter(
         return MyViewHolder.from(parent)
     }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-       holder.bind(getItem(position),clickListener,subsTransClickListener,plusTransClickListener,subslongListener,plusLongListener,longListener,priceLongListener,selectedSpinnerListener,unitQtyLongListener)
+       holder.bind(getItem(position),clickListener,subsTransClickListener,plusTransClickListener,subslongListener,plusLongListener,deleteListener,priceLongListener,selectedSpinnerListener,unitQtyLongListener)
         val item = getItem(position)
         //Log.d("drag", "Binding item at position: $position, item: $item")
     }

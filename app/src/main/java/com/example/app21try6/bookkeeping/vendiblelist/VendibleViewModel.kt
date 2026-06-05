@@ -37,13 +37,9 @@ class VendibleViewModel(
     private val _navigateToEditDetail = MutableLiveData<Boolean>()
     val navigateToEditDetail: LiveData<Boolean>
         get() = _navigateToEditDetail
-    private val _navigateToSub = MutableLiveData< Array<String>>()
-    val navigateToSub: LiveData<Array<String>>
-        get() = _navigateToSub
 
-    private val _addItem = MutableLiveData<Boolean>()
-    val addItem:LiveData<Boolean>
-        get() = _addItem
+
+
     val cathList = stockRepo.getCategoryModelLiveData()
     val cathList_ = stockRepo.getCategoryNameLiveData()
     var _itemCathPosition = MutableLiveData<Int>(0)
@@ -101,12 +97,8 @@ class VendibleViewModel(
 
 
     ///////////////////////////////////NAVIGATION/////////////////////////////////////////////////////////
-    fun onAddItem(){ _addItem.value = true }
-    fun onItemAdded(){ _addItem.value = false }
-    fun onNavigateToSub(date: Array<String>){_navigateToSub.value = date}
-    @SuppressLint("NullSafeMutableLiveData")
-    fun onNavigatedToSub(){
-        this._navigateToSub.value = null}
+
+
     fun onNavigatedToEditThings(){ _navigateToEditDetail.value = false }
     override fun onCleared() {
         super.onCleared()

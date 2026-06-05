@@ -16,7 +16,7 @@ import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.example.app21try6.bookkeeping.summary.ListModel
+import com.example.app21try6.database.models.ListModel
 import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.tables.Summary
@@ -32,10 +32,6 @@ import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.*
 
-/*
-val database: SummaryDbDao,
-                           val database2: ProductDao,
- */
 
 class BookkeepingViewModel(
     private val bookRepo:BookkeepingRepository,
@@ -68,9 +64,7 @@ private val tagg="ProfitProbs"
     private val _addItem = MutableLiveData<Boolean>()
     val addItem:LiveData<Boolean> get() = _addItem
     ///////////////////////////////////Summary variables////////////////////////////////////////////
-    private val _insertionCompleted = MutableLiveData<Boolean>()
-    val insertionCompleted: LiveData<Boolean>
-        get() = _insertionCompleted
+
 
     private val _isLoading = MutableLiveData<Boolean>(false)
     val isLoading: LiveData<Boolean>
@@ -81,11 +75,11 @@ private val tagg="ProfitProbs"
     val year = Calendar.getInstance().get(Calendar.YEAR)
     //to create pdf
 
-    val allItemFromSummary = bookRepo.getAllSummary()
+
     //selected spinner
     private val _selectedYear= MutableLiveData<Int>(year)
     val selectedYear:LiveData<Int>get() = _selectedYear
-    private val _selectedMonth= MutableLiveData<String>("All")
+    private val _selectedMonth= MutableLiveData<String>("ALL")
     val selectedMonth :LiveData<String>get() = _selectedMonth
     //recyclerview daya
     private val _recyclerViewData = MutableLiveData<List<ListModel>>()
@@ -203,7 +197,7 @@ private val tagg="ProfitProbs"
     ////////////////////////////////////Summary Functions////////////////////////////////////
 @RequiresApi(Build.VERSION_CODES.O)
 fun onRvClick(listModel: ListModel){
-        if (selectedMonth.value!="All"){
+        if (selectedMonth.value!="ALL"){
             val clickedDate = arrayOf(listModel.year_n.toString(),listModel.month_n,listModel.day_n.toString())
             onDayClick(clickedDate)
         }else{
@@ -211,15 +205,12 @@ fun onRvClick(listModel: ListModel){
             setSelectedYear(listModel.year_n.toString())
         }
     }
-    fun getSummaryWithNullProductId(){
-        viewModelScope.launch {
-            val list = bookRepo.getMothlyProfit()
-        }
-    }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun setSelectedYear(year:String){
-        _selectedYear.value = year.toInt()
+
+        _selectedYear.value = year.toIntOrNull()
         updateRvNew()
     }
     @RequiresApi(Build.VERSION_CODES.O)
@@ -261,7 +252,7 @@ fun onRvClick(listModel: ListModel){
 
         val initialList = mutableListOf<ListModel>()
         for(i in months_list){
-            if(i!="All"){
+            if(i!="ALL"){
                 initialList.add(ListModel(0,i,0,0,i,"",0.0,0.0))
             }
         }
@@ -272,7 +263,7 @@ fun onRvClick(listModel: ListModel){
     fun updateRvNew() {
         viewModelScope.launch {
             val currentList = mutableListOf<ListModel>()
-            if (selectedMonth.value == "All") {
+            if (selectedMonth.value == "ALL") {
                 initialRv()
                 val filteredData = bookRepo.getMonthlyData(_selectedYear.value?:year)
                 updateListWithFilteredData(currentList, filteredData)
@@ -294,7 +285,7 @@ fun onRvClick(listModel: ListModel){
                     currentItem.year_n = filteredItem.year_n
                     currentItem.month_n = filteredItem.month_n
                     currentItem.nama = filteredItem.nama
-                    currentItem.monthly_profit=filteredItem.monthly_profit-11700000.0
+                    currentItem.monthly_profit=filteredItem.monthly_profit-15000000.0
                 }
             }
 
@@ -315,56 +306,20 @@ fun onRvClick(listModel: ListModel){
                     total = filteredItem.total
                     year_n = filteredItem.year_n
                     month_n = filteredItem.month_n
-                    monthly_profit=filteredItem.monthly_profit-450000.0
+                    monthly_profit=filteredItem.monthly_profit-577000.0
                 }
             }
         }
 
     }
 
-    fun writeCSV(file: File) {
-        try {
-            val content = "Tahun,Bulan,Bulan, Tanggal, Hari,Nama Produk,Harga,Jumlah,Total,capital,profit"
-            val fw = FileWriter(file.absoluteFile)
-            val bw = BufferedWriter(fw)
-            bw.write(content)
-            for (j in allItemFromSummary.value!!){
-                if (j.item_name!="empty") {
-                    bw.newLine()
-                    val sumLine = "${j.year},${j.month},${j.month_number},${j.day},${j.day_name},${j.item_name},${j.price},${j.item_sold},${j.total_income},${j.product_capital},${(j.price-j.product_capital)*j.item_sold}"
-                    Log.i("new_", j.toString())
-                    bw.write(sumLine)
-                }
-            }
-            bw.close()
-            Toast.makeText(getApplication(),"Success",Toast.LENGTH_SHORT).show()
-        } catch (e: IOException) {
-            Toast.makeText(getApplication(),e.toString(),Toast.LENGTH_SHORT).show()
-        }
-
-    }
-
-    //fun onClear() { viewModelScope.launch {clear() } }
-    //suspend fun clear() { withContext(Dispatchers.IO) { database.clear() } }
     fun onDayClick(id: Array<String>){
         viewModelScope.launch {
             _navigateBookKeeping.value = id
             _date.value = id
         }}
 
-fun insertCSVBatch(tokensList: List<List<String>>) {
-    viewModelScope.launch {
-        try {
-            _isLoading.value = true
-            bookRepo.insertCSVBatch(tokensList)
-            _insertionCompleted.value = true
-        } catch (e: Exception) {
-            Toast.makeText(getApplication(), e.toString(), Toast.LENGTH_LONG).show()
-        }finally {
-            _isLoading.value = false // Hide loading indicator
-        }
-    }
-}
+
 
     @SuppressLint("NullSafeMutableLiveData")
     fun onDayNavigated() { _navigateBookKeeping.value  = null }
