@@ -39,23 +39,21 @@ fun CustomerItemView(
     item: CustomerTable,
     clickListener: CustomerListener,
     deleteListener: CustomerDelListener
-)
-{
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp)
             .padding(2.dp)
-            ,
+            .height(110.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(6.dp)
 
     ) {
-
         Box(
             modifier = Modifier
+                .padding(2.dp)
                 .fillMaxSize()
-                .background(color = Color.Transparent)
+                .background(color = colorResource(id = R.color.logrvbg))
         ) {
             Column(
                 modifier = Modifier
@@ -87,11 +85,7 @@ fun CustomerItemView(
                     style = MaterialTheme.typography.titleSmall,
                     color = colorResource(id = R.color.mainTextColor)
                 )
-
             }
-
-// ... rest of imports
-
             Row(
                 modifier = Modifier
                     .align(Alignment.TopEnd),
@@ -109,7 +103,6 @@ fun CustomerItemView(
                         modifier = Modifier.size(25.dp) // Scales the icon appropriately
                     )
                 }
-
                 IconButton(
                     onClick = { deleteListener.onClick(item) },
                     modifier = Modifier.size(40.dp)
@@ -124,5 +117,4 @@ fun CustomerItemView(
             }
         }
     }
-
 }

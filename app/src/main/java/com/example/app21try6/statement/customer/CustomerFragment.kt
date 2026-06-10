@@ -22,7 +22,6 @@ class CustomerFragment: Fragment(){
         val application= requireNotNull(this.activity).application
         val discountRepo= DiscountRepository(application)
         val viewModelFactory = StatementHSViewModelFactory(application,discountRepo)
-
         val viewModel = ViewModelProvider(this,viewModelFactory).get(StatementHSViewModel::class.java)
 
         return ComposeView(requireContext()).apply {

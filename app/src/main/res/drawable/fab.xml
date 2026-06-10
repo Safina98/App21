@@ -4,17 +4,7 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
     <solid android:color="#199fff"/>
-   <!--
-   pink
 
-        <gradient
-        android:angle="45"
-        android:centerX="40%"
-        android:centerColor="#e5bca9"
-        android:startColor="#c87d87"
-        android:endColor="#f0c4cb"
-        android:type="linear" />
-   -->
     <gradient
         android:angle="45"
         android:centerX="40%"

@@ -1,11 +1,14 @@
 package com.example.app21try6.statement.customer
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -22,13 +25,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.app21try6.DraggableFloatingActionButton
+import com.example.app21try6.R
 import com.example.app21try6.database.tables.CustomerTable
 import com.example.app21try6.statement.CustomerAdapter
 import com.example.app21try6.statement.CustomerDelListener
@@ -106,6 +116,9 @@ fun CustomerScreen (
         }
         DraggableFloatingActionButtonCompose(
             onClick = { showUpdateDialog = true },
+            brush = Brush.linearGradient(
+                colors = listOf(Color(0xFF27391C), Color(0xFF3E7B27), Color(0xFF3D5300))
+            ),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)

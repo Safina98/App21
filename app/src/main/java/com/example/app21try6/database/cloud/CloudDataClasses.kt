@@ -35,7 +35,6 @@ data class ProductCloud(
     var defaultNet: Double = 0.0,
     var alternatePrice: Double = 0.0,
     var brandCode: Long = 0L,
-    var cathCode: Long = 0L,
     var discountId: Int? = null,
     var purchasePrice: Int? = null,
     var puchaseUnit: String? = null,
@@ -55,14 +54,11 @@ data class SubProductCloud(
     var warna: String = "",
     var ket: String = "",
     var productCloudId: Long = 0,
-    var brandCode: Long = 0L,
-    var cathCode: Long = 0L,
     var isChecked: Boolean = false,
     var discountId: Int? = null,
     var isDeleted: Boolean = false,
     var needsSyncs: Int = 1,
     var lastUpdated: Long = System.currentTimeMillis(),
-
     @get:Exclude
     var cloudId: String = ""
 )
