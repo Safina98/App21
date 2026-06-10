@@ -269,7 +269,7 @@ fun updateSubTable(){
             bestSelling.value=product.bestSelling
             defaultNet.value=product.default_net
             alternatePrice.value=product.alternate_price
-            ctgName.value= repository.getCategoryNameById(product.cath_code)//_selectedKategoriSpinner.value ?: ""
+          //  ctgName.value= repository.getCategoryNameById(product.cath_code)//_selectedKategoriSpinner.value ?: ""
             discountId=MutableLiveData<Int?>(null)
             purchasePrice.value=product.purchasePrice
             puchaseUnit.value=product.puchaseUnit
@@ -298,7 +298,7 @@ fun updateSubTable(){
             product.product_name=(productName.value?:"").uppercase().trim()
             product.brand_code = selectedBrandBpModel.value!!.id?:0L
             product.product_price = productPice.value?:0
-            product.cath_code = ctgId.value?.toLong()?:0L
+           // product.cath_code = ctgId.value?.toLong()?:0L
             product.product_capital = productCapital.value?:0
             product.discountId=discountRepository.getDiscountIdByName((discountName.value?:"").uppercase().trim())
             product.alternate_capital=alternateCapital.value ?: 0.0
@@ -306,10 +306,11 @@ fun updateSubTable(){
             product.purchasePrice=purchasePrice.value ?: 0
             product.puchaseUnit=(puchaseUnit.value)?.uppercase()?.trim()
             product.alternate_price=alternatePrice.value ?: 0.0
-            product.cath_code=repository.getCategoryIdByName(ctgName.value ?: "")
-            product.brand_code=repository.getBrandIdByName(branName.value?:"",product.cath_code)?:0
+            //product.cath_code=repository.getCategoryIdByName(ctgName.value ?: "")
+            val ctgId=repository.getCategoryIdByName(ctgName.value ?: "")
+            product.brand_code=repository.getBrandIdByName(branName.value?:"",ctgId)?:0
             product.needsSyncs=1
-            if (product.brand_code!=0L && product.cath_code!=0L) {
+            if (product.brand_code!=0L && ctgId!=0L) {
                 if (_product.value==null){
                     product.productCloudId=System.currentTimeMillis()
                      repository.insertProduct(product)

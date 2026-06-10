@@ -4,6 +4,87 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 object Migrations {
+    val MIGRATION_55_56 = object : Migration(55, 56) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+
+            // ── SubProduct ──────────────────────────────────────────
+            database.execSQL("""
+            CREATE TABLE sub_table_new (
+                sPCloudId INTEGER NOT NULL,
+                sub_name TEXT NOT NULL,
+                roll_u INTEGER NOT NULL,
+                warna TEXT NOT NULL,
+                ket TEXT NOT NULL,
+                productCloudId INTEGER NOT NULL,
+                is_checked INTEGER NOT NULL,
+                discountId INTEGER,
+                is_deleted INTEGER NOT NULL,
+                needs_syncs INTEGER NOT NULL,
+                PRIMARY KEY(sPCloudId),
+                FOREIGN KEY(productCloudId) REFERENCES product_table(productCloudId) ON DELETE CASCADE ON UPDATE CASCADE,
+                FOREIGN KEY(discountId) REFERENCES discount_table(discountId) ON DELETE SET NULL ON UPDATE CASCADE
+            )
+        """.trimIndent())
+
+            database.execSQL("""
+            INSERT INTO sub_table_new (
+                sPCloudId, sub_name, roll_u, warna, ket,
+                productCloudId, is_checked, discountId,
+                is_deleted, needs_syncs
+            )
+            SELECT
+                sPCloudId, sub_name, roll_u, warna, ket,
+                productCloudId, is_checked, discountId,
+                is_deleted, needs_syncs
+            FROM sub_table
+        """.trimIndent())
+
+            database.execSQL("DROP TABLE sub_table")
+            database.execSQL("ALTER TABLE sub_table_new RENAME TO sub_table")
+
+            // ── Product ─────────────────────────────────────────────
+            database.execSQL("""
+            CREATE TABLE product_table_new (
+                productCloudId INTEGER NOT NULL,
+                product_name TEXT NOT NULL,
+                product_price INTEGER NOT NULL,
+                product_capital INTEGER NOT NULL,
+                checkBoxBoolean INTEGER NOT NULL,
+                best_selling INTEGER NOT NULL,
+                default_net REAL NOT NULL,
+                alternate_price REAL NOT NULL,
+                brand_code INTEGER NOT NULL,
+                discountId INTEGER,
+                purchasePrice INTEGER,
+                purchaseUnit TEXT,
+                alternate_capital REAL NOT NULL,
+                is_deleted INTEGER NOT NULL,
+                needs_syncs INTEGER NOT NULL,
+                PRIMARY KEY(productCloudId),
+                FOREIGN KEY(brand_code) REFERENCES brand_table(brandCloudId) ON DELETE CASCADE ON UPDATE CASCADE,
+                FOREIGN KEY(discountId) REFERENCES discount_table(discountId) ON DELETE SET NULL ON UPDATE CASCADE
+            )
+        """.trimIndent())
+
+            database.execSQL("""
+            INSERT INTO product_table_new (
+                productCloudId, product_name, product_price, product_capital,
+                checkBoxBoolean, best_selling, default_net, alternate_price,
+                brand_code, discountId, purchasePrice, purchaseUnit,
+                alternate_capital, is_deleted, needs_syncs
+            )
+            SELECT
+                productCloudId, product_name, product_price, product_capital,
+                checkBoxBoolean, best_selling, default_net, alternate_price,
+                brand_code, discountId, purchasePrice, purchaseUnit,
+                alternate_capital, is_deleted, needs_syncs
+            FROM product_table
+        """.trimIndent())
+
+            database.execSQL("DROP TABLE product_table")
+            database.execSQL("ALTER TABLE product_table_new RENAME TO product_table")
+        }
+    }
     val MIGRATION_54_55 = object : Migration(54, 55) { // replace X, Y with your version numbers
         override fun migrate(database: SupportSQLiteDatabase) {
             database.execSQL(

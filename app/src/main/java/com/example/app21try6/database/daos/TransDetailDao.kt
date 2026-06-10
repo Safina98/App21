@@ -89,8 +89,10 @@ interface TransDetailDao {
             SUM(td.qty * td.unit_qty) AS value
         FROM trans_detail_table td
         JOIN sub_table s ON td.sPCloudId = s.sPCloudId
-        JOIN category_table c ON s.cath_code = c.categoryCloudId
         JOIN product_table p ON s.productCloudId = p.productCloudId
+        JOIN brand_table b ON p.brand_code = b.brandCloudId
+        JOIN category_table c ON b.cath_code = c.categoryCloudId
+        
         WHERE
         (:month IS NULL OR substr(td.trans_detail_date, 6, 2) = :month)
       AND (:year IS NULL OR substr(td.trans_detail_date, 1, 4) = :year)
@@ -121,8 +123,10 @@ interface TransDetailDao {
             SUM(td.qty * td.unit_qty) AS value
         FROM trans_detail_table td
         JOIN sub_table s ON td.sPCloudId = s.sPCloudId
-        JOIN category_table c ON s.cath_code = c.categoryCloudId
         JOIN product_table p ON s.productCloudId = p.productCloudId
+        JOIN brand_table b ON p.brand_code = b.brandCloudId
+        JOIN category_table c ON b.cath_code = c.categoryCloudId
+        
         WHERE
         (:month IS NULL OR substr(td.trans_detail_date, 6, 2) = :month)
       AND (:year IS NULL OR substr(td.trans_detail_date, 1, 4) = :year)
@@ -139,8 +143,10 @@ interface TransDetailDao {
             SUM(td.qty * td.unit_qty) AS value
         FROM trans_detail_table td
         JOIN sub_table s ON td.sPCloudId = s.sPCloudId
-        JOIN category_table c ON s.cath_code = c.categoryCloudId
         JOIN product_table p ON s.productCloudId = p.productCloudId
+        JOIN brand_table b ON p.brand_code = b.brandCloudId
+        JOIN category_table c ON b.cath_code = c.categoryCloudId
+        
         WHERE
         (:month IS NULL OR substr(td.trans_detail_date, 6, 2) = :month)
       AND (:year IS NULL OR substr(td.trans_detail_date, 1, 4) = :year)
@@ -156,8 +162,9 @@ interface TransDetailDao {
             SUM(td.qty*td.unit_qty) AS value
         FROM trans_detail_table td
          JOIN sub_table s ON td.sPCloudId = s.sPCloudId
-        JOIN category_table c ON s.cath_code = c.categoryCloudId
-        JOIN product_table p ON s.productCloudId = p.productCloudId
+         JOIN product_table p ON s.productCloudId = p.productCloudId
+        JOIN brand_table b ON p.brand_code = b.brandCloudId
+        JOIN category_table c ON b.cath_code = c.categoryCloudId
         WHERE
        (:year IS NULL OR substr(td.trans_detail_date, 1, 4) = :year)
        AND (:category IS NULL OR c.category_name= :category)
@@ -174,8 +181,10 @@ interface TransDetailDao {
             SUM(td.qty*td.unit_qty) AS value
         FROM trans_detail_table td
             JOIN sub_table s ON td.sPCloudId = s.sPCloudId
-            JOIN category_table c ON s.cath_code = c.categoryCloudId
             JOIN product_table p ON s.productCloudId = p.productCloudId
+            JOIN brand_table b ON p.brand_code = b.brandCloudId            
+            JOIN category_table c ON b.cath_code = c.categoryCloudId
+            
              WHERE
         (:category IS NULL OR c.category_name= :category)
         AND (:product IS NULL OR p.product_name= :product)
@@ -193,8 +202,10 @@ interface TransDetailDao {
         JOIN trans_sum_table ts  ON td.tSCloudId = ts.tSCloudId
         INNER JOIN customer_table cs ON ts.custId = cs.custId
             JOIN sub_table s ON td.sPCloudId = s.sPCloudId
-            JOIN category_table c ON s.cath_code = c.categoryCloudId
             JOIN product_table p ON s.productCloudId = p.productCloudId
+            JOIN brand_table b ON p.brand_code = b.brandCloudId
+            JOIN category_table c ON b.cath_code = c.categoryCloudId
+            
              WHERE
               (:year IS NULL OR substr(td.trans_detail_date, 1, 4) = :year) 
         AND (:category IS NULL OR c.category_name= :category)

@@ -25,7 +25,10 @@ interface SubProductDao {
     fun update_checkbox(name:String,bool:Int):Int
     @Query("UPDATE sub_table SET is_checked =0")
     fun unchecked_allCheckbox()
-    @Query("SELECT * FROM sub_table WHERE  (:productCloudId_ IS NULL OR productCloudId = :productCloudId_) AND (:brandId IS NULL OR brand_code=:brandId)")
+    @Query("SELECT * FROM sub_table s " +
+            "JOIN product_table p  ON s.productCloudId = p.productCloudId "+
+            "WHERE  (:productCloudId_ IS NULL OR s.productCloudId = :productCloudId_)" +
+            " AND (:brandId IS NULL OR p.brand_code=:brandId)")
     fun getAll(productCloudId_:Long?,brandId: Long?):LiveData<List<SubProduct>>
 
     @Query("SELECT * FROM sub_table WHERE sPCloudId = :sub_id_")
@@ -56,8 +59,8 @@ interface SubProductDao {
     @Query("SELECT roll_u FROM sub_table WHERE sPCloudId = :sub_id_")
     fun getStokU(sub_id_: Long):LiveData<Int>
 
-    @Query("INSERT INTO sub_table (sub_name,roll_u,warna,ket,is_checked,productCloudId,brand_code,cath_code) SELECT :sub_name_ as sub_name,:u_ as roll_u, :warna_ as warna,:ket_ as ket,0 as is_checked,(SELECT productCloudId FROM product_table WHERE product_name = :product_name_ LIMIT 1) as productCloudId,(SELECT brandCloudId FROM brand_table WHERE brand_name = :brand_code_ LIMIT 1) as brand_code,(SELECT categoryCloudId FROM category_table WHERE category_name = :cath_code_ LIMIT 1) as cath_code")
-    fun insertIfNotExist(sub_name_:String,warna_:String,ket_:String,u_:Int,product_name_: String,brand_code_:String,cath_code_:String)
+    @Query("INSERT INTO sub_table (sub_name,roll_u,warna,ket,is_checked,productCloudId) SELECT :sub_name_ as sub_name,:u_ as roll_u, :warna_ as warna,:ket_ as ket,0 as is_checked,(SELECT productCloudId FROM product_table WHERE product_name = :product_name_ LIMIT 1) as productCloudId")
+    fun insertIfNotExist(sub_name_:String,warna_:String,ket_:String,u_:Int,product_name_: String)
 
 
     @Query("SELECT *FROM sub_table INNER JOIN PRODUCT_TABLE ON  product_table.productCloudId = sub_table.productCloudId WHERE sPCloudId = :id limit 1")

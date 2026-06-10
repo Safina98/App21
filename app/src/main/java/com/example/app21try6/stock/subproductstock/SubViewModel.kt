@@ -149,8 +149,8 @@ class SubViewModel (
                 val subProduct= SubProduct()
                 subProduct.productCloudId = product_id
                 subProduct.sub_name = subProduct_name
-                subProduct.brand_code = parameterBrandId
-                subProduct.cath_code = ctgId
+                //subProduct.brand_code = parameterBrandId
+                //subProduct.cath_code = ctgId
                 subProduct.needsSyncs=1
                 subProduct.sPCloudId=System.currentTimeMillis()
                 stockRepo.insertSubProduct(subProduct)

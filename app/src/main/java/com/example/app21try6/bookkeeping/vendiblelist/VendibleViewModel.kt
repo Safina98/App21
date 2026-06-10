@@ -15,13 +15,6 @@ import com.example.app21try6.database.tables.Summary
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 
-/*
- val database: SummaryDbDao,
-    val database1: CategoryDao,
-    val database2: ProductDao,
-    val database3: BrandDao,
-    val database4: SubProductDao,
- */
 class VendibleViewModel(
     private val bookRepo: BookkeepingRepository,
     private val stockRepo: StockRepositories,
@@ -77,17 +70,7 @@ class VendibleViewModel(
             _navigateToEditDetail.value = true
         }
     }
-    fun insertVendible(cath:String,brand:String,product: Product){
-        uiScope.launch {
-            try {
-                stockRepo.insertIfNotExist(brand,cath)
-                stockRepo.insertTry(product,brand,cath)
-            } catch (e: SQLiteException) {
-                Toast.makeText(getApplication(),e.toString(),Toast.LENGTH_LONG).show()
-                Log.i("tag_1", "message $e")
-            }
-        }
-    }
+
 
     fun deleteItemVendible(item_id:Long){ uiScope.launch { stockRepo.deleteProduct(item_id)} }
     fun updateVendible(product: Product){ uiScope.launch { stockRepo.updateProduct(product) } }

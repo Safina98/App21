@@ -201,7 +201,6 @@ class BrandStockFragment : Fragment() {
         }
         //Kategori adapter
         viewModel.ctgList.observe(viewLifecycleOwner, Observer {
-            Log.i("ctgList","$it")
             it.let {
                 adapterCat.submitList(it)
                 adapter.notifyDataSetChanged()

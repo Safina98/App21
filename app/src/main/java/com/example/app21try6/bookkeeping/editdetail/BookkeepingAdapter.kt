@@ -1,20 +1,14 @@
 package com.example.app21try6.bookkeeping.editdetail
 
 import android.annotation.SuppressLint
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-
 import com.example.app21try6.database.tables.Summary
 import com.example.app21try6.databinding.ItemListBookkeepingBinding
-//import com.example.app21try6.database.Vendible
-
-
-
 import com.example.app21try6.formatRupiah
 import java.util.Locale
 

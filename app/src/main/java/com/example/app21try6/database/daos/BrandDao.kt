@@ -68,9 +68,9 @@ interface BrandDao {
     INNER JOIN product_table 
         ON product_table.productCloudId = sub_table.productCloudId
     INNER JOIN brand_table 
-        ON brand_table.brandCloudId = sub_table.brand_code
+        ON brand_table.brandCloudId =product_table.productCloudId
     INNER JOIN category_table 
-        ON category_table.categoryCloudId = sub_table.cath_code
+        ON category_table.categoryCloudId = brand_table.cath_code
 """)
     fun getExportedData(): LiveData<List<ExportModel>>
 

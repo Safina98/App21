@@ -275,7 +275,7 @@ class StockRepositories (
     fun getAllProduct(): LiveData<List<Product>> {
         return productDao.getAllProduct()
     }
-   suspend fun insertTry(product: Product, brand: String, cath: String){ withContext(Dispatchers.IO){ productDao.inserProduct(product.product_name,product.product_price,product.bestSelling,brand,cath) } }
+
     //get product id by sub  id
     suspend fun getProdutIdBySubId(subId:Long):Long?{ return withContext(Dispatchers.IO){ subProductDao.getProductIdBySubId(subId) } }
     suspend fun updateProduct(product: Product){
@@ -624,11 +624,11 @@ class StockRepositories (
         productDao.insertIfNotExist(
             product.product_name, product.product_price, product.product_capital,
             product.default_net, product.alternate_capital, product.alternate_price,
-            product.bestSelling, brandName, categoryName
+            product.bestSelling, brandName
         )
         subProductDao.insertIfNotExist(
             subProduct.sub_name, subProduct.warna, subProduct.ket, subProduct.roll_u,
-             product.product_name, brandName, categoryName
+             product.product_name
         )
     }
 
