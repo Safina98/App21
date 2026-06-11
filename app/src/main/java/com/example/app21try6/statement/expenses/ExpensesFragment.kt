@@ -51,7 +51,7 @@ import java.util.Locale
 import kotlin.math.exp
 
 
-val tagg = "expenseprobs"
+var taggg = "expenseprobs"
 
 class ExpensesFragment : Fragment() {
 
@@ -67,15 +67,12 @@ class ExpensesFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_expenses,container,false)
         val application= requireNotNull(this.activity).application
         binding.lifecycleOwner = viewLifecycleOwner
-
         val layoutOneViews = listOf(
             binding.spinnerC,
-
             binding.rvDisc,
             binding.lblTotal,
             binding.txtTotal
         )
-
         val stockRepo = StockRepositories(application)
         val expenseRepo= ExpensesRepository(application)
         val logsRepo= LogsRepository(application)
@@ -100,11 +97,9 @@ class ExpensesFragment : Fragment() {
                 val id=item.id
                 DialogUtils.showDeleteDialog(
                     requireContext(),
-
                     viewModel,
                     item, { vm, item ->
                             (vm as  PurchaseViewModel).deleteExpense(item as DiscountAdapterModel)
-
                     })
 
             })

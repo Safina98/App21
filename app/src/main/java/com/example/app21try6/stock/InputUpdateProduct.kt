@@ -1,6 +1,7 @@
 package com.example.app21try6.stock
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -35,7 +36,6 @@ class InputUpdateProduct : Fragment() {
         binding=DataBindingUtil.inflate(inflater,R.layout.fragment_input_update_product,container,false)
         val application = requireNotNull(this.activity).application
 
-
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
@@ -45,11 +45,8 @@ class InputUpdateProduct : Fragment() {
                 }
             }
         )
-
         val repository = StockRepositories(application)
         val discountRepository= DiscountRepository(application)
-
-
 
         viewModel = ViewModelProvider(requireActivity(), BrandStockViewModelFactory(repository,discountRepository,application))
             .get(BrandStockViewModel::class.java)
@@ -77,6 +74,9 @@ class InputUpdateProduct : Fragment() {
                 )
                 binding.textCategory.setAdapter(adapterCat)
             }
+        }
+        viewModel.branName.observe(viewLifecycleOwner){
+            Log.i("ProductProbs","brand name $it")
         }
         binding.textCategory.setOnItemClickListener { parent, view, position, id ->
             val selectedCategory = parent.getItemAtPosition(position) as String

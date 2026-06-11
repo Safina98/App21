@@ -148,7 +148,7 @@ class StockRepositories (
     // get brand recycler view data by categoryId
     suspend fun getBrandByCategoryId(id:Long):List<BrandProductModel>{ return withContext(Dispatchers.IO){ brandDao.getBrandModelByCatId(null) } }
     suspend fun getAllBrand():List<Brand>{ return withContext(Dispatchers.IO){ brandDao.getAllBrand() } }
-    suspend fun getBrandNameListByCategoryName(cat:Long):List<String>{ return withContext(Dispatchers.IO){ brandDao.getBrandNameListByCatName(cat) } }
+    fun getBrandNameListByCategoryName(): LiveData<List<String>>{ return  brandDao.getBrandNameListByCatName()  }
     //update brand
     suspend fun updateBrand(brand: Brand){ withContext(Dispatchers.IO){
         brandDao.update(brand)
@@ -172,7 +172,7 @@ class StockRepositories (
     suspend fun deleteBrand(id:Long){ withContext(Dispatchers.IO){ brandDao.deleteBrand(id) } }
     //get brand id by product id
     suspend fun getBrandIdByProductId(productId: Long?):Long?{ return withContext(Dispatchers.IO){ productDao.getBrandIdByProductId(productId) } }
-    suspend fun getBrandIdByName(name:String,catCode:Long):Long?{return withContext(Dispatchers.IO){brandDao.getBrandIdbyName(name,catCode)} }
+    suspend fun getBrandIdByName(name:String):Long?{return withContext(Dispatchers.IO){brandDao.getBrandIdbyName(name)} }
     suspend fun getBrandNameyId(id:Long):String{return withContext(Dispatchers.IO){brandDao.getBrandNameById(id)} }
 
     //////////////////////////////////////Product///////////////////////////////////////

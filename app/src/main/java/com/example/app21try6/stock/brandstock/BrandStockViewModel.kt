@@ -46,6 +46,8 @@ class BrandStockViewModel(
     val ctgList = repository.getCategoryModelLiveData()
     //spinner entries
     val ctgNameList = repository.getCategoryNameLiveData()
+    val brandList = repository.getBrandNameListByCategoryName() // query from DB
+
     var _brandBpModelList = MutableLiveData<List<BrandProductModel>>()
     val brandBpModelList :LiveData<List<BrandProductModel>> get()= _brandBpModelList
     var ctgId = MutableLiveData<Long>(-1L)
@@ -278,18 +280,15 @@ fun updateSubTable(){
             branName.value= repository.getBrandNameyId(product.brand_code)//selectedBrand.value?.name?: ""
         }
     }
-    private val _brandList = MutableLiveData<List<String>>()
-    val brandList: LiveData<List<String>> get() = _brandList
+    //private val _brandList = MutableLiveData<List<String>>()
+    //val brandList: LiveData<List<String>> get() = _brandList
 
     fun onCategorySelected(category: String) {
         viewModelScope.launch {
             Log.i("SelectedCategory","$category")
             val catId=repository.getCategoryIdByName(category)
-            val brands = repository.getBrandNameListByCategoryName(catId) // query from DB
-            brands.forEach {
-                Log.i("SelectedCategory","$it")
-            }
-            _brandList.postValue(brands)
+            //val brands = repository.getBrandNameListByCategoryName(catId) // query from DB
+            //_brandList.postValue(brands)
         }
     }
     fun onBtnSimpanClick(){
@@ -308,9 +307,11 @@ fun updateSubTable(){
             product.alternate_price=alternatePrice.value ?: 0.0
             //product.cath_code=repository.getCategoryIdByName(ctgName.value ?: "")
             val ctgId=repository.getCategoryIdByName(ctgName.value ?: "")
-            product.brand_code=repository.getBrandIdByName(branName.value?:"",ctgId)?:0
+            product.brand_code=repository.getBrandIdByName(branName.value?:"")?:0
             product.needsSyncs=1
-            if (product.brand_code!=0L && ctgId!=0L) {
+            Log.i("Productprobs","Kategori ${ctgName.value} id $ctgId")
+            Log.i("Productprobs","Brand ${branName.value} id ${product.brand_code}")
+            if (product.brand_code!=0L ) {
                 if (_product.value==null){
                     product.productCloudId=System.currentTimeMillis()
                      repository.insertProduct(product)

@@ -39,11 +39,11 @@ interface BrandDao {
     @Query("SELECT * FROM brand_table")
     fun getAllBrand():List<Brand>
 
-    @Query("SELECT  brand_name  from brand_table WHERE  cath_code=:catId")
-    fun getBrandNameListByCatName(catId:Long):List<String>
+    @Query("SELECT  brand_name  from brand_table")
+    fun getBrandNameListByCatName(): LiveData<List<String>>
 
-    @Query("SELECT brandCloudId FROM brand_table WHERE brand_name =:name AND cath_code=:cath_code")
-    fun getBrandIdbyName(name:String,cath_code:Long):Long?
+    @Query("SELECT brandCloudId FROM brand_table WHERE brand_name =:name")
+    fun getBrandIdbyName(name:String):Long?
     @Query("SELECT brand_name FROM brand_table WHERE brandCloudId=:id")
     fun getBrandNameById(id:Long):String
 
