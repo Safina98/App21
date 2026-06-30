@@ -6,17 +6,13 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.createSavedStateHandle
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.app21try6.database.models.BarChartModel
-import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.DiscountRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
@@ -33,6 +29,8 @@ class GraphicViewModel(
     private val _productBCModel = MutableLiveData<List<BarChartModel>>()
     val productBCModel: LiveData<List<BarChartModel>> get() = _productBCModel
 
+    private val _omzetBCModel = MutableLiveData<List<BarChartModel>>()
+    val omzetBCModel: LiveData<List<BarChartModel>> get() = _omzetBCModel
     private val _profitBCModel = MutableLiveData<List<BarChartModel>>()
     val profitBCModel: LiveData<List<BarChartModel>> get() = _profitBCModel
 
@@ -73,9 +71,14 @@ class GraphicViewModel(
     val selectedStockMonthSpinner: LiveData<String> get() = _selectedStockMonthSpinner
 
     //selected year on Profit year spinner
+    private val _selectedOmzetYearSpinner = MutableLiveData<String?>("2026")
+    val selectedOmzetYearSpinner: LiveData<String?> get() = _selectedOmzetYearSpinner
+    private val _selectedCustomerOmzet= MutableLiveData<String>("ALL")
+    val selectedCustomerOmzet: LiveData<String> get() = _selectedCustomerOmzet
     private val _selectedProfitYearSpinner = MutableLiveData<String?>("2026")
     val selectedProfitYearSpinner: LiveData<String?> get() = _selectedProfitYearSpinner
-
+    private val _selectedCustomerProfit= MutableLiveData<String>("ALL")
+    val selectedCustomerProfit: LiveData<String> get() = _selectedCustomerProfit
     //selected month on Stok month spinner
     private val _selectedProfitMonthSpinner = MutableLiveData<String>()
     val selectedProfitMonthSpinner: LiveData<String> get() = _selectedProfitMonthSpinner
@@ -95,8 +98,7 @@ class GraphicViewModel(
     val selectedYearSpinnerPt: LiveData<String?> get() = _selectedYearSpinnerPt
 
     //selected customer
-    private val _selectedCustomerProfit= MutableLiveData<String>("ALL")
-    val selectedCustomerProfit: LiveData<String> get() = _selectedCustomerProfit
+
     //customer list for spinner
     private val  _customerEntries = MutableLiveData<List<String>>()
     val customerEntries: LiveData<List<String>> get() = _customerEntries
@@ -185,14 +187,26 @@ class GraphicViewModel(
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
+    fun filterOmzetModelList(){
+        viewModelScope.launch {
+            Log.i("chartprobs","omzet")
+            val year = _selectedOmzetYearSpinner.value.takeIf { it != "ALL" } // null if "ALL"
+            val customer=_selectedCustomerOmzet.value.takeIf { it  != "ALL"}
+            val list=   transRepo.getFilteredOmzetBarChart(year,customer)
+            val dividedList = list.map { it.copy(value = it.value / 1000000.0) }
+            _omzetBCModel.value=dividedList
+        }
+    }
     fun filterProfitModelList(){
         viewModelScope.launch {
             Log.i("chartprobs","profit")
             val year = _selectedProfitYearSpinner.value.takeIf { it != "ALL" } // null if "ALL"
             val customer=_selectedCustomerProfit.value.takeIf { it  != "ALL"}
-            val list=   transRepo.getFilteredProfitBarChart(year,customer)
+            val list=   transRepo.getFilteredProfitBarChart(year,null,null,null)
             val dividedList = list.map { it.copy(value = it.value / 1000000.0) }
             _profitBCModel.value=dividedList
+            val count =transRepo.get0ProductCapital()
+            Log.i("chartprobs","trans detail with 0 capita: $count")
         }
     }
 
@@ -224,16 +238,24 @@ class GraphicViewModel(
         }
     }
 
+
     //set selected spinner tahun
-    fun setSelectedYearValueProfit(selectedItem:String){
-        _selectedProfitYearSpinner.value = selectedItem
+    fun setSelectedYearValueOmzet(selectedItem:String){
+        _selectedOmzetYearSpinner.value = selectedItem
+        Log.i("chartprobs","view model selected year omzet")
     }
 
     //set selecter month spinner
+    fun setSelectedCustomerValueOmzet(selectedItem:String){
+        _selectedCustomerOmzet.value = selectedItem
+    }
+    fun setSelectedYearValueProfit(selectedItem:String){
+        _selectedProfitYearSpinner.value = selectedItem
+        Log.i("chartprobs","viewmodel selected year profit")
+    }
     fun setSelectedCustomerValueProfit(selectedItem:String){
         _selectedCustomerProfit.value = selectedItem
     }
-
     fun setSelectedSP(selectedItem: String){
         _selectedSPSpinnerPt.value = selectedItem
     }

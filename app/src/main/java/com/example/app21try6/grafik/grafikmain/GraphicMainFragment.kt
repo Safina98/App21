@@ -31,7 +31,8 @@ class GraphicMainFragment : Fragment() {
             tab.text = when (position) {
                 0 -> "Stok"
                 1 -> "Product Trend"
-                2-> "Profit"
+                2 -> "Omzet"
+                3 -> "Profit"
                 else -> "Customer"
             }
         }.attach()

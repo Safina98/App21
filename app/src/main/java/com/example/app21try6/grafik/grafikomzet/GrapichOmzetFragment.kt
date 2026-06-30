@@ -1,9 +1,8 @@
-package com.example.app21try6.grafik.grafikprofit
+package com.example.app21try6.grafik.grafikomzet
 
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,18 +15,17 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import com.example.app21try6.R
-import com.example.app21try6.databinding.FragmentGrapichProfitBinding
+import com.example.app21try6.databinding.FragmentGrapichOmzetBinding
 import com.example.app21try6.grafik.GraphicViewModel
 import com.example.app21try6.grafik.LineChartHelper
-import com.github.mikephil.charting.charts.LineChart
 import java.util.Calendar
 
 @RequiresApi(Build.VERSION_CODES.O)
-class GrapichProfitFragment : Fragment() {
+class GrapichOmzetFragment : Fragment() {
     private val viewModel: GraphicViewModel by  activityViewModels { GraphicViewModel.Factory }
 
     private lateinit var layout: View
-    private lateinit var binding: FragmentGrapichProfitBinding
+    private lateinit var binding: FragmentGrapichOmzetBinding
 
 
 
@@ -36,13 +34,13 @@ class GrapichProfitFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding  = DataBindingUtil.inflate(inflater,R.layout.fragment_grapich_profit,container,false)
+        binding  = DataBindingUtil.inflate(inflater,R.layout.fragment_grapich_omzet,container,false)
         layout = binding.mainLayout
         binding.lifecycleOwner = this
         //getCustomerSpinnerEntries
 
         var isItemSelected = false
-        val spinnerTahun = binding.spinnerTahunPg
+        val spinnerTahun = binding.spinnerTahunOg
         var isKeyboardOpen = false
        // val spinnerCustomer = binding.spinnerCustomerPg
         binding.customerAutoComplete.threshold = 1
@@ -81,7 +79,7 @@ class GrapichProfitFragment : Fragment() {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selected = parent.getItemAtPosition(position).toString()
                 when (parent.id) {
-                    R.id.spinner_tahun_pg -> viewModel.setSelectedYearValueProfit(selected)
+                    R.id.spinner_tahun_og -> viewModel.setSelectedYearValueOmzet(selected)
                    // R.id.spinner_customer_pg -> viewModel.setSelectedCustomerValueProfit(selected)
 
 
@@ -96,7 +94,7 @@ class GrapichProfitFragment : Fragment() {
 
         binding.customerAutoComplete.setOnItemClickListener { parent, _, position, _ ->
             val selected = parent.getItemAtPosition(position).toString()
-            viewModel.setSelectedCustomerValueProfit(selected)
+            viewModel.setSelectedCustomerValueOmzet(selected)
             isItemSelected = true
             // hide keyboard
             binding.customerAutoComplete.dismissDropDown()
@@ -121,23 +119,17 @@ class GrapichProfitFragment : Fragment() {
         viewModel.customerEntries.observe(viewLifecycleOwner){it?.let {
             val adapter = ArrayAdapter(requireContext(), R.layout.item_list, it)
             binding.customerAutoComplete.setAdapter(adapter)
+            }
         }
 
-//                val adapterCustomer =
-//                    ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
-//               spinnerCustomer.adapter = adapterCustomer
-
-
-
+        viewModel.selectedOmzetYearSpinner.observe(viewLifecycleOwner){ value->
+           viewModel.filterOmzetModelList()
         }
-        viewModel.selectedProfitYearSpinner.observe(viewLifecycleOwner){ value->
-           viewModel.filterProfitModelList()
-        }
-        viewModel.selectedCustomerProfit.observe(viewLifecycleOwner){
-            viewModel.filterProfitModelList()
+        viewModel.selectedCustomerOmzet.observe(viewLifecycleOwner){
+            viewModel.filterOmzetModelList()
         }
 
-        viewModel.profitBCModel.observe(viewLifecycleOwner){value->
+        viewModel.omzetBCModel.observe(viewLifecycleOwner){ value->
            //use this data to create line chart
             LineChartHelper.setData(
                 chart = chart,

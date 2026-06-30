@@ -144,14 +144,25 @@ class TransactionsRepository(application: Application) {
             transDetailDao.getFilteredSubBarChartList(year,month,category)
         }
     }
-    suspend fun getFilteredProfitBarChart(year:String?,customerName:String?): List<BarChartModel> {
+    suspend fun getFilteredOmzetBarChart(year:String?, customerName:String?): List<BarChartModel> {
         return  withContext(Dispatchers.IO){
-            transDetailDao.getFilteredProfitBarChartList(year,customerName)
+            transDetailDao.getFilteredOmzetBarChartList(year,customerName)
+        }
+    }
+    suspend fun getFilteredProfitBarChart(year:String?, month:String?,product:String?,category:String?): List<BarChartModel> {
+        return  withContext(Dispatchers.IO){
+            transDetailDao.getFilteredProfitBarChartList(year,product,category)
         }
     }
     suspend fun getMonthlyProductTrend(year:String?,category:String?,product:String?,sp:String?): List<BarChartModel> {
         return  withContext(Dispatchers.IO){
             transDetailDao.getMonthlyProductTrendList(year,category,product,sp)
+        }
+    }
+
+    suspend fun get0ProductCapital(): Int {
+        return  withContext(Dispatchers.IO){
+            transDetailDao.selectProductCapital()
         }
     }
     suspend fun getYearlyProductTrend(category: String?,product: String?,sp:String?): List<BarChartModel> {

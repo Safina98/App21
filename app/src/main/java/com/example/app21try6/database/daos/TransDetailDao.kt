@@ -115,7 +115,26 @@ interface TransDetailDao {
       GROUP BY substr(ts.trans_date, 6, 2)
     ORDER BY substr(ts.trans_date, 6, 2) ASC
     """)
-    fun getFilteredProfitBarChartList(year:String?,customerName:String?): List<BarChartModel>
+    fun getFilteredOmzetBarChartList(year:String?, customerName:String?): List<BarChartModel>
+
+    @Query("""
+         SELECT
+            substr(ts.trans_date, 6, 2) AS label,
+            SUM(td.trans_price * td.qty * td.unit_qty) AS value
+        FROM trans_detail_table td
+        JOIN trans_sum_table ts ON td.tSCloudId=ts.tSCloudId
+        JOIN sub_table s ON td.sPCloudId = s.sPCloudId
+        JOIN product_table p ON s.productCloudId = p.productCloudId
+        JOIN brand_table b ON p.brand_code = b.brandCloudId
+        JOIN category_table c ON b.cath_code = c.categoryCloudId
+        WHERE
+      (:year IS NULL OR substr(td.trans_detail_date, 1, 4) = :year)
+      AND (:product IS NULL OR p.product_name = :product)
+      AND (:category IS NULL OR c.category_name = :category)
+      GROUP BY substr(ts.trans_date, 6, 2)
+    ORDER BY substr(ts.trans_date, 6, 2) ASC
+    """)
+    fun getFilteredProfitBarChartList(year:String?,product:String?,category:String?): List<BarChartModel>
 
     @Query("""
         SELECT
@@ -136,6 +155,9 @@ interface TransDetailDao {
     ORDER BY value DESC
     """)
     fun getFilteredSubBarChartList(year:String?,month:String?,product:String?,category:String?): List<BarChartModel>
+
+    @Query("SELECT COUNT (*) FROM trans_detail_table WHERE product_capital==0")
+    fun selectProductCapital():Int
 
     @Query("""
         SELECT
