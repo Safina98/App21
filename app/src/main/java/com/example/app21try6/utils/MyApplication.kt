@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
+import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
@@ -76,10 +77,24 @@ class MyApplication: Application()  {
 //        }
 //
 //        connectivityManager.registerDefaultNetworkCallback(networkCallback)
-
+        scheduleUpdateProductCapitalWorker1()
     }
 
+    private fun scheduleUpdateProductCapitalWorker1() {
+        val updateData = Data.Builder()
 
+            .build()
+
+        val updateRequest = OneTimeWorkRequestBuilder<UpdateProductCapitalWorker>()
+            .setInputData(updateData)
+            .build()
+
+        WorkManager.getInstance(this).enqueueUniqueWork(
+            "update_product_capital_1",
+            ExistingWorkPolicy.KEEP,
+            updateRequest
+        )
+    }
 
     private fun markFirstRunCompleted() {
         val wmbPreference = PreferenceManager.getDefaultSharedPreferences(this)

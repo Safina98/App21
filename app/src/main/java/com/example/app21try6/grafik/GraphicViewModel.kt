@@ -165,20 +165,14 @@ class GraphicViewModel(
             val category=_selectedStockCategorySpinner.value.takeIf { it != "ALL" } // null if "ALL"
             val product=_selectedStockProductSpinner.value.takeIf { it!="ALL" }
 
-            Log.i("ProductAtcProbs","year $year, month $month, category:$category, product:$product")
             val list = if (product ==null){
-                Log.i("ProductAtcProbs","vm product null")
                 transRepo.getFilteredProductBarChart(month,year,product,category)
             }else if(product=="Sub Product"){
-                Log.i("ProductAtcProbs","vm product Sub Product")
                 transRepo.getFilteredSubBarChart(month,year,category)
             }
             else{
-                Log.i("ProductAtcProbs","vm product else")
                 transRepo.getFilteredSubBarChart(month,year,product,category)
-
             }
-            Log.i("ProductAtcProbs","vm list size ${list.size}")
             _productBCModel.value=list
         }
     }

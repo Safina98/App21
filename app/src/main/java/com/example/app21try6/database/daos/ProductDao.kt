@@ -85,4 +85,7 @@ interface ProductDao {
     @Query("SELECT * FROM product_table")
     fun selectAllProductTable(): List<Product>
 
+    @Query("SELECT productCloudId FROM product_table WHERE product_name=:name")
+    fun getProductIdByProductName(name:String):Long
+
 }

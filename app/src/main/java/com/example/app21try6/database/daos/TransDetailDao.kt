@@ -81,7 +81,28 @@ interface TransDetailDao {
     fun getSubProductMLive(productId:Long,tSCloudId_: Long):LiveData<List<TransSelectModel>>
 
 
-
+    @Query("""
+    UPDATE trans_detail_table 
+    SET product_capital = :newCapitalValue 
+    WHERE trans_detail_date < :targetDate 
+    AND sPCloudId IN (
+        SELECT sPCloudId FROM sub_table 
+        WHERE productCloudId = :productId
+    )
+""")
+    suspend fun updateProductCapitalBeforeDate(
+        targetDate: Date,
+        newCapitalValue: Int,
+        productId: Long
+    )
+    @Query("""
+    SELECT td.* FROM trans_detail_table td
+    JOIN sub_table s ON td.sPCloudId = s.sPCloudId
+    JOIN product_table p  ON s.productCloudId = p.productCloudId
+    JOIN brand_table b ON p.brand_code = b.brandCloudId
+    WHERE b.brand_name = :brandName
+""")
+    suspend fun getTransactionDetailsByBrandName(brandName: String): List<TransactionDetail>
 
     @Query("""
         SELECT
