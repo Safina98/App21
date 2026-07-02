@@ -181,7 +181,7 @@ class UpdateProductCapitalWorker(
             }
             list.add(model)
             //BENANG K ROLL BESAR
-            id =productDao.getProductIdByProductName("BENANG K ROLL B")
+            id =productDao.getProductIdByProductName("BENANG K ROLL BESAR")
             model= WorkerModel().apply {
                 productId=id
                 productCapital=17000
@@ -875,6 +875,523 @@ class UpdateProductCapitalWorker(
             }
             list.add(model)
 
+            //CARDOVA
+            id =productDao.getProductIdByProductName("CARDOVA")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=66000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+
+            //KARPET CARVIERRO
+            id =productDao.getProductIdByProductName("KARPET CARVIERRO")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=106000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+
+            //EXCELENT
+            id =productDao.getProductIdByProductName("EXCELENT")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=34000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //EXCELENT CATUR
+            id =productDao.getProductIdByProductName("EXCELENT CATUR")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=45000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //KAIN TENDA
+            id =productDao.getProductIdByProductName("KAIN TENDA")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=30000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //IMITASI
+            id =productDao.getProductIdByProductName("IMITASI")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=20000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+            //IONIC
+            id =productDao.getProductIdByProductName("IONIC")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=54000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //ITALIANO
+            id =productDao.getProductIdByProductName("ITALIANO")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=40000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //KARPET JAGUAR
+            id =productDao.getProductIdByProductName("KARPET JAGUAR")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=36000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+
+            //JOK MOTOR AUTO PRESS 85
+            //CARDOVA
+            id =productDao.getProductIdByProductName("CARDOVA")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=66000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+
+            //KARPET CARVIERRO
+            id =productDao.getProductIdByProductName("KARPET CARVIERRO")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=106000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+
+            //EXCELENT
+            id =productDao.getProductIdByProductName("EXCELENT")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=34000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //EXCELENT CATUR
+            id =productDao.getProductIdByProductName("EXCELENT CATUR")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=45000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //KAIN TENDA
+            id =productDao.getProductIdByProductName("KAIN TENDA")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=30000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //IMITASI
+            id =productDao.getProductIdByProductName("IMITASI")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=20000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+            //IONIC
+            id =productDao.getProductIdByProductName("IONIC")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=54000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //ITALIANO
+            id =productDao.getProductIdByProductName("ITALIANO")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=40000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+
+            //JOK MOTOR
+            //JOK MOTOR AUTO PRESS 85
+            id =productDao.getProductIdByProductName("JOK MOTOR AUTO PRESS 85")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=75000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+            // JOK MOTOR JAHIT 40K
+            id =productDao.getProductIdByProductName("JOK MOTOR JAHIT 40K")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=35000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+            //JOK MOTOR JAHIT 50
+            id =productDao.getProductIdByProductName("JOK MOTOR JAHIT 50")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=45000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+            //JOK MOTOR JAHIT 55
+            id =productDao.getProductIdByProductName("JOK MOTOR JAHIT 55")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=50000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+            //JOK MOTOR JAHIT KEPALA 25
+            id =productDao.getProductIdByProductName("JOK MOTOR JAHIT KEPALA 25")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=22000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+            //JOK MOTOR LEMBARAN 15
+            id =productDao.getProductIdByProductName("JOK MOTOR LEMBARAN 15")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=13000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+            //JOK MOTOR LEMBARAN 20
+            id =productDao.getProductIdByProductName("JOK MOTOR LEMBARAN 20")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=18000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+            //JOK MOTOR LEMBARAN SABLON 22
+            id =productDao.getProductIdByProductName("JOK MOTOR LEMBARAN SABLON 22")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=20000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+            //JOK MOTOR ZEUS PRESS 100
+            id =productDao.getProductIdByProductName("JOK MOTOR ZEUS PRESS 100")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=77000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+            //ZEUS PRESS LEMBARAN 60
+            id =productDao.getProductIdByProductName("ZEUS PRESS LEMBARAN 60")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=50000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+
+            //KAIN IMPORT 3D
+            id =productDao.getProductIdByProductName("KAIN IMPORT 3D")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=45000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+
+            //KAIN PARIS
+            id =productDao.getProductIdByProductName("KAIN PARIS")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=4500
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //KAIN PARIS PUTIH
+            id =productDao.getProductIdByProductName("KAIN PARIS PUTIH")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=5500
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+
+            //KARPET AUTOLEDER
+            id =productDao.getProductIdByProductName("KARPET AUTOLEDER")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=64000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //KARPET FORCE
+            id =productDao.getProductIdByProductName("KARPET FORCE")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=61000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+
+            //LEDERLUX
+            //EUROLEDER
+            id =productDao.getProductIdByProductName("EUROLEDER")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=200000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //LEDERLUX ALTRO
+            id =productDao.getProductIdByProductName("LEDERLUX ALTRO")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=112000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //LEDERLUX PRIMO
+            id =productDao.getProductIdByProductName("LEDERLUX PRIMO")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=86000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //MOGENLEDER
+            id =productDao.getProductIdByProductName("MOGENLEDER")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=130000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+
+            //MBTECH
+            //MB CAMARO
+            id =productDao.getProductIdByProductName("MB CAMARO")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=118000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //MB CARRERA
+            id =productDao.getProductIdByProductName("MB CARRERA")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=171000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //MB FIESTA
+            id =productDao.getProductIdByProductName("MB FIESTA")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=118000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //MB GIORGIO
+            id =productDao.getProductIdByProductName("MB GIORGIO")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=103000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //MB PICASSO
+            id =productDao.getProductIdByProductName("MB PICASSO")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=121000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //MB RYDER
+            id =productDao.getProductIdByProductName("MB RYDER")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=116000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //MB SUPERIOR
+            id =productDao.getProductIdByProductName("MB SUPERIOR")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=116000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+
+            //MH KING
+            id =productDao.getProductIdByProductName("MH KING")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=87000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+
+            //MORGAN
+            id =productDao.getProductIdByProductName("MORGAN")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=60000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+
+            //MURANO BLAST
+            id =productDao.getProductIdByProductName("MURANO BLAST")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=125000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+
+            //MURANO NAPPA
+            id =productDao.getProductIdByProductName("MURANO NAPPA")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=121000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+
+            //MYO
+            id =productDao.getProductIdByProductName("MYO")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=46000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+
+            //NAPPA PRIME
+            id =productDao.getProductIdByProductName("NAPPA PRIME")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=89000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //NAPPA SILK
+            id =productDao.getProductIdByProductName("NAPPA SILK")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=89000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //NAVARO
+            id =productDao.getProductIdByProductName("NAVARO")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=94000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+
+            //KAIN JOK MOTOR REVO
+            id =productDao.getProductIdByProductName("KAIN JOK MOTOR REVO")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=28000
+                fromDate= DETAILED_DATE_FORMATTER.parse("31-07-2026 00:00")
+            }
+            list.add(model)
+
+            //SBTECH
+            id =productDao.getProductIdByProductName("SBTECH AMPLAS")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=45000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+
+            //VISION
+            //BUGGATI
+            id =productDao.getProductIdByProductName("BUGGATI")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=167000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //KARBON VISION
+            id =productDao.getProductIdByProductName("KARBON VISION")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=82000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //LEVANTE
+            id =productDao.getProductIdByProductName("LEVANTE")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=207000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //LUGANO
+            id =productDao.getProductIdByProductName("LUGANO")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=145000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+            //SAFFIANO
+            id =productDao.getProductIdByProductName("SAFFIANO")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=107000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+
+            //ZAVIER
+            id =productDao.getProductIdByProductName("ZAVIER")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=140000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+
+            //ZEUS
+            id =productDao.getProductIdByProductName("ZEUS")
+            model= WorkerModel().apply {
+                productId=id
+                productCapital=65000
+                fromDate= DETAILED_DATE_FORMATTER.parse("27-04-2026 00:00")
+            }
+            list.add(model)
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -882,11 +1399,11 @@ class UpdateProductCapitalWorker(
 
             list.forEach {
                 Log.i("UpdateProductCapitalWorker","${it.fromDate}, ${it.productCapital}, ${it.productId}")
-                transactionDetailDao.updateProductCapitalBeforeDate(it.fromDate, it.productCapital, it.productId)
+               // transactionDetailDao.updateProductCapitalBeforeDate(it.fromDate, it.productCapital, it.productId)
             }
-            val brandList=transactionDetailDao.getTransactionDetailsByBrandName("ACCURA KARBON")
+            val brandList=transactionDetailDao.getTransactionDetailsByBrandName("BENANG B")
             brandList.forEach {
-                Log.i("UpdateProductCapitalWorker","${it.trans_item_name}, ${it.product_capital}, ${it.trans_detail_date}")
+                Log.i("UpdateProductCapitalWorkerr","${it.trans_item_name}, ${it.product_capital}, ${it.trans_detail_date}")
             }
 
             //transactionDetailDao.updateProductCapitalBeforeDate(targetDate, newCapitalValue,productId)

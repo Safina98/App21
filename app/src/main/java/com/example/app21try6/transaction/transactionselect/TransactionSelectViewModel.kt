@@ -81,21 +81,17 @@ class TransactionSelectViewModel(
         getKategoriEntries()
         unCheckedAllSubs()
         _productId.value=-1
-        Log.d("LiveDataProbs", "Init transRepo is ${transRepo?.toString() ?: "NULL"}")
-        Log.d("LiveDataProbs", "Init productId is ${_productId.value}")
+
     }
     fun updateTransDetailList(updatedList: List<TransSelectModel>) {
-        Log.i("DialogUtilProblems","viewModel updateTransDetailListCalled")
         transSelectModel.value = updatedList
     }
 
     fun updateItemInTransDetailList(trans: TransSelectModel) {
         viewModelScope.launch {
-            Log.i("DialogUtilProblems","viewModel updateItemInTransDetailCalled")
+
             val updatedList = transSelectModel.value?.toMutableList() ?: mutableListOf()
-            updatedList.forEach{
-                Log.i("DialogUtilProblems","viewModel before update currentList $it ")
-            }
+
             val index = updatedList.indexOfFirst { it.sPCloudId == trans.sPCloudId }
             val matchedItems=updatedList.filter { it.sPCloudId == trans.sPCloudId }
             Log.i("DialogUtilProblems","viewModel updateItemInTransDetail index: $index")
@@ -141,7 +137,6 @@ class TransactionSelectViewModel(
 
     fun updateTransDetail(s:TransSelectModel){
         viewModelScope.launch {
-            Log.i("DialogUtilProblems","View Model. Update TransDetail called")
             s.item_price= calculatePriceByQty(s.qty,s.item_default_price)
             val t = converter(s)
             t.needsSyncs=1
@@ -156,8 +151,6 @@ class TransactionSelectViewModel(
             if (s.qty==0.0){
                 delete(s)
             }
-        //processTransDetailUpdate(s)
-            //updateItemInTransDetailList(s)
         }
     }
 
@@ -169,6 +162,7 @@ class TransactionSelectViewModel(
         t.total_price = s.qty*s.item_price
         t.trans_item_name = s.item_name
         t.trans_price = s.item_price
+        t.product_capital=s.trans_capital
         t.trans_detail_date = Date()
         t.item_position = pos
         t.sPCloudId =s.sPCloudId

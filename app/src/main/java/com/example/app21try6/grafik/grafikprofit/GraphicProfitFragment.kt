@@ -71,7 +71,7 @@ class GraphicProfitFragment : Fragment() {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val selected = parent.getItemAtPosition(position).toString()
                 when (parent.id) {
-                    R.id.spinner_tahun_og -> viewModel.setSelectedYearValueProfit(selected)
+                    R.id.spinner_tahun_pg -> viewModel.setSelectedYearValueProfit(selected)
                     // R.id.spinner_customer_pg -> viewModel.setSelectedCustomerValueProfit(selected)
 
 

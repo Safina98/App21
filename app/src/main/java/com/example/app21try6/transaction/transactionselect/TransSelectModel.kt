@@ -16,6 +16,7 @@ data class TransSelectModel(
     var item_price: Int = 0,
     var item_default_price:Int=0,
     var trans_detail_id: Long = 0,
+    var trans_capital:Int=0,
     var qty: Double = 0.0, // backing field
     var selected: Boolean = false,
     //@Ignore

@@ -73,7 +73,8 @@ interface TransDetailDao {
             "s.is_checked AS selected ," +
             "p.product_price AS item_price," +
             "p.product_price AS item_default_price," +
-            "t.qty as qty,t.tDCloudId as trans_detail_id" +
+            "t.qty as qty,t.tDCloudId as trans_detail_id, " +
+            "p.product_capital AS trans_capital "+
             " FROM sub_table s" +
             " JOIN product_table p ON (S.productCloudId=P.productCloudId) " +
             " LEFT OUTER JOIN trans_detail_table t ON (S.sub_name = T.trans_item_name and T.tSCloudId =:tSCloudId_) WHERE s.productCloudId =:productId" +
@@ -89,6 +90,7 @@ interface TransDetailDao {
         SELECT sPCloudId FROM sub_table 
         WHERE productCloudId = :productId
     )
+    AND unit IS null
 """)
     suspend fun updateProductCapitalBeforeDate(
         targetDate: Date,
@@ -141,7 +143,7 @@ interface TransDetailDao {
     @Query("""
          SELECT
             substr(ts.trans_date, 6, 2) AS label,
-            SUM(td.trans_price * td.qty * td.unit_qty) AS value
+            SUM((td.trans_price - td.product_capital)*td.qty*td.unit_qty) AS value
         FROM trans_detail_table td
         JOIN trans_sum_table ts ON td.tSCloudId=ts.tSCloudId
         JOIN sub_table s ON td.sPCloudId = s.sPCloudId
@@ -152,6 +154,7 @@ interface TransDetailDao {
       (:year IS NULL OR substr(td.trans_detail_date, 1, 4) = :year)
       AND (:product IS NULL OR p.product_name = :product)
       AND (:category IS NULL OR c.category_name = :category)
+      AND td.unit IS NULL
       GROUP BY substr(ts.trans_date, 6, 2)
     ORDER BY substr(ts.trans_date, 6, 2) ASC
     """)
