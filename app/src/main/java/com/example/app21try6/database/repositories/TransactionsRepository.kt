@@ -9,6 +9,7 @@ import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.cloud.RealtimeDatabaseSync
 import com.example.app21try6.database.cloud.UploadInventories
 import com.example.app21try6.database.models.BarChartModel
+import com.example.app21try6.database.models.ProfitDebugModel
 import com.example.app21try6.database.models.TracketailWarnaModel
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.database.tables.TransactionSummary
@@ -51,7 +52,12 @@ class TransactionsRepository(application: Application) {
         }
     }
 
-
+    //TODO DELETE LATER
+    suspend fun getBigProfitData(year: String?,month: String?): List<BarChartModel>{
+        return withContext(Dispatchers.IO) {
+         transDetailDao.getBigProfitTransDetail(year,month)
+        }
+    }
 
     suspend fun getCustomerWithTotalTrans(month: String?,year:String?): List<BarChartModel> {
         return  withContext(Dispatchers.IO){
@@ -139,6 +145,7 @@ class TransactionsRepository(application: Application) {
             transDetailDao.getFilteredSubBarChartList(year,month,product,category)
         }
     }
+
     suspend fun getFilteredSubBarChart(month: String?, year:String?,  category:String?): List<BarChartModel> {
         return  withContext(Dispatchers.IO){
             transDetailDao.getFilteredSubBarChartList(year,month,category)
@@ -154,13 +161,25 @@ class TransactionsRepository(application: Application) {
             transDetailDao.getFilteredProfitBarChartList(year,product,category)
         }
     }
+    //TODO DELETE LATER
+    suspend fun gettransdetailwithnotnullunit( year:String?): Double {
+        return  withContext(Dispatchers.IO){
+            transDetailDao.sumOfTransDetailWithNonNullUnnit(year)
+        }
+    }
     suspend fun getMonthlyProductTrend(year:String?,category:String?,product:String?,sp:String?): List<BarChartModel> {
         return  withContext(Dispatchers.IO){
             transDetailDao.getMonthlyProductTrendList(year,category,product,sp)
         }
     }
 
+    //TODO DELETE LATER
     suspend fun get0ProductCapital(): Int {
+        return  withContext(Dispatchers.IO){
+            transDetailDao.selectProductCapital()
+        }
+    }
+    suspend fun debugList(): Int {
         return  withContext(Dispatchers.IO){
             transDetailDao.selectProductCapital()
         }

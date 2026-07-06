@@ -1,6 +1,7 @@
 package com.example.app21try6.grafik.grafikcustomer
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,11 +10,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.example.app21try6.Constants.DETAILED_DATE_FORMATTER
 import com.example.app21try6.database.models.BarChartModel
 import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.database.tables.TransactionSummary
+import com.example.app21try6.formatRupiah
 import com.example.app21try6.getMonthNumber
 import kotlinx.coroutines.launch
 
@@ -55,18 +58,16 @@ class GraphicCustomerViewModel (
             val year = selectedTahun.takeIf { it != "ALL" } // null if "ALL"
             val result = transRepo.getCustomerWithTotalTrans(month, year)
             val devidedList=result.map { it.copy(value = it.value/1000000) }
-            //_custWithTotalTrans.value = result
             _customerBarChartModel.value=devidedList
+//            val list=transRepo.getBigProfitData(year,month)
+//            Log.i("chartprobs","filter customer list ${list.size}")
+//            list.forEach {
+//
+//                    Log.i("chartprobs","${it.label} : ${formatRupiah(it.value)}")
+//
+//            }
         }
-
     }
-
-    fun filterCustomerTrend(selectedTahun:String){
-        viewModelScope.launch {
-
-        }
-    }
-
 
     companion object {
         @JvmStatic

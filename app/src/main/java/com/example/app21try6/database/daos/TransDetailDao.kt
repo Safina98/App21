@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.app21try6.database.models.BarChartModel
+import com.example.app21try6.database.models.ProfitDebugModel
 import com.example.app21try6.database.models.TracketailWarnaModel
 import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.transaction.transactiondetail.TransactionDetailWithProduct
@@ -85,14 +86,14 @@ interface TransDetailDao {
     @Query("""
     UPDATE trans_detail_table 
     SET product_capital = :newCapitalValue 
-    WHERE trans_detail_date < :targetDate 
+    WHERE trans_detail_date >= :targetDate 
     AND sPCloudId IN (
         SELECT sPCloudId FROM sub_table 
         WHERE productCloudId = :productId
     )
     AND unit IS null
 """)
-    suspend fun updateProductCapitalBeforeDate(
+    suspend fun updateProductCapitalAfterDate(
         targetDate: Date,
         newCapitalValue: Int,
         productId: Long
@@ -155,6 +156,7 @@ interface TransDetailDao {
       AND (:product IS NULL OR p.product_name = :product)
       AND (:category IS NULL OR c.category_name = :category)
       AND td.unit IS NULL
+      AND td.total_price!=0
       GROUP BY substr(ts.trans_date, 6, 2)
     ORDER BY substr(ts.trans_date, 6, 2) ASC
     """)
@@ -180,7 +182,19 @@ interface TransDetailDao {
     """)
     fun getFilteredSubBarChartList(year:String?,month:String?,product:String?,category:String?): List<BarChartModel>
 
-    @Query("SELECT COUNT (*) FROM trans_detail_table WHERE product_capital==0")
+    //TODO DELETE LATER
+    @Query("SELECT" +
+            " SUM (total_price) " +
+            "FROM trans_detail_table " +
+            "WHERE unit IS NOT NULL " +
+            "AND (:year IS NULL OR substr(trans_detail_date, 1, 4) = :year) " +
+            "AND substr(trans_detail_date, 6, 2) BETWEEN '01' AND '03'")
+    fun sumOfTransDetailWithNonNullUnnit(year: String?): Double
+
+    //TODO DELETE LATER
+    @Query("SELECT " +
+            "COUNT (*) " +
+            "FROM trans_detail_table WHERE product_capital==0")
     fun selectProductCapital():Int
 
     @Query("""
@@ -201,6 +215,42 @@ interface TransDetailDao {
     ORDER BY value DESC
     """)
     fun getFilteredSubBarChartList(year:String?,month:String?,category:String?): List<BarChartModel>
+
+//    @Query("""
+//    SELECT
+//    td.tDCloudId AS transDetailId,
+//    td.tSCloudId AS transSumId,
+//    p.product_name AS itemName,
+//    td.trans_detail_date AS date,
+//    td.qty AS qty,
+//    td.unit_qty AS unitQty,
+//    td.unit AS unit,
+//    ts.cust_name AS customerName,
+//    (td.trans_price -td.product_capital) AS totalProfit,
+//    td.trans_price AS totalTrans
+//    FROM trans_detail_table td
+//    JOIN trans_sum_table ts ON td.tSCloudId = ts.tSCloudId
+//    JOIN sub_table s ON td.sPCloudId=s.sPCloudId
+//    JOIN product_table p ON s.productCloudId=p.productCloudId
+//    WHERE
+//    (:month IS NULL OR substr(td.trans_detail_date, 6, 2) = :month)
+//    AND (:year IS NULL OR substr(td.trans_detail_date, 1, 4) = :year)
+//    AND unit is null
+//    AND td.qty>=1
+//""")
+@Query("""
+       SELECT
+            substr(td.trans_detail_date, 6, 2) AS label,
+            SUM((td.trans_price-td.product_capital)*td.qty*td.unit_qty) AS value
+        FROM trans_detail_table td
+             WHERE
+                (:year IS NULL OR substr(td.trans_detail_date, 1, 4) = :year)
+                AND (:month IS NULL OR substr(td.trans_detail_date, 6, 4) = :month)
+                AND td.unit IS NOT NULL
+      GROUP BY substr(td.trans_detail_date, 6, 2)
+    ORDER BY value DESC
+    """)
+    fun getBigProfitTransDetail(year: String?, month: String?): List<BarChartModel>
 
     @Query("""
        SELECT
@@ -230,7 +280,6 @@ interface TransDetailDao {
             JOIN product_table p ON s.productCloudId = p.productCloudId
             JOIN brand_table b ON p.brand_code = b.brandCloudId            
             JOIN category_table c ON b.cath_code = c.categoryCloudId
-            
              WHERE
         (:category IS NULL OR c.category_name= :category)
         AND (:product IS NULL OR p.product_name= :product)
@@ -251,7 +300,6 @@ interface TransDetailDao {
             JOIN product_table p ON s.productCloudId = p.productCloudId
             JOIN brand_table b ON p.brand_code = b.brandCloudId
             JOIN category_table c ON b.cath_code = c.categoryCloudId
-            
              WHERE
               (:year IS NULL OR substr(td.trans_detail_date, 1, 4) = :year) 
         AND (:category IS NULL OR c.category_name= :category)

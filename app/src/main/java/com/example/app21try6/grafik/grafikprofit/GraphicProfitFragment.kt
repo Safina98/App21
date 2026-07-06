@@ -73,8 +73,6 @@ class GraphicProfitFragment : Fragment() {
                 when (parent.id) {
                     R.id.spinner_tahun_pg -> viewModel.setSelectedYearValueProfit(selected)
                     // R.id.spinner_customer_pg -> viewModel.setSelectedCustomerValueProfit(selected)
-
-
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -105,8 +103,8 @@ class GraphicProfitFragment : Fragment() {
 //        }
 
         viewModel.selectedProfitYearSpinner.observe(viewLifecycleOwner){ value->
-            Log.i("chartprobs","profit fragment selected year profit")
             viewModel.filterProfitModelList()
+
         }
         viewModel.profitBCModel.observe(viewLifecycleOwner){ value->
             //use this data to create line chart
@@ -117,6 +115,13 @@ class GraphicProfitFragment : Fragment() {
                 lineColor = ContextCompat.getColor(requireContext(), R.color.black),
                 fillColor = ContextCompat.getColor(requireContext(), R.color.grey_green)
             )
+
+            value?.forEach {
+                if (it.value>0.05){
+                   // Log.i("chartprobs","${it.label}  ${it.value}")
+                }
+
+            }
         }
         return binding.root
     }

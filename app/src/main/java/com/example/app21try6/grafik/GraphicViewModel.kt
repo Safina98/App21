@@ -16,6 +16,7 @@ import com.example.app21try6.database.models.BarChartModel
 import com.example.app21try6.database.repositories.DiscountRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
+import com.example.app21try6.formatRupiah
 import com.example.app21try6.getMonthNumber
 import kotlinx.coroutines.launch
 
@@ -183,7 +184,7 @@ class GraphicViewModel(
 
     fun filterOmzetModelList(){
         viewModelScope.launch {
-            Log.i("chartprobs","omzet")
+
             val year = _selectedOmzetYearSpinner.value.takeIf { it != "ALL" } // null if "ALL"
             val customer=_selectedCustomerOmzet.value.takeIf { it  != "ALL"}
             val list=   transRepo.getFilteredOmzetBarChart(year,customer)
@@ -193,14 +194,17 @@ class GraphicViewModel(
     }
     fun filterProfitModelList(){
         viewModelScope.launch {
-            Log.i("chartprobs","profit")
+
             val year = _selectedProfitYearSpinner.value.takeIf { it != "ALL" } // null if "ALL"
             val customer=_selectedCustomerProfit.value.takeIf { it  != "ALL"}
             val list=   transRepo.getFilteredProfitBarChart(year,null,null,null)
             val dividedList = list.map { it.copy(value = it.value / 1000000.0) }
+            //sum of product with non null unit
+            val sum = transRepo.gettransdetailwithnotnullunit(year)
+           // Log.i("chartprobs","trans detail with not null unit year $year: ${formatRupiah(sum)}")
             _profitBCModel.value=dividedList
             val count =transRepo.get0ProductCapital()
-            Log.i("chartprobs","trans detail with 0 capita: $count")
+            //Log.i("chartprobs","trans detail with 0 capita: $count")
         }
     }
 
@@ -236,7 +240,7 @@ class GraphicViewModel(
     //set selected spinner tahun
     fun setSelectedYearValueOmzet(selectedItem:String){
         _selectedOmzetYearSpinner.value = selectedItem
-        Log.i("chartprobs","view model selected year omzet")
+
     }
 
     //set selecter month spinner
@@ -245,7 +249,7 @@ class GraphicViewModel(
     }
     fun setSelectedYearValueProfit(selectedItem:String){
         _selectedProfitYearSpinner.value = selectedItem
-        Log.i("chartprobs","viewmodel selected year profit")
+
     }
     fun setSelectedCustomerValueProfit(selectedItem:String){
         _selectedCustomerProfit.value = selectedItem
