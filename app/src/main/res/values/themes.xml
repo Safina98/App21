@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.App21Try6" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.App21Try6" parent="Theme.MaterialComponents.Light.NoActionBar">
 
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryVariant">@color/primaryLightColor</item>
@@ -8,7 +8,9 @@
         <item name="colorSecondary">@color/secondaryColor</item>
         <item name="colorSecondaryVariant">@color/secondaryLightColor</item>
         <item name="colorOnSecondary">@color/secondaryLightTextColor</item>
-        <item name="buttonStyle">@style/CustomButtonStyle</item>
+       <!-- <item name="buttonStyle">@style/CustomButtonStyle</item>-->
+        <item name="materialButtonStyle">@style/CustomButtonStyle</item>
+        <item name="textInputStyle">@style/CustomTextInputLayoutStyle</item>
         <item name="android:fontFamily">@font/metrophobic</item>
 
         <!-- Status bar color. -->

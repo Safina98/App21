@@ -82,6 +82,9 @@
             android:clickable="true"
             android:focusable="true"
             android:layout_margin="16dp"
+            app:tint="@null"
+            app:backgroundTint="@null"
+
             />
 
         <TextView

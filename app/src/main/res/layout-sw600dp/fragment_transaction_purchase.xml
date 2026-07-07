@@ -64,7 +64,7 @@
                 android:id="@+id/text_discount"
                 style="@style/EditText.Font"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="64dp"
                 android:inputType="text"
                 android:paddingStart="@dimen/big_margin"
                 android:paddingEnd="@dimen/big_margin"
@@ -75,8 +75,9 @@
             android:id="@+id/il_sub"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
             android:elevation="@dimen/medium_margin"
-            android:hint="nama"
+            android:hint="nama sub product"
             app:hintTextAppearance="@style/CustomHintTextStyle"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/il_disc">
@@ -85,11 +86,11 @@
                 android:id="@+id/text_Sub"
                 style="@style/EditText.Font"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="64dp"
+                android:completionThreshold="1"
                 android:inputType="text"
                 android:paddingStart="@dimen/big_margin"
                 android:paddingEnd="@dimen/big_margin"
-                android:completionThreshold="1"
                 android:text="@={viewModel.productName}" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -106,6 +107,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/il_qty"
             android:layout_width="60dp"
+            android:layout_marginEnd="@dimen/small_margin"
             android:layout_height="wrap_content"
             android:elevation="@dimen/medium_margin"
             android:hint="jml"
@@ -128,6 +130,7 @@
             android:id="@+id/il_net"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
             android:elevation="@dimen/medium_margin"
             android:hint="isi"
             app:hintTextAppearance="@style/CustomHintTextStyle"
@@ -149,6 +152,8 @@
             android:id="@+id/il_price"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_margin"
+
             android:elevation="@dimen/medium_margin"
             android:hint="harga"
             app:hintTextAppearance="@style/CustomHintTextStyle"
@@ -170,6 +175,7 @@
             android:id="@+id/il_total"
             android:layout_width="180dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
             android:elevation="@dimen/medium_margin"
             android:hint="total"
             app:hintTextAppearance="@style/CustomHintTextStyle"
@@ -192,8 +198,8 @@
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:elevation="@dimen/medium_margin"
-
             android:text="+"
+            app:layout_constraintBottom_toBottomOf="@+id/il_total"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/il_sub" />
 
@@ -202,6 +208,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="@dimen/medium_margin"
+
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/txt_total"
             app:layout_constraintStart_toStartOf="parent"

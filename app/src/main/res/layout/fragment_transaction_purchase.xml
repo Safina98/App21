@@ -64,7 +64,7 @@
                 android:id="@+id/text_discount"
                 style="@style/EditText.Font"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="32dp"
                 android:inputType="text"
                 android:paddingStart="@dimen/big_margin"
                 android:paddingEnd="@dimen/big_margin"

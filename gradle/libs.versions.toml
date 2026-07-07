@@ -16,6 +16,8 @@ compose-bom = "2024.09.00"
 activity-compose = "1.9.2"
 navigation-compose = "2.8.1"
 
+material = "1.12.0"
+
 [libraries]
 google-gms-tasks-ktx = { group = "com.google.android.gms", name = "play-services-tasks-ktx", version.ref = "gmsTasks" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -40,6 +42,8 @@ compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
+
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -56,6 +56,8 @@
             app:fabCustomSize="56dp"
             app:maxImageSize="56dp"
             android:scaleType="center"
+            app:tint="@null"
+            app:backgroundTint="@null"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

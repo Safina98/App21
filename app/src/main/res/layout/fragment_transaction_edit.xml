@@ -82,6 +82,8 @@
                         app:layout_constraintBottom_toTopOf="@+id/btn_selesai"
                         android:onClick="@{()->viewModel.onNavigatetoVendible()}"
                         android:src="@drawable/fab"
+                        app:tint="@null"
+                        app:backgroundTint="@null"
                         app:fabCustomSize="56dp"
                         app:maxImageSize="56dp"
                         android:scaleType="center" />

@@ -81,7 +81,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
 
     // Material (you can keep it even with Material3)
-    implementation("com.google.android.material:material:1.12.0")
+   // implementation("com.google.android.material:material:1.12.0")
 
     // Charts
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
@@ -109,4 +109,6 @@ dependencies {
 
 
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation(libs.material)
 }

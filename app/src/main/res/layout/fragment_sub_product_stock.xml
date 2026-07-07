@@ -90,6 +90,8 @@
             android:onLongClick="@{(view) -> subViewModel.onLongClick(view)}"
             android:clickable="true"
             android:focusable="true"
+            app:tint="@null"
+            app:backgroundTint="@null"
             android:layout_margin="16dp"
             />
 

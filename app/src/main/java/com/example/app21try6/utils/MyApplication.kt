@@ -77,7 +77,7 @@ class MyApplication: Application()  {
 //        }
 //
 //        connectivityManager.registerDefaultNetworkCallback(networkCallback)
-        scheduleUpdateProductCapitalWorker1()
+      //  scheduleUpdateProductCapitalWorker1()
     }
 
     private fun scheduleUpdateProductCapitalWorker1() {

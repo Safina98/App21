@@ -195,10 +195,12 @@ class BrandStockFragment : Fragment() {
             val adapter1 = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, entries)
             binding.spinnerM.adapter = adapter1
         }
+
         viewModel.selectedCtgSpinner.observe(viewLifecycleOwner) {
             Log.i("brandList","selected ctg spinner $it")
             viewModel.updateRv()
         }
+
         //Kategori adapter
         viewModel.ctgList.observe(viewLifecycleOwner, Observer {
             it.let {
@@ -206,12 +208,15 @@ class BrandStockFragment : Fragment() {
                 adapter.notifyDataSetChanged()
             }
         })
+
         viewModel.ctgId.observe(viewLifecycleOwner, Observer{})
+
         //Brand adapter
         viewModel.brandBpModelList.observe(viewLifecycleOwner){
             adapter.submitList(it.sortedBy { it.name})
             adapter.notifyDataSetChanged()
         }
+
         // product adapter
         viewModel.productBpModelList.observe(viewLifecycleOwner, Observer {
                 adapterProduct.submitList(it.sortedBy { it.name})
