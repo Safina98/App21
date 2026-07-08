@@ -252,7 +252,7 @@ class BrandStockFragment : Fragment() {
                             )
                         }
                     }else{
-                        this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct())
+                        this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct(0L))
                        // DialogUtils.updateDialog(requireContext(),viewModel,list)
                     }
                 }else{
@@ -280,7 +280,7 @@ class BrandStockFragment : Fragment() {
         viewModel.addProduct.observe(viewLifecycleOwner, Observer {
             if (it==true){
                 val list=viewModel.discountList.value
-                this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct())
+                this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct(0L))
                 viewModel.onProductAdded()
             }
         })
@@ -311,7 +311,7 @@ class BrandStockFragment : Fragment() {
                         categoryList = viewModel.ctgNameList.value
                     )
                 }else{
-                    this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct())
+                    this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct(0L))
 
                 }
             }

@@ -6,15 +6,12 @@
     <data>
         <variable
             name="view_model"
-            type="com.example.app21try6.stock.brandstock.BrandStockViewModel" />
-
+            type="com.example.app21try6.stock.upsertproduk.UpsertProductViewModel" />
     </data>
-
-        <!-- TODO: Update blank fragment layout -->
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".stock.InputUpdateProduct">
+            tools:context=".stock.upsertproduk.InputUpdateProduct">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -24,8 +21,8 @@
                     android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/medium_margin"
-                    android:id="@+id/lbl_id"
-                    >
+                    android:layout_marginBottom="@dimen/medium_margin"
+                    android:id="@+id/lbl_id">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -41,6 +38,7 @@
                     android:layout_width="300dp"
                     android:id="@+id/il_ket"
                     android:hint="Produk"
+                    android:layout_marginBottom="@dimen/big_margin"
                     android:layout_height="wrap_content">
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
@@ -55,11 +53,12 @@
                     android:layout_width="300dp"
                     android:id="@+id/il_cat"
                     android:hint="kategori"
-                    android:layout_height="60dp">
+                    android:layout_marginBottom="@dimen/medium_margin"
+                    android:layout_height="wrap_content">
                     <AutoCompleteTextView
                         android:id="@+id/text_category"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
+                        android:layout_height="60dp"
                         android:paddingStart="@dimen/big_margin"
                         android:paddingEnd="@dimen/big_margin"
                         android:inputType="text"
@@ -70,36 +69,24 @@
                     android:layout_width="300dp"
                     android:id="@+id/il_brand"
                     android:hint="Brand"
-                    android:layout_height="60dp">
+                    android:layout_marginBottom="@dimen/medium_margin"
+                    android:layout_height="wrap_content">
                     <AutoCompleteTextView
                         android:id="@+id/text_brand"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
+                        android:layout_height="60dp"
                         android:paddingStart="@dimen/big_margin"
                         android:paddingEnd="@dimen/big_margin"
                         android:inputType="text"
                         android:text="@={view_model.branName}"
                         />
                 </com.google.android.material.textfield.TextInputLayout>
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="300dp"
-                    android:id="@+id/il_disc"
-                    android:hint="Diskon"
-                    android:layout_height="60dp">
-                    <AutoCompleteTextView
-                        android:id="@+id/text_discount"
-                        android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:paddingStart="@dimen/big_margin"
-                        android:paddingEnd="@dimen/big_margin"
-                        android:inputType="text"
-                        android:text="@={view_model.discountName}"
-                        />
-                </com.google.android.material.textfield.TextInputLayout>
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="300dp"
                     android:id="@+id/il_price"
                     android:hint="Harga Jual"
+                    android:layout_marginBottom="@dimen/medium_margin"
                     android:layout_height="wrap_content">
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
@@ -123,12 +110,43 @@
                         app:rupiahValue="@={view_model.alternatePrice}"
                         />
                 </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="300dp"
+                    android:id="@+id/il_disc"
+                    android:hint="Diskon"
+                    android:layout_marginBottom="@dimen/medium_margin"
+                    android:layout_height="wrap_content">
+                    <AutoCompleteTextView
+                        android:id="@+id/text_discount"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:paddingStart="@dimen/big_margin"
+                        android:paddingEnd="@dimen/big_margin"
+                        android:inputType="text"
+                        android:text="@={view_model.discountName}"
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="300dp"
+                    android:id="@+id/il_purchase_price"
+                    android:hint="Harga Beli"
+                    android:layout_marginBottom="@dimen/medium_margin"
+                    android:layout_height="wrap_content">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/purchase_price"
+                        android:inputType="number"
+                        app:rupiahValue="@={view_model.purchasePrice}"
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
 
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="300dp"
                     android:id="@+id/il_capital"
                     android:hint="Modal"
+                    android:layout_marginBottom="@dimen/medium_margin"
                     android:layout_height="wrap_content">
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
@@ -142,6 +160,7 @@
                     android:layout_width="300dp"
                     android:id="@+id/il_capital2"
                     android:hint="Modal Alternatif"
+                    android:layout_marginBottom="@dimen/medium_margin"
                     android:layout_height="wrap_content">
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
@@ -151,44 +170,44 @@
                         app:rupiahValue="@={view_model.alternateCapital}"
                         />
                 </com.google.android.material.textfield.TextInputLayout>
-                <com.google.android.material.textfield.TextInputLayout
+
+                <LinearLayout
                     android:layout_width="300dp"
-                    android:id="@+id/il_default_net"
-                    android:hint="Net Modus"
-                    android:layout_height="wrap_content">
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/default_net"
-                        android:inputType="numberDecimal"
-                        app:doubleText="@={view_model.defaultNet}"
-                        />
-                </com.google.android.material.textfield.TextInputLayout>
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="300dp"
-                    android:id="@+id/il_purchase_price"
-                    android:hint="Harga Beli"
-                    android:layout_height="wrap_content">
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/purchase_price"
-                        android:inputType="number"
-                        app:rupiahValue="@={view_model.purchasePrice}"
-                        />
-                </com.google.android.material.textfield.TextInputLayout>
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="300dp"
-                    android:id="@+id/il_purchase_unit"
-                    android:hint="Unit"
-                    android:layout_height="wrap_content">
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/purchase_unit"
-                        android:text="@={view_model.puchaseUnit}"
-                        />
-                </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/big_margin"
+                    android:orientation="horizontal">
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="@dimen/small_margin"
+                        android:id="@+id/il_default_net"
+                        android:hint="Net Modus"
+                        android:layout_height="wrap_content">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/default_net"
+                            android:inputType="numberDecimal"
+                            app:doubleText="@={view_model.defaultNet}"
+                            />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="@dimen/small_margin"
+                        android:layout_marginBottom="@dimen/small_margin"
+                        android:id="@+id/il_purchase_unit"
+                        android:hint="Unit"
+                        android:layout_height="wrap_content">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/purchase_unit"
+                            android:text="@={view_model.puchaseUnit}"
+                            />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
 
                 <Button
                     android:layout_width="300dp"

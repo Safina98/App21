@@ -275,8 +275,12 @@
     </fragment>
     <fragment
         android:id="@+id/inputUpdateProduct"
-        android:name="com.example.app21try6.stock.InputUpdateProduct"
-        android:label="InputUpdateProduct" />
+        android:name="com.example.app21try6.stock.upsertproduk.InputUpdateProduct"
+        android:label="InputUpdateProduct" >
+        <argument
+            android:name="id"
+            app:argType="long" />
+    </fragment>
     <fragment
         android:id="@+id/customerFragment"
         android:name="com.example.app21try6.statement.customer.CustomerFragment"

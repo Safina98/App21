@@ -1,6 +1,5 @@
     package com.example.app21try6
 
-    import android.content.Context
     import android.os.Bundle
     import androidx.activity.OnBackPressedCallback
     import androidx.appcompat.app.AppCompatActivity
@@ -10,22 +9,11 @@
     import androidx.navigation.fragment.NavHostFragment
     import androidx.navigation.ui.AppBarConfiguration
     import androidx.navigation.ui.NavigationUI
-    import androidx.work.BackoffPolicy
-    import androidx.work.Constraints
-    import androidx.work.ExistingWorkPolicy
-    import androidx.work.NetworkType
-    import androidx.work.OneTimeWorkRequest
-    import androidx.work.WorkManager
-    import androidx.work.WorkRequest
-    import com.example.app21try6.database.VendibleDatabase
-    import com.example.app21try6.database.cloud.RealtimeDatabaseSync
     import com.example.app21try6.databinding.ActivityMainBinding
-    import com.example.app21try6.stock.InputUpdateProduct
+    import com.example.app21try6.stock.upsertproduk.InputUpdateProduct
     import com.example.app21try6.stock.brandstock.BrandStockFragment
     import com.example.app21try6.stock.subproductstock.SubProductStockFragment
     import com.example.app21try6.transaction.transactionedit.TransactionEditFragment
-    import com.example.app21try6.utils.MasterSyncWorker
-    import java.util.concurrent.TimeUnit
 
     class MainActivity : AppCompatActivity() {
         private lateinit var drawerLayout: DrawerLayout

@@ -72,7 +72,10 @@ class BrandStockViewModel(
     val addProduct: LiveData<Boolean> get() = _addProduct
     val discountList=discountRepository.getAllDicountName()
     val discountName=MutableLiveData<String?>("")
-    val _product=MutableLiveData<Product?>()
+    val _productId=MutableLiveData<Long?>()
+
+    val _navigateToUpsertProduct= MutableLiveData<Long?>()
+    val navigateToUpsertProduct: LiveData<Long?> get() = _navigateToUpsertProduct
 
     //TODO DELETE LATER
     //private val assignManager= AssignCloudIdManager(bookKeepingRepository,discountRepository,expensesRepository,logsRepository,repository,transactionsRepository)
@@ -80,19 +83,19 @@ class BrandStockViewModel(
 
 
     /////////////////////////// Produk variables///////////////////////////////////////////////////////////
-    var productName = MutableLiveData<String>()
-    var productPice=MutableLiveData<Int>()
-    var productCapital=MutableLiveData<Int>()
-    var checkBoxBoolean=MutableLiveData<Boolean>()
-    var bestSelling=MutableLiveData<Boolean>()
-    var defaultNet=MutableLiveData<Double>()
-    var alternatePrice=MutableLiveData<Double>()
-    var branName=MutableLiveData<String>()
-    var ctgName=MutableLiveData<String>()
-    var discountId=MutableLiveData<Int?>(null)
-    var purchasePrice=MutableLiveData<Int?>(null)
-    var puchaseUnit=MutableLiveData<String?>()
-    var alternateCapital=MutableLiveData<Double>()
+//    var productName = MutableLiveData<String>()
+//    var productPice=MutableLiveData<Int>()
+//    var productCapital=MutableLiveData<Int>()
+//    var checkBoxBoolean=MutableLiveData<Boolean>()
+//    var bestSelling=MutableLiveData<Boolean>()
+//    var defaultNet=MutableLiveData<Double>()
+//    var alternatePrice=MutableLiveData<Double>()
+//    var branName=MutableLiveData<String>()
+//    var ctgName=MutableLiveData<String>()
+//    var discountId=MutableLiveData<Int?>(null)
+//    var purchasePrice=MutableLiveData<Int?>(null)
+//    var puchaseUnit=MutableLiveData<String?>()
+//    var alternateCapital=MutableLiveData<Double>()
 
     private var _navigateBackToBrandStok=MutableLiveData<Boolean>()
     val navigateBackToBrandStok:LiveData<Boolean> get()=_navigateBackToBrandStok
@@ -260,29 +263,31 @@ fun updateSubTable(){
             _productBpModelList.value=list
         }
     }
-    fun getLongClickedProduct(id:Long){
-        viewModelScope.launch {
-            val product= repository.getProductById(id)
-            _product.value=product
-            productName.value=product.product_name
-            productPice.value=product.product_price
-            productCapital.value=product.product_capital
-            checkBoxBoolean.value=product.checkBoxBoolean
-            bestSelling.value=product.bestSelling
-            defaultNet.value=product.default_net
-            alternatePrice.value=product.alternate_price
-          //  ctgName.value= repository.getCategoryNameById(product.cath_code)//_selectedKategoriSpinner.value ?: ""
-            discountId=MutableLiveData<Int?>(null)
-            purchasePrice.value=product.purchasePrice
-            puchaseUnit.value=product.puchaseUnit
-            alternateCapital=MutableLiveData<Double>()
-            discountName.value=discountRepository.getDiscountNameById(product.discountId)
-            branName.value= repository.getBrandNameyId(product.brand_code)//selectedBrand.value?.name?: ""
-        }
-    }
+//    fun getLongClickedProduct(id:Long){
+//        viewModelScope.launch {
+//            val product= repository.getProductById(id)
+//            _product.value=product
+//            productName.value=product.product_name
+//            productPice.value=product.product_price
+//            productCapital.value=product.product_capital
+//            checkBoxBoolean.value=product.checkBoxBoolean
+//            bestSelling.value=product.bestSelling
+//            defaultNet.value=product.default_net
+//            alternatePrice.value=product.alternate_price
+//          //  ctgName.value= repository.getCategoryNameById(product.cath_code)//_selectedKategoriSpinner.value ?: ""
+//            discountId=MutableLiveData<Int?>(null)
+//            purchasePrice.value=product.purchasePrice
+//            puchaseUnit.value=product.puchaseUnit
+//            alternateCapital=MutableLiveData<Double>()
+//            discountName.value=discountRepository.getDiscountNameById(product.discountId)
+//            branName.value= repository.getBrandNameyId(product.brand_code)//selectedBrand.value?.name?: ""
+//        }
+//    }
     //private val _brandList = MutableLiveData<List<String>>()
     //val brandList: LiveData<List<String>> get() = _brandList
-
+fun getLongClickedProduct(id:Long){
+    _productId.value=id
+}
     fun onCategorySelected(category: String) {
         viewModelScope.launch {
             Log.i("SelectedCategory","$category")
@@ -291,68 +296,69 @@ fun updateSubTable(){
             //_brandList.postValue(brands)
         }
     }
-    fun onBtnSimpanClick(){
-        viewModelScope.launch {
-            val product=Product()
-            product.product_name=(productName.value?:"").uppercase().trim()
-            product.brand_code = selectedBrandBpModel.value!!.id?:0L
-            product.product_price = productPice.value?:0
-           // product.cath_code = ctgId.value?.toLong()?:0L
-            product.product_capital = productCapital.value?:0
-            product.discountId=discountRepository.getDiscountIdByName((discountName.value?:"").uppercase().trim())
-            product.alternate_capital=alternateCapital.value ?: 0.0
-            product.default_net=defaultNet.value ?: 0.0
-            product.purchasePrice=purchasePrice.value ?: 0
-            product.puchaseUnit=(puchaseUnit.value)?.uppercase()?.trim()
-            product.alternate_price=alternatePrice.value ?: 0.0
-            //product.cath_code=repository.getCategoryIdByName(ctgName.value ?: "")
-            val ctgId=repository.getCategoryIdByName(ctgName.value ?: "")
-            product.brand_code=repository.getBrandIdByName(branName.value?:"")?:0
-            product.needsSyncs=1
-            Log.i("Productprobs","Kategori ${ctgName.value} id $ctgId")
-            Log.i("Productprobs","Brand ${branName.value} id ${product.brand_code}")
-            if (product.brand_code!=0L ) {
-                if (_product.value==null){
-                    product.productCloudId=System.currentTimeMillis()
-                     repository.insertProduct(product)
-                }
-                else{
-                    product.productCloudId =_product.value!!.productCloudId
-                    updateProduct(product,"")
-                }
-                updateProductRv(selectedBrandBpModel.value?.id)
-                onNavigateBackToBrandStock()
-            }else{
-                Toast.makeText(getApplication(),"kategori atau brand tidak valid",Toast.LENGTH_SHORT).show()
-            }
-            clearMutable()
 
-        }
-    }
-    fun clearMutable(){
-        productName.value=""
-        //selectedBrandBpModel.value=null
-        productPice.value=0
-        ctgId.value=0L
-        productCapital.value=0
-        discountName.value=""
-        alternateCapital.value =0.0
-        defaultNet.value = 0.0
-        purchasePrice.value = 0
-        puchaseUnit.value=null
-        alternatePrice.value = 0.0
-        ctgName.value = ""
-        branName.value=""
-        _product.value==null
-    }
-    fun updateProduct(product: Product, discName:String){
-        uiScope.launch{
-           // product.discountId=discountRepository.getDiscountIdByName(discName)
-            repository.updateProduct(product)
-            _product.value=null
-            //updateProductRv(product.brand_code)
-        }
-    }
+//    fun onBtnSimpanClick(){
+//        viewModelScope.launch {
+//            val product=Product()
+//            product.product_name=(productName.value?:"").uppercase().trim()
+//            product.brand_code = selectedBrandBpModel.value!!.id?:0L
+//            product.product_price = productPice.value?:0
+//           // product.cath_code = ctgId.value?.toLong()?:0L
+//            product.product_capital = productCapital.value?:0
+//            product.discountId=discountRepository.getDiscountIdByName((discountName.value?:"").uppercase().trim())
+//            product.alternate_capital=alternateCapital.value ?: 0.0
+//            product.default_net=defaultNet.value ?: 0.0
+//            product.purchasePrice=purchasePrice.value ?: 0
+//            product.puchaseUnit=(puchaseUnit.value)?.uppercase()?.trim()
+//            product.alternate_price=alternatePrice.value ?: 0.0
+//            //product.cath_code=repository.getCategoryIdByName(ctgName.value ?: "")
+//            val ctgId=repository.getCategoryIdByName(ctgName.value ?: "")
+//            product.brand_code=repository.getBrandIdByName(branName.value?:"")?:0
+//            product.needsSyncs=1
+//            Log.i("Productprobs","Kategori ${ctgName.value} id $ctgId")
+//            Log.i("Productprobs","Brand ${branName.value} id ${product.brand_code}")
+//            if (product.brand_code!=0L ) {
+//                if (_product.value==null){
+//                    product.productCloudId=System.currentTimeMillis()
+//                     repository.insertProduct(product)
+//                }
+//                else{
+//                    product.productCloudId =_product.value!!.productCloudId
+//                    updateProduct(product,"")
+//                }
+//                updateProductRv(selectedBrandBpModel.value?.id)
+//                onNavigateBackToBrandStock()
+//            }else{
+//                Toast.makeText(getApplication(),"kategori atau brand tidak valid",Toast.LENGTH_SHORT).show()
+//            }
+//            clearMutable()
+//
+//        }
+//    }
+//    fun clearMutable(){
+//        productName.value=""
+//        //selectedBrandBpModel.value=null
+//        productPice.value=0
+//        ctgId.value=0L
+//        productCapital.value=0
+//        discountName.value=""
+//        alternateCapital.value =0.0
+//        defaultNet.value = 0.0
+//        purchasePrice.value = 0
+//        puchaseUnit.value=null
+//        alternatePrice.value = 0.0
+//        ctgName.value = ""
+//        branName.value=""
+//        _product.value==null
+//    }
+//    fun updateProduct(product: Product, discName:String){
+//        uiScope.launch{
+//           // product.discountId=discountRepository.getDiscountIdByName(discName)
+//            repository.updateProduct(product)
+//            _product.value=null
+//            //updateProductRv(product.brand_code)
+//        }
+//    }
 
     fun onProductAdded(){ _addProduct.value = false}
 
@@ -367,6 +373,10 @@ fun updateSubTable(){
     }
     fun onNavigatedBackToBrandStock(){
         _navigateBackToBrandStok.value=false
+    }
+
+    fun onNavigateToUpsertProduct(){
+        //_navigateToUpsertProduct.value =model
     }
 
     override fun onCleared() {
