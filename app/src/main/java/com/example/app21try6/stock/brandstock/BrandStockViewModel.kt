@@ -3,7 +3,6 @@ package com.example.app21try6.stock.brandstock
 import android.annotation.SuppressLint
 import android.app.Application
 import android.database.sqlite.SQLiteException
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
@@ -103,9 +102,9 @@ class BrandStockViewModel(
     fun setSelectedKategoriValue(value: String) {
         viewModelScope.launch {
             val id = repository.getCategoryIdByName(value)
-            Log.i("brandList","categoryIdfromrepo: ${ctgId.value}")
+
             ctgId.value = id
-            Log.i("brandList","ctgId: ${ctgId.value}")
+
             _selectedCtgSpinner.value = value
         }
     }
@@ -115,10 +114,8 @@ class BrandStockViewModel(
         viewModelScope.launch {
             val brandlist = repository.getBrandByCategoryId(ctgId.value?.toLong() ?:0L)
             val allbrand = repository.getAllBrand()
-            Log.i("brandList","view mode update rv $allbrand")
-            allbrand.forEach {
-                Log.i("brandList","$it")
-            }
+
+
             _brandBpModelList.value = brandlist
         }
     }
@@ -171,7 +168,7 @@ class BrandStockViewModel(
                     repository.insertCategory(category)
                 } catch (e: SQLiteException) {
                     Toast.makeText(getApplication(), "InsertItemCath", Toast.LENGTH_LONG).show()
-                    Log.e("CSV Import", "InsertItemCath $e")
+
                 }
             }
         }
@@ -211,7 +208,7 @@ fun updateSubTable(){
                 repository.insertCSVBatch(tokensList)
                 _insertionCompleted.value = true
             } catch (e: Exception) {
-                Log.e("CSV Import", "InsertCsvBatch $e")
+
                 Toast.makeText(getApplication(), "InsertCsvBatch $e", Toast.LENGTH_LONG).show()
             } finally {
                 _isLoading.value = false
@@ -234,7 +231,7 @@ fun updateSubTable(){
         brand.brandCloudId=brandBpModel.id?: System.currentTimeMillis()
         brand.cath_code=repository.getCategoryIdByName(ctgName)
         repository.updateBrand(brand)
-        Log.i("UpdateBrand","${brand.brand_name} ${brand.cath_code}")
+
         updateRv()
     } }
 
@@ -290,7 +287,7 @@ fun getLongClickedProduct(id:Long){
 }
     fun onCategorySelected(category: String) {
         viewModelScope.launch {
-            Log.i("SelectedCategory","$category")
+
             val catId=repository.getCategoryIdByName(category)
             //val brands = repository.getBrandNameListByCategoryName(catId) // query from DB
             //_brandList.postValue(brands)
@@ -374,9 +371,11 @@ fun getLongClickedProduct(id:Long){
     fun onNavigatedBackToBrandStock(){
         _navigateBackToBrandStok.value=false
     }
-
-    fun onNavigateToUpsertProduct(){
-        //_navigateToUpsertProduct.value =model
+    fun onNavigateToUpsertProduct(id:Long){
+        _navigateToUpsertProduct.value =id
+    }
+    fun onNavigatedToUpsertProduct(){
+        _navigateToUpsertProduct.value =null
     }
 
     override fun onCleared() {

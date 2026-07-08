@@ -5,7 +5,7 @@ import android.Manifest
 import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
+
 import android.view.*
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -93,7 +93,7 @@ class BrandStockFragment : Fragment() {
                 }else if(layoutOneViews[0].visibility == View.VISIBLE && binding.rvProductStock.visibility==View.VISIBLE&&viewModel.selectedBrandBpModel.value!=null){
                     viewModel.getBrandIdByName(null)
                 }else if(layoutOneViews[0].visibility == View.GONE && binding.rvCat.visibility==View.VISIBLE){
-                    Log.i("CustomBackProbs"," second if else condition met")
+
                     binding.cardView.visibility = View.GONE
                     if(binding.txtBrand==null){
                         binding.rvProductStock.visibility=View.VISIBLE
@@ -103,7 +103,6 @@ class BrandStockFragment : Fragment() {
                 }
 
                 else {
-                    Log.i("CustomBackProbs","else condition met")
                     isEnabled = false // Disable callback temporarily
                     requireActivity().onBackPressed() // Trigger default back behavior
                 }
@@ -147,6 +146,7 @@ class BrandStockFragment : Fragment() {
             }, BrandStockLongListener {
                 viewModel.getLongClickedProduct(it.id)
                 showDialogBox(viewModel,it,Constants.MODELTYPE.PRODUCT)
+
             },null,requireContext())
 
 
@@ -197,7 +197,7 @@ class BrandStockFragment : Fragment() {
         }
 
         viewModel.selectedCtgSpinner.observe(viewLifecycleOwner) {
-            Log.i("brandList","selected ctg spinner $it")
+
             viewModel.updateRv()
         }
 
@@ -252,7 +252,8 @@ class BrandStockFragment : Fragment() {
                             )
                         }
                     }else{
-                        this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct(0L))
+                        viewModel.onNavigateToUpsertProduct(0L)
+
                        // DialogUtils.updateDialog(requireContext(),viewModel,list)
                     }
                 }else{
@@ -280,7 +281,7 @@ class BrandStockFragment : Fragment() {
         viewModel.addProduct.observe(viewLifecycleOwner, Observer {
             if (it==true){
                 val list=viewModel.discountList.value
-                this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct(0L))
+                viewModel.onNavigateToUpsertProduct(0L)
                 viewModel.onProductAdded()
             }
         })
@@ -290,6 +291,12 @@ class BrandStockFragment : Fragment() {
                 this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToSubProductStockFragment(id))
                 viewModel.onBrandNavigated()
             } })
+        viewModel.navigateToUpsertProduct.observe(viewLifecycleOwner, Observer{
+            if (it!=null){
+                this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct(it))
+                viewModel.onNavigatedToUpsertProduct()
+            }
+        })
         setHasOptionsMenu(true)
         return binding.root
     }
@@ -311,7 +318,8 @@ class BrandStockFragment : Fragment() {
                         categoryList = viewModel.ctgNameList.value
                     )
                 }else{
-                    this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct(0L))
+                    //this.findNavController().navigate(BrandStockFragmentDirections.actionBrandStockFragmentToInputUpdateProduct(0L))
+                    viewModel.onNavigateToUpsertProduct(vendible.id)
 
                 }
             }

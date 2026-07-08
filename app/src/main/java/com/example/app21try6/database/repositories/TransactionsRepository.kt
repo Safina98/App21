@@ -69,6 +69,24 @@ class TransactionsRepository(application: Application) {
     fun getTransSelectModelLive(productId: Long, sum_id: Long): LiveData<List<TransSelectModel>> {
         return transDetailDao.getSubProductMLive(productId, sum_id)
     }
+    suspend fun getQtyPerProduct(productId:Long,startDate:Date,endDate: Date): Double{
+        return withContext(Dispatchers.IO){
+            transDetailDao.getQtyPerProduct(productId,startDate,endDate)
+        }
+
+    }
+    suspend fun getTransCountPerProduct(productId:Long,startDate:Date,endDate: Date): Int{
+        return withContext(Dispatchers.IO){
+            transDetailDao.getTransCountPerProduct(productId,startDate,endDate)
+        }
+
+    }
+    suspend fun getCustomerCountPerProduct(productId:Long,startDate:Date,endDate: Date): Int{
+        return withContext(Dispatchers.IO){
+            transDetailDao.getCustomerCountPerProduct(productId,startDate,endDate)
+        }
+
+    }
 
     fun getTransactionDetails(id:Long): LiveData<List<TransactionDetail>> {
         return transDetailDao.selectATransDetail(id)

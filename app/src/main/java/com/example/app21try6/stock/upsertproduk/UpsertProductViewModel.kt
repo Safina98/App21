@@ -9,15 +9,32 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.app21try6.database.repositories.DiscountRepository
 import com.example.app21try6.database.repositories.StockRepositories
+import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.database.tables.Product
+import com.example.app21try6.formatDateRange
 import kotlinx.coroutines.launch
+import java.util.Date
 
 class UpsertProductViewModel(
-    private val brandId: Long?,
+    private val productId: Long?,
     private val repository: StockRepositories,
     private val discountRepository:DiscountRepository,
+    private val transRepositories: TransactionsRepository,
     application: Application): AndroidViewModel(application) {
 
+
+    val _startDate = MutableLiveData<Date>()
+    val _endDate= MutableLiveData<Date>()
+    val _dateRangeString = MutableLiveData<String>("Pilih Tanggal")
+
+    //total banyaknya produk terjual
+    val qtyPerProduct= MutableLiveData<String>("")
+    //berapa kali produk terjual/ total transaksi
+    val productTransactionCount= MutableLiveData<String>("")
+    val customerPerProductCount= MutableLiveData<String>("")
+
+    private var _isStartDatePickerClicked = MutableLiveData<Boolean>()
+    val isStartDatePickerClicked :LiveData<Boolean>get() = _isStartDatePickerClicked
 
     val ctgNameList = repository.getCategoryNameLiveData()
     val brandList = repository.getBrandNameListByCategoryName() // query from DB
@@ -42,6 +59,29 @@ class UpsertProductViewModel(
     private var _navigateBackToBrandStok=MutableLiveData<Long?>()
     val navigateBackToBrandStok:LiveData<Long?> get()=_navigateBackToBrandStok
 
+
+    fun updateDateRangeString(startDate: Date, endDate: Date) {
+        _dateRangeString.value = formatDateRange(startDate, endDate)
+    }
+    fun setStartAndEndDateRange(startDate: Date,endDate: Date){
+        viewModelScope.launch {
+            _startDate.value = startDate
+            _endDate.value = endDate
+            //resetLogs()
+        }
+    }
+    fun getTotalQtyPerProduct(){
+        viewModelScope.launch {
+          val qty = transRepositories.getQtyPerProduct(productId?:0L,_startDate.value!!,_endDate.value!!)
+            Log.i("ProductProbs","productId:$productId qty $qty")
+            qtyPerProduct.value=qty.toString()
+            val transCount=transRepositories.getTransCountPerProduct(productId?:0L,_startDate.value!!,_endDate.value!!)
+            productTransactionCount.value=transCount.toString()
+            val customerCount =transRepositories.getCustomerCountPerProduct(productId?:0L,_startDate.value!!,_endDate.value!!)
+            customerPerProductCount.value=customerCount.toString()
+
+        }
+    }
     fun getLongClickedProduct(id:Long){
         viewModelScope.launch {
             val product= repository.getProductById(id)
@@ -53,7 +93,6 @@ class UpsertProductViewModel(
             bestSelling.value=product.bestSelling
             defaultNet.value=product.default_net
             alternatePrice.value=product.alternate_price
-            //  ctgName.value= repository.getCategoryNameById(product.cath_code)//_selectedKategoriSpinner.value ?: ""
             discountId=MutableLiveData<Int?>(null)
             purchasePrice.value=product.purchasePrice
             puchaseUnit.value=product.puchaseUnit
@@ -67,7 +106,7 @@ class UpsertProductViewModel(
         viewModelScope.launch {
             val product=Product()
             product.product_name=(productName.value?:"").uppercase().trim()
-            product.brand_code = brandId?:0L
+            product.brand_code = productId?:0L
             product.product_price = productPice.value?:0
             // product.cath_code = ctgId.value?.toLong()?:0L
             product.product_capital = productCapital.value?:0
@@ -81,8 +120,7 @@ class UpsertProductViewModel(
             val ctgId=repository.getCategoryIdByName(ctgName.value ?: "")
             product.brand_code=repository.getBrandIdByName(branName.value?:"")?:0
             product.needsSyncs=1
-            Log.i("Productprobs","Kategori ${ctgName.value} id $ctgId")
-            Log.i("Productprobs","Brand ${branName.value} id ${product.brand_code}")
+
             if (product.brand_code!=0L ) {
                 if (_product.value==null){
                     product.productCloudId=System.currentTimeMillis()
@@ -124,9 +162,10 @@ class UpsertProductViewModel(
         branName.value=""
         _product.value==null
     }
-
+    fun onStartDatePickerClick(){ _isStartDatePickerClicked.value = true }
+    fun onStartDatePickerClicked(){ _isStartDatePickerClicked.value = false }
     fun onNavigateBackToBrandStock(){
-        _navigateBackToBrandStok.value=brandId
+        _navigateBackToBrandStok.value=productId
     }
     fun onNavigatedBackToBrandStock(){
         _navigateBackToBrandStok.value=null

@@ -216,6 +216,8 @@ interface TransDetailDao {
     """)
     fun getFilteredSubBarChartList(year:String?,month:String?,category:String?): List<BarChartModel>
 
+
+
 //    @Query("""
 //    SELECT
 //    td.tDCloudId AS transDetailId,
@@ -309,6 +311,38 @@ interface TransDetailDao {
     ORDER BY value DESC
     """)
     fun getCustomerCountList(year:String?,category: String?,product: String?,sp:String?): List<BarChartModel>
+
+
+    @Query("SELECT SUM(qty*unit_qty) " +
+            "FROM trans_detail_table td " +
+            "JOIN sub_table s ON td.sPCloudId = s.sPCloudId " +
+            "WHERE " +
+            "s.productCloudId =:productId" +
+            " AND (:startDate IS NULL OR td.trans_detail_date >= :startDate)\n" +
+            "             AND (:endDate IS NULL OR td.trans_detail_date <= :endDate)")
+    fun getQtyPerProduct(productId:Long,startDate: Date?,endDate: Date?): Double
+
+    @Query("SELECT COUNT(td.tDCloudId) " +
+            "FROM trans_detail_table td " +
+            "JOIN sub_table s ON td.sPCloudId = s.sPCloudId " +
+            "WHERE " +
+            "s.productCloudId =:productId" +
+            " AND (:startDate IS NULL OR td.trans_detail_date >= :startDate)\n" +
+            "             AND (:endDate IS NULL OR td.trans_detail_date <= :endDate)")
+    fun getTransCountPerProduct(productId:Long,startDate: Date?,endDate: Date?): Int
+
+    @Query("""
+    SELECT COUNT(DISTINCT ts.cust_name)
+    FROM trans_detail_table td
+    JOIN trans_sum_table ts ON td.tSCloudId = ts.tSCloudId
+     JOIN sub_table s ON td.sPCloudId = s.sPCloudId  
+            WHERE
+            s.productCloudId =:productId
+             AND (:startDate IS NULL OR td.trans_detail_date >= :startDate)
+                        AND (:endDate IS NULL OR td.trans_detail_date <= :endDate)
+""")
+
+    fun getCustomerCountPerProduct(productId:Long,startDate: Date?,endDate: Date?): Int
 
     @Query("""
     SELECT 

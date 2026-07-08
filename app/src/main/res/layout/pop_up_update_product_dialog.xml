@@ -16,8 +16,10 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="300dp"
+            android:layout_height="wrap_content"
             android:id="@+id/il_ket"
-            android:layout_height="wrap_content">
+            android:layout_marginBottom="@dimen/medium_margin"
+            >
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -27,9 +29,10 @@
                 />
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="300dp"
             android:id="@+id/il_price"
-            android:layout_height="wrap_content">
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/medium_margin">
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -41,7 +44,8 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="300dp"
             android:id="@+id/il_capital"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/medium_margin">
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -54,11 +58,12 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="300dp"
             android:id="@+id/il_disc"
-            android:layout_height="60dp">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/big_margin">
             <AutoCompleteTextView
                 android:id="@+id/text_discount"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="60dp"
                 android:paddingStart="@dimen/big_margin"
                 android:paddingEnd="@dimen/big_margin"
                 android:inputType="text" />
