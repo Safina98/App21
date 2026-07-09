@@ -9,6 +9,7 @@ import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.cloud.RealtimeDatabaseSync
 import com.example.app21try6.database.cloud.UploadInventories
 import com.example.app21try6.database.models.BarChartModel
+import com.example.app21try6.database.models.ProductModusModel
 import com.example.app21try6.database.models.ProfitDebugModel
 import com.example.app21try6.database.models.TracketailWarnaModel
 import com.example.app21try6.database.tables.TransactionDetail
@@ -73,25 +74,26 @@ class TransactionsRepository(application: Application) {
         return withContext(Dispatchers.IO){
             transDetailDao.getQtyPerProduct(productId,startDate,endDate)
         }
-
     }
     suspend fun getTransCountPerProduct(productId:Long,startDate:Date,endDate: Date): Int{
         return withContext(Dispatchers.IO){
             transDetailDao.getTransCountPerProduct(productId,startDate,endDate)
         }
-
     }
+
     suspend fun getCustomerCountPerProduct(productId:Long,startDate:Date,endDate: Date): Int{
         return withContext(Dispatchers.IO){
             transDetailDao.getCustomerCountPerProduct(productId,startDate,endDate)
         }
-
     }
-
+    suspend fun getProductModus(productId:Long,startDate:Date,endDate: Date): List<ProductModusModel>{
+        return withContext(Dispatchers.IO){
+            transDetailDao.getProductModus(productId,startDate,endDate)
+        }
+    }
     fun getTransactionDetails(id:Long): LiveData<List<TransactionDetail>> {
         return transDetailDao.selectATransDetail(id)
     }
-
     suspend fun getTransactionDetailsWithProductIDList(id:Long): List<TransactionDetailWithProduct>? {
         return withContext(Dispatchers.IO){ transDetailDao.getTransactionDetailsWithProductList(id)}
     }
@@ -101,7 +103,6 @@ class TransactionsRepository(application: Application) {
     suspend fun getTotalTransactionn(id: Long):Double{
         return withContext(Dispatchers.IO){transDetailDao.getTotalTransaction(id)}
     }
-
     suspend fun insertTransDetail(transDetail: TransactionDetail):Long{
        return withContext(Dispatchers.IO){
            transDetail.tDCloudId= System.currentTimeMillis()
@@ -120,9 +121,7 @@ class TransactionsRepository(application: Application) {
         withContext(Dispatchers.IO){
             val tDTable=transDetailDao.selectTransDetailById(id)
             transDetailDao.deleteAnItemTransDetail(id)
-
             val softDeletedtD = tDTable.copy(isDeleted = true, needsSyncs = 1)
-
             val cloudObject = uploadInventory.convertTransactionDetailToTransactionDetailCloud(tDTable)
             //detailWarnaDao.deleteMerchandise(id)
             //detailWarnaDao.updateRetail(softDeletedmR)

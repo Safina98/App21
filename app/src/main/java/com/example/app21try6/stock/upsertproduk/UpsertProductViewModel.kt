@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.app21try6.database.models.ProductModusModel
 import com.example.app21try6.database.repositories.DiscountRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
@@ -24,6 +25,7 @@ class UpsertProductViewModel(
 
 
     val _startDate = MutableLiveData<Date>()
+
     val _endDate= MutableLiveData<Date>()
     val _dateRangeString = MutableLiveData<String>("Pilih Tanggal")
 
@@ -32,6 +34,29 @@ class UpsertProductViewModel(
     //berapa kali produk terjual/ total transaksi
     val productTransactionCount= MutableLiveData<String>("")
     val customerPerProductCount= MutableLiveData<String>("")
+
+    private val _productModusList=MutableLiveData<List<ProductModusModel>>()
+    val productModusList: LiveData<List<ProductModusModel>> get() = _productModusList
+
+    //ubah modal di transaksi
+    //1. tambah text Pilih tanggal
+    //2. tambah variabel pilih tanggal? pakai yang sudah ada?
+    //3. buat datepicker dialog baru? pakai yang sudah ada?
+    //4. buat fungsi untuk update di viewmodel, repo, dao
+    //5. buat undo schema
+
+    //Undo schema, hanya dapat dilakukan 1 kali, selama fragmnet belum dihancurkan
+    //1. tambah text dan icon undo
+    //2. buat variable untuk simpan modal lama
+    //3. buat variable untuk simpan tanggal lama
+    //4. saat icon update data dari tanggal lama dengan modal lama
+    //undo lebih permanen
+    //1. buat table baru, id, productId, tanggal awal dan akhir,tanggal update dilakukan,  modal lama, modal setelah di update
+    //2. saat update transaksi insert data di tabel baru
+    //3. tambah text dan icon undo
+    //4. saat icon di click, buka pop up dialog/pop up fragment untuk tampilkan daftar perubahan yang sudah dilakukan
+    //5. di ujung setiap daftar ada pilihan undo
+    //6. saat undo di click, update data dengan modal lama dari startDate sampai endDate
 
     private var _isStartDatePickerClicked = MutableLiveData<Boolean>()
     val isStartDatePickerClicked :LiveData<Boolean>get() = _isStartDatePickerClicked
@@ -72,16 +97,18 @@ class UpsertProductViewModel(
     }
     fun getTotalQtyPerProduct(){
         viewModelScope.launch {
-          val qty = transRepositories.getQtyPerProduct(productId?:0L,_startDate.value!!,_endDate.value!!)
-            Log.i("ProductProbs","productId:$productId qty $qty")
+            val qty = transRepositories.getQtyPerProduct(productId?:0L,_startDate.value!!,_endDate.value!!)
             qtyPerProduct.value=qty.toString()
             val transCount=transRepositories.getTransCountPerProduct(productId?:0L,_startDate.value!!,_endDate.value!!)
             productTransactionCount.value=transCount.toString()
             val customerCount =transRepositories.getCustomerCountPerProduct(productId?:0L,_startDate.value!!,_endDate.value!!)
             customerPerProductCount.value=customerCount.toString()
+            val list= transRepositories.getProductModus(productId?:0L,_startDate.value!!,_endDate.value!!)
+            _productModusList.value=list
 
         }
     }
+
     fun getLongClickedProduct(id:Long){
         viewModelScope.launch {
             val product= repository.getProductById(id)

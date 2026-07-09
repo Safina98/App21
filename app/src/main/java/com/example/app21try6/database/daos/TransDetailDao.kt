@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.app21try6.database.models.BarChartModel
+import com.example.app21try6.database.models.ProductModusModel
 import com.example.app21try6.database.models.ProfitDebugModel
 import com.example.app21try6.database.models.TracketailWarnaModel
 import com.example.app21try6.database.tables.TransactionDetail
@@ -332,7 +333,7 @@ interface TransDetailDao {
     fun getTransCountPerProduct(productId:Long,startDate: Date?,endDate: Date?): Int
 
     @Query("""
-    SELECT COUNT(DISTINCT ts.cust_name)
+    SELECT COUNT(DISTINCT ts.custId)
     FROM trans_detail_table td
     JOIN trans_sum_table ts ON td.tSCloudId = ts.tSCloudId
      JOIN sub_table s ON td.sPCloudId = s.sPCloudId  
@@ -343,6 +344,21 @@ interface TransDetailDao {
 """)
 
     fun getCustomerCountPerProduct(productId:Long,startDate: Date?,endDate: Date?): Int
+
+    @Query("""
+        SELECT COUNT(*) AS count,
+        td.qty AS qty
+        FROM trans_detail_table td
+        JOIN sub_table s ON td.sPCloudId = s.sPCloudId
+        WHERE
+            s.productCloudId = :productId
+            AND (:startDate IS NULL OR td.trans_detail_date >= :startDate)
+            AND (:endDate IS NULL OR td.trans_detail_date <= :endDate)
+        GROUP BY td.qty
+        ORDER BY count DESC
+    LIMIT 3
+""")
+    fun getProductModus(productId:Long,startDate: Date?,endDate: Date?):List<ProductModusModel>
 
     @Query("""
     SELECT 

@@ -100,8 +100,8 @@ class InputUpdateProduct : Fragment() {
             }
         }
         viewModel.branName.observe(viewLifecycleOwner){
-
         }
+        viewModel.productModusList.observe(viewLifecycleOwner){}
         binding.textCategory.setOnItemClickListener { parent, view, position, id ->
             val selectedCategory = parent.getItemAtPosition(position) as String
             //viewModel.onCategorySelected(selectedCategory)
@@ -158,7 +158,7 @@ class InputUpdateProduct : Fragment() {
 
                 viewModel.updateDateRangeString(startDate,endDate)
                 viewModel.setStartAndEndDateRange(startDate,endDate)
-
+                viewModel.getTotalQtyPerProduct()
                 // viewModel.setEndDateRange(endDate)
             }
             .setNegativeButton("Cancel", null)
