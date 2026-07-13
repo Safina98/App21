@@ -674,7 +674,7 @@ class TransactionDetailViewModel (
             val brandId=stockRepo.getBrandIdByProductId(productId)
             val transDetailId=transdetail.tDCloudId
             val ctgId=stockRepo.getCategoryIdByBrandId(brandId)
-            val productName=stockRepo.getProductById(productId?:0).product_name
+            val productName=stockRepo.getProductById(productId?:0)?.product_name?:""
             val stringArray=arrayOf(productId.toString(),brandId.toString(),ctgId.toString(),transDetailId.toString(),productName,subId.toString())
             _navigateToSubProduct.value=stringArray
         }

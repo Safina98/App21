@@ -240,7 +240,7 @@ class StockRepositories (
         }
     }
 
-    suspend fun getProductById(id:Long):Product{
+    suspend fun getProductById(id:Long):Product?{
         return withContext(Dispatchers.IO){productDao.getProductById(id)}
     }
 

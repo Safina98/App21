@@ -44,8 +44,6 @@ class SubAdapter (val code: Long,
             binding.stokTxt.text = item.roll_u.toString()
             binding.colorTxt.text = item.warna
             binding.ketTxt.text = item.ket
-            binding.textStokToko.text = ""
-            binding.textStokGudang.text = ""
             binding.substockCheckbox.visibility=View.GONE
             binding.longListener = longListener
             binding.plusListener = plusListener
@@ -57,40 +55,6 @@ class SubAdapter (val code: Long,
             binding.cvSub.setBackgroundColor(
                 if (isSelected) ContextCompat.getColor(context, R.color.primaryColor) else ContextCompat.getColor(context, R.color.logrvbg)
             )
-            /*
-            if (code==0){
-                binding.stokTxt.text = item.roll_u.toString()
-                binding.colorTxt.text = item.warna
-                binding.ketTxt.text = item.ket
-                binding.textStokToko.text = item.roll_bt.toString()+"B + "+item.roll_st+"S + "+item.roll_kt+"K"
-                binding.textStokGudang.text = item.roll_bg.toString()+"BG + "+item.roll_sg+"SG + "+item.roll_kg+"KG"
-                binding.substockCheckbox.visibility=View.GONE
-                binding.longListener = longListener
-                binding.plusListener = plusListener
-                binding.subssListener = subsListener
-                binding.warnaListener = warnaListener
-                binding.ketListener = ketListener
-                binding.subProductListener = subProductListener
-               // binding.cvSub.setBackgroundColor(if (isSelected) Color.LTGRAY else Color.WHITE)
-                binding.cvSub.setBackgroundColor(
-                    if (isSelected) ContextCompat.getColor(context, R.color.dialogbtncolor) else ContextCompat.getColor(context, R.color.logrvbg)
-                )
-            }else
-            {
-                binding.textStokGudang.visibility = View.GONE
-                binding.addNStockBtn.visibility = View.GONE
-                binding.subsNStockBtn.visibility = View.GONE
-                binding.stokTxt.visibility = View.GONE
-                binding.textView2.visibility = View.GONE
-                binding.textView3.visibility = View.GONE
-                binding.textStokToko.visibility = View.GONE
-                binding.ketTxt.visibility = View.GONE
-                binding.subCheckBoxListener = checkBoxListenerSub
-                binding.substockCheckbox.isChecked = item.is_checked
-
-            }
-
-            */
 
             binding.executePendingBindings()
 

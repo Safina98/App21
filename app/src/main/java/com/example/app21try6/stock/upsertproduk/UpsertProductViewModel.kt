@@ -50,6 +50,7 @@ class UpsertProductViewModel(
     //2. buat variable untuk simpan modal lama
     //3. buat variable untuk simpan tanggal lama
     //4. saat icon update data dari tanggal lama dengan modal lama
+
     //undo lebih permanen
     //1. buat table baru, id, productId, tanggal awal dan akhir,tanggal update dilakukan,  modal lama, modal setelah di update
     //2. saat update transaksi insert data di tabel baru
@@ -104,30 +105,35 @@ class UpsertProductViewModel(
             val customerCount =transRepositories.getCustomerCountPerProduct(productId?:0L,_startDate.value!!,_endDate.value!!)
             customerPerProductCount.value=customerCount.toString()
             val list= transRepositories.getProductModus(productId?:0L,_startDate.value!!,_endDate.value!!)
+            list.forEach {
+                Log.i("ProductProbs","qty: ${it.qty} count: ${it.count}")
+            }
             _productModusList.value=list
-
         }
     }
 
     fun getLongClickedProduct(id:Long){
         viewModelScope.launch {
             val product= repository.getProductById(id)
-            _product.value=product
-            productName.value=product.product_name
-            productPice.value=product.product_price
-            productCapital.value=product.product_capital
-            checkBoxBoolean.value=product.checkBoxBoolean
-            bestSelling.value=product.bestSelling
-            defaultNet.value=product.default_net
-            alternatePrice.value=product.alternate_price
-            discountId=MutableLiveData<Int?>(null)
-            purchasePrice.value=product.purchasePrice
-            puchaseUnit.value=product.puchaseUnit
-            alternateCapital=MutableLiveData<Double>()
-            discountName.value=discountRepository.getDiscountNameById(product.discountId)
-            branName.value= repository.getBrandNameyId(product.brand_code)//selectedBrand.value?.name?: ""
+            if (product!=null){
+                _product.value=product
+                productName.value=product.product_name
+                productPice.value=product.product_price
+                productCapital.value=product.product_capital
+                checkBoxBoolean.value=product.checkBoxBoolean
+                bestSelling.value=product.bestSelling
+                defaultNet.value=product.default_net
+                alternatePrice.value=product.alternate_price
+                discountId=MutableLiveData<Int?>(null)
+                purchasePrice.value=product.purchasePrice
+                puchaseUnit.value=product.puchaseUnit
+                alternateCapital=MutableLiveData<Double>()
+                discountName.value=discountRepository.getDiscountNameById(product.discountId)
+                branName.value= repository.getBrandNameyId(product.brand_code)//selectedBrand.value?.name?: ""
+            }
         }
     }
+
 
     fun onBtnSimpanClick(){
         viewModelScope.launch {

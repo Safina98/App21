@@ -44,7 +44,7 @@ interface ProductDao {
     //@Query("SELECT year as year_n,month as month_n,month_number as month_nbr, month as nama,day as day_n,day_name as day_name,SUM(total_income) as total FROM SUMMARY_TABLE  WHERE year = :year_  GROUP BY month ORDER BY month_nbr ASC")
 
     @Query("SELECT * FROM product_table WHERE productCloudId =:id")
-    fun getProductById(id:Long):Product
+    fun getProductById(id:Long):Product?
 
 
     @Query("SELECT brand_code FROM product_table WHERE productCloudId =:id")
