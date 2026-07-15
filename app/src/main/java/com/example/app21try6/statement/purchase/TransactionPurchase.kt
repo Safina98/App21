@@ -31,6 +31,11 @@ import com.example.app21try6.database.repositories.LogsRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.tables.InventoryPurchase
 import com.example.app21try6.databinding.FragmentTransactionPurchaseBinding
+import com.example.app21try6.transaction.transactiondetail.PaymentAdapter
+import com.example.app21try6.transaction.transactiondetail.TransDatePaymentClickListener
+import com.example.app21try6.transaction.transactiondetail.TransPaymentClickListener
+import com.example.app21try6.transaction.transactiondetail.TransPaymentLongListener
+import com.example.app21try6.transaction.transactiondetail.TransactionDetailFragment.type
 import com.example.app21try6.utils.DialogUtils
 import com.example.app21try6.utils.SimilarWordAdapter
 import com.example.app21try6.utils.SpaceInsensitiveArrayAdapter
@@ -60,10 +65,12 @@ class TransactionPurchase : Fragment() {
         binding.viewModel=viewModel
 
         viewModel.getExpense(id)
-        viewModel.getInventoryList(id)
+        viewModel.getNewInventoryList(id)
 
-        val autoCompleteSuplier: AutoCompleteTextView = binding.textDiscount
+        val autoCompleteSuplier: AutoCompleteTextView = binding.textSuplier
         val autoCompleteSubName: AutoCompleteTextView = binding.textSub
+
+
 
 
         val adapter =PurchaseAdapter(
@@ -75,7 +82,17 @@ class TransactionPurchase : Fragment() {
                 viewModel.deletePurchase(it)
 
             })
+        val discAdapter = PaymentAdapter(false,
+            TransPaymentClickListener {
+
+            },TransPaymentLongListener {
+
+            },
+            TransDatePaymentClickListener {
+                //showDatePickerDialog(it)
+            })
         binding.purchaseRv.adapter=adapter
+        binding.recyclerViewPdiscount.adapter=discAdapter
 
         val dividerItemDecoration = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
 
@@ -112,7 +129,7 @@ class TransactionPurchase : Fragment() {
                     context = requireContext(),
                     viewModel = viewModel, // Replace with your ViewModel instance
                     model = null,         // Replace with your model instance
-                    title = "Update Brand",
+                    title = "Diskon",
                     getBrandName = { (it as InventoryPurchase).subProductName },
                     setBrandName = { it, name -> (it as InventoryPurchase).subProductName = name },
                     updateFunction = { vm, item -> (vm as PurchaseViewModel).addDiscount(0 )},
@@ -135,25 +152,36 @@ class TransactionPurchase : Fragment() {
         autoCompleteSubName.setOnItemClickListener { _, _, position, _ ->
 
         }
+
+        autoCompleteSuplier.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                viewModel.updateExpenseName()
+            }
+        })
         viewModel.suplierDummy.observe(viewLifecycleOwner) { list ->
-            list?.let {
-                val supNames = list.map { it.suplierName }
-                val adapterSuplier = ArrayAdapter(
+                val supliernames = list.map { it.suplierName }
+                val adapterr = ArrayAdapter(
                     requireContext(),
                     android.R.layout.simple_dropdown_item_1line,
-                    supNames
+                    supliernames
                 )
-                autoCompleteSuplier.setAdapter(adapterSuplier)
-            }
+               autoCompleteSuplier.setAdapter(adapterr)
         }
 
         viewModel.inventoryPurchaseList.observe(viewLifecycleOwner){
             adapter.submitList(it)
             adapter.notifyDataSetChanged()
         }
+        viewModel.pDiscountList.observe(viewLifecycleOwner){
+            discAdapter.submitList(it)
+            adapter.notifyDataSetChanged()
+        }
         //adapter.submitList(purchaseDummy)
         binding.btnAdd.setOnClickListener {
-            viewModel.onAddClick()
+            //viewModel.onAddClick()
+            viewModel.insertPurchase()
             val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(it.windowToken, 0) // "it" = button's window token
             val snackbar = Snackbar.make(binding.root, "added", Snackbar.LENGTH_SHORT)
@@ -215,7 +243,7 @@ class TransactionPurchase : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        viewModel.savePurchase()
+        //viewModel.savePurchase()
     }
 
 }

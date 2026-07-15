@@ -11,16 +11,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.*
 import androidx.lifecycle.viewModelScope
 import com.example.app21try6.Constants
-import com.example.app21try6.database.daos.ExpenseCategoryDao
-import com.example.app21try6.database.daos.ExpenseDao
-import com.example.app21try6.database.daos.ProductDao
-import com.example.app21try6.database.daos.SubProductDao
-import com.example.app21try6.database.daos.DetailWarnaDao
-import com.example.app21try6.database.daos.InventoryLogDao
-import com.example.app21try6.database.daos.InventoryPurchaseDao
-import com.example.app21try6.database.daos.SuplierDao
 import com.example.app21try6.database.models.SubWithPriceModel
-import com.example.app21try6.database.repositories.DiscountRepository
 import com.example.app21try6.database.repositories.ExpensesRepository
 import com.example.app21try6.database.repositories.LogsRepository
 import com.example.app21try6.database.repositories.StockRepositories
@@ -29,6 +20,7 @@ import com.example.app21try6.database.tables.ExpenseCategory
 import com.example.app21try6.database.tables.Expenses
 import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.database.tables.InventoryPurchase
+import com.example.app21try6.database.tables.PurchaseDiscount
 import com.example.app21try6.formatRupiah
 import com.example.app21try6.getMonthNumber
 import com.example.app21try6.statement.DiscountAdapterModel
@@ -39,6 +31,7 @@ import kotlinx.coroutines.withContext
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
+import kotlin.onFailure
 
 val tagp="PURCHASEPROBS"
 @RequiresApi(Build.VERSION_CODES.O)
@@ -73,20 +66,38 @@ class PurchaseViewModel(application: Application,
     }
     //purchase
     val suplierDummy= expenseRepo.getAllSuplier()//suplierDao.getAllSuplier()
+
     var inventoryList= mutableListOf<InventoryPurchase>()
     //val allSubProductFromDb=subProductDao.getSubProductWithPrice()
     private val searchQuery = MutableLiveData<String>()
-    val allSubProductFromDb: LiveData<List<SubWithPriceModel>?> = searchQuery.switchMap { query ->
+    val allSubProductFromDb:
+            LiveData<List<SubWithPriceModel>?> = searchQuery.switchMap{ query ->
         //subProductDao.getSubProductWithPrice(query)
-        stockRepo.getSubProductWithPrice(query)
+                stockRepo.getSubProductWithPrice(query)
     }
+    var inventoryPurchaseId:Int=0
     private val _inventoryPurchaseList=MutableLiveData<List<InventoryPurchase>>()
     val inventoryPurchaseList:LiveData<List<InventoryPurchase>> get() = _inventoryPurchaseList
-    var inventoryPurchaseId:Int=0
 
-    val totalTransSum: LiveData<String> = inventoryPurchaseList.map{ list ->
-        val sum = list.sumOf { it.totalPrice } ?:0.0
-        formatRupiah(sum)?:""
+
+    val pDiscountList=expenseRepo.getPDiscountByExpense(id)
+
+    val totalTransSum: LiveData<String> = MediatorLiveData<String>().apply {
+        var purchaseSum = 0.0
+        var discountSum = 0.0
+
+        fun update() {
+            value = formatRupiah(purchaseSum - discountSum)
+        }
+
+        addSource(inventoryPurchaseList) { list ->
+            purchaseSum = list.sumOf { it.totalPrice }
+            update()
+        }
+        addSource(pDiscountList) { list ->
+            discountSum = list.sumOf { it.payment_ammount?.toDouble() ?: 0.0}
+            update()
+        }
     }
 
     private val _isAddItemClick=MutableLiveData<Boolean>(false)
@@ -104,7 +115,7 @@ class PurchaseViewModel(application: Application,
     val inventoryPurchase=MutableLiveData<InventoryPurchase?>()
     val expenseMutable=MutableLiveData<Expenses>()
 
-    val productName=MutableLiveData<String>("")
+    val subProductName=MutableLiveData<String>("")
     val suplierName=MutableLiveData<String>("")
     val productPrice=MutableLiveData<Double>(0.0)
     val productNet=MutableLiveData<Double>(0.0)
@@ -136,9 +147,24 @@ class PurchaseViewModel(application: Application,
                 val list= expenseRepo.getInventoryPurchaseList(id)//withContext(Dispatchers.IO){invetoryPurchaseDao.selectPurchaseList(id)}
                 inventoryList=list.toMutableList()
                 _inventoryPurchaseList.value=list
-                if (inventoryList!=null) inventoryPurchaseId= inventoryList.last().id*-1
+              //  if (inventoryList!=null) inventoryPurchaseId= inventoryList.last().id*-1
                 val inP = expenseRepo.getPurchaseById()
             }
+        }
+    }
+    fun getNewInventoryList(id:Int){
+        viewModelScope.launch {
+            if (id!=-1){
+                val list= expenseRepo.getInventoryPurchaseList(id)
+                _inventoryPurchaseList.value=list
+               // expenseRepo.insertSupliers()
+            }
+        }
+    }
+
+    fun updateExpenseName(){
+        viewModelScope.launch {
+            expenseRepo.updateExpenseName(id,suplierName.value?:"")
         }
     }
 
@@ -183,22 +209,24 @@ class PurchaseViewModel(application: Application,
         }
     }
 
+
+
     fun updateItem(){
         if (inventoryPurchase.value!=null){
             val index = inventoryList.indexOfFirst { it.id == inventoryPurchase.value?.id}
             val item = inventoryPurchase.value!!
-            item.subProductName=productName.value?:""
-            item.suplierName=suplierName.value?:""
+            item.subProductName=subProductName.value?:""
+            //item.suplierName=suplierName.value?:""
             item.net=productNet.value?.toDouble() ?: 0.0
             item.batchCount=productQty.value?.toDouble() ?: 0.0
             item.price=productPrice.value?.toInt() ?: 0
             item.totalPrice=totalPrice.value?.toDouble() ?: 0.0
-            item.ref=inventoryPurchase.value!!.ref
+           // item.ref=inventoryPurchase.value!!.ref
             item.status=Constants.BARANGLOGKET.masuk
-            item.sPCloudId =allSubProductFromDb.value?.find { it.subProduct.sub_name ==productName.value }?.subProduct?.sPCloudId
+            item.sPCloudId =allSubProductFromDb.value?.find { it.subProduct.sub_name ==subProductName.value }?.subProduct?.sPCloudId
                 ?: inventoryPurchase.value!!.sPCloudId
-            item.suplierId=suplierDummy.value?.find { it.suplierName==suplierName.value }?.id ?: inventoryPurchase.value!!.suplierId
-            item.purchaseDate= Date()
+            //item.suplierId=suplierDummy.value?.find { it.suplierName==suplierName.value }?.id ?: inventoryPurchase.value!!.suplierId
+            //item.purchaseDate= Date()
             if (index != -1) {
                 inventoryList[index] = item
                 _inventoryPurchaseList.value=inventoryList
@@ -220,7 +248,7 @@ class PurchaseViewModel(application: Application,
                 expenses.expenseCloudId=System.currentTimeMillis()
                 expenses.needsSyncs=1
                 if (inventoryPurchaseList.value!=null){
-                    expenseRepo.insertPurchase(expenses,inventoryPurchaseList.value!!)
+                    expenseRepo.insertPurchases(expenses,inventoryPurchaseList.value!!)
                 }
             }
             else{
@@ -239,37 +267,67 @@ class PurchaseViewModel(application: Application,
     fun getAutoIncrementId(){
         inventoryPurchaseId-=1
     }
+    fun insertPurchase(){
+        viewModelScope.launch{
+            val item=InventoryPurchase()
+            item.subProductName=subProductName.value?:""
+            //item.suplierName=suplierName.value?:""
+            item.net=productNet.value?.toDouble() ?: 0.0
+            item.batchCount=productQty.value?.toDouble() ?: 0.0
+            item.price=productPrice.value?.toInt() ?: 0
+            item.totalPrice=totalPrice.value?.toDouble() ?: 0.0
+            item.id= System.currentTimeMillis()
+           // item.ref=UUID.randomUUID().toString()
+            item.status="PENDING"
+            //item.sPCloudId =allSubProductFromDb.value?.find { it.subProduct.sub_name ==productName.value }?.subProduct?.sPCloudId ?: 0
+            //item.suplierId=suplierDummy.value?.find { it.suplierName==suplierName.value }?.id ?: null
+            //item.purchaseDate= Date()
+            item.expensesId=id
+            //item.iPCloudId= System.currentTimeMillis()
+            item.needsSyncs=1
+
+            expenseRepo.insertPurchase(item,subProductName.value).onSuccess {
+                clearAllButName()
+                _isAddItemClick.value=true
+                getNewInventoryList(id)
+            }.onFailure {
+                    throwable ->
+                Log.e("PurchaseProbs", "failed: ${throwable.message}", throwable)
+                //show snackbar that said insert failed
+            }
+            //onClearClick()
+
+        }
+    }
 
     fun addItemToList(){
         val item=InventoryPurchase()
         getAutoIncrementId()
-        item.id=inventoryPurchaseId
-        item.subProductName=productName.value?:""
-        item.suplierName=suplierName.value?:""
+        //item.id=inventoryPurchaseId
+        item.subProductName=subProductName.value?:""
+        //item.suplierName=suplierName.value?:""
         item.net=productNet.value?.toDouble() ?: 0.0
         item.batchCount=productQty.value?.toDouble() ?: 0.0
         item.price=productPrice.value?.toInt() ?: 0
         item.totalPrice=totalPrice.value?.toDouble() ?: 0.0
-        item.ref=UUID.randomUUID().toString()
+        //item.ref=UUID.randomUUID().toString()
         item.status="PENDING"
-        item.sPCloudId =allSubProductFromDb.value?.find { it.subProduct.sub_name ==productName.value }?.subProduct?.sPCloudId
+        item.sPCloudId =allSubProductFromDb.value?.find { it.subProduct.sub_name ==subProductName.value }?.subProduct?.sPCloudId
             ?: 0
-        item.suplierId=suplierDummy.value?.find { it.suplierName==suplierName.value }?.id ?: null
-        item.purchaseDate= Date()
+        //item.suplierId=suplierDummy.value?.find { it.suplierName==suplierName.value }?.id ?: null
+        //item.purchaseDate= Date()
         item.expensesId=id
-        item.iPCloudId= System.currentTimeMillis()
+        //item.iPCloudId= System.currentTimeMillis()
         item.needsSyncs=1
         inventoryList.add(item)
         _inventoryPurchaseList.value=inventoryList
-        Log.i("SavePruchaseProbs","addItemToList pId: $inventoryPurchaseId")
-        Log.i("SavePruchaseProbs","item: $item")
         _isAddItemClick.value=true
         //onClearClick()
         clearAllButName()
     }
 
     fun rvClick(item: InventoryPurchase){
-        productName.value=item.subProductName
+        subProductName.value=item.subProductName
         productPrice.value=item.price.toDouble()
         productQty.value=item.batchCount.toInt()
         productNet.value=item.net
@@ -292,11 +350,11 @@ class PurchaseViewModel(application: Application,
                     //update or insert detail
                     val inventoryLog=InventoryLog()
                     inventoryLog.detailWarnaRef=subDetail.ref
-                    inventoryLog.barangLogDate=i.purchaseDate
+          //          inventoryLog.barangLogDate=i.purchaseDate
                     inventoryLog.sPCloudId =i.sPCloudId
                     inventoryLog.productCloudId =stockRepo.getProdutIdBySubId(i.sPCloudId!!)//getProductId(i.sPCloudId!!)
                     inventoryLog.brandId=stockRepo.getBrandIdByProductId(inventoryLog.productCloudId)//getBrandId(inventoryLog.productCloudId ?:0)
-                    inventoryLog.barangLogDate=i.purchaseDate
+            //        inventoryLog.barangLogDate=i.purchaseDate
                     inventoryLog.barangLogRef=UUID.randomUUID().toString()
                     inventoryLog.isi=i.net
                     inventoryLog.pcs=i.batchCount.toInt()
@@ -310,14 +368,6 @@ class PurchaseViewModel(application: Application,
         }
     }
 
-    fun getDetailWarnaANdInventoryLog(){
-        viewModelScope.launch {
-          //  val detailWarnaList= withContext(Dispatchers.IO){inventoryLogDao.selectAllDetailWarna()}
-           // val inventoryLog= withContext(Dispatchers.IO){inventoryLogDao.selectAllDetailWarna()}
-           // Log.i(tagp,"$detailWarnaList")
-            //Log.i(tagp,"$inventoryLog")
-        }
-    }
 
     fun deletePurchase(purchase: InventoryPurchase){
         inventoryList.remove(purchase)
@@ -326,7 +376,7 @@ class PurchaseViewModel(application: Application,
     }
 
     fun onClearClick(){
-        productName.value=""
+        subProductName.value=""
         clearAllButName()
     }
     fun clearAllButName(){
@@ -344,21 +394,35 @@ class PurchaseViewModel(application: Application,
         }
     }
     fun addDiscount(price:Int){
-        val purchase=InventoryPurchase()
-        getAutoIncrementId()
-        purchase.id=inventoryPurchaseId
-        purchase.net=1.0
-        purchase.status="DISCOUNT"
-        purchase.ref=UUID.randomUUID().toString()
-        purchase.purchaseDate=Date()
-        purchase.price=price*-1
-        purchase.batchCount=1.0
-        purchase.subProductName="DISCOUNT"
-        purchase.totalPrice=price.toDouble() *-1
-        Log.i("DiskProbs","$price")
-        getAutoIncrementId()
-        inventoryList.add(purchase)
-        _inventoryPurchaseList.value=inventoryList
+        viewModelScope.launch {
+            val purchaseDiscount= PurchaseDiscount()
+            purchaseDiscount.id= System.currentTimeMillis()
+            purchaseDiscount.discountName="Diskon"
+            purchaseDiscount.discountValue=price-1
+            purchaseDiscount.expenseId=id
+            expenseRepo.insertPurchaseDiscount(purchaseDiscount).onSuccess {
+                getNewInventoryList(id)
+            }   .onFailure {
+
+            }
+        }
+
+      //  expenseRepo.insertPurchase()
+//        val purchase=InventoryPurchase()
+//       // getAutoIncrementId()
+//        //purchase.id=inventoryPurchaseId
+//        purchase.net=1.0
+//        purchase.status="DISCOUNT"
+//        //purchase.ref=UUID.randomUUID().toString()
+//        //purchase.purchaseDate=Date()
+//        purchase.price=price*-1
+//        purchase.batchCount=1.0
+//        purchase.subProductName="DISCOUNT"
+//        purchase.totalPrice=price.toDouble() *-1
+
+        //getAutoIncrementId()
+        //inventoryList.add(purchase)
+        //_inventoryPurchaseList.value=inventoryList
     }
     fun updateDiscount(item:InventoryPurchase){
 
@@ -438,10 +502,6 @@ class PurchaseViewModel(application: Application,
     fun getAllexpenseCategory(){
         viewModelScope.launch {
             val list =expenseRepo.getAllExpenseCategoryName()
-//                withContext(Dispatchers.IO){
-//                expenseCategoryDao.getAllExpenseCategoryName()
-//            }
-
             val l =list.toMutableList()
             l.add(0,"ALL")
             _allExpenseCategorName.value=l
@@ -499,102 +559,15 @@ class PurchaseViewModel(application: Application,
         _unfilteredExpesne.value=filteredData
 
     }
-//    private suspend fun getPurchaseById():InventoryPurchase?{
-//        return withContext(Dispatchers.IO){
-//            invetoryPurchaseDao.getPurchaseById(0)
-//        }
-//    }
 
 
-//    private suspend fun insertPurchase(expenses: Expenses,list:List<InventoryPurchase>){
-//        withContext(Dispatchers.IO){
-//            invetoryPurchaseDao.insertPurchaseAndExpense(expenses,list)
-//        }
-//    }
-//    private suspend fun updatePurchasesAndExpense(expenses: Expenses, list:List<InventoryPurchase>){
-//        withContext(Dispatchers.IO){
-//            invetoryPurchaseDao.updatePurchasesAndExpense(expenses,list)
-//        }
-//    }
-
-//    private suspend fun updateExpense(expenses: Expenses){
-//        withContext(Dispatchers.IO){
-//            invetoryPurchaseDao.updateExpense(expenses)
-//        }
-//    }
-
-    //TODO delete later
-//    private suspend fun insertExpense(expenses: Expenses):Int{
-//        return withContext(Dispatchers.IO){
-//            expenseDao.insert(expenses).toInt()
-//        }
-//    }
-//    private suspend fun update(expenses: Expenses){
-//        withContext(Dispatchers.IO){
-//            expenseDao.update(expenses)
-//        }
-//    }
-//    private suspend fun getExpensesById(id:Int):Expenses{
-//        return withContext(Dispatchers.IO){
-//            expenseDao.getExpenseById(id)
-//        }
-//    }
-//    private suspend fun getCategoryIdByName(name:String):Int?{
-//        return withContext(Dispatchers.IO){
-//            expenseCategoryDao.getECIdByName(name)
-//        }
-//    }
-//    private suspend fun getBrandId(productId:Long?):Long?{
-//        return withContext(Dispatchers.IO){
-//            productDao.getBrandIdByProductId(productId)
-//        }
-//    }
-//    private suspend fun getProductId(subId:Long?):Long?{
-//        return withContext(Dispatchers.IO){
-//            subProductDao.getProductIdBySubId(subId)
-//        }
-//    }
     private suspend fun upsertDetailWarnaAndLog(detailWarnaList:List<DetailWarnaTable>,
                                                  inventoryLogList: MutableList<InventoryLog>){
         withContext(Dispatchers.IO){
            // inventoryLogDao.updateInsertDetailWarnaAndLog(detailWarnaList,inventoryLogList)
         }
     }
-    //expenses
-//    private suspend fun insertExpensesCategory(expenseCategory: ExpenseCategory){
-//        withContext(Dispatchers.IO){
-//            expenseCategoryDao.insert(expenseCategory)
-//        }
-//    }
-//    private suspend fun updateExpensesCategory(expenseCategory: ExpenseCategory){
-//        withContext(Dispatchers.IO){
-//            expenseCategoryDao.update(expenseCategory)
-//        }
-//    }
-//    private suspend fun deleteExpensesCategoryToDao(id:Int){
-//        withContext(Dispatchers.IO){
-//            expenseCategoryDao.delete(id)
-//        }
-//    }
 
-//    private suspend fun updateExpenseToDao(expenses: Expenses){
-//        withContext(Dispatchers.IO){
-//            expenseDao.update(expenses)
-//        }
-//    }
-
-//    private suspend fun deleteExpensesToDao(id:Int){
-//        withContext(Dispatchers.IO){
-//            expenseDao.delete(id)
-//        }
-//    }
-
-//    private suspend fun getExpenseByQuery(query: String,month:String?):List<DiscountAdapterModel>{
-//        return withContext(Dispatchers.IO){
-//            Log.i("FilterProbs","month: ${_selectedMonthSpinner.value}; year:${_selectedYearSpinner.value}")
-//            expenseDao.getExpenseByQuery(query,month,_selectedYearSpinner.value)
-//        }
-//    }
     fun onTxtTransSumLongClikc(){
         _transSumDateLongClick.value = true
     }
@@ -619,9 +592,25 @@ class PurchaseViewModel(application: Application,
         _isDiscountClicked.value=null
     }
 
+    fun addNewExpense(){
+         viewModelScope.launch {
+             val expenses=Expenses()
+             expenses.expense_ammount=0
+             expenses.expense_ref=UUID.randomUUID().toString()
+             expenses.expense_category_id=expenseRepo.getCategoryIdByName("BELI BARANG")?:0
+             expenses.expense_name="Bayar ${suplierName.value}"
+             expenses.expense_date=Date()
+             expenses.expenseCloudId=System.currentTimeMillis()
+             expenses.needsSyncs=1
+             val eId = expenseRepo.insertExpense(expenses)
+             onNavigateToPurcase(eId)
+         }
+    }
+
     fun onNavigateToPurcase(id:Int){
         _isNavigateToPurchase.value=id
     }
+
     fun onNavigatedToPurchase(){
         _isNavigateToPurchase.value=null
     }

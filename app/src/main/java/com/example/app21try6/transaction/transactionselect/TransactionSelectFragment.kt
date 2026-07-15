@@ -75,7 +75,7 @@ class TransactionSelectFragment : Fragment() {
                     it.qty =number
                     viewModel.updateTransDetail(it)
                 }else{
-                    DialogUtils.showFailedWarning(requireContext(),it.item_name)
+                    DialogUtils.showFailedWarning(requireContext(),it.item_name,"Update Gagal ${it.item_name}.  Quantitas minimal 0")
                 }
             },CheckBoxSelectListener{view:View, trans:TransSelectModel ->
                 val cb = view as CheckBox
@@ -162,7 +162,7 @@ class TransactionSelectFragment : Fragment() {
                     if (newQty>=0){
                         model.qty= model.qty - number.toDouble()
                     }else{
-                        DialogUtils.showFailedWarning(requireContext(),model.item_name)
+                        DialogUtils.showFailedWarning(requireContext(),model.item_name,"Update Gagal ${model.item_name}.  Quantitas minimal 0")
                     }
                 }else
                      model.qty  = number.toDouble()

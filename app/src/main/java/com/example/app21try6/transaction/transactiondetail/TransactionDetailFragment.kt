@@ -50,6 +50,8 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import java.util.*
 
+val tdTag="PRINTERPROBS"
+
 
 class TransactionDetailFragment : Fragment() {
     private lateinit var binding:FragmentTransactionDetailBinding
@@ -66,8 +68,7 @@ class TransactionDetailFragment : Fragment() {
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        binding = DataBindingUtil.inflate(inflater,
-           R.layout.fragment_transaction_detail,container,false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transaction_detail,container,false)
         val application= requireNotNull(this.activity).application
         Log.d("DetailFragment", "onCreateView called")
         val id = arguments?.getLong("id")
@@ -130,6 +131,7 @@ class TransactionDetailFragment : Fragment() {
         binding.recyclerViewDiscount.adapter=discAdapter
 
         binding.btnPrintNew.setOnClickListener {
+            Log.i(tdTag,"btn print clicked")
             fibrateOnClick()
             printReceipt()
         }
@@ -189,6 +191,7 @@ class TransactionDetailFragment : Fragment() {
             if (it==true){
                 val exportedString=viewModel.generateReceiptTextWa()
                 val phoneNumber=viewModel._customerPhoneNumber.value
+
                 exportTextToWhatsApp(exportedString,phoneNumber)
                 viewModel.onKirimBtnClicked()
             }
@@ -311,21 +314,28 @@ class TransactionDetailFragment : Fragment() {
 
     }
     private fun printReceipt() {
+
         // Check if Bluetooth is enabled
         if (!bluetoothAdapter.isEnabled) {
            Toast.makeText(context,"BLUETOOTH IS DISCONNECTED", Toast.LENGTH_SHORT).show()
+            Log.i(tdTag,"print receipt called,  bluetooth disconnected")
         } else {
             // Discover and select printer device
+            Log.i(tdTag,"print receipt called,  bluetooth on")
             discoverAndSelectPrinter()
+
         }
     }
 
     private fun discoverAndSelectPrinter() {
+        Log.i(tdTag,"discover and select printer called")
         if (checkPermission()) {
+            Log.i(tdTag,"permission granted")
             val pairedDevices = bluetoothAdapter.bondedDevices
             val printerDevices =
                 pairedDevices.filter { it.bluetoothClass.majorDeviceClass == BluetoothClass.Device.Major.IMAGING }
             if (printerDevices.isEmpty()) {
+                Log.i(tdTag,"printer device is empty")
                 Toast.makeText(context, "No printer found", Toast.LENGTH_SHORT).show()
                 return
             }

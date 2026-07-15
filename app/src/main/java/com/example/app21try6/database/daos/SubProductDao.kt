@@ -31,8 +31,7 @@ interface SubProductDao {
             " AND (:brandId IS NULL OR p.brand_code=:brandId)")
     fun getAll(productCloudId_:Long?,brandId: Long?):LiveData<List<SubProduct>>
 
-    @Query("SELECT * FROM sub_table WHERE sPCloudId = :sub_id_")
-    fun getAnItem(sub_id_:Long):LiveData<SubProduct>
+
 
     @Query("""
         SELECT s.sub_name FROM sub_table s
@@ -46,7 +45,10 @@ interface SubProductDao {
     fun getProductIdBySubId(sub_id_:Long?):Long?
 
     @Query("SELECT * FROM sub_table WHERE sPCloudId = :sub_id_")
-    fun getSubProductIdBySubId(sub_id_:Long?): SubProduct
+    fun getSubProductBySubId(sub_id_:Long?): SubProduct
+
+    @Query("SELECT sPCloudId FROM sub_table WHERE sub_name=:subName")
+    fun getSubIdBySubName(subName:String):Long
 
     @Query("SELECT sub_name FROM sub_table WHERE sPCloudId = :sub_id_")
     fun getNama(sub_id_: Long):LiveData<String>

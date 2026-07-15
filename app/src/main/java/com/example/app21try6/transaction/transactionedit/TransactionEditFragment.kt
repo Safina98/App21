@@ -78,7 +78,7 @@ class TransactionEditFragment : Fragment() {
            if (qty>=0){
                viewModel.updateTransDetail(item, -1.0)
            }else{
-               DialogUtils.showFailedWarning(requireContext(),item.trans_item_name)
+               DialogUtils.showFailedWarning(requireContext(),item.trans_item_name,"Update Gagal ${item.trans_item_name}.  Quantitas minimal 0")
            }
 
        }, PlusTransClickListener {
@@ -256,29 +256,36 @@ class TransactionEditFragment : Fragment() {
         builder.setView(view)
         builder.setPositiveButton("OK") { dialog, which ->
             val v = textKet.text.toString().uppercase().trim()
-            when (code) {
-                Constants.Code.LONGSUBS -> {
-                    if ((transactionDetail.qty-v.toDouble())>=0){
-                        //viewModel.updateTransDetail(transactionDetail, -1.0)
-                        viewModel.updateTransDetail(transactionDetail, (v.toDouble() * -1))
-                    }else{
-                        DialogUtils.showFailedWarning(requireContext(),transactionDetail.trans_item_name)
+            if (v.isNotEmpty()){
+                when (code) {
+                    Constants.Code.LONGSUBS -> {
+                        if ((transactionDetail.qty-v.toDouble())>=0){
+                            //viewModel.updateTransDetail(transactionDetail, -1.0)
+                            viewModel.updateTransDetail(transactionDetail, (v.toDouble() * -1))
+                        }else{
+                            DialogUtils.showFailedWarning(requireContext(),transactionDetail.trans_item_name,"Update Gagal ${transactionDetail.trans_item_name}.  Quantitas minimal 0")
+                        }
                     }
-                }
-                Constants.Code.LONGPLUS -> {
-                    viewModel.updateTransDetail(transactionDetail, v.toDouble())
-                }
-                Constants.Code.TEXTITEM -> {
-                    viewModel.updateTransDetailItemName(transactionDetail, v)
-                }
-                Constants.Code.TEXTPRICE -> {
-                    viewModel.updateTransDetailItemPrice(transactionDetail, v.toInt())
-                }Constants.Code.UNITQTY->{
+                    Constants.Code.LONGPLUS -> {
+                        viewModel.updateTransDetail(transactionDetail, v.toDouble())
+                    }
+                    Constants.Code.TEXTITEM -> {
+                        viewModel.updateTransDetailItemName(transactionDetail, v)
+                    }
+                    Constants.Code.TEXTPRICE -> {
+                        viewModel.updateTransDetailItemPrice(transactionDetail, v.toInt())
+                    }Constants.Code.UNITQTY->{
                     viewModel.updateUitQty(transactionDetail,v.toDouble())
                 }else->{
                     Toast.makeText(context,"Failed",Toast.LENGTH_SHORT).show()
                 }
+                }
+
+            }else {
+                DialogUtils.showFailedWarning(requireContext(),transactionDetail.trans_item_name,"Update Gagal. Teks tidak boleh kosong")
+
             }
+
           //  imm.hideSoftInputFromWindow(view?.windowToken, 0)
             viewModel.onCloseDialog()
         }

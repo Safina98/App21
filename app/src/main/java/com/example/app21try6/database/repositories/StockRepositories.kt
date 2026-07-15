@@ -358,7 +358,7 @@ class StockRepositories (
     }
     suspend fun getsubProductById(spId: Long): SubProduct{
         return withContext(Dispatchers.IO){
-            subProductDao.getSubProductIdBySubId(spId)
+            subProductDao.getSubProductBySubId(spId)
         }
     }
     //////////////////////////////////////Detail Warna////////////////////////////////////////////////

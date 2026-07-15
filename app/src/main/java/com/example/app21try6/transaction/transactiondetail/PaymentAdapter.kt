@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.app21try6.Constants.SIMPLE_DATE_FORMATTER
 import com.example.app21try6.database.models.PaymentModel
 import com.example.app21try6.databinding.ItemListTransactionPaymentBinding
 import com.example.app21try6.formatRupiah
@@ -34,6 +35,12 @@ class PaymentAdapter(
         binding.longClickListener = longListener
         binding.dateClickListener = datePaymentClickListener
         binding.txtBayarItemList.text = formatRupiah(item.payment_ammount?.toDouble())
+        if (item.payment_date!=null){
+            binding.txtDateItemList.text=SIMPLE_DATE_FORMATTER.format(item.payment_date)
+        }else{
+            binding.txtDateItemList.visibility= View.GONE
+        }
+
         binding.executePendingBindings()
     }
         companion object {

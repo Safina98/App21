@@ -347,7 +347,7 @@ class SubProductStockFragment : Fragment() {
                     if (newQty>=0){
                         model.net= model.net - number.toDouble()
                     }else{
-                        DialogUtils.showFailedWarning(requireContext(),model.net.toString())
+                        DialogUtils.showFailedWarning(requireContext(),model.net.toString(),"Update Gagal.  Quantitas minimal 0")
                     }
                 }
             },

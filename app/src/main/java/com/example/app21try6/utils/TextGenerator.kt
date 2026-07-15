@@ -18,7 +18,7 @@ class TextGenerator(
     //Make today amazing!
     //Rise, shine, repeat!
     //"The best is yet to come! 🌟"
-    val message="Stay positive, shine on!"
+    val message="Pastikan nota sudah sesuai dengan pesanan Anda"
     val emoji="\uD83C\uDF1F"
     val decimalFormat = DecimalFormat("#.##")
     fun getPadding(value:String, position:String,constant:Int):Int {
@@ -47,12 +47,11 @@ class TextGenerator(
         builder.append("$paddingStoreName $storeName $paddingStoreName\n")
         builder.append("$storeAddress\n")
         builder.append("$storePhone\n")
-        builder.append("Receipt: ${transsum.tSCloudId}")
+        builder.append("Receipt: ${transsum.tSCloudId}\n")
         builder.append("Date: $currentDate\n")
         builder.append("${transsum?.cust_name}\n")
         builder.append("-".repeat(getPadding("","Left",50))+"\n")
-        //builder.append("Barang  Jumlah  Harga  Total\n")
-        //builder.append("-".repeat(getPadding("","Left",50))+"\n")
+
 
         decimalFormat.isDecimalSeparatorAlwaysShown = false
         // Receipt items
@@ -112,7 +111,7 @@ class TextGenerator(
 
         builder.append("-".repeat(getPadding("","Left",50))+"\n")
         builder.append("Terimakasih atas pembelian anda\n")
-        builder.append("      $message\n")
+        builder.append("$message\n")
         builder.append("-".repeat(getPadding("","Left",50))+"\n")
 
         return builder.toString()

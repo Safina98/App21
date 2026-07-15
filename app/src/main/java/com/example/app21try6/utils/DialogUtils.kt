@@ -44,9 +44,10 @@ object DialogUtils{
     }
     fun showFailedWarning(context:Context,
                           itemName: String,
+                          message:String,
     ) {
         val builder = AlertDialog.Builder(context)
-        builder.setMessage("Update Gagal ${itemName}.  Quantitas minimal 0")
+        builder.setMessage(message)
             .setCancelable(true)
             .setPositiveButton("Ok") { dialog, id ->
                 dialog.dismiss()

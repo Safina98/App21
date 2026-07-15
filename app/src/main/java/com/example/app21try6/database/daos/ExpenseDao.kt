@@ -20,6 +20,9 @@ interface ExpenseDao {
     @Update
     fun update(expenses: Expenses)
 
+    @Query("UPDATE expenses_table SET expense_name=:newName WHERE id=:id")
+    fun updateExpenseName(id:Int,newName:String)
+
 
     @Query("""
         SELECT e.id as id,  

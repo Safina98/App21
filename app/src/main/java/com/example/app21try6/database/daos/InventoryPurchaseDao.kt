@@ -12,6 +12,7 @@ import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.Expenses
 import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.database.tables.InventoryPurchase
+import com.example.app21try6.database.tables.PurchaseDiscount
 import java.util.Date
 
 @Dao
@@ -24,6 +25,8 @@ interface InventoryPurchaseDao {
     fun insertPurchases(list: List<InventoryPurchase>)
     @Insert
     fun insertPurchase(inventoryPurchase: InventoryPurchase):Long
+    @Insert
+    fun insertPDiscount(pDiscount: PurchaseDiscount)
     @Update
     fun updatePurchase(inventoryPurchase: InventoryPurchase)
     @Delete
@@ -45,10 +48,19 @@ interface InventoryPurchaseDao {
     @Query("UPDATE detail_warna_table SET batchCount = batchCount + :batchCount WHERE sPCloudId = :subId AND net = :net")
     suspend fun updateBatchCount(subId: Long, net: Double, batchCount: Double)
 
+    @Query("SELECT SUM(totalPrice) FROM inventory_purchase_table WHERE expensesId =:eId")
+    fun getPurchaseSum(eId:Int): Double
+
+    @Query("SELECT SUM(discountValue) FROM purchase_discount_table WHERE expenseId =:eId")
+    fun getDiscountSum(eId:Int): Double
+
     @Insert
     fun insertExpense(expenses: Expenses):Long
     @Update
     fun updateExpense(expenses: Expenses)
+
+    @Query("UPDATE expenses_table SET expense_ammount =:newAmmount WHERE id=:eId")
+    fun updateExpenseAmmount(eId:Int,newAmmount: Double)
     @Transaction
     suspend fun updateSubProductAndTransDetail(
         detailWarnaList:List<DetailWarnaTable>,
@@ -72,6 +84,29 @@ interface InventoryPurchaseDao {
             }
         }
     }
+
+    @Transaction
+    suspend fun insertPurchaseAndUpdateExpense(inventoryPurchase: InventoryPurchase){
+        if (inventoryPurchase.expensesId!=null){
+            insertPurchase(inventoryPurchase)
+            val expenseSum=getPurchaseSum(inventoryPurchase.expensesId!!)
+            val totalDiscount=getDiscountSum(inventoryPurchase.expensesId!!)
+            val newExpenseSum=expenseSum-totalDiscount
+            updateExpenseAmmount(inventoryPurchase.expensesId!!,newExpenseSum)
+        }
+    }
+
+    @Transaction
+    suspend fun insertPDiscountAndUpdateExpense(pDiscount: PurchaseDiscount){
+        if (pDiscount.expenseId!=null){
+            insertPDiscount(pDiscount)
+            val expenseSum=getPurchaseSum(pDiscount.expenseId!!)
+            val totalDiscount=getDiscountSum(pDiscount.expenseId!!)
+            val newExpenseSum=expenseSum-totalDiscount
+            updateExpenseAmmount(pDiscount.expenseId!!,newExpenseSum)
+        }
+    }
+
     @Transaction
     suspend fun insertPurchaseAndExpense(
         expenses: Expenses,
@@ -87,9 +122,9 @@ interface InventoryPurchaseDao {
             if (id > 0) {
                 purchaseList.map { it.apply { expensesId = id } }
                 purchaseList.map { it.apply { it.id=0 } }
-                purchaseList.map { it.apply { purchaseDate=expenses.expense_date?: Date() } }
+               // purchaseList.map { it.apply { purchaseDate=expenses.expense_date?: Date() } }
                 purchaseList.forEach{
-                    it.iPCloudId=System.currentTimeMillis()
+                 //   it.iPCloudId=System.currentTimeMillis()
                     Log.i("insertPurchaseAndExpense","insert $it")
                 }
                 // Map the purchases to associate the expensesId, then insert them
@@ -124,13 +159,13 @@ interface InventoryPurchaseDao {
             Log.i("SavePurchaseProbs","$it")
         }
 
-        purchaseList.map { it.apply { purchaseDate=expenses.expense_date?:Date()} }
+       // purchaseList.map { it.apply { purchaseDate=expenses.expense_date?:Date()} }
         purchaseList.forEach {
             if (it.id<0){
                 Log.i("SavePurchaseProbs","Insert $it")
                 it.expensesId=expenses.id
                 it.id=0
-                it.iPCloudId=System.currentTimeMillis()
+                //it.iPCloudId=System.currentTimeMillis()
                 var id = insertPurchase(it)
                 var purhcaseItem=getPurchaseById(id.toInt())
                 Log.i("SavePurchaseProbs","pId $purhcaseItem")
@@ -150,19 +185,9 @@ interface InventoryPurchaseDao {
 //    @Query("SELECT id as id,subProductName as nama,purchaseDate as date FROM inventory_purchase_table where id=:id")
 //    fun selectADataNameAndDate(id:Int):StringDateModel
 
-    @Query("""
-        UPDATE inventory_purchase_table
-        SET purchaseDate =:date
-        WHERE id=:id
-    """)
-    fun updatePurchaseDate(id: Int, date:Date)
 
-    @Query("""
-        UPDATE inventory_purchase_table
-        SET iPCloudId =:cloudId
-        WHERE id=:id
-    """)
-    fun assignInventoryPurchaseCloudID(cloudId:Long,id:Int)
+
+
     
     @Query("SELECT * FROM inventory_purchase_table")
     fun selectAllInventoryPurchaseTable(): List<InventoryPurchase>

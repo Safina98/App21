@@ -4,6 +4,69 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 object Migrations {
+    val MIGRATION_56_57 = object : Migration(56, 57) { // replace X, Y with your actual old/new db version
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                """
+            CREATE TABLE IF NOT EXISTS `purchase_discount_table` (
+                `id` INTEGER NOT NULL,
+                `discountName` TEXT NOT NULL,
+                `discountValue` INTEGER NOT NULL,
+                `expenseId` INTEGER NOT NULL,
+                PRIMARY KEY(`id`),
+                FOREIGN KEY(`expenseId`) REFERENCES `expenses_table`(`id`)
+                    ON UPDATE CASCADE ON DELETE CASCADE
+            )
+            """.trimIndent()
+            )
+
+            db.execSQL(
+                "CREATE INDEX IF NOT EXISTS `index_purchase_discount_table_expenseId` ON `purchase_discount_table` (`expenseId`)"
+            )
+            db.execSQL("DELETE FROM `inventory_purchase_table` WHERE `expensesId` IS NULL")
+
+            db.execSQL(
+                """
+            CREATE TABLE `inventory_purchase_table_new` (
+                `id` INTEGER NOT NULL,
+                `sPCloudId` INTEGER,
+                `expensesId` INTEGER NOT NULL,
+                `subProductName` TEXT NOT NULL,
+                `batchCount` REAL NOT NULL,
+                `net` REAL NOT NULL,
+                `price` INTEGER NOT NULL,
+                `totalPrice` REAL NOT NULL,
+                `status` TEXT NOT NULL,
+                `is_deleted` INTEGER NOT NULL,
+                `needs_syncs` INTEGER NOT NULL,
+                PRIMARY KEY(`id`),
+                FOREIGN KEY(`expensesId`) REFERENCES `expenses_table`(`id`)
+                    ON UPDATE CASCADE ON DELETE CASCADE,
+                FOREIGN KEY(`sPCloudId`) REFERENCES `sub_table`(`sPCloudId`)
+                    ON UPDATE SET NULL ON DELETE SET NULL
+            )
+            """.trimIndent()
+            )
+
+            db.execSQL(
+                """
+            INSERT INTO `inventory_purchase_table_new`
+                (id, sPCloudId, expensesId, subProductName,
+                 batchCount, net, price, totalPrice, status, is_deleted, needs_syncs)
+            SELECT
+                id, sPCloudId, expensesId, subProductName, 
+                batchCount, net, price, totalPrice, status, is_deleted, needs_syncs
+            FROM `inventory_purchase_table`
+            """.trimIndent()
+            )
+
+            db.execSQL("DROP TABLE `inventory_purchase_table`")
+            db.execSQL("ALTER TABLE `inventory_purchase_table_new` RENAME TO `inventory_purchase_table`")
+
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_inventory_purchase_table_expensesId` ON `inventory_purchase_table` (`expensesId`)")
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_inventory_purchase_table_sPCloudId` ON `inventory_purchase_table` (`sPCloudId`)")
+        }
+    }
     val MIGRATION_55_56 = object : Migration(55, 56) {
         override fun migrate(database: SupportSQLiteDatabase) {
 

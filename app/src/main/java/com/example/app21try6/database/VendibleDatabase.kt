@@ -17,6 +17,7 @@ import com.example.app21try6.database.Migrations.MIGRATION_47_48
 import com.example.app21try6.database.Migrations.MIGRATION_48_49
 import com.example.app21try6.database.Migrations.MIGRATION_54_55
 import com.example.app21try6.database.Migrations.MIGRATION_55_56
+import com.example.app21try6.database.Migrations.MIGRATION_56_57
 import com.example.app21try6.database.MigrationsForCloud.MIGRATION_53_54
 
 
@@ -33,6 +34,7 @@ import com.example.app21try6.database.daos.InventoryLogDao
 import com.example.app21try6.database.daos.InventoryPurchaseDao
 import com.example.app21try6.database.daos.PaymentDao
 import com.example.app21try6.database.daos.ProductDao
+import com.example.app21try6.database.daos.PurchaseDiscountDao
 import com.example.app21try6.database.daos.SubProductDao
 import com.example.app21try6.database.daos.SummaryDbDao
 import com.example.app21try6.database.daos.SuplierDao
@@ -50,6 +52,7 @@ import com.example.app21try6.database.tables.InventoryPurchase
 import com.example.app21try6.database.tables.MerchandiseRetail
 import com.example.app21try6.database.tables.Payment
 import com.example.app21try6.database.tables.Product
+import com.example.app21try6.database.tables.PurchaseDiscount
 import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.database.tables.Summary
 import com.example.app21try6.database.tables.SuplierTable
@@ -61,8 +64,8 @@ import com.example.app21try6.database.tables.TransactionSummary
     TransactionSummary::class, TransactionDetail::class, Payment::class, Expenses::class,
     ExpenseCategory::class, Summary::class, DiscountTable::class, DiscountTransaction::class,
     CustomerTable::class,DetailWarnaTable::class,InventoryLog::class,
-    SuplierTable::class,InventoryPurchase::class, MerchandiseRetail::class
-                     ],version=56, exportSchema = true)
+    SuplierTable::class,InventoryPurchase::class, MerchandiseRetail::class, PurchaseDiscount::class
+                     ],version=57, exportSchema = true)
 @TypeConverters(DateTypeConverter::class)
 abstract class VendibleDatabase:RoomDatabase(){
     abstract val brandDao : BrandDao
@@ -82,6 +85,8 @@ abstract class VendibleDatabase:RoomDatabase(){
     abstract val inventoryLogDao:InventoryLogDao
     abstract val suplierDao:SuplierDao
     abstract val inventoryPurchaseDao: InventoryPurchaseDao
+    abstract val purchaseDiscountDao: PurchaseDiscountDao
+
 
     companion object{
         @Volatile
@@ -99,7 +104,7 @@ abstract class VendibleDatabase:RoomDatabase(){
                         //.addMigrations(MIGRATION_45_46)
                         //.addMigrations(MIGRATION_46_47)
                         //.addMigrations(MIGRATION_47_48)
-                        .addMigrations(MIGRATION_55_56)
+                        .addMigrations(MIGRATION_56_57)
                         // .fallbackToDestructiveMigration()
                     .build()
                     INSTANCE = instance

@@ -15,8 +15,8 @@ import java.util.Date
             entity = Expenses::class,
             parentColumns = ["id"],
             childColumns = ["expensesId"],
-            onDelete = ForeignKey.SET_NULL,
-            onUpdate = ForeignKey.SET_NULL
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = SubProduct::class,
@@ -25,32 +25,24 @@ import java.util.Date
             onDelete = ForeignKey.SET_NULL,
             onUpdate = ForeignKey.SET_NULL
         ),
-        ForeignKey(
-            entity = SuplierTable::class,
-            parentColumns = ["id"],
-            childColumns = ["suplierId"],
-            onDelete = ForeignKey.SET_NULL,
-            onUpdate = ForeignKey.SET_NULL
-        )
     ],
-    indices = [Index(value = ["ref"], unique = true)]
+    indices = [
+        Index(value = ["expensesId"]),
+        Index(value = ["sPCloudId"])
+    ]
+
 )
 @TypeConverters(DateTypeConverter::class)
 data class InventoryPurchase(
-    @PrimaryKey(autoGenerate = true)
-    var id: Int=0,
+    @PrimaryKey
+    var id: Long=0L,
     @ColumnInfo(name="sPCloudId")
-    var sPCloudId: Long? =null,//Foreign key
+    var sPCloudId: Long? =null,//Foreign key,
     @ColumnInfo(name="expensesId")
-    var expensesId:Int?=null,//Foreign key
-    @ColumnInfo(name="suplierId")
-    var suplierId:Int?=null,
-    @ColumnInfo(name="suplierName")
-    var suplierName:String="",
+    var expensesId:Int=0,//Foreign key,
     @ColumnInfo(name="subProductName")
     var subProductName:String="",
-    @ColumnInfo(name="purchaseDate")
-    var purchaseDate: Date = Date(),
+
     @ColumnInfo(name="batchCount")
     var batchCount:Double=0.0,
     @ColumnInfo(name="net")
@@ -61,12 +53,8 @@ data class InventoryPurchase(
     var totalPrice:Double=0.0,
     @ColumnInfo(name="status")
     var status:String="",
-    @ColumnInfo(name="ref")
-    var ref:String="",
     @ColumnInfo(name="is_deleted")
-    var isDeleted: Boolean = false, //newly added cloumn
-    @ColumnInfo(name = "iPCloudId")
-    var iPCloudId: Long = 0L,//newly added cloumn
+    var isDeleted: Boolean = false,
     @ColumnInfo(name="needs_syncs")
-    var needsSyncs:Int=1//newly added cloumn
+    var needsSyncs:Int=1
 )

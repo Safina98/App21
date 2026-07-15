@@ -38,10 +38,12 @@ class UpdateSummaryProductIdWorker(
                 SuplierTable(3,"Busa Yerry","Surabaya"),
                 SuplierTable(4,"Vision","Jakarta"),
                 SuplierTable(5,"PT. SIMNU","Surabaya"),
-                SuplierTable(6,"Aneka Lancar","Makassar"),
+                SuplierTable(6,"New Lancar","Makassar"),
                 SuplierTable(7,"Sentral Logam","Makassar"),
                 SuplierTable(8,"Toko Utama","Makassar"),
                 SuplierTable(9,"Bali Jaya","Makassar"),
+                SuplierTable(10,"Cahaya Indah","Makassar"),
+                SuplierTable(10,"Cahaya Indah","Makassar"),
             )
 
             // Update all entries with the new date format

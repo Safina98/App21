@@ -1,25 +1,29 @@
 package com.example.app21try6.database.repositories
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.LiveData
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.database.models.PaymentModel
 
 import com.example.app21try6.database.tables.ExpenseCategory
 import com.example.app21try6.database.tables.Expenses
 import com.example.app21try6.database.tables.InventoryPurchase
+import com.example.app21try6.database.tables.PurchaseDiscount
 import com.example.app21try6.database.tables.SuplierTable
+import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.statement.DiscountAdapterModel
 import com.example.app21try6.stock.brandstock.CategoryModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.Date
 
 class ExpensesRepository(application: Application) {
     private val expenseDao = VendibleDatabase.getInstance(application).expenseDao
     private val expenseCategoryDao = VendibleDatabase.getInstance(application).expenseCategoryDao
     private val suplierDao= VendibleDatabase.getInstance(application).suplierDao
     private val inventoryPurchaseDao= VendibleDatabase.getInstance(application).inventoryPurchaseDao
+    private val subProductDao = VendibleDatabase.getInstance(application).subProductDao
+
+    private val pDiscountDao= VendibleDatabase.getInstance(application).purchaseDiscountDao
 
     /////////////////////////////Expenxe/////////////////////////////////////////
     suspend fun getFilteredExpense(startDate:String?,endDate:String?,ecId:Int?): List<DiscountAdapterModel>{
@@ -83,6 +87,12 @@ class ExpensesRepository(application: Application) {
         }
     }
 
+    suspend fun updateExpenseName(id:Int,name:String){
+        withContext(Dispatchers.IO){
+            expenseDao.updateExpenseName(id,name)
+        }
+    }
+
 
     suspend fun assignCloudIdToExpenseCategoryTable(cloudId: Long, id: Int){
         withContext(Dispatchers.IO){
@@ -122,16 +132,33 @@ class ExpensesRepository(application: Application) {
     fun getAllSuplier() : LiveData<List<SuplierTable>>{
         return suplierDao.getAllSuplier()
     }
+    suspend fun insertSupliers(){
+        withContext(Dispatchers.IO){
+            val suplierDummy= listOf<SuplierTable>(
+                SuplierTable(1,"Mitra Jaya","Jakarta"),
+                SuplierTable(2,"Polystar","Jakarta"),
+                SuplierTable(3,"Busa Yerry","Surabaya"),
+                SuplierTable(4,"Vision","Jakarta"),
+                SuplierTable(5,"PT. SIMNU","Surabaya"),
+                SuplierTable(6,"New Lancar","Makassar"),
+                SuplierTable(7,"Sentral Logam","Makassar"),
+                SuplierTable(8,"Toko Utama","Makassar"),
+                SuplierTable(9,"Bali Jaya","Makassar"),
+                SuplierTable(10,"Cahaya Indah","Makassar"),
+                SuplierTable(11,"Trijaya Tunggal","Makassar"),
+                SuplierTable(12,"Sun Auto","Surabaya"),
+                SuplierTable(13,"Nasional Lestari","Surabaya"),
+            )
+
+            // Update all entries with the new date format
+            suplierDao.insert(suplierDummy)
+        }
+    }
     /////////////////////////////////InventoryPurchase////////////////////////////////////
     suspend fun getInventoryPurchaseList(id:Int): List<InventoryPurchase>{
         return withContext(Dispatchers.IO){inventoryPurchaseDao.selectPurchaseList(id)}
     }
 
-    suspend fun assignCloudIdToInventoryPurchaseTable(cloudId: Long, id: Int){
-        withContext(Dispatchers.IO){
-            inventoryPurchaseDao.assignInventoryPurchaseCloudID(cloudId, id)
-        }
-    }
 
     suspend fun getAllInventoryPurchaseTable(): List<InventoryPurchase> {
         return withContext(Dispatchers.IO) {
@@ -143,15 +170,32 @@ class ExpensesRepository(application: Application) {
             inventoryPurchaseDao.getPurchaseById(0)
         }
     }
-    suspend fun insertPurchase(expenses: Expenses,list:List<InventoryPurchase>){
+    suspend fun insertPurchases(expenses: Expenses, list:List<InventoryPurchase>){
         withContext(Dispatchers.IO){
             inventoryPurchaseDao.insertPurchaseAndExpense(expenses,list)
         }
+    }
+
+    suspend fun insertPurchase(inventoryPurchase: InventoryPurchase,subName:String?): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO){
+                inventoryPurchase.sPCloudId=subProductDao.getSubIdBySubName(subName!!)
+                inventoryPurchaseDao.insertPurchaseAndUpdateExpense(inventoryPurchase)
+            }
     }
     suspend fun updatePurchasesAndExpense(expenses: Expenses, list:List<InventoryPurchase>){
         withContext(Dispatchers.IO){
             inventoryPurchaseDao.updatePurchasesAndExpense(expenses,list)
         }
     }
-
+    ///////////////////////////////PurchaseDiscount///////////////////////////////////////
+    suspend fun insertPurchaseDiscount(pDiscount: PurchaseDiscount): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO){
+                inventoryPurchaseDao.insertPDiscount(pDiscount)
+            }
+    }
+    fun getPDiscountByExpense(expenseId:Int): LiveData<List<PaymentModel>> {
+        return pDiscountDao.getPDiscountByExpenseId(expenseId)
+    }
 }
