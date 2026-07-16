@@ -9,7 +9,8 @@ import com.example.app21try6.database.models.PaymentModel
 interface PurchaseDiscountDao{
 
     @Query("SELECT " +
-            "id  AS tsCloudId," +
+            "id  AS tSCloudId," +
+            "expenseId AS id, " +
             "discountName AS name, " +
             "discountValue AS payment_ammount " +
             "FROM " +

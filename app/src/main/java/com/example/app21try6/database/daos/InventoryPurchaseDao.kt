@@ -8,12 +8,12 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.example.app21try6.database.models.PaymentModel
 import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.Expenses
 import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.database.tables.InventoryPurchase
 import com.example.app21try6.database.tables.PurchaseDiscount
-import java.util.Date
 
 @Dao
 interface InventoryPurchaseDao {
@@ -29,8 +29,17 @@ interface InventoryPurchaseDao {
     fun insertPDiscount(pDiscount: PurchaseDiscount)
     @Update
     fun updatePurchase(inventoryPurchase: InventoryPurchase)
+
+    @Delete
+    fun deletePurchase(inventoryPurchase: InventoryPurchase)
     @Delete
     fun deletePurchases(purchaseList: List<InventoryPurchase>)
+
+    @Query("DELETE FROM purchase_discount_table WHERE id=:id")
+    fun deletePDiscount(id:Long)
+
+    @Query("UPDATE purchase_discount_table SET discountValue=:newValue WHERE id=:id")
+    fun updatePDiscount(id:Long, newValue:Int)
 
 
 
@@ -61,6 +70,9 @@ interface InventoryPurchaseDao {
 
     @Query("UPDATE expenses_table SET expense_ammount =:newAmmount WHERE id=:eId")
     fun updateExpenseAmmount(eId:Int,newAmmount: Double)
+
+
+
     @Transaction
     suspend fun updateSubProductAndTransDetail(
         detailWarnaList:List<DetailWarnaTable>,
@@ -86,25 +98,46 @@ interface InventoryPurchaseDao {
     }
 
     @Transaction
-    suspend fun insertPurchaseAndUpdateExpense(inventoryPurchase: InventoryPurchase){
-        if (inventoryPurchase.expensesId!=null){
+    suspend fun upsertPurchaseAndUpdateExpense(inventoryPurchase: InventoryPurchase){
+        if (inventoryPurchase.id==0L) {
+            inventoryPurchase.id= System.currentTimeMillis()
             insertPurchase(inventoryPurchase)
-            val expenseSum=getPurchaseSum(inventoryPurchase.expensesId!!)
-            val totalDiscount=getDiscountSum(inventoryPurchase.expensesId!!)
-            val newExpenseSum=expenseSum-totalDiscount
-            updateExpenseAmmount(inventoryPurchase.expensesId!!,newExpenseSum)
-        }
+        } else
+            updatePurchase(inventoryPurchase)
+
+        val expenseSum=getPurchaseSum(inventoryPurchase.expensesId!!)
+        val totalDiscount=getDiscountSum(inventoryPurchase.expensesId!!)
+        val newExpenseSum=expenseSum-totalDiscount
+        updateExpenseAmmount(inventoryPurchase.expensesId!!,newExpenseSum)
+    }
+    @Transaction
+    suspend fun deletePurchaseAndUpdateExpense(inventoryPurchase: InventoryPurchase){
+        deletePurchase(inventoryPurchase)
+        val expenseSum=getPurchaseSum(inventoryPurchase.expensesId!!)
+        val totalDiscount=getDiscountSum(inventoryPurchase.expensesId!!)
+        val newExpenseSum=expenseSum-totalDiscount
+        updateExpenseAmmount(inventoryPurchase.expensesId!!,newExpenseSum)
     }
 
     @Transaction
     suspend fun insertPDiscountAndUpdateExpense(pDiscount: PurchaseDiscount){
-        if (pDiscount.expenseId!=null){
-            insertPDiscount(pDiscount)
-            val expenseSum=getPurchaseSum(pDiscount.expenseId!!)
-            val totalDiscount=getDiscountSum(pDiscount.expenseId!!)
-            val newExpenseSum=expenseSum-totalDiscount
-            updateExpenseAmmount(pDiscount.expenseId!!,newExpenseSum)
-        }
+        insertPDiscount(pDiscount)
+        val expenseSum=getPurchaseSum(pDiscount.expenseId!!)
+        val totalDiscount=getDiscountSum(pDiscount.expenseId!!)
+        val newExpenseSum=expenseSum-totalDiscount
+        updateExpenseAmmount(pDiscount.expenseId!!,newExpenseSum)
+            }
+    @Transaction
+    suspend fun deletePDiscountAndUpdateExpense(pDiscount: PaymentModel){
+        deletePDiscount(pDiscount.tSCloudId!!)
+        val expenseSum=getPurchaseSum(pDiscount.id!!)
+        val totalDiscount=getDiscountSum(pDiscount.id!!)
+        val newExpenseSum=expenseSum-totalDiscount
+        updateExpenseAmmount(pDiscount.id!!,newExpenseSum)
+    }
+    @Transaction
+    suspend fun updatePDiscountAndUpdateExpense(pDiscount: PurchaseDiscount){
+
     }
 
     @Transaction

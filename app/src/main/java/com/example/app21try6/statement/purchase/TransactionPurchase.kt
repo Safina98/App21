@@ -30,7 +30,9 @@ import com.example.app21try6.database.repositories.ExpensesRepository
 import com.example.app21try6.database.repositories.LogsRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.tables.InventoryPurchase
+import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.databinding.FragmentTransactionPurchaseBinding
+import com.example.app21try6.stock.subproductstock.SubViewModel
 import com.example.app21try6.transaction.transactiondetail.PaymentAdapter
 import com.example.app21try6.transaction.transactiondetail.TransDatePaymentClickListener
 import com.example.app21try6.transaction.transactiondetail.TransPaymentClickListener
@@ -70,23 +72,23 @@ class TransactionPurchase : Fragment() {
         val autoCompleteSuplier: AutoCompleteTextView = binding.textSuplier
         val autoCompleteSubName: AutoCompleteTextView = binding.textSub
 
-
-
-
         val adapter =PurchaseAdapter(
             UpdateListener {
                 viewModel.rvClick(it)
                 //Log.i(tagp,"${productName.value}")
             },
             DeleteListener {
-                viewModel.deletePurchase(it)
+               // viewModel.deletePurchase(it)
+                DialogUtils.showDeleteDialog(requireContext(),viewModel, it, { vm, item -> (vm as PurchaseViewModel).deletePurchase(item as InventoryPurchase ) })
 
             })
         val discAdapter = PaymentAdapter(false,
             TransPaymentClickListener {
+                //show update dialog
 
             },TransPaymentLongListener {
-
+                //show delete confirmation dialog
+                DialogUtils.showDeleteDialog(requireContext(),viewModel, it, { vm, item -> (vm as PurchaseViewModel).deleteDiscount(item as PaymentModel ) })
             },
             TransDatePaymentClickListener {
                 //showDatePickerDialog(it)
@@ -187,6 +189,7 @@ class TransactionPurchase : Fragment() {
             val snackbar = Snackbar.make(binding.root, "added", Snackbar.LENGTH_SHORT)
             snackbar.duration = 1000 // Duration in milliseconds
             snackbar.show()
+            showStatus(binding,"Berhasil",true)
 
         }
         viewModel.isNavigateToExpense.observe(viewLifecycleOwner){
@@ -240,7 +243,15 @@ class TransactionPurchase : Fragment() {
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }
+    fun showStatus(binding: FragmentTransactionPurchaseBinding, message: String, isSuccess: Boolean) {
+        binding.statusBanner.animate().cancel()
 
+        binding.statusText.text = message
+        binding.statusBanner.visibility = View.VISIBLE
+        binding.statusBanner.postDelayed({
+            binding.statusBanner.visibility = View.GONE
+        }, 500)
+    }
     override fun onPause() {
         super.onPause()
         //viewModel.savePurchase()

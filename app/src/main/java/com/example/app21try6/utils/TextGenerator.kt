@@ -18,7 +18,7 @@ class TextGenerator(
     //Make today amazing!
     //Rise, shine, repeat!
     //"The best is yet to come! 🌟"
-    val message="Pastikan nota sudah sesuai dengan pesanan Anda"
+    val message=""
     val emoji="\uD83C\uDF1F"
     val decimalFormat = DecimalFormat("#.##")
     fun getPadding(value:String, position:String,constant:Int):Int {

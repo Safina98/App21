@@ -10,7 +10,6 @@ import com.example.app21try6.database.tables.Expenses
 import com.example.app21try6.database.tables.InventoryPurchase
 import com.example.app21try6.database.tables.PurchaseDiscount
 import com.example.app21try6.database.tables.SuplierTable
-import com.example.app21try6.database.tables.TransactionDetail
 import com.example.app21try6.statement.DiscountAdapterModel
 import com.example.app21try6.stock.brandstock.CategoryModel
 import kotlinx.coroutines.Dispatchers
@@ -180,21 +179,31 @@ class ExpensesRepository(application: Application) {
         runCatching {
             withContext(Dispatchers.IO){
                 inventoryPurchase.sPCloudId=subProductDao.getSubIdBySubName(subName!!)
-                inventoryPurchaseDao.insertPurchaseAndUpdateExpense(inventoryPurchase)
+                inventoryPurchaseDao.upsertPurchaseAndUpdateExpense(inventoryPurchase)
             }
     }
-    suspend fun updatePurchasesAndExpense(expenses: Expenses, list:List<InventoryPurchase>){
-        withContext(Dispatchers.IO){
-            inventoryPurchaseDao.updatePurchasesAndExpense(expenses,list)
+    suspend fun deletePurchase(inventoryPurchase: InventoryPurchase): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO){
+                inventoryPurchaseDao.deletePurchaseAndUpdateExpense(inventoryPurchase)
+            }
         }
-    }
+
     ///////////////////////////////PurchaseDiscount///////////////////////////////////////
     suspend fun insertPurchaseDiscount(pDiscount: PurchaseDiscount): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO){
-                inventoryPurchaseDao.insertPDiscount(pDiscount)
+                inventoryPurchaseDao.insertPDiscountAndUpdateExpense(pDiscount)
             }
     }
+
+    suspend fun deletePurchaseDiscount(pDiscount: PaymentModel): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO){
+
+                inventoryPurchaseDao.deletePDiscountAndUpdateExpense(pDiscount)
+            }
+        }
     fun getPDiscountByExpense(expenseId:Int): LiveData<List<PaymentModel>> {
         return pDiscountDao.getPDiscountByExpenseId(expenseId)
     }

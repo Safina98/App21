@@ -11,6 +11,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.*
 import androidx.lifecycle.viewModelScope
 import com.example.app21try6.Constants
+import com.example.app21try6.database.models.PaymentModel
 import com.example.app21try6.database.models.SubWithPriceModel
 import com.example.app21try6.database.repositories.ExpensesRepository
 import com.example.app21try6.database.repositories.LogsRepository
@@ -179,88 +180,19 @@ class PurchaseViewModel(application: Application,
     }
 
     fun searchProduct(query: String) {
-        searchQuery.value = query
-        val selectedSubProduct = allSubProductFromDb.value?.find { it.subProduct.sub_name == query }
-        productPrice.value = selectedSubProduct?.purchasePrice?.toDouble() ?: 0.0
-        if((selectedSubProduct?.purchasePrice ?: 0) > 220000){
-            productNet.value = 1.0
-        }else{
-            productNet.value = selectedSubProduct?.default_net?:0.0
-        }
-    }
-
-    fun setProductPriceAndNet(name:String){
-        viewModelScope.launch {
-            val selectedSubProduct = allSubProductFromDb.value?.find { it.subProduct.sub_name == name }
+        if (inventoryPurchase.value==null){
+            searchQuery.value = query
+            val selectedSubProduct = allSubProductFromDb.value?.find { it.subProduct.sub_name == query }
             productPrice.value = selectedSubProduct?.purchasePrice?.toDouble() ?: 0.0
-            if((selectedSubProduct?.purchasePrice ?: 0) > 220000){
+            if((selectedSubProduct?.purchasePrice ?: 0) > 231000){
                 productNet.value = 1.0
             }else{
                 productNet.value = selectedSubProduct?.default_net?:0.0
             }
         }
+
     }
 
-    fun onAddClick(){
-        if (_isRvClick.value==true){
-            updateItem()
-        }else{
-            addItemToList()
-        }
-    }
-
-
-
-    fun updateItem(){
-        if (inventoryPurchase.value!=null){
-            val index = inventoryList.indexOfFirst { it.id == inventoryPurchase.value?.id}
-            val item = inventoryPurchase.value!!
-            item.subProductName=subProductName.value?:""
-            //item.suplierName=suplierName.value?:""
-            item.net=productNet.value?.toDouble() ?: 0.0
-            item.batchCount=productQty.value?.toDouble() ?: 0.0
-            item.price=productPrice.value?.toInt() ?: 0
-            item.totalPrice=totalPrice.value?.toDouble() ?: 0.0
-           // item.ref=inventoryPurchase.value!!.ref
-            item.status=Constants.BARANGLOGKET.masuk
-            item.sPCloudId =allSubProductFromDb.value?.find { it.subProduct.sub_name ==subProductName.value }?.subProduct?.sPCloudId
-                ?: inventoryPurchase.value!!.sPCloudId
-            //item.suplierId=suplierDummy.value?.find { it.suplierName==suplierName.value }?.id ?: inventoryPurchase.value!!.suplierId
-            //item.purchaseDate= Date()
-            if (index != -1) {
-                inventoryList[index] = item
-                _inventoryPurchaseList.value=inventoryList
-            }
-            onClearClick()
-            _isAddItemClick.value=true
-        }
-    }
-    fun savePurchase(){
-        viewModelScope.launch {
-            if (id==-1){
-                val expenses=Expenses()
-                val cleanedText = totalTransSum.value?.replace("[Rp,.\\s]".toRegex(), "")
-                expenses.expense_ammount=cleanedText?.toInt()?: 0
-                expenses.expense_ref=UUID.randomUUID().toString()
-                expenses.expense_category_id=expenseRepo.getCategoryIdByName("BELI BARANG")?:0
-                expenses.expense_name="Bayar ${suplierName.value}"
-                expenses.expense_date=Date()
-                expenses.expenseCloudId=System.currentTimeMillis()
-                expenses.needsSyncs=1
-                if (inventoryPurchaseList.value!=null){
-                    expenseRepo.insertPurchases(expenses,inventoryPurchaseList.value!!)
-                }
-            }
-            else{
-                val expenses=expenseRepo.getExpensesById(id)//getExpensesById(id)
-                val cleanedText = totalTransSum.value?.replace("[Rp,.\\s]".toRegex(), "")
-                expenses.expense_ammount=cleanedText?.toInt()?: 0
-                expenses.expense_name="Bayar ${suplierName.value}"
-                expenses.needsSyncs=1
-                expenseRepo.updatePurchasesAndExpense(expenses,inventoryPurchaseList.value!!)
-            }
-        }
-    }
     fun onBtnSimppanClick(){
         _isNavigateToExpense.value=true
     }
@@ -271,59 +203,26 @@ class PurchaseViewModel(application: Application,
         viewModelScope.launch{
             val item=InventoryPurchase()
             item.subProductName=subProductName.value?:""
-            //item.suplierName=suplierName.value?:""
             item.net=productNet.value?.toDouble() ?: 0.0
             item.batchCount=productQty.value?.toDouble() ?: 0.0
             item.price=productPrice.value?.toInt() ?: 0
             item.totalPrice=totalPrice.value?.toDouble() ?: 0.0
             item.id= System.currentTimeMillis()
-           // item.ref=UUID.randomUUID().toString()
             item.status="PENDING"
-            //item.sPCloudId =allSubProductFromDb.value?.find { it.subProduct.sub_name ==productName.value }?.subProduct?.sPCloudId ?: 0
-            //item.suplierId=suplierDummy.value?.find { it.suplierName==suplierName.value }?.id ?: null
-            //item.purchaseDate= Date()
             item.expensesId=id
-            //item.iPCloudId= System.currentTimeMillis()
             item.needsSyncs=1
-
+            item.id=inventoryPurchase.value?.id ?: 0L
             expenseRepo.insertPurchase(item,subProductName.value).onSuccess {
                 clearAllButName()
                 _isAddItemClick.value=true
+                if (inventoryPurchase.value!=null) clearAllMutables()
                 getNewInventoryList(id)
             }.onFailure {
                     throwable ->
                 Log.e("PurchaseProbs", "failed: ${throwable.message}", throwable)
                 //show snackbar that said insert failed
             }
-            //onClearClick()
-
         }
-    }
-
-    fun addItemToList(){
-        val item=InventoryPurchase()
-        getAutoIncrementId()
-        //item.id=inventoryPurchaseId
-        item.subProductName=subProductName.value?:""
-        //item.suplierName=suplierName.value?:""
-        item.net=productNet.value?.toDouble() ?: 0.0
-        item.batchCount=productQty.value?.toDouble() ?: 0.0
-        item.price=productPrice.value?.toInt() ?: 0
-        item.totalPrice=totalPrice.value?.toDouble() ?: 0.0
-        //item.ref=UUID.randomUUID().toString()
-        item.status="PENDING"
-        item.sPCloudId =allSubProductFromDb.value?.find { it.subProduct.sub_name ==subProductName.value }?.subProduct?.sPCloudId
-            ?: 0
-        //item.suplierId=suplierDummy.value?.find { it.suplierName==suplierName.value }?.id ?: null
-        //item.purchaseDate= Date()
-        item.expensesId=id
-        //item.iPCloudId= System.currentTimeMillis()
-        item.needsSyncs=1
-        inventoryList.add(item)
-        _inventoryPurchaseList.value=inventoryList
-        _isAddItemClick.value=true
-        //onClearClick()
-        clearAllButName()
     }
 
     fun rvClick(item: InventoryPurchase){
@@ -333,6 +232,14 @@ class PurchaseViewModel(application: Application,
         productNet.value=item.net
         totalPrice.value=item.totalPrice
         inventoryPurchase.value=item
+    }
+    fun clearAllMutables(){
+        subProductName.value=""
+        productPrice.value=0.0
+        productQty.value=1
+        productNet.value=0.0
+        totalPrice.value=0.0
+        inventoryPurchase.value=null
     }
     fun addInventoryLog(){
         viewModelScope.launch {
@@ -370,18 +277,23 @@ class PurchaseViewModel(application: Application,
 
 
     fun deletePurchase(purchase: InventoryPurchase){
-        inventoryList.remove(purchase)
-        _inventoryPurchaseList.value=inventoryList
+        viewModelScope.launch {
+            Log.i(tagp,"view model deletePurchaseCalled")
+            expenseRepo.deletePurchase(purchase).onSuccess {
+                getNewInventoryList(id)
+            }.onFailure { throwable ->
+            }
+        }
         _isAddItemClick.value=true
     }
 
     fun onClearClick(){
         subProductName.value=""
-        clearAllButName()
+        clearAllMutables()
+        //clearAllButName()
     }
     fun clearAllButName(){
         productQty.value=1
-
     }
     fun updateLongClickedDate(date:Date){
         viewModelScope.launch {
@@ -398,7 +310,7 @@ class PurchaseViewModel(application: Application,
             val purchaseDiscount= PurchaseDiscount()
             purchaseDiscount.id= System.currentTimeMillis()
             purchaseDiscount.discountName="Diskon"
-            purchaseDiscount.discountValue=price-1
+            purchaseDiscount.discountValue=price*-1
             purchaseDiscount.expenseId=id
             expenseRepo.insertPurchaseDiscount(purchaseDiscount).onSuccess {
                 getNewInventoryList(id)
@@ -406,23 +318,12 @@ class PurchaseViewModel(application: Application,
 
             }
         }
+    }
 
-      //  expenseRepo.insertPurchase()
-//        val purchase=InventoryPurchase()
-//       // getAutoIncrementId()
-//        //purchase.id=inventoryPurchaseId
-//        purchase.net=1.0
-//        purchase.status="DISCOUNT"
-//        //purchase.ref=UUID.randomUUID().toString()
-//        //purchase.purchaseDate=Date()
-//        purchase.price=price*-1
-//        purchase.batchCount=1.0
-//        purchase.subProductName="DISCOUNT"
-//        purchase.totalPrice=price.toDouble() *-1
-
-        //getAutoIncrementId()
-        //inventoryList.add(purchase)
-        //_inventoryPurchaseList.value=inventoryList
+    fun deleteDiscount(paymentModel: PaymentModel){
+        viewModelScope.launch {
+            expenseRepo.deletePurchaseDiscount(paymentModel)
+        }
     }
     fun updateDiscount(item:InventoryPurchase){
 

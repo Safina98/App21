@@ -22,6 +22,7 @@ import androidx.cardview.widget.CardView
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
 import com.example.app21try6.Constants
+import com.example.app21try6.statement.purchase.tagp
 
 
 import java.text.NumberFormat
@@ -193,6 +194,7 @@ fun setRupiahValueInt(editText: EditText, value: Int?) {
         "${rupiahFormatOld.format(it.toInt()).split(",")[0]}" // Remove decimals by splitting at comma
     } ?: "Rp 0"
     if (editText.text.toString() != formattedValue) {
+
         editText.setText(formattedValue)
     }
 }
@@ -223,8 +225,10 @@ fun getRupiahValue(editText: EditText): Double {
 @InverseBindingAdapter(attribute = "rupiahValue", event = "rupiahValueAttrChanged")
 fun getRupiahValueInt(editText: EditText): Int {
     val text = editText.text.toString()
+
     return try {
         val cleanedText = text.replace("[Rp,.\\s]".toRegex(), "")
+
         cleanedText.toInt()
     } catch (e: NumberFormatException) {
         0
@@ -247,7 +251,6 @@ fun setRupiahValueListener(editText: EditText, listener: InverseBindingListener?
 
                 val cleanString = s.toString().replace("[^\\d]".toRegex(), "")
                 val parsed = cleanString.toDoubleOrNull() ?: 0.0
-
                 current = if (cleanString.isEmpty()) "" else rupiahFormat.format(parsed)
                 editText.setText(current)
                 editText.setSelection(current.length)
