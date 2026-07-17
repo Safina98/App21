@@ -4,6 +4,103 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 object Migrations {
+
+    val MIGRATION_57_58 = object : Migration(57, 58) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE detail_warna_table RENAME TO detail_warna_table_old")
+
+            db.execSQL(
+                """
+    CREATE TABLE detail_warna_table (
+        dWCloudId INTEGER NOT NULL PRIMARY KEY,
+        sPCloudId INTEGER NOT NULL,
+        batchCount REAL NOT NULL,
+        net REAL NOT NULL,
+        ket TEXT NOT NULL,
+        ref TEXT NOT NULL DEFAULT '',
+        is_deleted INTEGER NOT NULL DEFAULT 0,
+        needs_syncs INTEGER NOT NULL DEFAULT 1,
+        date TEXT,
+        expenseId INTEGER,
+        FOREIGN KEY(sPCloudId) REFERENCES sub_table(sPCloudId)
+            ON DELETE CASCADE ON UPDATE CASCADE,
+        FOREIGN KEY(expenseId) REFERENCES expenses_table(id)
+            ON DELETE SET NULL ON UPDATE SET NULL
+    )
+    """.trimIndent()
+            )
+
+            db.execSQL(
+                """
+    INSERT INTO detail_warna_table
+        (dWCloudId, sPCloudId, batchCount, net, ket, ref, is_deleted, needs_syncs)
+    SELECT
+        dWCloudId, sPCloudId, batchCount, net, ket, ref, is_deleted, needs_syncs
+    FROM detail_warna_table_old
+    """.trimIndent()
+            )
+
+            db.execSQL("DROP TABLE detail_warna_table_old")
+
+            db.execSQL(
+                "CREATE UNIQUE INDEX IF NOT EXISTS index_detail_warna_table_ref " +
+                        "ON detail_warna_table (ref)"
+            )
+            db.execSQL("ALTER TABLE inventory_log_table RENAME TO inventory_log_table_old")
+
+            db.execSQL(
+                """
+            CREATE TABLE inventory_log_table (
+                id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                brandId INTEGER,
+                productCloudId INTEGER,
+                sPCloudId INTEGER,
+                detailWarnaRef TEXT,
+                isi REAL NOT NULL,
+                pcs INTEGER NOT NULL,
+                barangLogDate TEXT NOT NULL,
+                barangLogRef TEXT NOT NULL,
+                barangLogKet TEXT NOT NULL,
+                is_deleted INTEGER NOT NULL DEFAULT 0,
+                iLCloudId INTEGER NOT NULL DEFAULT 0,
+                needs_syncs INTEGER NOT NULL DEFAULT 1,
+                expenseId INTEGER,
+                FOREIGN KEY(brandId) REFERENCES brand_table(brandCloudId)
+                    ON DELETE SET NULL ON UPDATE SET NULL,
+                FOREIGN KEY(productCloudId) REFERENCES product_table(productCloudId)
+                    ON DELETE SET NULL ON UPDATE SET NULL,
+                FOREIGN KEY(sPCloudId) REFERENCES sub_table(sPCloudId)
+                    ON DELETE SET NULL ON UPDATE SET NULL,
+                FOREIGN KEY(detailWarnaRef) REFERENCES detail_warna_table(ref)
+                    ON DELETE SET NULL ON UPDATE SET NULL,
+                FOREIGN KEY(expenseId) REFERENCES expenses_table(id)
+                    ON DELETE SET NULL ON UPDATE SET NULL
+            )
+            """.trimIndent()
+            )
+
+            db.execSQL(
+                """
+            INSERT INTO inventory_log_table
+                (id, brandId, productCloudId, sPCloudId, detailWarnaRef, isi, pcs,
+                 barangLogDate, barangLogRef, barangLogKet, is_deleted, iLCloudId, needs_syncs)
+            SELECT
+                id, brandId, productCloudId, sPCloudId, detailWarnaRef, isi, pcs,
+                barangLogDate, barangLogRef, barangLogKet, is_deleted, iLCloudId, needs_syncs
+            FROM inventory_log_table_old
+            """.trimIndent()
+            )
+
+            db.execSQL("DROP TABLE inventory_log_table_old")
+
+            // Recreate the unique index that was on the old table
+            db.execSQL(
+                "CREATE UNIQUE INDEX IF NOT EXISTS index_inventory_log_table_barangLogRef " +
+                        "ON inventory_log_table (barangLogRef)"
+            )
+        }
+    }
+
     val MIGRATION_56_57 = object : Migration(56, 57) { // replace X, Y with your actual old/new db version
         override fun migrate(db: SupportSQLiteDatabase) {
             db.execSQL(

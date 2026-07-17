@@ -206,6 +206,7 @@ class ExpensesFragment : Fragment() {
             adapter.notifyDataSetChanged()
         })
 
+
         viewModel.expenseSum.observe(viewLifecycleOwner, Observer {
         })
         viewModel.isNavigateToPurchase.observe(viewLifecycleOwner,Observer{

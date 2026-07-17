@@ -18,9 +18,9 @@ pink
     <gradient
         android:angle="45"
         android:centerX="70%"
-        android:centerColor="#9BEC00"
-        android:endColor="#3D5300"
-        android:startColor="#27391C"
+        android:centerColor="#79D7BE"
+        android:endColor="#A1EEBD"
+        android:startColor="#D0F5BE"
         android:type="linear" />
 
 </shape>

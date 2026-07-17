@@ -11,17 +11,22 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.DatePicker
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.app21try6.Constants
 import com.example.app21try6.R
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.PaymentModel
@@ -176,6 +181,7 @@ class TransactionPurchase : Fragment() {
             adapter.submitList(it)
             adapter.notifyDataSetChanged()
         }
+        viewModel.expenseIsKeeped.observe(viewLifecycleOwner, Observer{})
         viewModel.pDiscountList.observe(viewLifecycleOwner){
             discAdapter.submitList(it)
             adapter.notifyDataSetChanged()
@@ -184,12 +190,7 @@ class TransactionPurchase : Fragment() {
         binding.btnAdd.setOnClickListener {
             //viewModel.onAddClick()
             viewModel.insertPurchase()
-            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(it.windowToken, 0) // "it" = button's window token
-            val snackbar = Snackbar.make(binding.root, "added", Snackbar.LENGTH_SHORT)
-            snackbar.duration = 1000 // Duration in milliseconds
-            snackbar.show()
-            showStatus(binding,"Berhasil",true)
+
 
         }
         viewModel.isNavigateToExpense.observe(viewLifecycleOwner){
@@ -197,6 +198,11 @@ class TransactionPurchase : Fragment() {
             if (it==true){
                this.findNavController().navigate(TransactionPurchaseDirections.actionTransactionPurchaseToExpensesFragment())
                 viewModel.onNavigatedToExpense()
+            }
+        }
+        viewModel.isCrudSucsess.observe(viewLifecycleOwner){
+            if (it!=null){
+                showStatus(binding,it)
             }
         }
         return binding.root
@@ -243,18 +249,14 @@ class TransactionPurchase : Fragment() {
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
     }
-    fun showStatus(binding: FragmentTransactionPurchaseBinding, message: String, isSuccess: Boolean) {
+    fun showStatus(binding: FragmentTransactionPurchaseBinding, message: String) {
         binding.statusBanner.animate().cancel()
-
         binding.statusText.text = message
         binding.statusBanner.visibility = View.VISIBLE
         binding.statusBanner.postDelayed({
             binding.statusBanner.visibility = View.GONE
         }, 500)
     }
-    override fun onPause() {
-        super.onPause()
-        //viewModel.savePurchase()
-    }
+
 
 }

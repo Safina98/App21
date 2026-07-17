@@ -42,6 +42,12 @@ object Constants {
         const val SUB_PRODUCT = "Sub Product"
     }
 
+    object CRUDSTATUS {
+        const val SUCSESS = "Berhasil!"
+        const val FAILED = "Gagal!"
+
+    }
+
         object TABLENAMES {
         const val BRAND = "brand_table"
         const val CATEGORY = "category_table"

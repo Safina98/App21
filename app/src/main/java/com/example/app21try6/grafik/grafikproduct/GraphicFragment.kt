@@ -115,9 +115,6 @@ class GraphicFragment : Fragment() {
         viewModel.setSelectedProductValueStok("Sub Product")
 
         viewModel.productEntries.observe(viewLifecycleOwner){
-           // val adapterProduct =
-             //   ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
-            //binding.spinnerProductSg.adapter = adapterProduct
             adapter_product.clear()
             adapter_product.addAll(it)
             adapter_product.notifyDataSetChanged()

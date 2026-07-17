@@ -178,8 +178,7 @@ class SubViewModel (
                     batchCount = batchCount,
                     ket = "Stok Awal",
                     ref = UUID.randomUUID().toString(),
-                    dWCloudId = System.currentTimeMillis().toLong(),
-
+                    dWCloudId = System.currentTimeMillis(),
                 )
                 stockRepo.insertDetailWarna(newDetailWarna, createInventoryLog(newDetailWarna, batchCount,productId, brandId,"Masuk"))
             } else {
@@ -248,7 +247,6 @@ class SubViewModel (
             net = this.net,
             batchCount = this.batchCount ?: 0.0, // Handle null with default value
             ket = this.ket ?: "", // Handle null with empty string
-            // Note: date is not part of DetailWarnaTable so it's omitted
         )
     }
     fun createInventoryLog(detailWarnaTable: DetailWarnaTable,batchCount:Double,productId:Long,brandId:Long,ket:String):InventoryLog{

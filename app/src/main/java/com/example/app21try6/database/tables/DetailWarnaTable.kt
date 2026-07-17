@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.util.Date
 
 
 @Entity(
@@ -16,9 +17,16 @@ import androidx.room.PrimaryKey
             childColumns = ["sPCloudId"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = Expenses::class,
+            parentColumns = ["id"],
+            childColumns = ["expenseId"],
+            onDelete = ForeignKey.SET_NULL,
+            onUpdate = ForeignKey.SET_NULL
         )
     ],
-    indices = [Index(value = ["ref"], unique = true)] // Add this index
+    indices = [Index(value = ["ref"], unique = true)]   // <-- add this
 )
 data class DetailWarnaTable(
     @PrimaryKey
@@ -33,10 +41,14 @@ data class DetailWarnaTable(
     @ColumnInfo(name="ket")
     var ket:String="",
     @ColumnInfo(name="ref")
-    var ref: String="",
+    var ref:String="",
     @ColumnInfo(name="is_deleted")
     var isDeleted: Boolean = false,
     @ColumnInfo(name="needs_syncs")
-    var needsSyncs:Int=1
+    var needsSyncs:Int=1,
+    @ColumnInfo
+    var date: Date?=null, //NEW COLUMN
+    @ColumnInfo
+    var expenseId:Int?=null //NEW COLUMN
 )
 

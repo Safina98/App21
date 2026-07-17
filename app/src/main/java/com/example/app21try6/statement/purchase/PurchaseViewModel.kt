@@ -52,6 +52,8 @@ class PurchaseViewModel(application: Application,
     val allExpensesFromDB :LiveData<List<DiscountAdapterModel>> get() = _allExpenseFromDb
     val _unfilteredExpesne=MutableLiveData<List<DiscountAdapterModel>>()
 
+    val expenseIsKeeped=expenseRepo.getExpenseIsKeeped(id)
+
     private val _selectedECSpinner = MutableLiveData<String>()
     val selectedECSpinner: LiveData<String> get() = _selectedECSpinner
     private val _selectedYearSpinner=MutableLiveData<String>()
@@ -88,7 +90,7 @@ class PurchaseViewModel(application: Application,
         var discountSum = 0.0
 
         fun update() {
-            value = formatRupiah(purchaseSum - discountSum)
+            value = formatRupiah(purchaseSum + discountSum)
         }
 
         addSource(inventoryPurchaseList) { list ->
@@ -103,6 +105,9 @@ class PurchaseViewModel(application: Application,
 
     private val _isAddItemClick=MutableLiveData<Boolean>(false)
     val isAddItemClick:LiveData<Boolean> get() = _isAddItemClick
+
+    private val _isCrudSucsess=MutableLiveData<String?>(null)
+    val isCrudSucsess:LiveData<String?> get() = _isCrudSucsess
 
     private val _isNavigateToExpense=MutableLiveData<Boolean>(false)
     val isNavigateToExpense:LiveData<Boolean> get() = _isNavigateToExpense
@@ -153,6 +158,7 @@ class PurchaseViewModel(application: Application,
             }
         }
     }
+
     fun getNewInventoryList(id:Int){
         viewModelScope.launch {
             if (id!=-1){
@@ -190,7 +196,6 @@ class PurchaseViewModel(application: Application,
                 productNet.value = selectedSubProduct?.default_net?:0.0
             }
         }
-
     }
 
     fun onBtnSimppanClick(){
@@ -216,10 +221,12 @@ class PurchaseViewModel(application: Application,
                 clearAllButName()
                 _isAddItemClick.value=true
                 if (inventoryPurchase.value!=null) clearAllMutables()
+                _isCrudSucsess.value = Constants.CRUDSTATUS.SUCSESS
                 getNewInventoryList(id)
             }.onFailure {
                     throwable ->
                 Log.e("PurchaseProbs", "failed: ${throwable.message}", throwable)
+                _isCrudSucsess.value = Constants.CRUDSTATUS.FAILED
                 //show snackbar that said insert failed
             }
         }
@@ -243,35 +250,12 @@ class PurchaseViewModel(application: Application,
     }
     fun addInventoryLog(){
         viewModelScope.launch {
-            for (i in inventoryList){
-                if (i.status!="DISCOUNT"){
-                    val subDetail= DetailWarnaTable()
-                    subDetail.sPCloudId =i.sPCloudId!!
-                    subDetail.batchCount=i.batchCount
-                    subDetail.net=i.net
-                    subDetail.ket
-                    subDetail.ref=UUID.randomUUID().toString()
-                    //subDetail.dWCloudId= System.currentTimeMillis()
-                    subDetail.needsSyncs=1
-                    subDetailList.add(subDetail)
-                    //update or insert detail
-                    val inventoryLog=InventoryLog()
-                    inventoryLog.detailWarnaRef=subDetail.ref
-          //          inventoryLog.barangLogDate=i.purchaseDate
-                    inventoryLog.sPCloudId =i.sPCloudId
-                    inventoryLog.productCloudId =stockRepo.getProdutIdBySubId(i.sPCloudId!!)//getProductId(i.sPCloudId!!)
-                    inventoryLog.brandId=stockRepo.getBrandIdByProductId(inventoryLog.productCloudId)//getBrandId(inventoryLog.productCloudId ?:0)
-            //        inventoryLog.barangLogDate=i.purchaseDate
-                    inventoryLog.barangLogRef=UUID.randomUUID().toString()
-                    inventoryLog.isi=i.net
-                    inventoryLog.pcs=i.batchCount.toInt()
-                    inventoryLog.barangLogKet="PENDING"
-                    inventoryLog.iLCloudId=System.currentTimeMillis()
-                    inventoryLog.needsSyncs=1
-                    logList.add(inventoryLog)
-                }
+            stockRepo.insertDetailWarnaFromPurchase(inventoryPurchaseList.value,Date(),id).onSuccess {
+                _isCrudSucsess.value= Constants.CRUDSTATUS.SUCSESS
+            }.onFailure {throwable ->
+                _isCrudSucsess.value= Constants.CRUDSTATUS.FAILED
+                Log.e(tagp,"$throwable")
             }
-            upsertDetailWarnaAndLog(subDetailList,logList)
         }
     }
 
@@ -462,12 +446,7 @@ class PurchaseViewModel(application: Application,
     }
 
 
-    private suspend fun upsertDetailWarnaAndLog(detailWarnaList:List<DetailWarnaTable>,
-                                                 inventoryLogList: MutableList<InventoryLog>){
-        withContext(Dispatchers.IO){
-           // inventoryLogDao.updateInsertDetailWarnaAndLog(detailWarnaList,inventoryLogList)
-        }
-    }
+
 
     fun onTxtTransSumLongClikc(){
         _transSumDateLongClick.value = true

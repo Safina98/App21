@@ -58,6 +58,8 @@ interface ExpenseDao {
     )
     fun getExpenseByQuery(name: String, selectedMonth: String?,selectedYear: String?): List<DiscountAdapterModel>
 
+    @Query("SELECT is_keeped FROM expenses_table WHERE id=:eId")
+    fun getExpenseIsKeeped(eId:Int): LiveData<Boolean>
     @Query("DELETE FROM expenses_table WHERE id=:id")
     fun delete(id:Int)
 

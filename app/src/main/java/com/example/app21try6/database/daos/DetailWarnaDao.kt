@@ -17,8 +17,13 @@ import com.example.app21try6.database.tables.TransactionDetail
 interface DetailWarnaDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(detailWarnaTable: DetailWarnaTable)
+
+    @Insert
+    fun insert(detailWarnaList: List<DetailWarnaTable>)
     @Insert
     fun insertLog(inventoryLog: InventoryLog)
+    @Insert
+    fun insertLog(inventoryLog: List<InventoryLog>)
     @Update
     fun update(detailWarnaTable: DetailWarnaTable)
     @Update
@@ -110,12 +115,24 @@ interface DetailWarnaDao {
         insert(detailWarnaTable)
         insertLog(inventoryLog)
     }
+    @Transaction
+    fun insertDetailWarnaAndLogList(detailWarnaList: List<DetailWarnaTable>,inventoryLogList: List<InventoryLog>,id:Int) {
+        val rowsUpdated = updateExpense(id)
+        if (rowsUpdated == 0) {
+            throw IllegalStateException("Expense $id is already kept (is_keeped = true)")
+        }
+        insert(detailWarnaList)
+        insertLog(inventoryLogList)
+    }
     @Query("UPDATE detail_warna_table SET needs_syncs = 0 WHERE dWCloudId = :cloudId")
     suspend fun markDetailWarnaAsSynced(cloudId: Long)
     @Query("UPDATE merchandise_table SET needs_syncs = 0 WHERE mRCloudId = :cloudId")
     suspend fun markMerhcandiseRetailAsSynced(cloudId: Long)
     @Query("UPDATE trans_detail_table SET needs_syncs = 0 WHERE tDCloudId = :cloudId")
     suspend fun markTransactionDetailAsSynced(cloudId: Long)
+
+    @Query("UPDATE expenses_table SET is_keeped = 1 WHERE id = :eId AND is_keeped = 0")
+    fun updateExpense(eId: Int): Int
     @Transaction
     fun updateDetailWarnaAndInsertLog(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog,merchandiseRetail: MerchandiseRetail?) {
         update(detailWarnaTable)

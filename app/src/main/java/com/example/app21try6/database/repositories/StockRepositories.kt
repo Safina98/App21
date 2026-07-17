@@ -16,6 +16,7 @@ import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.tables.Category
 import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.InventoryLog
+import com.example.app21try6.database.tables.InventoryPurchase
 import com.example.app21try6.database.tables.MerchandiseRetail
 import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.tables.SubProduct
@@ -25,6 +26,8 @@ import com.example.app21try6.stock.brandstock.StockCategoryModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import java.util.Date
+import java.util.UUID
 
 class StockRepositories (
    application: Application
@@ -36,6 +39,8 @@ class StockRepositories (
     private val productDao=VendibleDatabase.getInstance(application).productDao
     private val subProductDao=VendibleDatabase.getInstance(application).subProductDao
     private val detailWarnaDao=VendibleDatabase.getInstance(application).detailWarnaDao
+
+
 
 
     //category rv data
@@ -438,8 +443,6 @@ class StockRepositories (
                 Log.w("SyncManager", "Upload failed for merchadise reteil ${merchandiseRetailList}: ${e.message}")
             }
 
-
-
         }
     }
     suspend fun deleteDetailWarna(detailWarnaTable: DetailWarnaTable,inventoryLog: InventoryLog,merchandiseRetail: MerchandiseRetail?){
@@ -493,6 +496,43 @@ class StockRepositories (
             }
 
 
+        }
+    }
+
+    suspend fun insertDetailWarnaFromPurchase(inventoryPurchases:List<InventoryPurchase>?,date: Date,expenseId:Int)=runCatching{
+        withContext(Dispatchers.IO){
+            val logList= mutableListOf<InventoryLog>()
+            val subDetailList= mutableListOf<DetailWarnaTable>()
+            inventoryPurchases?.forEach {purchase->
+                if (purchase.status!="DISCOUNT"){
+                    val subDetail= DetailWarnaTable()
+                    subDetail.sPCloudId =purchase.sPCloudId!!
+                    subDetail.batchCount=purchase.batchCount
+                    subDetail.net=purchase.net
+                    subDetail.ref=UUID.randomUUID().toString()
+                    subDetail.dWCloudId= System.currentTimeMillis()
+                    subDetail.needsSyncs=1
+                    subDetail.date=date
+                    subDetail.expenseId=expenseId
+                    subDetailList.add(subDetail)
+
+                    val inventoryLog=InventoryLog()
+                    inventoryLog.detailWarnaRef=subDetail.ref
+                    inventoryLog.sPCloudId =purchase.sPCloudId
+                    inventoryLog.productCloudId =getProdutIdBySubId(purchase.sPCloudId!!)//getProductId(i.sPCloudId!!)
+                    inventoryLog.brandId=getBrandIdByProductId(inventoryLog.productCloudId)//getBrandId(inventoryLog.productCloudId ?:0)
+                    inventoryLog.barangLogDate=date
+                    inventoryLog.barangLogRef=UUID.randomUUID().toString()
+                    inventoryLog.isi=purchase.net
+                    inventoryLog.pcs=purchase.batchCount.toInt()
+                    inventoryLog.barangLogKet="MASUK"
+                    inventoryLog.iLCloudId=System.currentTimeMillis()
+                    inventoryLog.needsSyncs=1
+                    inventoryLog.expenseId=expenseId
+                    logList.add(inventoryLog)
+                }
+            }
+            detailWarnaDao.insertDetailWarnaAndLogList(subDetailList,logList,expenseId)
         }
     }
 

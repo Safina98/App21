@@ -55,6 +55,9 @@ class ExpensesRepository(application: Application) {
             expenseDao.getExpenseByQuery(query,month,year)
         }
     }
+    fun getExpenseIsKeeped(eId:Int): LiveData<Boolean>{
+        return expenseDao.getExpenseIsKeeped(eId)
+    }
     /////////////////////////////////Esxpense Category////////////////////////////////////////////
     fun getExpenseCateroryModel(): LiveData<List<CategoryModel>>{
         return expenseCategoryDao.getAllExpenseCategoryModel()
