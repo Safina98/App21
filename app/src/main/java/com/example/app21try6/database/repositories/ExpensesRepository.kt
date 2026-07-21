@@ -3,6 +3,7 @@ package com.example.app21try6.database.repositories
 import android.app.Application
 import androidx.lifecycle.LiveData
 import com.example.app21try6.database.VendibleDatabase
+import com.example.app21try6.database.models.BarChartModel
 import com.example.app21try6.database.models.PaymentModel
 
 import com.example.app21try6.database.tables.ExpenseCategory
@@ -14,6 +15,7 @@ import com.example.app21try6.statement.DiscountAdapterModel
 import com.example.app21try6.stock.brandstock.CategoryModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.Date
 
 class ExpensesRepository(application: Application) {
     private val expenseDao = VendibleDatabase.getInstance(application).expenseDao
@@ -59,6 +61,12 @@ class ExpensesRepository(application: Application) {
         return expenseDao.getExpenseIsKeeped(eId)
     }
     /////////////////////////////////Esxpense Category////////////////////////////////////////////
+
+    suspend fun getcExpenseByTipe(tipe:String, startDate: Date?, endDate:Date?): List<BarChartModel>{
+        return withContext(Dispatchers.IO){
+            expenseDao.getHPPExpense(tipe,startDate,endDate)
+        }
+    }
     fun getExpenseCateroryModel(): LiveData<List<CategoryModel>>{
         return expenseCategoryDao.getAllExpenseCategoryModel()
     }

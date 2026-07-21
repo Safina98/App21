@@ -216,6 +216,13 @@ class ExpensesFragment : Fragment() {
             }
         })
 
+        viewModel.navigateToReport.observe(viewLifecycleOwner){
+            if(it==true){
+                this.findNavController().navigate(ExpensesFragmentDirections.actionExpensesFragmentToReportFragment())
+                viewModel.onNavigatedToReport()
+            }
+        }
+
 
 
 

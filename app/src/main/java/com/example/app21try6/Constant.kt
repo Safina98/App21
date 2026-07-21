@@ -48,6 +48,12 @@ object Constants {
 
     }
 
+    object TIPEEXPENSECATOGORY {
+        const val HPP = "HPP"
+        const val BEBAN = "Beban"
+
+    }
+
         object TABLENAMES {
         const val BRAND = "brand_table"
         const val CATEGORY = "category_table"

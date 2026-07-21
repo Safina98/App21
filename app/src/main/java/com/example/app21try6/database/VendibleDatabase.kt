@@ -5,21 +5,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.app21try6.database.Migrations.MIGRATION_41_42
-import com.example.app21try6.database.Migrations.MIGRATION_42_43
-import com.example.app21try6.database.Migrations.MIGRATION_43_44
-import com.example.app21try6.database.Migrations.MIGRATION_44_45
-import com.example.app21try6.database.Migrations.MIGRATION_45_46
-import com.example.app21try6.database.Migrations.MIGRATION_46_47
-import com.example.app21try6.database.Migrations.MIGRATION_47_48
-import com.example.app21try6.database.Migrations.MIGRATION_48_49
-import com.example.app21try6.database.Migrations.MIGRATION_54_55
-import com.example.app21try6.database.Migrations.MIGRATION_55_56
-import com.example.app21try6.database.Migrations.MIGRATION_56_57
-import com.example.app21try6.database.Migrations.MIGRATION_57_58
-import com.example.app21try6.database.MigrationsForCloud.MIGRATION_53_54
+import com.example.app21try6.database.Migrations.MIGRATION_58_59
+
 
 
 import com.example.app21try6.database.daos.BrandDao
@@ -66,7 +53,7 @@ import com.example.app21try6.database.tables.TransactionSummary
     ExpenseCategory::class, Summary::class, DiscountTable::class, DiscountTransaction::class,
     CustomerTable::class,DetailWarnaTable::class,InventoryLog::class,
     SuplierTable::class,InventoryPurchase::class, MerchandiseRetail::class, PurchaseDiscount::class
-                     ],version=58, exportSchema = true)
+                     ],version=59, exportSchema = true)
 @TypeConverters(DateTypeConverter::class)
 abstract class VendibleDatabase:RoomDatabase(){
     abstract val brandDao : BrandDao
@@ -102,10 +89,7 @@ abstract class VendibleDatabase:RoomDatabase(){
                             VendibleDatabase::class.java,
                             "vendible_table"
                     )
-                        //.addMigrations(MIGRATION_45_46)
-                        //.addMigrations(MIGRATION_46_47)
-                        //.addMigrations(MIGRATION_47_48)
-                        .addMigrations(MIGRATION_57_58)
+                        .addMigrations(MIGRATION_58_59)
                         // .fallbackToDestructiveMigration()
                     .build()
                     INSTANCE = instance

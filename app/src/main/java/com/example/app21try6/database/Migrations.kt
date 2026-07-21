@@ -5,6 +5,21 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 object Migrations {
 
+    val MIGRATION_58_59 = object : Migration(58, 59) { // replace X, Y with your actual old/new version numbers
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                "ALTER TABLE expense_category_table ADD COLUMN categoryType TEXT NOT NULL DEFAULT 'Beban'"
+            )
+
+            db.execSQL(
+                "UPDATE expense_category_table SET categoryType = 'HPP' WHERE expense_category_name = 'BELI BARANG'"
+            )
+            db.execSQL(
+                "UPDATE expense_category_table SET categoryType = 'HPP' WHERE expense_category_name = 'PENGANGKUTAN'"
+            )
+        }
+    }
+
     val MIGRATION_57_58 = object : Migration(57, 58) {
         override fun migrate(db: SupportSQLiteDatabase) {
             db.execSQL("ALTER TABLE detail_warna_table RENAME TO detail_warna_table_old")

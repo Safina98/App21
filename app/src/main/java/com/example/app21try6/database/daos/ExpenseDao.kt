@@ -5,9 +5,11 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import com.example.app21try6.database.models.BarChartModel
 import com.example.app21try6.database.tables.Expenses
 import com.example.app21try6.database.tables.TransactionSummary
 import com.example.app21try6.statement.DiscountAdapterModel
+import com.github.mikephil.charting.charts.BarChart
 import java.util.Date
 
 @Dao
@@ -22,6 +24,21 @@ interface ExpenseDao {
 
     @Query("UPDATE expenses_table SET expense_name=:newName WHERE id=:id")
     fun updateExpenseName(id:Int,newName:String)
+
+
+
+    @Query(
+        "SELECT " +
+                "ec.expense_category_name AS label, " +
+                "SUM(e.expense_ammount) AS value " +
+                "FROM expenses_table e " +
+                "JOIN expense_category_table ec ON e.expense_category_id = ec.id " +
+                "WHERE ec.categoryType =:tipe " +
+                " AND (:startDate IS NULL OR e.expense_date >= :startDate)" +
+                "AND (:endDate IS NULL OR e.expense_date <= :endDate) "+
+                "GROUP BY ec.id"
+    )
+    fun getHPPExpense(tipe:String,startDate:Date?,endDate:Date?): List<BarChartModel>
 
 
     @Query("""
