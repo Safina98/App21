@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".statement.report.ReportFragment">
+
+        <TextView
+            android:id="@+id/lblReportTitle"
+            style="@style/active_transaction_text_style"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/big_margin"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center"
+            android:text="Laporan Tahun 2026"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/lblSegmen1"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/lblSegmen1"
+            style="@style/active_transaction_text_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/big_margin"
+            android:text="Segmen 1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lblReportTitle" />
+
+        <TableLayout
+            android:id="@+id/table_segmen1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:shrinkColumns="1"
+            android:stretchColumns="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lblSegmen1">
+
+            <!-- Header row -->
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#EEEEEE"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Pengeluaran"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Jumlah"
+                    android:textStyle="bold" />
+
+            </TableRow>
+
+            <!-- Data row -->
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Beli barang" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Rp.1.000.000.000" />
+
+            </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Pengangkutan" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Rp.100.000.000" />
+
+            </TableRow>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#CCCCCC" />
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Sub Total" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Rp.100.000.000" />
+
+            </TableRow>
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#CCCCCC" />
+
+        </TableLayout>
+
+        <TextView
+            android:id="@+id/lblSegmen2"
+            style="@style/active_transaction_text_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/big_margin"
+            android:text="Beban"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/table_segmen1" />
+        <TableLayout
+            android:id="@+id/table_segmen2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:shrinkColumns="1"
+            android:stretchColumns="1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lblSegmen2">
+
+            <!-- Header row -->
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#EEEEEE"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Pengeluaran"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Jumlah"
+                    android:textStyle="bold" />
+
+            </TableRow>
+
+            <!-- Data row -->
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Listrik: " />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Rp.12.000/000" />
+
+            </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Internet: " />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Rp.3.000.000" />
+            </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Sampah: " />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Rp.12.000/000" />
+
+            </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Transportasi: " />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Rp.5.000.000" />
+
+            </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Pajak: " />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Rp.12.000.000" />
+            </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Gaji: " />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Rp.180.000.000" />
+            </TableRow>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#CCCCCC" />
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Sub Total" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Rp.300.000.000" />
+
+            </TableRow>
+        </TableLayout>
+        <TextView
+            android:id="@+id/lblSegmen3"
+            style="@style/active_transaction_text_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/big_margin"
+            android:text="Penyusutan"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/table_segmen2" />
+        <TableRow
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lblSegmen3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Penyusutan: " />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:text="Rp.100.000.000" />
+        </TableRow>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

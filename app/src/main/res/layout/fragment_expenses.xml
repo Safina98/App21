@@ -17,7 +17,7 @@
 
         <Spinner
             android:id="@+id/spinner_year"
-            android:layout_width="182dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_weight="0.5"
@@ -30,7 +30,7 @@
 
         <Spinner
             android:id="@+id/spinner_month"
-            android:layout_width="182dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_weight="0.5"
@@ -85,6 +85,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/search_all_expense" />
+
+        <ImageView
+            android:id="@+id/btn_report"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="@dimen/medium_margin"
+            android:elevation="@dimen/medium_margin"
+            android:src="@drawable/baseline_article_24"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@id/btn_add_new_expense"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_add_new_expense"

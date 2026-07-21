@@ -16,19 +16,15 @@ import com.example.app21try6.database.models.SubWithPriceModel
 import com.example.app21try6.database.repositories.ExpensesRepository
 import com.example.app21try6.database.repositories.LogsRepository
 import com.example.app21try6.database.repositories.StockRepositories
-import com.example.app21try6.database.tables.DetailWarnaTable
 import com.example.app21try6.database.tables.ExpenseCategory
 import com.example.app21try6.database.tables.Expenses
-import com.example.app21try6.database.tables.InventoryLog
 import com.example.app21try6.database.tables.InventoryPurchase
 import com.example.app21try6.database.tables.PurchaseDiscount
 import com.example.app21try6.formatRupiah
 import com.example.app21try6.getMonthNumber
 import com.example.app21try6.statement.DiscountAdapterModel
 import com.example.app21try6.stock.brandstock.CategoryModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
@@ -70,17 +66,13 @@ class PurchaseViewModel(application: Application,
     //purchase
     val suplierDummy= expenseRepo.getAllSuplier()//suplierDao.getAllSuplier()
 
-    var inventoryList= mutableListOf<InventoryPurchase>()
-    //val allSubProductFromDb=subProductDao.getSubProductWithPrice()
     private val searchQuery = MutableLiveData<String>()
     val allSubProductFromDb:
             LiveData<List<SubWithPriceModel>?> = searchQuery.switchMap{ query ->
-        //subProductDao.getSubProductWithPrice(query)
                 stockRepo.getSubProductWithPrice(query)
     }
-    var inventoryPurchaseId:Int=0
-    private val _inventoryPurchaseList=MutableLiveData<List<InventoryPurchase>>()
-    val inventoryPurchaseList:LiveData<List<InventoryPurchase>> get() = _inventoryPurchaseList
+
+    val inventoryPurchaseList=expenseRepo.getInventoryPurchaseList(id)
 
 
     val pDiscountList=expenseRepo.getPDiscountByExpense(id)
@@ -109,14 +101,11 @@ class PurchaseViewModel(application: Application,
     private val _isCrudSucsess=MutableLiveData<String?>(null)
     val isCrudSucsess:LiveData<String?> get() = _isCrudSucsess
 
+    private val _isAddInventorySucsess=MutableLiveData<String?>(null)
+    val isAddInventorySucsess:LiveData<String?> get() = _isAddInventorySucsess
+
     private val _isNavigateToExpense=MutableLiveData<Boolean>(false)
     val isNavigateToExpense:LiveData<Boolean> get() = _isNavigateToExpense
-
-    private val _isRvClick=MutableLiveData<Boolean>(false)
-    val isRvClick:LiveData<Boolean> get() = _isRvClick
-
-    val logList= mutableListOf<InventoryLog>()
-    val subDetailList= mutableListOf<DetailWarnaTable>()
 
     val inventoryPurchase=MutableLiveData<InventoryPurchase?>()
     val expenseMutable=MutableLiveData<Expenses>()
@@ -130,8 +119,13 @@ class PurchaseViewModel(application: Application,
     private val _transSumDateLongClick = MutableLiveData<Boolean>()
     val transSumDateLongClick:LiveData<Boolean> get() = _transSumDateLongClick
 
+    private val _showSaveToInventoryConfirmDialog = MutableLiveData<Boolean>()
+    val showSaveToInventoryConfirmDialog:LiveData<Boolean> get() = _showSaveToInventoryConfirmDialog
+
     private val _isDiscountClicked=MutableLiveData<InventoryPurchase?>()
     val isDiscountClicked:LiveData<InventoryPurchase?> get() = _isDiscountClicked
+
+
 
     val totalPrice = MediatorLiveData<Double>().apply {
         addSource(productPrice) { calculateTotalPrice() }
@@ -147,31 +141,11 @@ class PurchaseViewModel(application: Application,
     }
 
 
-    fun getInventoryList(id:Int){
-        viewModelScope.launch {
-            if (id!=-1){
-                val list= expenseRepo.getInventoryPurchaseList(id)//withContext(Dispatchers.IO){invetoryPurchaseDao.selectPurchaseList(id)}
-                inventoryList=list.toMutableList()
-                _inventoryPurchaseList.value=list
-              //  if (inventoryList!=null) inventoryPurchaseId= inventoryList.last().id*-1
-                val inP = expenseRepo.getPurchaseById()
-            }
-        }
-    }
-
-    fun getNewInventoryList(id:Int){
-        viewModelScope.launch {
-            if (id!=-1){
-                val list= expenseRepo.getInventoryPurchaseList(id)
-                _inventoryPurchaseList.value=list
-               // expenseRepo.insertSupliers()
-            }
-        }
-    }
 
     fun updateExpenseName(){
         viewModelScope.launch {
-            expenseRepo.updateExpenseName(id,suplierName.value?:"")
+            val supName:String=suplierName.value?:""
+            expenseRepo.updateExpenseName(id,"Bayar nota $supName")
         }
     }
 
@@ -201,9 +175,7 @@ class PurchaseViewModel(application: Application,
     fun onBtnSimppanClick(){
         _isNavigateToExpense.value=true
     }
-    fun getAutoIncrementId(){
-        inventoryPurchaseId-=1
-    }
+
     fun insertPurchase(){
         viewModelScope.launch{
             val item=InventoryPurchase()
@@ -222,11 +194,12 @@ class PurchaseViewModel(application: Application,
                 _isAddItemClick.value=true
                 if (inventoryPurchase.value!=null) clearAllMutables()
                 _isCrudSucsess.value = Constants.CRUDSTATUS.SUCSESS
-                getNewInventoryList(id)
+
             }.onFailure {
                     throwable ->
                 Log.e("PurchaseProbs", "failed: ${throwable.message}", throwable)
                 _isCrudSucsess.value = Constants.CRUDSTATUS.FAILED
+
                 //show snackbar that said insert failed
             }
         }
@@ -251,9 +224,9 @@ class PurchaseViewModel(application: Application,
     fun addInventoryLog(){
         viewModelScope.launch {
             stockRepo.insertDetailWarnaFromPurchase(inventoryPurchaseList.value,Date(),id).onSuccess {
-                _isCrudSucsess.value= Constants.CRUDSTATUS.SUCSESS
+                _isAddInventorySucsess.value= Constants.CRUDSTATUS.SUCSESS
             }.onFailure {throwable ->
-                _isCrudSucsess.value= Constants.CRUDSTATUS.FAILED
+                _isAddInventorySucsess.value= Constants.CRUDSTATUS.FAILED
                 Log.e(tagp,"$throwable")
             }
         }
@@ -264,7 +237,7 @@ class PurchaseViewModel(application: Application,
         viewModelScope.launch {
             Log.i(tagp,"view model deletePurchaseCalled")
             expenseRepo.deletePurchase(purchase).onSuccess {
-                getNewInventoryList(id)
+
             }.onFailure { throwable ->
             }
         }
@@ -297,7 +270,7 @@ class PurchaseViewModel(application: Application,
             purchaseDiscount.discountValue=price*-1
             purchaseDiscount.expenseId=id
             expenseRepo.insertPurchaseDiscount(purchaseDiscount).onSuccess {
-                getNewInventoryList(id)
+
             }   .onFailure {
 
             }
@@ -309,9 +282,17 @@ class PurchaseViewModel(application: Application,
             expenseRepo.deletePurchaseDiscount(paymentModel)
         }
     }
-    fun updateDiscount(item:InventoryPurchase){
-
+    fun onShowConfirmationDialog(){
+        _showSaveToInventoryConfirmDialog.value=true
     }
+    fun onShowedConfirmationDialog(){
+        _showSaveToInventoryConfirmDialog.value=false
+    }
+    fun onInventorySuccessed(){
+        _isAddInventorySucsess.value=null
+    }
+
+
 //expenses
     fun deleteExpense(model: DiscountAdapterModel){
         viewModelScope.launch {
@@ -404,8 +385,6 @@ class PurchaseViewModel(application: Application,
             expenses.expense_category_id=catId?:0
             expenses.expenseCloudId=System.currentTimeMillis()
             expenses.needsSyncs=1
-            //Log.i(tagg,"date $expenseDate")
-           // insertExpense(expenses)
             expenseRepo.insertExpense(expenses)
 
             updateRv4()
@@ -445,9 +424,6 @@ class PurchaseViewModel(application: Application,
 
     }
 
-
-
-
     fun onTxtTransSumLongClikc(){
         _transSumDateLongClick.value = true
     }
@@ -455,12 +431,7 @@ class PurchaseViewModel(application: Application,
     fun onItemAdded(){
         _isAddItemClick.value=false
     }
-    fun onRvClick(){
-        _isRvClick.value=true
-    }
-    fun onRvClicked(){
-        _isRvClick.value=false
-    }
+
     fun onNavigatedToExpense(){
         _isNavigateToExpense.value=false
     }

@@ -1,25 +1,18 @@
 package com.example.app21try6.statement.purchase
 
 import android.app.AlertDialog
-import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.DatePicker
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -28,25 +21,20 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.app21try6.Constants
 import com.example.app21try6.R
-import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.PaymentModel
 import com.example.app21try6.database.models.SubWithPriceModel
 import com.example.app21try6.database.repositories.ExpensesRepository
 import com.example.app21try6.database.repositories.LogsRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.tables.InventoryPurchase
-import com.example.app21try6.database.tables.SubProduct
 import com.example.app21try6.databinding.FragmentTransactionPurchaseBinding
-import com.example.app21try6.stock.subproductstock.SubViewModel
 import com.example.app21try6.transaction.transactiondetail.PaymentAdapter
 import com.example.app21try6.transaction.transactiondetail.TransDatePaymentClickListener
 import com.example.app21try6.transaction.transactiondetail.TransPaymentClickListener
 import com.example.app21try6.transaction.transactiondetail.TransPaymentLongListener
-import com.example.app21try6.transaction.transactiondetail.TransactionDetailFragment.type
 import com.example.app21try6.utils.DialogUtils
 import com.example.app21try6.utils.SimilarWordAdapter
 import com.example.app21try6.utils.SpaceInsensitiveArrayAdapter
-import com.google.android.material.snackbar.Snackbar
 import java.util.Calendar
 
 
@@ -72,7 +60,7 @@ class TransactionPurchase : Fragment() {
         binding.viewModel=viewModel
 
         viewModel.getExpense(id)
-        viewModel.getNewInventoryList(id)
+        //.getNewInventoryList(id)
 
         val autoCompleteSuplier: AutoCompleteTextView = binding.textSuplier
         val autoCompleteSubName: AutoCompleteTextView = binding.textSub
@@ -80,10 +68,8 @@ class TransactionPurchase : Fragment() {
         val adapter =PurchaseAdapter(
             UpdateListener {
                 viewModel.rvClick(it)
-                //Log.i(tagp,"${productName.value}")
             },
             DeleteListener {
-               // viewModel.deletePurchase(it)
                 DialogUtils.showDeleteDialog(requireContext(),viewModel, it, { vm, item -> (vm as PurchaseViewModel).deletePurchase(item as InventoryPurchase ) })
 
             })
@@ -105,8 +91,6 @@ class TransactionPurchase : Fragment() {
 
         binding.purchaseRv.addItemDecoration(dividerItemDecoration)
 
-        //val subNameAdapter=SimilarWordAdapter(requireContext(), emptyList())
-        //autoCompleteSubName.setAdapter(subNameAdapter)
         autoCompleteSubName.threshold = 1
 
         val suplierList= listOf<String>("Mitra Jaya","Mbtech","Simnu","Busa Yerry","Lancar","Cahaya Indah","Vision","Owl Crown","Bali Jaya","Toko Utama","Sentral Logam","Toko ada","Trijaya","Maliang")
@@ -128,6 +112,13 @@ class TransactionPurchase : Fragment() {
         viewModel.transSumDateLongClick.observe(viewLifecycleOwner){
             if (it==true){
                 showDatePickerDialog(null)
+            }
+        }
+        viewModel.showSaveToInventoryConfirmDialog.observe(viewLifecycleOwner){
+            if (it==true){
+                DialogUtils.showConfirmationDialog(
+                    requireContext(),viewModel,null,"Masukkan transaksi ke stok?",{ vm, item -> (vm as PurchaseViewModel).addInventoryLog() }
+                )
             }
         }
         viewModel.isDiscountClicked.observe(viewLifecycleOwner){
@@ -194,7 +185,6 @@ class TransactionPurchase : Fragment() {
 
         }
         viewModel.isNavigateToExpense.observe(viewLifecycleOwner){
-            Log.i("ExpenseProblem","isNavigateToExpense: ${it}")
             if (it==true){
                this.findNavController().navigate(TransactionPurchaseDirections.actionTransactionPurchaseToExpensesFragment())
                 viewModel.onNavigatedToExpense()
@@ -203,6 +193,12 @@ class TransactionPurchase : Fragment() {
         viewModel.isCrudSucsess.observe(viewLifecycleOwner){
             if (it!=null){
                 showStatus(binding,it)
+            }
+        }
+        viewModel.isAddInventorySucsess.observe(viewLifecycleOwner){
+            if (it!=null){
+                showStatus2(binding,it)
+               // viewModel.onInventorySuccessed()
             }
         }
         return binding.root
@@ -215,7 +211,6 @@ class TransactionPurchase : Fragment() {
         if (!subProductList.isNullOrEmpty()) {
             val subNames = subProductList.map { it.subProduct.sub_name.trim()
             }
-
             val adapterSub = SpaceInsensitiveArrayAdapter(
                 requireContext(),
                 android.R.layout.simple_dropdown_item_1line,
@@ -256,6 +251,15 @@ class TransactionPurchase : Fragment() {
         binding.statusBanner.postDelayed({
             binding.statusBanner.visibility = View.GONE
         }, 500)
+    }
+    fun showStatus2(binding: FragmentTransactionPurchaseBinding, status: String) {
+        binding.status2Banner.animate().cancel()
+        val message =if (status== Constants.CRUDSTATUS.SUCSESS) "Data berhasil ditambakan ke Inventori" else "Gagal"
+        binding.status2Text.text = message
+        binding.status2Banner.visibility = View.VISIBLE
+        binding.status2Banner.postDelayed({
+            binding.status2Banner.visibility = View.GONE
+        }, 2000)
     }
 
 

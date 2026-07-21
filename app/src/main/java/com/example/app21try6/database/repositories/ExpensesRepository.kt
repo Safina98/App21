@@ -157,8 +157,12 @@ class ExpensesRepository(application: Application) {
         }
     }
     /////////////////////////////////InventoryPurchase////////////////////////////////////
-    suspend fun getInventoryPurchaseList(id:Int): List<InventoryPurchase>{
-        return withContext(Dispatchers.IO){inventoryPurchaseDao.selectPurchaseList(id)}
+    suspend fun getInventoryPurchaseListOld(id:Int): List<InventoryPurchase>{
+        return withContext(Dispatchers.IO){inventoryPurchaseDao.selectPurchaseListOld(id)}
+    }
+
+    fun getInventoryPurchaseList(id:Int): LiveData<List<InventoryPurchase>>{
+        return inventoryPurchaseDao.selectPurchaseList(id)
     }
 
 

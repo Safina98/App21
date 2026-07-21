@@ -1,6 +1,7 @@
 package com.example.app21try6.database.daos
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -20,7 +21,12 @@ interface InventoryPurchaseDao {
 
 
     @Query("SELECT *FROM inventory_purchase_table WHERE expensesId=:exId")
-    fun selectPurchaseList(exId:Int):List<InventoryPurchase>
+    fun selectPurchaseListOld(exId:Int):List<InventoryPurchase>
+
+    @Query("SELECT *FROM inventory_purchase_table WHERE expensesId=:exId")
+    fun selectPurchaseList(exId:Int): LiveData<List<InventoryPurchase>>
+
+
     @Insert
     fun insertPurchases(list: List<InventoryPurchase>)
     @Insert
@@ -180,7 +186,7 @@ interface InventoryPurchaseDao {
     ) {
 
         updateExpense(expenses)
-        val allPurchaseByExpense = selectPurchaseList(expenses.id)
+        val allPurchaseByExpense = selectPurchaseListOld(expenses.id)
         val purchasesToDelete = allPurchaseByExpense.filter { dbPurchase ->
             purchaseList.none { newPurchase -> newPurchase.id == dbPurchase.id }
         }
