@@ -19,28 +19,41 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             >
-            <ImageView
-                android:id="@+id/cal_icon"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_margin="@dimen/medium_margin"
-                android:elevation="@dimen/medium_margin"
-                android:onClick="@{()->view_model.onStartDatePickerClick()}"
-                android:src="@drawable/baseline_calendar_month_24"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/cal_icon"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_margin="@dimen/medium_margin"
+                    android:elevation="@dimen/medium_margin"
+                    android:onClick="@{()->view_model.onStartDatePickerClick()}"
+                    android:src="@drawable/baseline_calendar_month_24"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/txt_start_date"
-                style="@style/active_transaction_small_txt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginTop="8dp"
-                android:onClick="@{()->view_model.onStartDatePickerClick()}"
-                android:text="@{view_model._dateRangeString}"
-                app:layout_constraintEnd_toStartOf="@id/cal_icon"
-                app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/txt_start_date"
+                    style="@style/active_transaction_small_txt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    android:onClick="@{()->view_model.onStartDatePickerClick()}"
+                    android:text="PilihTanggal"
+                    app:layout_constraintEnd_toStartOf="@id/cal_icon"
+                    app:layout_constraintTop_toTopOf="parent" />
+                <Spinner
+                    android:id="@+id/spinner_tahun_r"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="8dp"
+                    />
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/lblReportTitle"
                 style="@style/active_transaction_text_style"
@@ -81,7 +94,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:padding="8dp"
-                    android:text="Rp4.420.114.960" />
+                    android:text="@{view_model.totalTrans}" />
             </TableRow>
             <View
                 android:layout_width="match_parent"
@@ -98,105 +111,39 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/lblReportTitle" />
 
-            <TableLayout
-                android:id="@+id/table_segmen1"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView_hpp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:shrinkColumns="1"
-                android:stretchColumns="1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lblSegmen1">
-
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
                 <!-- Header row -->
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#EEEEEE"
-                    android:padding="8dp">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#CCCCCC" />
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Pengeluaran"
-                        android:textStyle="bold" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Total" />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Jumlah"
-                        android:textStyle="bold" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="@{view_model.totalHPP}" />
 
-                </TableRow>
-
-                <!-- Data row -->
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Beli barang" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Rp.3.759.000.000" />
-
-                </TableRow>
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Pengangkutan" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Rp.133.678.660" />
-
-                </TableRow>
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#CCCCCC" />
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Total" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Rp.3.892.678.660" />
-
-                </TableRow>
-                <!-- Divider -->
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#CCCCCC" />
-
-            </TableLayout>
+            </TableRow>
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#CCCCCC" />
 
             <TextView
                 android:id="@+id/lbllabakotor"
@@ -225,7 +172,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:padding="8dp"
-                    android:text="Rp527.436.300" />
+                    android:text="@{view_model.labaKotor}" />
             </TableRow>
             <View
                 android:layout_width="match_parent"
@@ -242,193 +189,37 @@
                 android:text="Beban Operasional"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/table_segmen1" />
-            <TableLayout
-                android:id="@+id/table_segmen2"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView_beban_op"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:shrinkColumns="1"
-                android:stretchColumns="1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/lblSegmen2">
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#CCCCCC" />
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
 
-                <!-- Header row -->
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#EEEEEE"
-                    android:padding="8dp">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="Sub Total" />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Pengeluaran"
-                        android:textStyle="bold" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:padding="8dp"
+                    android:text="@{view_model.totalBOP}" />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Jumlah"
-                        android:textStyle="bold" />
-
-                </TableRow>
-
-                <!-- Data row -->
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Listrik:" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Rp.10.842.520" />
-
-                </TableRow>
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Internet: " />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Rp.4.781.514" />
-                </TableRow>
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Sampah: " />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Rp.12.000.000" />
-
-                </TableRow>
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Transportasi: " />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Rp.7.651.800" />
-
-                </TableRow>
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Pajak: " />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Rp.11.257.000" />
-                </TableRow>
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp">
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Gaji: " />
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Rp.180.000.000" />
-                </TableRow>
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Penyusutan Bangunan: " />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Rp.100.000.000" />
-
-                </TableRow>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#CCCCCC" />
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Sub Total" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:padding="8dp"
-                        android:text="Rp.300.000.000" />
-
-                </TableRow>
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#CCCCCC" />
-            </TableLayout>
-
-
-
-
+            </TableRow>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#CCCCCC" />
             <TextView
                 android:id="@+id/lblTotalPengeluaran"
                 style="@style/active_transaction_text_style"
@@ -456,7 +247,7 @@
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:padding="8dp"
-                    android:text="Rp.4.000.000.000" />
+                    android:text="@{view_model.totalPengeluaran}" />
 
             </TableRow>
             <View
@@ -494,7 +285,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:padding="8dp"
-                android:text="Rp.300.000.000" />
+                android:text="@{view_model.labaBersih}" />
 
         </TableRow>
         <View

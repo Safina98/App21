@@ -67,6 +67,11 @@ class ExpensesRepository(application: Application) {
             expenseDao.getHPPExpense(tipe,startDate,endDate)
         }
     }
+    suspend fun getTotalcExpenseByTipe(tipe:String, startDate: Date?, endDate:Date?): Double?{
+        return withContext(Dispatchers.IO){
+            expenseDao.getTotalHPP(tipe,startDate,endDate)
+        }
+    }
     fun getExpenseCateroryModel(): LiveData<List<CategoryModel>>{
         return expenseCategoryDao.getAllExpenseCategoryModel()
     }

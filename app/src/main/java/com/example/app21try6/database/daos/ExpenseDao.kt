@@ -40,6 +40,17 @@ interface ExpenseDao {
     )
     fun getHPPExpense(tipe:String,startDate:Date?,endDate:Date?): List<BarChartModel>
 
+    @Query(
+        "SELECT " +
+                "SUM(e.expense_ammount) "+
+                "FROM expenses_table e " +
+                "JOIN expense_category_table ec ON e.expense_category_id = ec.id " +
+                "WHERE ec.categoryType =:tipe " +
+                "AND (:startDate IS NULL OR e.expense_date >= :startDate)" +
+                "AND (:endDate IS NULL OR e.expense_date <= :endDate) "
+    )
+    fun getTotalHPP(tipe:String,startDate:Date?,endDate:Date?): Double?
+
 
     @Query("""
         SELECT e.id as id,  

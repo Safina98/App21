@@ -12,6 +12,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.example.app21try6.R
 import com.example.app21try6.database.repositories.ExpensesRepository
+import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentReportBinding
 import com.example.app21try6.databinding.FragmentTransactionPurchaseBinding
 import com.example.app21try6.statement.purchase.PurchaseViewModel
@@ -31,9 +32,22 @@ class ReportFragment : Fragment() {
         val application= requireNotNull(this.activity).application
         binding.lifecycleOwner=this
         val expenseRepo= ExpensesRepository(application)
-        val viewModelFactory = ReportViewModelFactory(application,expenseRepo)
+        val transRepo= TransactionsRepository(application)
+        val viewModelFactory = ReportViewModelFactory(application,expenseRepo,transRepo)
         viewModel = ViewModelProvider(this,viewModelFactory).get(ReportViewModel::class.java)
         binding.viewModel=viewModel
+        val adapterHPP= ReportAdapter(ReportListener{})
+        val adapterBOP=ReportAdapter(ReportListener{})
+        binding.recyclerViewHpp.adapter=adapterHPP
+        binding.recyclerViewBebanOp.adapter=adapterBOP
+
+        viewModel.HPPList.observe(viewLifecycleOwner){
+            adapterHPP.submitList(it)
+
+        }
+        viewModel.BOPList.observe(viewLifecycleOwner){
+            adapterBOP.submitList(it)
+        }
         viewModel.isDatePickerClicked.observe(viewLifecycleOwner){
             showDatePickerDialog()
         }
