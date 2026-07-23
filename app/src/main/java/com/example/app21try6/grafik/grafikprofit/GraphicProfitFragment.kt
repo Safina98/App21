@@ -39,22 +39,7 @@ class GraphicProfitFragment : Fragment() {
         var isItemSelected = false
         val spinnerTahun = binding.spinnerTahunPg
         var isKeyboardOpen = false
-        // val spinnerCustomer = binding.spinnerCustomerPg
-//        binding.customerAutoCompletepg.threshold = 1
-//        binding.customerAutoCompletepg.setOnClickListener {
-//            binding.customerAutoCompletepg.showDropDown()
-//        }
-//        binding.customerAutoCompletepg.setOnFocusChangeListener { _, hasFocus ->
-//            isItemSelected = false
-//            if (hasFocus) binding.customerAutoCompletepg.showDropDown()
-//        }
-//        binding.root.viewTreeObserver.addOnGlobalLayoutListener {
-//            val rect = android.graphics.Rect()
-//            binding.root.getWindowVisibleDisplayFrame(rect)
-//            val screenHeight = binding.root.rootView.height
-//            val keypadHeight = screenHeight - rect.bottom
-//            isKeyboardOpen = keypadHeight > screenHeight * 0.15
-//        }
+
         val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
         val adapter_year = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, resources.getStringArray(R.array.tahun))
         spinnerTahun.adapter=adapter_year

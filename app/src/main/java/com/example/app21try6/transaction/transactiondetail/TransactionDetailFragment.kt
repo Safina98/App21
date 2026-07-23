@@ -88,7 +88,6 @@ class TransactionDetailFragment : Fragment() {
 
         binding.viewModel = viewModel
         viewModel.getSummaryWithNullProductId()
-        //bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         val bluetoothManager = requireContext().getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
         if (bluetoothManager!=null)
             bluetoothAdapter = bluetoothManager.adapter

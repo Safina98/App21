@@ -175,4 +175,34 @@
         <item name="boxCornerRadiusBottomEnd">8dp</item>
     </style>
 
+    <!-- res/values/styles.xml -->
+    <style name="ThemeOverlay.MyApp.Dialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="materialAlertDialogTitleTextStyle">@style/MyApp.Dialog.Title</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/MyApp.Dialog.Body</item>
+        <item name="buttonBarPositiveButtonStyle">@style/MyApp.Dialog.Button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/MyApp.Dialog.Button</item>
+        <item name="android:textAppearanceSmall">@style/MyApp.Dialog.Body</item>
+        <item name="android:textAppearanceMedium">@style/MyApp.Dialog.Body</item>
+        <item name="android:textAppearanceLarge">@style/MyApp.Dialog.Body</item>
+    </style>
+
+    <style name="MyApp.Dialog.Title" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/metrophobic</item>
+        <item name="fontFamily">@font/metrophobic</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MyApp.Dialog.Body" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
+        <item name="android:textSize">15sp</item>
+        <item name="android:fontFamily">@font/metrophobic</item>
+        <item name="fontFamily">@font/metrophobic</item>
+    </style>
+
+    <style name="MyApp.Dialog.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/metrophobic</item>
+        <item name="fontFamily">@font/metrophobic</item>
+    </style>
+
 </resources>

@@ -125,8 +125,6 @@ class PurchaseViewModel(application: Application,
     private val _isDiscountClicked=MutableLiveData<InventoryPurchase?>()
     val isDiscountClicked:LiveData<InventoryPurchase?> get() = _isDiscountClicked
 
-    private val _navigateToReport = MutableLiveData<Boolean>()
-    val navigateToReport:LiveData<Boolean> get() = _navigateToReport
 
 
     val totalPrice = MediatorLiveData<Double>().apply {
@@ -468,12 +466,6 @@ class PurchaseViewModel(application: Application,
         _isNavigateToPurchase.value=null
     }
 
-    fun onNavigateToReport(){
-        _navigateToReport.value=true
-    }
 
-    fun onNavigatedToReport(){
-        _navigateToReport.value=false
-    }
 
 }

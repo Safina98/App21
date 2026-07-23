@@ -20,6 +20,7 @@ import com.example.app21try6.R
 import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.databinding.PopUpUpdateProductDialogBinding
 import com.example.app21try6.stock.brandstock.BrandStockViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 import com.google.android.material.textfield.TextInputEditText
 
@@ -29,7 +30,7 @@ object DialogUtils{
                          item: Any,
                          onDelete: (ViewModel, Any) -> Unit
     ) {
-        val builder = AlertDialog.Builder(context)
+        val builder = MaterialAlertDialogBuilder(context, R.style.ThemeOverlay_MyApp_Dialog)
         builder.setMessage("Are you sure you want to delete?")
             .setCancelable(true)
             .setPositiveButton("Yes") { dialog, id ->
@@ -49,7 +50,7 @@ object DialogUtils{
                                message:String,
                          onDelete: (ViewModel, Any?) -> Unit
     ) {
-        val builder = AlertDialog.Builder(context)
+        val builder = MaterialAlertDialogBuilder(context, R.style.ThemeOverlay_MyApp_Dialog)
         builder.setMessage(message)
             .setCancelable(true)
             .setPositiveButton("Yes") { dialog, id ->
@@ -66,7 +67,7 @@ object DialogUtils{
                           itemName: String,
                           message:String,
     ) {
-        val builder = AlertDialog.Builder(context)
+        val builder = MaterialAlertDialogBuilder(context, R.style.ThemeOverlay_MyApp_Dialog)
         builder.setMessage(message)
             .setCancelable(true)
             .setPositiveButton("Ok") { dialog, id ->
@@ -88,7 +89,7 @@ object DialogUtils{
         onUpdate: (ViewModel, M) -> Unit
         ) {
 
-        val builder = AlertDialog.Builder(context)
+        val builder = com.google.android.material.dialog.MaterialAlertDialogBuilder(context)
         builder.setTitle(title)
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.pop_up_update, null)

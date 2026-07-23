@@ -35,4 +35,9 @@
         android:id="@+id/expensesFragment"
         android:icon="@drawable/pengeluaran"
         android:title="Pengeluaran"/>
+
+    <item
+        android:id="@+id/reportFragment"
+        android:icon="@drawable/report"
+        android:title="Laporan"/>
 </menu>

@@ -21,7 +21,33 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import java.util.Calendar
+import java.util.Date
 
+
+fun getFirstDayOfYear(year: Int): Date {
+    val calendar = Calendar.getInstance()
+    calendar.set(Calendar.YEAR, year)
+    calendar.set(Calendar.MONTH, Calendar.JANUARY)
+    calendar.set(Calendar.DAY_OF_MONTH, 1)
+    calendar.set(Calendar.HOUR_OF_DAY, 0)
+    calendar.set(Calendar.MINUTE, 0)
+    calendar.set(Calendar.SECOND, 0)
+    calendar.set(Calendar.MILLISECOND, 0)
+    return calendar.time
+}
+
+fun getLastDayOfYear(year: Int): Date {
+    val calendar = Calendar.getInstance()
+    calendar.set(Calendar.YEAR, year)
+    calendar.set(Calendar.MONTH, Calendar.DECEMBER)
+    calendar.set(Calendar.DAY_OF_MONTH, 31)
+    calendar.set(Calendar.HOUR_OF_DAY, 23)
+    calendar.set(Calendar.MINUTE, 59)
+    calendar.set(Calendar.SECOND, 59)
+    calendar.set(Calendar.MILLISECOND, 999)
+    return calendar.time
+}
 fun scheduleImmediateSync(context: Context) {
     // 1. Define Constraints: Requires network connectivity
     val constraints = Constraints.Builder()
@@ -55,50 +81,9 @@ fun formatRupiah(number: Double?): String? {
         formatRupiah.format(0.0) // or any default value you prefer
     }
 }
-fun getDateFromComponents(year: Int, month: String, monthNumber: Int, day: Int, dayName: String): Date {
-    // Create a map for month names to month numbers (if needed)
-    val monthMap = mapOf(
-        "Januari" to Calendar.JANUARY,
-        "Februari" to Calendar.FEBRUARY,
-        "Maret" to Calendar.MARCH,
-        "April" to Calendar.APRIL,
-        "Mei" to Calendar.MAY,
-        "Juni" to Calendar.JUNE,
-        "Juli" to Calendar.JULY,
-        "Agustus" to Calendar.AUGUST,
-        "September" to Calendar.SEPTEMBER,
-        "Oktober" to Calendar.OCTOBER,
-        "November" to Calendar.NOVEMBER,
-        "Desember" to Calendar.DECEMBER
-    )
-    // Get the month number from the map
-    val monthNum = monthMap[month] ?: monthNumber - 1 // Use monthNumber if month name is not in the map
 
-    // Create a Calendar instance and set the date
-    val calendar = Calendar.getInstance()
-    calendar.set(year, monthNum, day)
-
-    // Return the Date object
-    return calendar.time
-}
 // Define a function to convert month numbers to month names
-fun getMonthName(month: Int): String {
-    return when (month) {
-        1 -> "Januari"
-        2 -> "Februari"
-        3 -> "Maret"
-        4 -> "April"
-        5 -> "Mei"
-        6 -> "Juni"
-        7 -> "Juli"
-        8 -> "Agustus"
-        9 -> "September"
-        10 -> "Oktober"
-        11 -> "November"
-        12 -> "Desember"
-        else -> "Invalid Month"
-    }
-}
+
 fun getMonthNumber(month: String?): String? {
     return when (month) {
         "ALL" -> null
@@ -117,12 +102,7 @@ fun getMonthNumber(month: String?): String? {
         else -> null
     }
 }
-private val bulanMap = mapOf(
-    "ALL" to null, "Januari" to "01", "Februari" to "02", "Maret" to "03",
-    "April" to "04", "Mei" to "05", "Juni" to "06", "Juli" to "07",
-    "Agustus" to "08", "September" to "09", "Oktober" to "10",
-    "November" to "11", "Desember" to "12"
-)
+
 //trans detail and trans sum csv
 fun parseDate(dateString: String): Date? {
     // Specify the format pattern
@@ -180,4 +160,15 @@ fun formatDateRange(startDate: Date?, endDate: Date?): String {
     } else {
         "Pilih Tanggal"
     }
+
 }
+
+fun reportFormatDateRange(startDate: Date?, endDate: Date?): String {
+    return if (startDate != null && endDate != null) {
+        val dateFormat = SimpleDateFormat(" dd MMMM yyyy", Locale("in", "ID"))
+        val startDateString = dateFormat.format(startDate)
+        val endDateString = dateFormat.format(endDate)
+        "$startDateString - $endDateString"
+    } else {
+        "Pilih Tanggal"
+    }}

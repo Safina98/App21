@@ -228,7 +228,7 @@ class SubProductStockFragment : Fragment() {
 
     private fun showDialog(subProduct: SubProduct, i: Int, viewModel: SubViewModel) {
         val builder = AlertDialog.Builder(context)
-        builder.setMessage("Chosoe Action")
+        builder.setMessage("Choose Action")
             .setCancelable(true)
             .setPositiveButton("Update") { dialog, id ->
                 updateDialog(subProduct,i,viewModel)

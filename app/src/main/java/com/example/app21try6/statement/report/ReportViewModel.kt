@@ -12,6 +12,7 @@ import com.example.app21try6.database.repositories.ExpensesRepository
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.formatDateRange
 import com.example.app21try6.formatRupiah
+import com.example.app21try6.reportFormatDateRange
 import kotlinx.coroutines.launch
 import java.util.Date
 
@@ -21,7 +22,7 @@ class ReportViewModel(application: Application,
 ): AndroidViewModel(application) {
     val _startDate= MutableLiveData<Date?>(null)
     val _endDate= MutableLiveData<Date?>(null)
-    val _dateRangeString = MutableLiveData<String>("Pilih Tanggal")
+    val _dateRangeString = MutableLiveData<String>("")
 
     private var _isDatePickerClicked = MutableLiveData<Boolean>()
     val isDatePickerClicked :LiveData<Boolean>get() = _isDatePickerClicked
@@ -39,17 +40,13 @@ class ReportViewModel(application: Application,
     val totalPengeluaran=MutableLiveData<String>()
     val labaBersih=MutableLiveData<String>()
 
-
-
     fun setStartAndEndDateRange(startDate: Date?,endDate: Date?){
         viewModelScope.launch {
             _startDate.value = startDate
             _endDate.value = endDate
+            _dateRangeString.value = reportFormatDateRange(startDate, endDate)
             //resetLogs()
         }
-    }
-    fun updateDateRangeString(startDate: Date?, endDate: Date?) {
-        _dateRangeString.value = formatDateRange(startDate, endDate)
     }
     fun getCategoryByType(){
         viewModelScope.launch {
@@ -63,11 +60,11 @@ class ReportViewModel(application: Application,
             val totalpengeluaran=totalhpp+totalbop
             val lababersih=total-totalpengeluaran
             val totalText = formatRupiah(total)
-            totalHPP.value = formatRupiah(totalhpp)
-            totalBOP.value=formatRupiah(totalbop)
-            labaKotor.value=formatRupiah(labakotor)
-            totalPengeluaran.value=formatRupiah(totalpengeluaran)
-            labaBersih.value =formatRupiah(lababersih)
+            totalHPP.value = formatRupiah(totalhpp) ?:"Rp0"
+            totalBOP.value=formatRupiah(totalbop)?:"Rp0"
+            labaKotor.value=formatRupiah(labakotor)?:"Rp0"
+            totalPengeluaran.value=formatRupiah(totalpengeluaran)?:"Rp0"
+            labaBersih.value =formatRupiah(lababersih)?:"Rp0"
 
             totalTrans.value=totalText ?: "Rp."
             _HPPList.value=hppList
