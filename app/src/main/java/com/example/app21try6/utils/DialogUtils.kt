@@ -89,7 +89,7 @@ object DialogUtils{
         onUpdate: (ViewModel, M) -> Unit
         ) {
 
-        val builder = com.google.android.material.dialog.MaterialAlertDialogBuilder(context)
+        val builder = MaterialAlertDialogBuilder(context)
         builder.setTitle(title)
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.pop_up_update, null)
