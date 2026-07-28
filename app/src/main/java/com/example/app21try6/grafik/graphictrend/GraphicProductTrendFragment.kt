@@ -17,6 +17,7 @@ import com.example.app21try6.grafik.BarChartModelRVAdapter
 import com.example.app21try6.grafik.BarChartModelRvListener
 import com.example.app21try6.grafik.GraphicViewModel
 import com.example.app21try6.grafik.LineChartHelper
+import com.example.app21try6.grafik.grafikmain.TabStateViewModel
 import com.example.app21try6.utils.setupDropdown
 import java.util.Calendar
 import kotlin.getValue
@@ -24,19 +25,23 @@ import kotlin.getValue
 
 class GraphicProductTrendFragment : Fragment() {
     private val viewModel: GraphicViewModel by  activityViewModels { GraphicViewModel.Factory }
+    private lateinit var binding: FragmentGraphicProductTrendBinding
+    private val tabStateViewModel: TabStateViewModel by activityViewModels { TabStateViewModel.Factory() }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-       val binding: FragmentGraphicProductTrendBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_graphic_product_trend,container,false)
+        binding = DataBindingUtil.inflate(inflater,R.layout.fragment_graphic_product_trend,container,false)
         binding.lifecycleOwner = this
         val currentYear = Calendar.getInstance().get(Calendar.YEAR).toString()
         val adapter_year = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, resources.getStringArray(R.array.tahun))
         val spinnerTahun=binding.spinnerTahunPt
-        //val spinnerProduct=binding.spinnerProductPt
+
         val spinnerCategory=binding.spinnerCategoryPt
         val spinnerSp=binding.spinnerSpPt
+        val atcProductPt=binding.actProductPt
+        atcProductPt.dropDownHeight = (200 * resources.displayMetrics.density).toInt()
         spinnerTahun.adapter=adapter_year
         val positionY = (spinnerTahun.adapter as ArrayAdapter<String>).getPosition(currentYear)
         spinnerTahun.setSelection(positionY)
@@ -44,9 +49,13 @@ class GraphicProductTrendFragment : Fragment() {
         val adapter = BarChartModelRVAdapter(BarChartModelRvListener{
 
         })
+
         val adapterAtc = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, mutableListOf<String>())
-        binding.actProductPt.setAdapter(adapterAtc)
-        binding.actProductPt.threshold = 1
+       atcProductPt!!.setAdapter(adapterAtc)
+        atcProductPt.threshold = 1
+
+        // binding.mtcProductPtnew.setAdapter(adapterAtc)
+        //binding.actProductPt.threshold = 1
         binding.rvChartPt.adapter=adapter
 
         val chart=binding.lineChartPt
@@ -72,19 +81,16 @@ class GraphicProductTrendFragment : Fragment() {
        // spinnerProduct.onItemSelectedListener=spinnerListener
         spinnerCategory.onItemSelectedListener=spinnerListener
         spinnerSp.onItemSelectedListener=spinnerListener
-        binding.actProductPt.setupDropdown { selected ->
+        atcProductPt.setupDropdown { selected ->
             viewModel.setSelectedProductPt(selected)
         }
-        viewModel.setSelectedProductPt("ALL")
+       viewModel.setSelectedProductPt("ALL")
         viewModel.categoryEntries.observe(viewLifecycleOwner){it?.let {
             val adapterCategory =
                 ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
             spinnerCategory.adapter = adapterCategory }
         }
         viewModel.productEntries.observe(viewLifecycleOwner){
-//            val adapterProduct =
-//                ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, it)
-//            spinnerProduct.adapter = adapterProduct
             adapterAtc.clear()
             adapterAtc.addAll(it)
             adapterAtc.notifyDataSetChanged()
@@ -119,7 +125,6 @@ class GraphicProductTrendFragment : Fragment() {
                 value.forEach {
                     Log.i("chartprobs","customer count $it")
                 }
-
                 adapter.submitList(it)
             }
         }
@@ -136,5 +141,4 @@ class GraphicProductTrendFragment : Fragment() {
 
         return binding.root
     }
-
 }

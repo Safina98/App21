@@ -50,6 +50,7 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content" />-->
                 <AutoCompleteTextView
+                    style="@style/AutoCompleteDropdown"
                     android:id="@+id/act_product_sg"
                     android:layout_width="0dp"
                     android:layout_weight="1"

@@ -28,6 +28,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <AutoCompleteTextView
+            style="@style/AutoCompleteDropdown"
             android:id="@+id/act_product_pt"
             android:layout_width="364dp"
             android:layout_height="wrap_content"

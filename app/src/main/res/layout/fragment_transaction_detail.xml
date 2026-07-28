@@ -259,35 +259,44 @@
             android:id="@+id/btn_add_new_brand_"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_marginStart="4dp"
             android:contentDescription="@string/submit"
-            android:text="diambil"
             android:onClick="@{()->viewModel.updateBooleanValue()}"
+            android:text="diambil"
             app:applyGradientBackground="@{viewModel.transSum.is_taken_}"
-            app:layout_constraintEnd_toStartOf="@id/btn_insert_to_sum_"
-            app:layout_constraintStart_toEndOf="@id/btn_bayar_trans"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintBottom_toBottomOf="@+id/btn_insert_to_sum_"
+            app:layout_constraintEnd_toStartOf="@+id/btn_insert_to_sum_"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btn_bayar_trans" />
+
         <Button
             android:id="@+id/btn_insert_to_sum_"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="8dp"
+            android:padding="0dp"
             android:contentDescription="@string/submit"
             android:onClick="@{()->viewModel.onBtnPembukuanClick()}"
             android:text="pembukuan"
             app:applyGradientBackground="@{viewModel.transSum.is_keeped}"
-            app:layout_constraintStart_toEndOf="@id/btn_add_new_brand_"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/btn_add_new_brand_" />
+
         <Button
             android:id="@+id/btn_bayar_trans"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
             android:layout_weight="1"
-            android:text="bayar"
             android:onClick="@{()->viewModel.onBtnBayarClick()}"
-            app:layout_constraintBaseline_toBaselineOf="@+id/btn_add_new_brand_"
+            android:text="bayar"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_add_new_brand_"
             app:layout_constraintEnd_toStartOf="@+id/btn_add_new_brand_"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

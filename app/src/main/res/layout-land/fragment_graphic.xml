@@ -43,6 +43,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/spinner_tahun_sg" />-->
         <AutoCompleteTextView
+            style="@style/AutoCompleteDropdown"
             android:id="@+id/act_product_sg"
             android:layout_width="364dp"
             android:layout_height="wrap_content"

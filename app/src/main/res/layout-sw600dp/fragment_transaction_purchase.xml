@@ -84,7 +84,7 @@
 
             <AutoCompleteTextView
                 android:id="@+id/text_Sub"
-                style="@style/EditText.Font"
+                style="@style/AutoCompleteDropdown"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:completionThreshold="1"

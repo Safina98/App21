@@ -74,6 +74,7 @@ interface SubProductDao {
             "FROM sub_table sp " +
             "INNER JOIN product_table p ON sp.productCloudId = p.productCloudId " +
             "WHERE sp.sub_name  LIKE '%' || :query || '%' " +
+            "ORDER BY sp.sub_name " +
             "LIMIT 20")
     fun getSubProductWithPrice(query: String):LiveData<List<SubWithPriceModel>?>
 

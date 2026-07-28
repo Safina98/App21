@@ -13,6 +13,7 @@
         android:layout_height="match_parent"
         tools:context=".transaction.transactionedit.TransactionEditFragment">
         <AutoCompleteTextView
+            style="@style/AutoCompleteDropdown"
             android:id="@+id/cust_name_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

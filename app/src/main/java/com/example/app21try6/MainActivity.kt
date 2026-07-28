@@ -1,6 +1,10 @@
     package com.example.app21try6
 
+    import android.content.Context
     import android.os.Bundle
+    import android.util.Log
+    import android.view.KeyEvent
+    import android.view.inputmethod.InputMethodManager
     import androidx.activity.OnBackPressedCallback
     import androidx.appcompat.app.AppCompatActivity
     import androidx.databinding.DataBindingUtil
@@ -88,6 +92,28 @@
             // Call the sync function here, passing the activity context (or better, the application context)
             // WorkManager will ignore the request if a sync with the same unique name is already running/queued.
           //  scheduleImmediateSync(applicationContext)
+        }
+        var activeDropdownBackHandler: (() -> Boolean)? = null
+
+        override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+            Log.i("Autocompleteprobs","dispatchKeyEven")
+            if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                val focused = currentFocus
+                Log.i("Autocompleteprobs","event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP")
+                // Stage 1: keyboard is up -> hide it, consume, stop here
+                if (focused != null && imm.hideSoftInputFromWindow(focused.windowToken, 0)) {
+                    Log.i("Autocompleteprobs","focused != null && imm.hideSoftInputFromWindow(focused.windowToken, 0)")
+                    return true
+                }
+
+                // Stage 2: keyboard already down -> ask the visible tab if it has a dropdown open
+                if (activeDropdownBackHandler?.invoke() == true) {
+                    Log.i("Autocompleteprobs","activeDropdownBackHandler?.invoke() == true")
+                    return true
+                }
+            }
+            return super.dispatchKeyEvent(event)
         }
 
     }

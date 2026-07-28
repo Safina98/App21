@@ -16,7 +16,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 class GraphicMainFragment : Fragment() {
     private val viewModel: GraphicViewModel by  activityViewModels { GraphicViewModel.Factory }
     private lateinit var binding: FragmentGraphicMainBinding
-
+    private val tabStateViewModel: TabStateViewModel by activityViewModels { TabStateViewModel.Factory() }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,6 +36,12 @@ class GraphicMainFragment : Fragment() {
                 else -> "Customer"
             }
         }.attach()
+        binding.viewPager.registerOnPageChangeCallback(object : androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                // Notify the ViewModel or a shared mechanism of which tab is active
+                tabStateViewModel.setActiveGraphTab(position)
+            }
+        })
         return binding.root
     }
 }

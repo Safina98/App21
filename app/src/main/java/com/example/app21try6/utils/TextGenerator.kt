@@ -38,8 +38,6 @@ class TextGenerator(
         // Get current date
 
         val currentDate = Constants.SIMPLE_DATE_FORMATTER.format(transsum?.trans_date)
-
-
         var totalTransaction= transsum!!.total_trans
 
         // Receipt header
