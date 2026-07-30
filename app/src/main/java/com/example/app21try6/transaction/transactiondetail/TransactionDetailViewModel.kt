@@ -209,13 +209,17 @@ class TransactionDetailViewModel (
 
     //Toggle is_note Clicked value when Text View note_Textview is clicked
     fun onTxtNoteClick(){
-        _isTxtNoteClick.value = _isTxtNoteClick.value?.not() ?: true
+        Log.i("IsEditing","viewmodel text note click")
+        _isTxtNoteClick.value =true
+        _isCardViewShow.value=false
     }
 
     //Toggle is_note Clicked value and update transSum note value when Text View ok_Textview is clicked
     fun onTxtNoteOkClicked(){
         viewModelScope.launch {
-            onTxtNoteClick()
+            Log.i("IsEditing","viewmodel text note clicked")
+            _isTxtNoteClick.value =false
+            _isCardViewShow.value=true
             val transum = transSum.value
             transum?.sum_note = txtNote.value
             transRepo.updateTransactionSummary(transum!!)
@@ -228,7 +232,7 @@ class TransactionDetailViewModel (
     }
     fun showCardDialog(){
         _isCardViewShow.value = true
-        _isTxtNoteClick.value=true
+        //_isTxtNoteClick.value=true
     }
 
     //Toggle and update TransSUm is paid off on btn click

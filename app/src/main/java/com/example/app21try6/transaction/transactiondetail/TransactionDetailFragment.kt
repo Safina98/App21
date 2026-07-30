@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothClass
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.Context
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -24,6 +25,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import android.widget.DatePicker
 import android.widget.ImageView
 import android.widget.Toast
@@ -50,7 +52,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import java.util.*
 
-val tdTag="PRINTERPROBS"
+
 
 
 class TransactionDetailFragment : Fragment() {
@@ -130,7 +132,7 @@ class TransactionDetailFragment : Fragment() {
         binding.recyclerViewDiscount.adapter=discAdapter
 
         binding.btnPrintNew.setOnClickListener {
-            Log.i(tdTag,"btn print clicked")
+
             fibrateOnClick()
             printReceipt()
         }
@@ -206,7 +208,16 @@ class TransactionDetailFragment : Fragment() {
         }
 
         viewModel.isCardViewShow.observe(viewLifecycleOwner) {}
-        viewModel.isTxtNoteClick.observe(viewLifecycleOwner) {}
+        viewModel.isTxtNoteClick.observe(viewLifecycleOwner) { isEditing ->
+            Log.i("IsEditing","fragment observer $isEditing")
+            if (isEditing==true) {
+                binding.noteEditTextNew.post {
+                    binding.noteEditTextNew.requestFocus()
+                    val imm = requireContext().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.showSoftInput(binding.noteEditTextNew, InputMethodManager.SHOW_IMPLICIT)
+                }
+            }
+        }
         viewModel.isBtnBayarCLicked.observe(viewLifecycleOwner) {
             if (it == true) {
                 showBayarDialog(
@@ -317,24 +328,20 @@ class TransactionDetailFragment : Fragment() {
         // Check if Bluetooth is enabled
         if (!bluetoothAdapter.isEnabled) {
            Toast.makeText(context,"BLUETOOTH IS DISCONNECTED", Toast.LENGTH_SHORT).show()
-            Log.i(tdTag,"print receipt called,  bluetooth disconnected")
         } else {
             // Discover and select printer device
-            Log.i(tdTag,"print receipt called,  bluetooth on")
             discoverAndSelectPrinter()
 
         }
     }
 
     private fun discoverAndSelectPrinter() {
-        Log.i(tdTag,"discover and select printer called")
         if (checkPermission()) {
-            Log.i(tdTag,"permission granted")
             val pairedDevices = bluetoothAdapter.bondedDevices
             val printerDevices =
                 pairedDevices.filter { it.bluetoothClass.majorDeviceClass == BluetoothClass.Device.Major.IMAGING }
             if (printerDevices.isEmpty()) {
-                Log.i(tdTag,"printer device is empty")
+
                 Toast.makeText(context, "No printer found", Toast.LENGTH_SHORT).show()
                 return
             }
@@ -368,14 +375,7 @@ class TransactionDetailFragment : Fragment() {
 
 
     private fun exportTextToWhatsApp(text: String,phoneNumber:String?) {
-//        val sendIntent = Intent().apply {
-//            action = Intent.ACTION_SEND
-//            putExtra(Intent.EXTRA_TEXT, text)
-//            // Set the MIME type
-//            type = "text/plain"
-//            // Set the package name of WhatsApp
-//            setPackage("com.whatsapp")
-//        }
+
         val phone = phoneNumber // country code + number
         val message = text
         val intent = if (phone!=null){
@@ -627,4 +627,6 @@ class TransactionDetailFragment : Fragment() {
             },
         )
     }
+
+
 }

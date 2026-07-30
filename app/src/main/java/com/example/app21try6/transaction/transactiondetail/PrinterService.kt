@@ -16,15 +16,15 @@ class BluetoothPrinterService(private val device: BluetoothDevice) {
     @SuppressLint("MissingPermission")
     fun connect() {
         try {
-            Log.i(tdTag,"BluetoothPrinterService connect")
+
             socket = device.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"))
             socket?.connect()
             outputStream = socket?.outputStream
 
         } catch (e: IOException) {
-            Log.i(tdTag,"BluetoothPrinterService connect failed")
+
             e.printStackTrace()
-            Log.i(tdTag,"${e}")
+
 
         }
     }
@@ -63,13 +63,13 @@ class BluetoothPrinterService(private val device: BluetoothDevice) {
 
     fun print(data: ByteArray) {
         try {
-            Log.i(tdTag,"BluetoothPrinterService print")
+
             outputStream?.write(data)
             outputStream?.flush()
         } catch (e: IOException) {
-            Log.i(tdTag,"BluetoothPrinterService print failed")
+
             e.printStackTrace()
-            Log.i(tdTag,"BluetoothPrinterService ${e}")
+
         }
     }
 }

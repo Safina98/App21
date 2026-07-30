@@ -3,7 +3,6 @@ package com.example.app21try6.stock.upsertproduk
 import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,11 +20,15 @@ import com.example.app21try6.database.repositories.DiscountRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentInputUpdateProductBinding
-import com.example.app21try6.stock.brandstock.BrandStockViewModel
-import com.example.app21try6.stock.brandstock.BrandStockViewModelFactory
-import com.example.app21try6.stock.subproductstock.SubProductStockFragmentArgs
 import java.util.Calendar
 import java.util.Date
+import android.graphics.Rect
+import android.view.WindowManager
+import android.widget.EditText
+import android.widget.ScrollView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 
 class InputUpdateProduct : Fragment() {
 
@@ -52,6 +55,17 @@ class InputUpdateProduct : Fragment() {
                 }
             }
         )
+//        scrollToViewOnFocus(
+//            binding.scrollViewUpsertProduct,
+//            binding.textUpdateKet,
+//            binding.textUpdatePrice,
+//            binding.textUpdateAlternatePrice,
+//            binding.purchasePrice,
+//            binding.textCapital,
+//            binding.textCapital2,
+//            binding.defaultNet,
+//            binding.purchaseUnit
+//        )
         val repository = StockRepositories(application)
         val discountRepository= DiscountRepository(application)
         val transactionsRepository= TransactionsRepository(application)
@@ -170,5 +184,19 @@ class InputUpdateProduct : Fragment() {
         dialog.show()
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.dialogbtncolor))
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requireActivity().window.setSoftInputMode(
+            WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        requireActivity().window.setSoftInputMode(
+            WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN // or whatever your other fragments rely on
+        )
     }
 }

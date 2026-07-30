@@ -16,6 +16,7 @@
             android:layout_height="match_parent"
             android:orientation="horizontal">
             <ScrollView
+                android:id="@+id/scroll_view_upsert_product"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

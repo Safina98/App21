@@ -72,18 +72,6 @@
             app:layout_constraintEnd_toStartOf="@id/btn_edit_trans_new"
             app:layout_constraintTop_toBottomOf="@id/txt_cust_name"
             />
-        <!--
-        <ImageView
-            android:id="@+id/btn_log"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_margin="@dimen/big_margin"
-            app:logColor="@{viewModel.transSum._logged}"
-            android:elevation="@dimen/medium_margin"
-            android:onClick="@{()->viewModel.updateLogBooleanValue()}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/btn_disc" />
-            -->
 
         <ImageView
             android:id="@+id/btn_disc"
@@ -94,7 +82,7 @@
             android:elevation="@dimen/medium_margin"
             android:onClick="@{()->viewModel.onBtnDiscClick()}"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/trans_sum_note" />
+            app:layout_constraintBottom_toTopOf="@id/btn_send_new" />
 
 
         <ImageView
@@ -127,8 +115,51 @@
             android:elevation="@dimen/medium_margin"
             app:noteColor="@{viewModel.isn}"
             android:onClick="@{()->viewModel.onBtnNoteClick()}"
-            app:layout_constraintBottom_toTopOf="@id/btn_send_new"
+            app:layout_constraintBottom_toTopOf="@id/btn_disc"
             app:layout_constraintEnd_toEndOf="parent" />
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_note_edit"
+            android:layout_margin="@dimen/medium_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_edit_trans_new"
+            app:viewVisibility="@{!viewModel.isTxtNoteClick()}"
+            android:elevation="@dimen/medium_margin"
+            android:layout_width="250dp"
+            android:layout_height="180dp">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <EditText
+                    android:id="@+id/note_edit_text_new"
+                    style="@style/EditText.NoBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_margin="@dimen/medium_margin"
+                    android:elevation="@dimen/medium_margin"
+                    android:fontFamily="@font/architects_daughter"
+                    android:text="@={viewModel.txtNote}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="@+id/ok_textView_new"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+                <TextView
+                    android:id="@+id/ok_textView_new"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:elevation="@dimen/medium_margin"
+                    android:onClick="@{()->viewModel.onTxtNoteOkClicked()}"
+                    style="@style/text_subproduct_small_style"
+                    android:layout_margin="@dimen/medium_margin"
+                    android:text="Ok"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/card_note"
@@ -151,87 +182,65 @@
                     android:elevation="@dimen/medium_margin"
                     android:onClick="@{()->viewModel.onTxtNoteClick()}"
                     android:text="@{viewModel.txtNote}"
-                    app:layout_constraintBottom_toTopOf="@+id/ok_textView"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:textVisibility="@{viewModel.isTxtNoteClick()}" />
-
-                <EditText
-                    android:id="@+id/note_edit_text"
-                    style="@style/EditText.NoBackground"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_margin="@dimen/medium_margin"
-                    android:elevation="@dimen/medium_margin"
-                    android:fontFamily="@font/architects_daughter"
-                    android:text="@={viewModel.txtNote}"
-                    android:textSize="20sp"
-                    app:layout_constraintBottom_toTopOf="@+id/ok_textView"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:viewVisibility="@{viewModel.isTxtNoteClick()}" />
-
-                <TextView
-                    android:id="@+id/ok_textView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:elevation="@dimen/medium_margin"
-                    android:onClick="@{()->viewModel.onTxtNoteOkClicked()}"
-                    style="@style/text_subproduct_small_style"
-                    app:viewVisibility="@{viewModel.isTxtNoteClick()}"
-                    android:layout_margin="@dimen/medium_margin"
-                    android:text="Ok"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                     />
             </androidx.constraintlayout.widget.ConstraintLayout>
-
         </androidx.cardview.widget.CardView>
+
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/txt_bayar_sum"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/txt_sum_id"
-            app:layout_constraintBottom_toTopOf="@id/txt_bayar_sum">
+            app:layout_constraintVertical_bias="0.0">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="@dimen/medium_margin">
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerView_detail_trans"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
                 <TextView
                     android:id="@+id/txt_total_sum"
+                    style="@style/text_subproduct_small_style"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAlignment="viewEnd"
                     android:layout_marginEnd="48dp"
-                    style="@style/text_subproduct_small_style"
                     android:text="@{viewModel.transTotal}"
+                    android:textAlignment="viewEnd"
                     android:textSize="24sp" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerView_discount"
-                    android:layout_marginEnd="32dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_marginEnd="32dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerView_bayar"
-                    android:layout_marginEnd="32dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_marginEnd="32dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
+
         <TextView
             android:id="@+id/txt_bayar_sum"
             android:layout_width="wrap_content"

@@ -9,6 +9,7 @@
             type="com.example.app21try6.stock.upsertproduk.UpsertProductViewModel" />
     </data>
         <ScrollView
+            android:id="@+id/scroll_view_upsert_product"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:context=".stock.upsertproduk.InputUpdateProduct">
