@@ -20,7 +20,8 @@
                     style="@style/Base_ToolbarStyle"
                     android:background="@drawable/tool_bar_bg"
                     android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize">
+                    android:layout_height="wrap_content"
+                    android:minHeight="?attr/actionBarSize">
 
                     <ImageView
                         android:id="@+id/delete_image"

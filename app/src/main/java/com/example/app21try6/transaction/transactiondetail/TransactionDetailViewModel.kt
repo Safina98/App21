@@ -122,9 +122,7 @@ class TransactionDetailViewModel (
     }
 
 
-    var itemCount :LiveData<String> = transDetail.map{ items->
-        "${items.size} item"
-    }
+    var itemCount :LiveData<String> = transDetail.map{ items-> "${items.size} item" }
 
     //Transaction Summary note on edit text and carview
     var txtNote =MutableLiveData<String?>()
@@ -173,17 +171,6 @@ class TransactionDetailViewModel (
     }
     /******************************************** CRUD **************************************/
 
-    fun getSummaryWithNullProductId(){
-        viewModelScope.launch {
-            //val list = withContext(Dispatchers.IO){database.getAllSummaryProductId()}
-            val simpleFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-            val date = simpleFormatter.parse("2024-11-27 00:00")
-            val dateEnd = simpleFormatter.parse("2024-11-27 23:59")
-            val startDate = simpleFormatter.parse("2024-01-01 00:00")!!
-            val endDate = simpleFormatter.parse("2024-12-01 00:00")!! // Exclusive end date
-
-        }
-    }
    fun deleteDiscount(id:Int){
        viewModelScope.launch {
            discountRepo.deleteTransactionDiscount(id)

@@ -3,6 +3,7 @@ package com.example.app21try6
 import android.content.Context
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -24,7 +25,10 @@ import java.util.concurrent.TimeUnit
 import java.util.Calendar
 import java.util.Date
 
-
+fun hideKeyboard(view: View) {
+    val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(view.windowToken, 0)
+}
 fun getFirstDayOfYear(year: Int): Date {
     val calendar = Calendar.getInstance()
     calendar.set(Calendar.YEAR, year)

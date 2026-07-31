@@ -51,8 +51,9 @@ import com.example.app21try6.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import java.util.*
-
-
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.example.app21try6.hideKeyboard
 
 
 class TransactionDetailFragment : Fragment() {
@@ -68,6 +69,7 @@ class TransactionDetailFragment : Fragment() {
         const val Payment = "Payment"
         const val Discount = "Discount"
     }
+    private var wasKeyboardVisible = false
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transaction_detail,container,false)
@@ -89,7 +91,7 @@ class TransactionDetailFragment : Fragment() {
         img?.visibility = View.GONE
 
         binding.viewModel = viewModel
-        viewModel.getSummaryWithNullProductId()
+
         val bluetoothManager = requireContext().getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
         if (bluetoothManager!=null)
             bluetoothAdapter = bluetoothManager.adapter
@@ -209,13 +211,14 @@ class TransactionDetailFragment : Fragment() {
 
         viewModel.isCardViewShow.observe(viewLifecycleOwner) {}
         viewModel.isTxtNoteClick.observe(viewLifecycleOwner) { isEditing ->
-            Log.i("IsEditing","fragment observer $isEditing")
             if (isEditing==true) {
                 binding.noteEditTextNew.post {
                     binding.noteEditTextNew.requestFocus()
                     val imm = requireContext().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.showSoftInput(binding.noteEditTextNew, InputMethodManager.SHOW_IMPLICIT)
                 }
+            }else{
+                hideKeyboard(binding.noteEditTextNew)
             }
         }
         viewModel.isBtnBayarCLicked.observe(viewLifecycleOwner) {
@@ -627,6 +630,26 @@ class TransactionDetailFragment : Fragment() {
             },
         )
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val isKeyboardVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+            if (wasKeyboardVisible && !isKeyboardVisible) {
+                viewModel.onTxtNoteOkClicked()
+            }
+            wasKeyboardVisible = isKeyboardVisible
+            insets
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.i("CardProblem","On destroy called")
+        //binding = null
+    }
+
 
 
 }

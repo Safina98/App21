@@ -7,6 +7,7 @@
     import android.view.inputmethod.InputMethodManager
     import androidx.activity.OnBackPressedCallback
     import androidx.appcompat.app.AppCompatActivity
+    import androidx.core.view.WindowCompat
     import androidx.databinding.DataBindingUtil
     import androidx.drawerlayout.widget.DrawerLayout
     import androidx.navigation.findNavController
@@ -18,6 +19,9 @@
     import com.example.app21try6.stock.brandstock.BrandStockFragment
     import com.example.app21try6.stock.subproductstock.SubProductStockFragment
     import com.example.app21try6.transaction.transactionedit.TransactionEditFragment
+    import androidx.core.view.ViewCompat
+    import androidx.core.view.WindowInsetsCompat
+    import androidx.core.view.updatePadding
 
     class MainActivity : AppCompatActivity() {
         private lateinit var drawerLayout: DrawerLayout
@@ -26,10 +30,25 @@
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             @Suppress("UNUSED_VARIABLE")
+            WindowCompat.setDecorFitsSystemWindows(window, false)
             val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this,R.layout.activity_main)
             val toolbar:androidx.appcompat.widget.Toolbar = binding.toolbar
            drawerLayout = binding.drawerLayout
             setSupportActionBar(toolbar)
+
+            ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+                // push toolbar down below the status bar
+                binding.toolbar.updatePadding(top = systemBars.top)
+
+                // push the nav host fragment content up above the nav bar
+                binding.myNavHostFragment.updatePadding(bottom = systemBars.bottom)
+
+                // IMPORTANT: do not consume — let insets keep propagating to child fragments
+                // (needed for your keyboard-close detection in the Fragment)
+                insets
+            }
            // val db = VendibleDatabase.getInstance(this)
             //RealtimeDatabaseSync.startSyncAllTables(db.brandDao, db.categoryDao)
 
