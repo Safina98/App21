@@ -3,8 +3,6 @@
 <style name="base_button">
 
 </style>
-
-
     <style name="Base_ToolbarTheme">
         <item name="android:textColorPrimary">@color/primaryTextColor</item>
         <item name="android:textColorSecondary">@color/primaryTextColor</item>

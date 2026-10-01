@@ -16,14 +16,14 @@
         android:layout_height="80dp"
         android:onClick="@{()->clickListener.onClick(product)}"
         android:layout_margin="2dp">
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
             <TextView
                 style="@style/text_product_title"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:layout_marginStart="4dp"
                 android:text="@{product.product_name}"
                 android:ellipsize="end"
@@ -32,39 +32,12 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-            <!-- android:textColor="@color/black"-->
-            <!--
-            <Button
-                android:id="@+id/add_n_trans_btn"
-                style="@style/sub_btn_style"
-                android:text="@string/add_btn_value"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/qty_txt_trans"
-                android:layout_width="30dp"
-                android:layout_height="60dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="8dp"
-                android:fontFamily="@font/alegreya_sc"
-                android:foregroundGravity="center_horizontal"
-                android:gravity="center"
-                android:text="0"
-                android:textSize="24sp"
-                app:layout_constraintEnd_toStartOf="@+id/add_n_trans_btn"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/subs_n_trans_btn"
-                style="@style/add_btn_style"
-                android:text="@string/sub_btn_value"
-                app:layout_constraintEnd_toStartOf="@+id/qty_txt_trans"
-                app:layout_constraintHorizontal_bias="0.969"
-                app:layout_constraintStart_toEndOf="@+id/sub_product_txt_trans"
-                app:layout_constraintTop_toTopOf="parent" />
-                -->
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <CheckBox
+                android:id="@+id/product_cb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
+                />
+        </LinearLayout>
     </androidx.cardview.widget.CardView>
 </layout>

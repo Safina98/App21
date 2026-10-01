@@ -7,4 +7,5 @@
     <string name="add_btn_value">+</string>
     <string name="pembukuan">Pemasukan</string>
     <string name="menu_stok">Stok</string>
+    <string name="menu_price">Kirim Daftar Harga</string>
 </resources>

@@ -6,6 +6,11 @@
         android:icon="@drawable/stock_icon"
         />
     <item
+        android:id="@+id/exportStockPriceFragment"
+        android:title="@string/menu_price"
+        android:icon="@drawable/stock_icon"
+        />
+    <item
         android:id="@+id/trackFragment"
         android:title="Track Inventory"
         android:icon="@drawable/track"

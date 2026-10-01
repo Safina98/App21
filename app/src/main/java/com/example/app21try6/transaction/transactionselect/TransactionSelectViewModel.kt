@@ -206,16 +206,7 @@ class TransactionSelectViewModel(
     }
 
     ///////////////////////////////////////////////PRODUCT//////////////////////////////////////
-    fun filterProductOld(query: String?) {
-        val list = mutableListOf<Product>()
-        if(!query.isNullOrEmpty()) {
-            list.addAll(_unFilteredProduct.value!!.filter {
-                it.product_name.lowercase(Locale.getDefault()).contains(query.toString().lowercase(Locale.getDefault()))})
-        } else {
-            list.addAll(_unFilteredProduct.value!!)
-        }
-        _allProduct.value =list
-    }
+
     fun filterProduct(query: String?) {
             val originalList = _unFilteredProduct.value ?: return
             val filteredList = if (!query.isNullOrEmpty()) {

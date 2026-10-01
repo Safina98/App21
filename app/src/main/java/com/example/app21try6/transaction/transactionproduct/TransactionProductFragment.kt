@@ -59,7 +59,7 @@ class TransactionProductFragment : Fragment() {
             viewModel.saveSelectedItemPosition(it.productCloudId)
             viewModel.onNavigatetoTransSelect(it.productCloudId.toString())
 
-        })
+        },false)
         binding.transproductRv.adapter  = adapter
         binding.transproductRv.layoutManager = LinearLayoutManager(context)
 
