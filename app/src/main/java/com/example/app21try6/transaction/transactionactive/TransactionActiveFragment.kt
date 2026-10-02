@@ -227,6 +227,13 @@ class TransactionActiveFragment : Fragment() {
                 viewModel.onNavigatedToTransDetail()
             }
         }
+        viewModel.navigatToExportPrice.observe(viewLifecycleOwner){
+            if (it==true){
+                this.findNavController().navigate(TransactionActiveFragmentDirections.actionTransactionActiveFragmentToExportStockPriceFragment())
+                viewModel.onNavigatedToExportPrice()
+            }
+        }
+
         setHasOptionsMenu(true)
         return binding.root
     }

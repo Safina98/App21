@@ -132,6 +132,9 @@
         <action
             android:id="@+id/action_transactionActiveFragment_to_allTransactionsFragment"
             app:destination="@id/allTransactionsFragment" />
+        <action
+            android:id="@+id/action_transactionActiveFragment_to_exportStockPriceFragment"
+            app:destination="@id/exportStockPriceFragment" />
     </fragment>
     <fragment
         android:id="@+id/transactionEditFragment"
@@ -292,6 +295,6 @@
     <fragment
         android:id="@+id/exportStockPriceFragment"
         android:name="com.example.app21try6.stock.exportprice.ExportStockPriceFragment"
-        android:label="ExportStockPriceFragment" />
+        android:label="Kirim Daftar Harga" />
 
 </navigation>

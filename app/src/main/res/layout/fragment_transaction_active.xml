@@ -60,7 +60,16 @@
             app:backgroundTint="@null"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
-
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:onClick="@{()->viewModel.onNavigateToExportPrice()}"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/export_price_icon"
+            app:layout_constraintBottom_toTopOf="@+id/button3"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+/>
         <TextView
             android:id="@+id/button3"
             android:layout_width="0dp"

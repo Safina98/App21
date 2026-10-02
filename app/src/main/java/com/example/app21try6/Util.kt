@@ -40,6 +40,10 @@ fun getFirstDayOfYear(year: Int): Date {
     calendar.set(Calendar.MILLISECOND, 0)
     return calendar.time
 }
+fun String.toTitleCase(): String =
+    lowercase().split(" ").joinToString(" ") { word ->
+        word.replaceFirstChar { it.uppercase() }
+    }
 
 fun getLastDayOfYear(year: Int): Date {
     val calendar = Calendar.getInstance()

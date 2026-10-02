@@ -51,6 +51,9 @@ class TransactionActiveViewModel(
     private val _navigateToAllTrans = MutableLiveData<Boolean>()
     val navigatToAllTrans: LiveData<Boolean> get() = _navigateToAllTrans
 
+    private val _navigateToExportPrice = MutableLiveData<Boolean>()
+    val navigatToExportPrice: LiveData<Boolean> get() = _navigateToExportPrice
+
     //Get active transaction from database
     fun getActiveTrans(){
         viewModelScope.launch {
@@ -109,6 +112,9 @@ class TransactionActiveViewModel(
     fun onNavigatedToTransDetail(){ this._navigateToTransDetail.value = null }
     fun onNavigateToAllTrans(){ _navigateToAllTrans.value=true }
     fun onNavigatedToAllTrans(){ _navigateToAllTrans.value=false }
+
+    fun onNavigateToExportPrice(){ _navigateToExportPrice.value=true }
+    fun onNavigatedToExportPrice(){ _navigateToExportPrice.value=false }
 
     fun insertCSVBatch(tokensList: List<List<String>>) {
         viewModelScope.launch {
