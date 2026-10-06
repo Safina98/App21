@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.app21try6.database.models.ExportStockPriceModel
 import com.example.app21try6.database.repositories.DiscountRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.tables.Product
@@ -19,10 +20,10 @@ class ExportStockPriceViewModel(
     private val discountRepository:DiscountRepository,
     application: Application
 ) : AndroidViewModel(application){
-    private var _allProduct = MutableLiveData<List<Product>>()
+    private var _allProduct = MutableLiveData<List<ExportStockPriceModel>>()
 
-    private val _newList = MutableLiveData<List<Product>>()
-    val newList: LiveData<List<Product>> get() = _newList
+    private val _newList = MutableLiveData<List<ExportStockPriceModel>>()
+    val newList: LiveData<List<ExportStockPriceModel>> get() = _newList
 
     private var _isPickingProduct= MutableLiveData<Boolean>(true)
     val isPickingProduct: LiveData<Boolean>get() = _isPickingProduct
@@ -34,20 +35,20 @@ class ExportStockPriceViewModel(
     fun draftText() {
         Log.i(espTag,"draftTextCalled")
         val text = _unFilteredProduct.value
-            ?.filter { it.checkBoxBoolean }
-            ?.joinToString("\n") { "${it.product_name.toTitleCase()} ${formatRupiah(it.product_price.toDouble())}" }
+            ?.filter { it.isChecked }
+            ?.joinToString("\n") { "${it.productName?.toTitleCase()} ${formatRupiah(it.productPrice?.toDouble())}" }
             ?: ""
         exportText.value = text
         Log.i(espTag,"${text}")
         exportText.value = text
     }
-    fun onProductClicked(item: Product) {
+    fun onProductClicked(item: ExportStockPriceModel) {
         Log.i(espTag,"onProductClickCalled clicked")
         _unFilteredProduct.value = _unFilteredProduct.value?.map {
-            if (it.productCloudId == item.productCloudId) it.copy(checkBoxBoolean = true) else it
+            if (it.id== item.id) it.copy(isChecked = true) else it
         }
         _newList.value = _newList.value?.map {
-            if (it.productCloudId == item.productCloudId) it.copy(checkBoxBoolean = true) else it
+            if (it.id == item.id) it.copy(isChecked = true) else it
         }
     }
     fun pickProduct(){
@@ -57,17 +58,17 @@ class ExportStockPriceViewModel(
         _isPickingProduct.value=false
     }
 
-    private val _unFilteredProduct = MutableLiveData<List<Product>>()
+    private val _unFilteredProduct = MutableLiveData<List<ExportStockPriceModel>>()
     fun filterProduct(query: String?) {
         val originalList = _unFilteredProduct.value ?: return
         val filteredList = if (!query.isNullOrEmpty()) {
             val input = query.lowercase(Locale.getDefault()).trim().replace(" ","")
             originalList.filter { merk ->
-                val name = merk.product_name.lowercase(Locale.getDefault()).trim().replace(" ","")
-                val words = name.split(" ")
-                words.any { word ->
+                val name = merk.productName?.lowercase(Locale.getDefault())?.trim()?.replace(" ","")
+                val words = name?.split(" ")
+                words?.any { word ->
                     word.contains(input)
-                }
+                } ?: false
             }
         } else {
             originalList
@@ -77,10 +78,10 @@ class ExportStockPriceViewModel(
 
     fun updateRv(){
         viewModelScope.launch {
-            val product = stockRepo.getProductListByCategoryId(null)
-            _allProduct.value = product
-            _unFilteredProduct.value = product
-            _newList.value = product.map { it.copy() }
+            val espModel = stockRepo.getESPModel()
+            _allProduct.value = espModel
+            _unFilteredProduct.value = espModel
+            _newList.value = espModel.map { it.copy() }
         }
     }
 }

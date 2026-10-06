@@ -45,17 +45,19 @@ class ExportStockPriceFragment : Fragment() {
         binding.lifecycleOwner =this
         viewModel.updateRv()
 
-        val adapter = TransactionProductAdapter(ProductTransListener {
-            Log.i(espTag,"${it.product_name} clicked")
+        val adapter = ExportStockPriceAdapter(ESPListener {
+            Log.i(espTag,"${it.productName} clicked")
             viewModel.onProductClicked(it)
+        }, ESPRollListener{
 
-
-        },true)
+        }
+            )
 
         binding.espRv.adapter=adapter
         binding.btnSend.setOnClickListener {
             exportTextToWhatsApp(viewModel.exportText.value?:"","")
         }
+
         binding.searchBarProduct.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true
@@ -67,7 +69,7 @@ class ExportStockPriceFragment : Fragment() {
         })
 
         viewModel.newList.observe(viewLifecycleOwner, Observer {
-            adapter.submitList(it.sortedBy { it.product_name })
+            adapter.submitList(it.sortedBy { it.productName })
             viewModel.draftText()
 
         })

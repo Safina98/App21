@@ -11,6 +11,7 @@ import com.example.app21try6.database.cloud.RealtimeDatabaseSync
 import com.example.app21try6.database.cloud.UploadInventories
 import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.models.DetailMerchandiseModel
+import com.example.app21try6.database.models.ExportStockPriceModel
 import com.example.app21try6.database.models.SubWithPriceModel
 import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.tables.Category
@@ -260,6 +261,11 @@ class StockRepositories (
     suspend fun getProductListByCategoryId(categoryCloudId:Long?):List<Product>{
         return withContext(Dispatchers.IO){
             productDao.getProductByCategory(categoryCloudId)
+        }
+    }
+    suspend fun getESPModel():List<ExportStockPriceModel>{
+        return withContext(Dispatchers.IO){
+            productDao.selectESPModel()
         }
     }
     suspend fun getProductNameListByCategoryName(name:String):List<String>{

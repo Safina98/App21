@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="product"
+            type="com.example.app21try6.database.models.ExportStockPriceModel" />
+        <variable
+            name="clickListener"
+            type="com.example.app21try6.stock.exportprice.ESPListener" />
+        <variable
+            name="rollClickListener"
+            type="com.example.app21try6.stock.exportprice.ESPRollListener" />
+
+    </data>
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:onClick="@{()->clickListener.onClick(product)}"
+        android:layout_margin="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView"
+                style="@style/text_product_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@{product.productName}"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:layout_weight="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <CheckBox
+                android:id="@+id/checkBoxEnceran"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="Enceran"
+                android:checked="@{product.enceranChecked}"
+                android:onClick="@{()->clickListener.onClick(product)}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <CheckBox
+                android:id="@+id/checkBoxRoll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Roll"
+                android:checked="@{product.rollChecked}"
+                android:onClick="@{()->rollClickListener.onClick(product)}"
+                app:layout_constraintBottom_toBottomOf="@+id/checkBoxEnceran"
+                app:layout_constraintStart_toEndOf="@+id/checkBoxEnceran" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

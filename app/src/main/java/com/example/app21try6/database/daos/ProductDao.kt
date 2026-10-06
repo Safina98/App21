@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.example.app21try6.database.models.BrandProductModel
+import com.example.app21try6.database.models.ExportStockPriceModel
 import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.tables.TransactionDetail
 
@@ -19,6 +20,18 @@ interface ProductDao {
     fun update(product: Product)
     @Query("SELECT productCloudId as id,product_name as name,brand_code as parentId from product_table WHERE (:brandCloudId_ IS NULL OR brand_code = :brandCloudId_)")
     fun getAll(brandCloudId_:Long?): List<BrandProductModel>
+
+    @Query("SELECT " +
+            "productCloudId as id," +
+            "product_name as productName," +
+            "product_price as productPrice, " +
+            "alternate_price as productAlternatePrice, " +
+            "default_net as productNet," +
+            "0 as isChecked, " +
+            "0 as isRollChecked, " +
+            "0 as isEnceranChecked " +
+            "from product_table")
+    fun selectESPModel(): List<ExportStockPriceModel>
 
     @Query("UPDATE product_table SET needs_syncs = 0 WHERE productCloudId = :cloudId")
     suspend fun markAsSynced(cloudId: Long)

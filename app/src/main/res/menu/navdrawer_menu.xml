@@ -5,11 +5,7 @@
         android:title="@string/menu_stok"
         android:icon="@drawable/stock_icon"
         />
-    <item
-        android:id="@+id/exportStockPriceFragment"
-        android:title="@string/menu_price"
-        android:icon="@drawable/export_price_icon"
-        />
+
     <item
         android:id="@+id/trackFragment"
         android:title="Track Inventory"

@@ -12,14 +12,13 @@ import com.google.firebase.database.core.view.View
 
 class TransactionProductAdapter (
     val clickListener:ProductTransListener,
-    val isCheckBoxVisible: Boolean=false
+
         ): ListAdapter<Product,TransactionProductAdapter.MyViewHolder>(ProductTransDiffCallBack()){
 
     class MyViewHolder private constructor(val binding: ItemListTransactionProductBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(item: Product, produtListener: ProductTransListener,isCheckBoxVisible: Boolean){
+        fun bind(item: Product, produtListener: ProductTransListener){
             binding.product = item
             binding.clickListener = produtListener
-            if (isCheckBoxVisible)binding.productCb.visibility= android.view.View.VISIBLE
             binding.executePendingBindings()
         }
         companion object{
@@ -35,7 +34,7 @@ class TransactionProductAdapter (
         return MyViewHolder.from(parent)
     }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(getItem(position),clickListener,isCheckBoxVisible)
+        holder.bind(getItem(position),clickListener)
     }
 }
 
