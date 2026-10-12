@@ -30,27 +30,70 @@ class ExportStockPriceViewModel(
 
     var exportText= MutableLiveData<String>("")
 
-
+    private val _unFilteredProduct = MutableLiveData<List<ExportStockPriceModel>>()
 
     fun draftText() {
         Log.i(espTag,"draftTextCalled")
-        val text = _unFilteredProduct.value
-            ?.filter { it.isChecked }
-            ?.joinToString("\n") { "${it.productName?.toTitleCase()} ${formatRupiah(it.productPrice?.toDouble())}" }
+        val text = _unFilteredProduct.value?.sortedBy { it.productName }
+            ?.filter { it.isEnceranChecked || it.isRollChecked }
+            ?.joinToString("\n") { draftEnceranText(it) }
             ?: ""
         exportText.value = text
         Log.i(espTag,"${text}")
         exportText.value = text
     }
+    fun draftEnceranText(model: ExportStockPriceModel):String{
+        var text="${model.productName?.toTitleCase()}"
+        if (model.isEnceranChecked && !model.isRollChecked){
+            text= text+" harga ${formatRupiah(model.productPrice?.toDouble())}"
+        }
+        else if (model.isRollChecked && !model.isEnceranChecked){
+            val sum = model.productAlternatePrice?.let { model.productNet?.times(it) }
+            text= text+" 1 roll harga ${formatRupiah(sum)}, isi ${model.productNet} meter"
+        }
+        else{
+            val sum = model.productAlternatePrice?.let { model.productNet?.times(it) }
+            text= text+" harga ${formatRupiah(model.productPrice?.toDouble())} per meter, 1 roll harga ${formatRupiah(sum)}, isi ${model.productNet} meter"
+        }
+
+
+        return text}
+
+
     fun onProductClicked(item: ExportStockPriceModel) {
         Log.i(espTag,"onProductClickCalled clicked")
         _unFilteredProduct.value = _unFilteredProduct.value?.map {
-            if (it.id== item.id) it.copy(isChecked = true) else it
+            if (it.id == item.id) it.copy(
+                isChecked = !it.isChecked,
+                isEnceranChecked = !it.isEnceranChecked
+            ) else it
         }
+
         _newList.value = _newList.value?.map {
-            if (it.id == item.id) it.copy(isChecked = true) else it
+            if (it.id == item.id) it.copy(
+                isChecked = !it.isChecked,
+                isEnceranChecked = !it.isEnceranChecked
+            ) else it
         }
     }
+
+    fun onRollCheckBoxClick(item: ExportStockPriceModel) {
+        Log.i(espTag,"onProductClickCalled clicked")
+        _unFilteredProduct.value = _unFilteredProduct.value?.map {
+            if (it.id == item.id) it.copy(
+                isChecked = !it.isChecked,
+                isRollChecked = !it.isRollChecked
+            ) else it
+        }
+
+        _newList.value = _newList.value?.map {
+            if (it.id == item.id) it.copy(
+                isChecked = !it.isChecked,
+                isRollChecked = !it.isRollChecked
+            ) else it
+        }
+    }
+
     fun pickProduct(){
         _isPickingProduct.value=true
     }
@@ -58,7 +101,7 @@ class ExportStockPriceViewModel(
         _isPickingProduct.value=false
     }
 
-    private val _unFilteredProduct = MutableLiveData<List<ExportStockPriceModel>>()
+
     fun filterProduct(query: String?) {
         val originalList = _unFilteredProduct.value ?: return
         val filteredList = if (!query.isNullOrEmpty()) {

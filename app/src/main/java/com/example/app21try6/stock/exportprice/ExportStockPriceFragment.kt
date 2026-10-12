@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -43,13 +44,30 @@ class ExportStockPriceFragment : Fragment() {
             .get(ExportStockPriceViewModel::class.java)
         binding.viewModel=viewModel
         binding.lifecycleOwner =this
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (binding.view1.visibility== View.VISIBLE){
+                    binding.view1.visibility= View.GONE
+                    binding.view2.visibility = View.VISIBLE
+                }
+
+                else {
+                    isEnabled = false // Disable callback temporarily
+                    requireActivity().onBackPressed() // Trigger default back behavior
+                }
+
+            }
+        })
+
+
+
         viewModel.updateRv()
 
         val adapter = ExportStockPriceAdapter(ESPListener {
             Log.i(espTag,"${it.productName} clicked")
             viewModel.onProductClicked(it)
         }, ESPRollListener{
-
+            viewModel.onRollCheckBoxClick(it)
         }
             )
 

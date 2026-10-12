@@ -154,7 +154,7 @@ class PurchaseViewModel(application: Application,
             if (id!=-1){
                 val expense=expenseRepo.getExpensesById(id)//getExpensesById(id)
                 expenseMutable.value=expense
-                suplierName.value = expense.expense_name.replace("Bayar ","")
+                suplierName.value = expense.expense_name.replace("Bayar nota ","")
             }
         }
     }
