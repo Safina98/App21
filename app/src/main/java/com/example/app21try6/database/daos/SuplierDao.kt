@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import com.example.app21try6.database.models.PurchaseExpenseRow
 import com.example.app21try6.database.models.PurchaseOrderRaw
 import com.example.app21try6.database.tables.DiscountTable
 import com.example.app21try6.database.tables.SuplierTable
@@ -43,24 +44,20 @@ interface SuplierDao {
                 +
                 COALESCE((SELECT SUM(m.net)
                           FROM merchandise_table m
-                          WHERE m.sPCloudId = s.sPCloudId AND m.is_deleted = 0), 0)
+                          WHERE m.sPCloudId = s.sPCloudId), 0)
             ) AS totalNet,
             p.default_net AS defaultNet,
             COALESCE((SELECT SUM(t.qty * t.unit_qty)
                       FROM trans_detail_table t
                       WHERE t.sPCloudId = s.sPCloudId
-                        AND t.is_deleted = 0
                         AND t.trans_detail_date >= :since30), 0) AS totalSells30Days,
             COALESCE((SELECT SUM(t.qty * t.unit_qty)
                       FROM trans_detail_table t
                       WHERE t.sPCloudId = s.sPCloudId
-                        AND t.is_deleted = 0
                         AND t.trans_detail_date >= :since90), 0) AS totalSells90Days
         FROM product_table p
         INNER JOIN sub_table s ON s.productCloudId = p.productCloudId
         WHERE p.suplier_id = :suplierId
-          AND p.is_deleted = 0
-          AND s.is_deleted = 0
         ORDER BY p.product_name, s.sub_name
         """
     )
@@ -70,5 +67,26 @@ interface SuplierDao {
         since90: String
     ): List<PurchaseOrderRaw>
 
+
+    @Query("""
+        SELECT sp.productCloudId AS productCloudId,
+               e.expense_name    AS expenseName,
+               e.expense_date    AS expenseDate
+        FROM inventory_purchase_table ip
+        INNER JOIN sub_table sp      ON sp.sPCloudId = ip.sPCloudId
+        INNER JOIN expenses_table e  ON e.id = ip.expensesId
+        WHERE ip.is_deleted = 0 AND sp.is_deleted = 0 AND e.is_deleted = 0
+    """)
+    suspend fun getPurchaseExpenseRows(): List<PurchaseExpenseRow>
+
+    @Query("SELECT * FROM suplier_table WHERE is_deleted = 0")
+    suspend fun getAllSuppliers(): List<SuplierTable>
+
+    @Query("""
+        UPDATE product_table
+        SET suplier_id = :supplierId, needs_syncs = 1
+        WHERE productCloudId = :productId
+    """)
+    suspend fun updateProductSupplier(productId: Long, supplierId: Long)
 
 }

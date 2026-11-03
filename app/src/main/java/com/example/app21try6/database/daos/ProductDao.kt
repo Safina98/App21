@@ -95,7 +95,7 @@ interface ProductDao {
     """)
     fun assignProductCloudID(cloudId:Long,id: Long)
 
-    @Query("SELECT * FROM product_table")
+    @Query("SELECT * FROM product_table where suplier_id is not null")
     fun selectAllProductTable(): List<Product>
 
     @Query("SELECT productCloudId FROM product_table WHERE product_name=:name")

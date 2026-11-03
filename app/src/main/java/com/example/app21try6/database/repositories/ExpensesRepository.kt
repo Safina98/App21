@@ -2,6 +2,7 @@ package com.example.app21try6.database.repositories
 
 import android.app.Application
 import androidx.lifecycle.LiveData
+import androidx.room.withTransaction
 import com.example.app21try6.database.DateTypeConverter
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.BarChartModel
@@ -21,8 +22,13 @@ import java.util.Calendar
 import java.util.Date
 import kotlin.math.ceil
 
+data class SupplierCleanupResult(
+    val updatedCount: Int,
+    val unmatchedNames: List<String>
+)
 class ExpensesRepository(application: Application) {
     private val expenseDao = VendibleDatabase.getInstance(application).expenseDao
+    private val db = VendibleDatabase.getInstance(application)
     private val expenseCategoryDao = VendibleDatabase.getInstance(application).expenseCategoryDao
     private val suplierDao= VendibleDatabase.getInstance(application).suplierDao
     private val inventoryPurchaseDao= VendibleDatabase.getInstance(application).inventoryPurchaseDao
@@ -163,7 +169,10 @@ class ExpensesRepository(application: Application) {
 
                 val net = raw.defaultNet
                 val order = if (net != null && net > 0.0) {
-                    ceil(averageSells * 45 / net).toInt()
+                   val toOrder= ((averageSells * 45)-raw.totalNet) / net
+                    if (toOrder>0)
+                    ceil(toOrder).toInt()
+                    else 0
                 } else null
 
                 PurchaseOrderModel(
@@ -191,7 +200,7 @@ class ExpensesRepository(application: Application) {
     suspend fun insertSupliers(){
         withContext(Dispatchers.IO){
             val suplierDummy= listOf<SuplierTable>(
-                SuplierTable(1L,"Mitra Jaya","Jakarta"),
+                SuplierTable(1L,"Mitra","Jakarta"),
                 SuplierTable(2L,"MBTECH","Jakarta"),
                 SuplierTable(3L,"Busa Yerry","Surabaya"),
                 SuplierTable(4L,"Vision","Jakarta"),
@@ -214,8 +223,52 @@ class ExpensesRepository(application: Application) {
         return withContext(Dispatchers.IO){
             suplierDao.getSuplierNameById(id)
         }
-
     }
+    ///////////////////////to delete later///////////////////////////////////////
+
+    suspend fun updateProductSuppliersFromPurchases(): SupplierCleanupResult {
+        insertSupliers()
+        val supplierIdByName = suplierDao.getAllSuppliers()
+            .associate { normalize(it.suplierName) to it.id }
+
+        val latestPurchaseByProduct = suplierDao.getPurchaseExpenseRows()
+            .groupBy { it.productCloudId }
+            .mapNotNull { (productId, rows) ->
+                rows.maxByOrNull { it.expenseDate.orEmpty() }?.let { productId to it }
+            }
+
+        var updatedCount = 0
+        val unmatchedNames = mutableSetOf<String>()
+
+        db.withTransaction {
+            for ((productId, row) in latestPurchaseByProduct) {
+                val cleanedName = cleanExpenseName(row.expenseName)
+                val supplierId = supplierIdByName[cleanedName]
+                if (supplierId == null) {
+                    unmatchedNames += cleanedName
+                    continue
+                }
+                suplierDao.updateProductSupplier(productId, supplierId)
+                updatedCount++
+            }
+        }
+        return SupplierCleanupResult(updatedCount, unmatchedNames.toList())
+    }
+
+    private fun cleanExpenseName(name: String): String =
+        normalize(
+            name.replace(NOISE_REGEX, " ")
+                .trim { !it.isLetterOrDigit() }
+        )
+
+    private fun normalize(name: String): String =
+        name.replace(SPACE_REGEX, " ").trim().lowercase()
+
+    private companion object {
+        val NOISE_REGEX = Regex("\\b(bayar|nota)\\b", RegexOption.IGNORE_CASE)
+        val SPACE_REGEX = Regex("\\s+")
+    }
+    ///////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////InventoryPurchase////////////////////////////////////
     suspend fun getInventoryPurchaseListOld(id:Int): List<InventoryPurchase>{
         return withContext(Dispatchers.IO){inventoryPurchaseDao.selectPurchaseListOld(id)}

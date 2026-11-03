@@ -33,9 +33,8 @@ class ExportStockPriceAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bind(getItem(position),clickListener,rollClickListener)
     }
-
-
 }
+
 class ESPDiffCallBack: DiffUtil.ItemCallback<ExportStockPriceModel>(){
     override fun areItemsTheSame(oldItem: ExportStockPriceModel, newItem: ExportStockPriceModel): Boolean {
         return oldItem.id ==oldItem.id

@@ -13,6 +13,7 @@ import com.example.app21try6.R
 import com.example.app21try6.database.repositories.ExpensesRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.databinding.FragmentPurchaseOrderBinding
+import com.example.app21try6.round2
 
 val pOTag="OrderProbs"
 class PurchaseOrderFragment : Fragment() {
@@ -35,7 +36,11 @@ class PurchaseOrderFragment : Fragment() {
         binding.viewModel=viewModel
         binding.lifecycleOwner =this
 
+        val adapter= PurchaseOrderAdapter(POModelListener{})
+        binding.poRv.adapter=adapter
+
         viewModel.suplierList.observe(viewLifecycleOwner){supliers->
+
             if (supliers != null) {
                 val adapterSuplier = ArrayAdapter(
                     requireContext(),
@@ -44,6 +49,14 @@ class PurchaseOrderFragment : Fragment() {
                 )
                 binding.textSuplier.setAdapter(adapterSuplier)
             }
+        }
+
+        viewModel.items.observe(viewLifecycleOwner){items->
+            adapter.submitList(items)
+            items.forEach {
+                Log.i(pOTag,"${it.subName} 30 days ${it.totalSells30Days?.round2() }; 90 days ${it.totalSells90Days?.round2()}; averagesells ${it.averagesells?.round2()}; order${it.purcahseOrder}")
+            }
+
         }
 
         return binding.root

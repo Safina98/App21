@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit
 import java.util.Calendar
 import java.util.Date
 
+fun Double.round2(): Double = Math.round(this * 100) / 100.0
 fun hideKeyboard(view: View) {
     val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.hideSoftInputFromWindow(view.windowToken, 0)

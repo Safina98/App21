@@ -1,6 +1,7 @@
 package com.example.app21try6.statement.purchaseorder
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -33,13 +34,24 @@ class PurchaseOrderViewModel(
             _error.value = null
             try {
                 // repository switches to Dispatchers.IO internally
+//                val products=stockRepo.getAllProductTable()
+//                products.forEach {
+//                    Log.i(pOTag,"${it.product_name}, suplierID: ${it.suplierId}")
+//                }
                 _items.value = expensesRepository.getPurchaseOrders(suplierName.value?:"")
             } catch (e: Exception) {
                 _error.value = e.message ?: "Failed to load purchase orders"
             } finally {
                 _isLoading.value = false
             }
+
+
+//                val result = expensesRepository.updateProductSuppliersFromPurchases()
+//               Log.d(pOTag, "Updated ${result.updatedCount}, unmatched: ${result.unmatchedNames}")
+
         }
+
+
     }
 
 }
