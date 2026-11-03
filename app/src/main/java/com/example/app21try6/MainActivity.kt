@@ -22,6 +22,7 @@
     import androidx.core.view.ViewCompat
     import androidx.core.view.WindowInsetsCompat
     import androidx.core.view.updatePadding
+    import com.example.app21try6.stock.exportprice.ExportStockPriceFragment
 
     class MainActivity : AppCompatActivity() {
         private lateinit var drawerLayout: DrawerLayout
@@ -99,6 +100,10 @@
                 }
             }
             if (currentFragment is InputUpdateProduct) {
+                if (currentFragment.handleBackPress()) return true
+            }
+
+            if (currentFragment is ExportStockPriceFragment) {
                 if (currentFragment.handleBackPress()) return true
             }
 

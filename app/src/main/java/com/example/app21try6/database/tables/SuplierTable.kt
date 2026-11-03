@@ -9,16 +9,14 @@ import androidx.room.PrimaryKey
     tableName = "suplier_table",
 )
 data class SuplierTable(
-    @PrimaryKey(autoGenerate = true)
-    var id:Int=0,
+    @PrimaryKey
+    var id:Long=0L,
     @ColumnInfo(name="suplierName")
     var suplierName:String="",
     @ColumnInfo(name="suplierLocation")
     var suplierLocation:String="",
     @ColumnInfo(name="is_deleted")
-    var isDeleted: Boolean = false, //newly added cloumn
-    @ColumnInfo(name = "suplierCloudId")
-    var suplierCloudId: Long = 0L,//newly added cloumn
+    var isDeleted: Boolean = false,
     @ColumnInfo(name="needs_syncs")
-    var needsSyncs:Int=1//newly added cloumn
+    var needsSyncs:Int=1
 )

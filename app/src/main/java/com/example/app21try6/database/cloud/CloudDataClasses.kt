@@ -42,6 +42,7 @@ data class ProductCloud(
     var isDeleted: Boolean = false,
     var needsSyncs: Int = 1,
     var lastUpdated: Long = System.currentTimeMillis(),
+    var suplierId:Long?=null,
 
     @get:Exclude
     var cloudId: String = ""

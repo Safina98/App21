@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.app21try6.database.models.ProductModusModel
 import com.example.app21try6.database.repositories.DiscountRepository
+import com.example.app21try6.database.repositories.ExpensesRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.database.tables.Product
@@ -21,6 +22,7 @@ class UpsertProductViewModel(
     private val repository: StockRepositories,
     private val discountRepository:DiscountRepository,
     private val transRepositories: TransactionsRepository,
+    private val expensesRepository: ExpensesRepository,
     application: Application): AndroidViewModel(application) {
 
 
@@ -81,6 +83,7 @@ class UpsertProductViewModel(
 
     val discountList=discountRepository.getAllDicountName()
     val discountName=MutableLiveData<String?>("")
+    val suplierName= MutableLiveData<String?>("")
 
     private var _navigateBackToBrandStok=MutableLiveData<Long?>()
     val navigateBackToBrandStok:LiveData<Long?> get()=_navigateBackToBrandStok
@@ -129,6 +132,7 @@ class UpsertProductViewModel(
                 puchaseUnit.value=product.puchaseUnit
                 alternateCapital=MutableLiveData<Double>()
                 discountName.value=discountRepository.getDiscountNameById(product.discountId)
+                suplierName.value=expensesRepository.getSuplierNameById(product.suplierId)
                 branName.value= repository.getBrandNameyId(product.brand_code)//selectedBrand.value?.name?: ""
             }
         }

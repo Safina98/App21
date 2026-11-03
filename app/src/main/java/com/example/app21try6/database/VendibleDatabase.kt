@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.app21try6.database.Migrations.MIGRATION_58_59
-
+import com.example.app21try6.database.Migrations.MIGRATION_59_60
 
 
 import com.example.app21try6.database.daos.BrandDao
@@ -53,7 +53,7 @@ import com.example.app21try6.database.tables.TransactionSummary
     ExpenseCategory::class, Summary::class, DiscountTable::class, DiscountTransaction::class,
     CustomerTable::class,DetailWarnaTable::class,InventoryLog::class,
     SuplierTable::class,InventoryPurchase::class, MerchandiseRetail::class, PurchaseDiscount::class
-                     ],version=59, exportSchema = true)
+                     ],version=60, exportSchema = true)
 @TypeConverters(DateTypeConverter::class)
 abstract class VendibleDatabase:RoomDatabase(){
     abstract val brandDao : BrandDao
@@ -89,7 +89,7 @@ abstract class VendibleDatabase:RoomDatabase(){
                             VendibleDatabase::class.java,
                             "vendible_table"
                     )
-                        .addMigrations(MIGRATION_58_59)
+                        .addMigrations(MIGRATION_59_60)
                         // .fallbackToDestructiveMigration()
                     .build()
                     INSTANCE = instance

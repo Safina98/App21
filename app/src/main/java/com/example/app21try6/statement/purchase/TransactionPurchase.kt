@@ -159,11 +159,11 @@ class TransactionPurchase : Fragment() {
             }
         })
         viewModel.suplierDummy.observe(viewLifecycleOwner) { list ->
-                val supliernames = list.map { it.suplierName }
+
                 val adapterr = ArrayAdapter(
                     requireContext(),
                     android.R.layout.simple_dropdown_item_1line,
-                    supliernames
+                    list
                 )
                autoCompleteSuplier.setAdapter(adapterr)
         }

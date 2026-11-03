@@ -654,7 +654,8 @@ class StockRepositories (
             product_capital = token[13].toInt(),
             default_net = token.getOrNull(14)?.toDoubleOrNull() ?: 0.0,
             alternate_capital = token.getOrNull(15)?.toDoubleOrNull() ?: 0.0,
-            alternate_price = token.getOrNull(16)?.toDoubleOrNull() ?: 0.0
+            alternate_price = token.getOrNull(16)?.toDoubleOrNull() ?: 0.0,
+            suplierId = null
         )
 
         val subProduct = SubProduct(

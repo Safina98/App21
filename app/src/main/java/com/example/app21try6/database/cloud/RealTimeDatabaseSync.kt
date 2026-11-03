@@ -213,7 +213,8 @@ object RealtimeDatabaseSync {
                 puchaseUnit = cloud.puchaseUnit,
                 alternate_capital = cloud.alternateCapital,
                 isDeleted = cloud.isDeleted,
-                needsSyncs = cloud.needsSyncs
+                cloud.needsSyncs,
+                suplierId = cloud.suplierId
             )
 
             Executors.newSingleThreadExecutor().execute {

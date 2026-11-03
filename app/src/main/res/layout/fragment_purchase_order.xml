@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="view_model"
+            type="com.example.app21try6.statement.purchaseorder.PurchaseOrderViewModel" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".statement.purchaseorder.PurchaseOrderFragment">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_weight="0.25"
+                android:id="@+id/il_brand"
+                android:hint="Brand"
+                android:layout_height="wrap_content">
+                <AutoCompleteTextView
+                    android:id="@+id/text_suplier"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:paddingStart="@dimen/big_margin"
+                    android:paddingEnd="@dimen/big_margin"
+                    android:inputType="text"
+                    android:text="@={view_model.suplierName}"
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+            <Button
+                android:layout_weight="0.75"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Search"
+                android:onClick="@{()->view_model.loadPurchaseOrder()}"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>

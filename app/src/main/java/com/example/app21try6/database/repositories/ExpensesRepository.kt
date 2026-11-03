@@ -2,9 +2,11 @@ package com.example.app21try6.database.repositories
 
 import android.app.Application
 import androidx.lifecycle.LiveData
+import com.example.app21try6.database.DateTypeConverter
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.BarChartModel
 import com.example.app21try6.database.models.PaymentModel
+import com.example.app21try6.database.models.PurchaseOrderModel
 
 import com.example.app21try6.database.tables.ExpenseCategory
 import com.example.app21try6.database.tables.Expenses
@@ -15,7 +17,9 @@ import com.example.app21try6.statement.DiscountAdapterModel
 import com.example.app21try6.stock.brandstock.CategoryModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.Calendar
 import java.util.Date
+import kotlin.math.ceil
 
 class ExpensesRepository(application: Application) {
     private val expenseDao = VendibleDatabase.getInstance(application).expenseDao
@@ -133,41 +137,84 @@ class ExpensesRepository(application: Application) {
         }
     }
 
-    suspend fun assignCloudIdToSuplierTable(cloudId: Long, id: Int){
-        withContext(Dispatchers.IO){
-            suplierDao.assignSuplierCloudID(cloudId, id)
-        }
-    }
+
 
     suspend fun getAllSuplierTable(): List<SuplierTable> {
         return withContext(Dispatchers.IO) {
             suplierDao.selectAllSuplierTable()
         }
     }
-    fun getAllSuplier() : LiveData<List<SuplierTable>>{
+    suspend fun getPurchaseOrders(suplierName:String): List<PurchaseOrderModel> =
+        withContext(Dispatchers.IO) {
+            val now = Calendar.getInstance()
+            val since30 = DateTypeConverter.fromDate(
+                (now.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, -30) }.time
+            )!!
+            val since90 = DateTypeConverter.fromDate(
+                (now.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, -90) }.time
+            )!!
+
+            val suplierId=suplierDao.getSuplierIdByName(suplierName)
+
+            suplierDao.getPurchaseOrderRaw(suplierId, since30, since90).map { raw ->
+                val daily30 = raw.totalSells30Days / 30.0
+                val daily90 = raw.totalSells90Days / 90.0
+                val averageSells = if (daily30 > daily90) daily30 else daily90
+
+                val net = raw.defaultNet
+                val order = if (net != null && net > 0.0) {
+                    ceil(averageSells * 45 / net).toInt()
+                } else null
+
+                PurchaseOrderModel(
+                    subId = raw.subId,
+                    productId = raw.productId,
+                    subName = raw.subName,
+                    totalNet = raw.totalNet,
+                    defaultNet = raw.defaultNet,
+                    totalSells30Days = raw.totalSells30Days,
+                    totalSells90Days = raw.totalSells90Days,
+                    averagesells = averageSells,
+                    purcahseOrder = order
+                )
+            }
+        }
+    suspend fun deleteAllSuplierTable(){
+        withContext(Dispatchers.IO) {
+            suplierDao.delete()
+        }
+    }
+
+    fun getAllSuplier() : LiveData<List<String>>{
         return suplierDao.getAllSuplier()
     }
     suspend fun insertSupliers(){
         withContext(Dispatchers.IO){
             val suplierDummy= listOf<SuplierTable>(
-                SuplierTable(1,"Mitra Jaya","Jakarta"),
-                SuplierTable(2,"Polystar","Jakarta"),
-                SuplierTable(3,"Busa Yerry","Surabaya"),
-                SuplierTable(4,"Vision","Jakarta"),
-                SuplierTable(5,"PT. SIMNU","Surabaya"),
-                SuplierTable(6,"New Lancar","Makassar"),
-                SuplierTable(7,"Sentral Logam","Makassar"),
-                SuplierTable(8,"Toko Utama","Makassar"),
-                SuplierTable(9,"Bali Jaya","Makassar"),
-                SuplierTable(10,"Cahaya Indah","Makassar"),
-                SuplierTable(11,"Trijaya Tunggal","Makassar"),
-                SuplierTable(12,"Sun Auto","Surabaya"),
-                SuplierTable(13,"Nasional Lestari","Surabaya"),
+                SuplierTable(1L,"Mitra Jaya","Jakarta"),
+                SuplierTable(2L,"MBTECH","Jakarta"),
+                SuplierTable(3L,"Busa Yerry","Surabaya"),
+                SuplierTable(4L,"Vision","Jakarta"),
+                SuplierTable(5L,"SIMNU","Surabaya"),
+                SuplierTable(6L,"Lancar","Makassar"),
+                SuplierTable(7L,"Sentral Logam","Makassar"),
+                SuplierTable(8L,"Toko Utama","Makassar"),
+                SuplierTable(9L,"Bali Jaya","Makassar"),
+                SuplierTable(10L,"Cahaya Indah","Makassar"),
+                SuplierTable(11L,"Trijaya","Makassar"),
+                SuplierTable(12L,"Sun Auto","Surabaya"),
+                SuplierTable(13L,"Nasional Lestari","Surabaya"),
             )
 
             // Update all entries with the new date format
             suplierDao.insert(suplierDummy)
         }
+    }
+    suspend fun getSuplierNameById(id:Long?):String?{
+        return withContext(Dispatchers.IO){
+            suplierDao.getSuplierNameById(id)
+        }
+
     }
     /////////////////////////////////InventoryPurchase////////////////////////////////////
     suspend fun getInventoryPurchaseListOld(id:Int): List<InventoryPurchase>{

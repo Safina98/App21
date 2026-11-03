@@ -4,6 +4,34 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 object Migrations {
+    val MIGRATION_59_60 = object : Migration(59, 60) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            // 1. Recreate suplier_table (empty, so nothing is lost)
+            db.execSQL("DROP TABLE IF EXISTS `suplier_table`")
+            db.execSQL(
+                """
+            CREATE TABLE IF NOT EXISTS `suplier_table` (
+                `id` INTEGER NOT NULL,
+                `suplierName` TEXT NOT NULL,
+                `suplierLocation` TEXT NOT NULL,
+                `is_deleted` INTEGER NOT NULL,
+                `needs_syncs` INTEGER NOT NULL,
+                PRIMARY KEY(`id`)
+            )
+            """.trimIndent()
+            )
+
+            // 2. Add the FK column to product_table
+            db.execSQL(
+                """
+            ALTER TABLE `product_table`
+            ADD COLUMN `suplier_id` INTEGER
+            REFERENCES `suplier_table`(`id`) ON UPDATE CASCADE ON DELETE SET NULL
+            """.trimIndent()
+            )
+
+        }
+    }
 
     val MIGRATION_58_59 = object : Migration(58, 59) { // replace X, Y with your actual old/new version numbers
         override fun migrate(db: SupportSQLiteDatabase) {

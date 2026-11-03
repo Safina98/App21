@@ -58,3 +58,8 @@ data class InventoryPurchase(
     @ColumnInfo(name="needs_syncs")
     var needsSyncs:Int=1
 )
+//Update all product suplier id bases on expense name
+//scan through all inventory purchase,
+//group them by the distint product id,
+//then update the product id based on the expense_name from expense_table after "bayar nota is removed"
+//

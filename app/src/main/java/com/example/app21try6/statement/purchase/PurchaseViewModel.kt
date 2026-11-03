@@ -337,9 +337,7 @@ class PurchaseViewModel(application: Application,
                 list.addAll(_unfilteredExpesne.value!!)
                 _allExpenseFromDb.value =list
             }
-
         }
-
     }
     fun insertExpenseCategory(categoryName:String){
         viewModelScope.launch {

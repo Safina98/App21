@@ -245,6 +245,9 @@
             app:popEnterAnim="@anim/fade_in_pop_up"
             app:popExitAnim="@anim/fade_out_pop_up"
             />
+        <action
+            android:id="@+id/action_expensesFragment_to_purchaseOrderFragment"
+            app:destination="@id/purchaseOrderFragment" />
     </fragment>
     <fragment
         android:id="@+id/transactionPurchase"
@@ -296,5 +299,9 @@
         android:id="@+id/exportStockPriceFragment"
         android:name="com.example.app21try6.stock.exportprice.ExportStockPriceFragment"
         android:label="Kirim Daftar Harga" />
+    <fragment
+        android:id="@+id/purchaseOrderFragment"
+        android:name="com.example.app21try6.statement.purchaseorder.PurchaseOrderFragment"
+        android:label="PurchaseOrderFragment" />
 
 </navigation>

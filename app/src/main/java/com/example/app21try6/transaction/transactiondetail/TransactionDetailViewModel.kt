@@ -366,8 +366,6 @@ class TransactionDetailViewModel (
             if (item.is_cutted==false){
                 if (totalQty <= (totalNet?:0.0)){
                     Log.i("MERCHPROBS","total qty<=total net")
-                    if (trans.unit== null || trans.unit==Constants.ITEMUNIT.LSN || trans.unit==Constants.ITEMUNIT.ROLL|| trans.unit==Constants.ITEMUNIT.DOS){
-
                         _multipleMerch.value = Pair(
                             item.copy(),
                             if (item.unit == Constants.ITEMUNIT.LSN) item.qty * 12
@@ -381,9 +379,6 @@ class TransactionDetailViewModel (
                         val merchandiseRetailList = merch.toMerchandiseRetailList()
                         updateMerchValue(merchandiseRetailList,totalQty,item.copy(),extra)
 
-                    }else {
-
-                    }
                 }else{
                     //pop up dialog
                     Log.i("MERCHPROBS","total qty > total net")

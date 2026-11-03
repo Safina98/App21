@@ -106,7 +106,6 @@ class ExportStockPriceFragment : Fragment() {
     }
 
     private fun exportTextToWhatsApp(text: String,phoneNumber:String?) {
-
         val phone = phoneNumber // country code + number
         val message = text
         val intent = if (phone!=null){
@@ -133,6 +132,16 @@ class ExportStockPriceFragment : Fragment() {
             Toast.makeText(requireContext(), e.toString(), Toast.LENGTH_SHORT).show()
         }
 
+    }
+    fun handleBackPress(): Boolean {
+        if (binding.view1.visibility == View.VISIBLE) {
+            // Toggle RecyclerViews visibility
+            binding.view1.visibility= View.GONE
+            binding.view2.visibility= View.VISIBLE
+
+            return true // Handled, so don't exit fragment
+        }
+        return false // Not handled, let activity navigate back
     }
 
 }

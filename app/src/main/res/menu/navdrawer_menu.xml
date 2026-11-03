@@ -33,6 +33,10 @@
         android:icon="@drawable/outline_person_24"
         android:title="Pelanggan" />
     <item
+        android:id="@+id/purchaseOrderFragment"
+        android:icon="@drawable/stock_icon"
+        android:title="Order"/>
+    <item
         android:id="@+id/expensesFragment"
         android:icon="@drawable/pengeluaran"
         android:title="Pengeluaran"/>

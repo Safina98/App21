@@ -9,18 +9,18 @@ import androidx.room.*
                         childColumns = ["brand_code"],
                         onDelete = ForeignKey.CASCADE,
                         onUpdate = ForeignKey.CASCADE),
-//                ForeignKey(entity = Category::class,
-//                        parentColumns = ["categoryCloudId"],
-//                        childColumns = ["cath_code"],
-//                        onDelete = ForeignKey.CASCADE,
-//                        onUpdate = ForeignKey.CASCADE),
-                //recently added
                 ForeignKey(entity = DiscountTable::class,
                         parentColumns = ["discountId"],
                         childColumns = ["discountId"],
                         onDelete = ForeignKey.SET_NULL,
                         onUpdate = ForeignKey.CASCADE),
-        ]
+            ForeignKey(entity = SuplierTable::class,
+                parentColumns = ["id"],
+                childColumns = ["suplier_id"],
+                onDelete = ForeignKey.SET_NULL,
+                onUpdate = ForeignKey.CASCADE),
+        ],
+
 )
 data class Product(
     @PrimaryKey
@@ -42,8 +42,6 @@ data class Product(
         var alternate_price:Double = 0.0,
     @ColumnInfo(name="brand_code")
         var brand_code: Long=0L,
-    //@ColumnInfo(name = "cath_code")
-    //    var cath_code: Long = 0L,
     @ColumnInfo(name = "discountId")
         var discountId:Int?=null,
         //new columns
@@ -55,7 +53,9 @@ data class Product(
         var alternate_capital:Double = 0.0,
     @ColumnInfo(name="is_deleted")
     var isDeleted: Boolean = false,
-
     @ColumnInfo(name="needs_syncs")
-    var needsSyncs:Int=1
+    var needsSyncs:Int=1,
+    @ColumnInfo(name="suplier_id")
+    var suplierId:Long?=null
+
 )

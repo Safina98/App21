@@ -29,6 +29,7 @@ import android.widget.ScrollView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.app21try6.database.repositories.ExpensesRepository
 
 class InputUpdateProduct : Fragment() {
 
@@ -69,10 +70,11 @@ class InputUpdateProduct : Fragment() {
         val repository = StockRepositories(application)
         val discountRepository= DiscountRepository(application)
         val transactionsRepository= TransactionsRepository(application)
+        val expenseRepository= ExpensesRepository(application)
 
         viewModel = ViewModelProvider(
             this,
-            UpsertProductViewModelFactory(id,repository, discountRepository, transactionsRepository,application)
+            UpsertProductViewModelFactory(id,repository, discountRepository, transactionsRepository,expenseRepository,application)
         )
             .get(UpsertProductViewModel::class.java)
         binding.viewModel=viewModel
