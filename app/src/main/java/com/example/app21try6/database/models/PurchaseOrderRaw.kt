@@ -7,5 +7,7 @@ data class PurchaseOrderRaw(
     val totalNet: Double,
     val defaultNet: Double?,
     val totalSells30Days: Double,
-    val totalSells90Days: Double
+    val totalSells90Days: Double,
+    val productName:String?,
+    val categoryName:String?,
 )

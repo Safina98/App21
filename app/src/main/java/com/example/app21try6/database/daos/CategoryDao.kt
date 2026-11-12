@@ -35,6 +35,9 @@ interface CategoryDao {
 
     @Query("SELECT category_name FROM category_table")
     fun getName():LiveData<List<String>>
+
+    @Query("SELECT * FROM category_table")
+    fun getCategoryNameByProductId(): List<Category>
     @Query("SELECT category_name FROM category_table")
     fun getAllCategoryName():List<String>
     @Query("SELECT categoryCloudId FROM category_table WHERE category_name = :name")

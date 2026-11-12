@@ -11,15 +11,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.app21try6.database.tables.Category
 import com.example.app21try6.database.models.BrandProductModel
-import com.example.app21try6.database.repositories.BookkeepingRepository
 import com.example.app21try6.database.repositories.DiscountRepository
-import com.example.app21try6.database.repositories.ExpensesRepository
-import com.example.app21try6.database.repositories.LogsRepository
 import com.example.app21try6.database.repositories.StockRepositories
-import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.database.tables.Brand
-import com.example.app21try6.database.tables.Product
-import com.example.app21try6.utils.AssignCloudIdManager
 
 import kotlinx.coroutines.*
 import java.io.BufferedWriter

@@ -9,6 +9,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.models.ExportStockPriceModel
+import com.example.app21try6.database.models.SelectableItem
 import com.example.app21try6.database.tables.Product
 import com.example.app21try6.database.tables.TransactionDetail
 
@@ -100,5 +101,16 @@ interface ProductDao {
 
     @Query("SELECT productCloudId FROM product_table WHERE product_name=:name")
     fun getProductIdByProductName(name:String):Long
+
+
+    @Query("""
+    SELECT DISTINCT p.product_name AS name, 0 AS isChecked
+    FROM product_table p
+    INNER JOIN suplier_table s ON s.id = p.suplier_id
+    WHERE s.suplierName = :suplierName
+      AND p.is_deleted = 0
+    ORDER BY p.product_name
+""")
+    fun getProductBySuplierName(suplierName: String): List<SelectableItem>?
 
 }

@@ -14,6 +14,8 @@ interface SuplierDao {
     @Insert
     suspend fun insert(list: List<SuplierTable>)
 
+    @Insert
+    suspend fun insert(suplierTable: SuplierTable)
     @Query("DELETE  FROM suplier_table")
     fun delete()
 
@@ -37,6 +39,8 @@ interface SuplierDao {
             s.sPCloudId AS subId,
             s.productCloudId AS productId,
             s.sub_name AS subName,
+            p.product_name as productName,
+            c.category_name as categoryName,
             (
                 COALESCE((SELECT SUM(d.batchCount * d.net)
                           FROM detail_warna_table d
@@ -54,9 +58,13 @@ interface SuplierDao {
             COALESCE((SELECT SUM(t.qty * t.unit_qty)
                       FROM trans_detail_table t
                       WHERE t.sPCloudId = s.sPCloudId
-                        AND t.trans_detail_date >= :since90), 0) AS totalSells90Days
+                        AND t.trans_detail_date >= :since90), 0) AS totalSells90Days,
+                        b.brand_name AS brandName,
+                        c.category_name AS categoryName
         FROM product_table p
         INNER JOIN sub_table s ON s.productCloudId = p.productCloudId
+        LEFT JOIN brand_table b ON b.brandCloudId = p.brand_code
+        LEFT JOIN category_table c ON c.categoryCloudId = b.cath_code
         WHERE p.suplier_id = :suplierId
         ORDER BY p.product_name, s.sub_name
         """
@@ -74,8 +82,9 @@ interface SuplierDao {
                e.expense_date    AS expenseDate
         FROM inventory_purchase_table ip
         INNER JOIN sub_table sp      ON sp.sPCloudId = ip.sPCloudId
+        INNER JOIN product_table p   ON sp.productCloudId = p.productCloudId 
         INNER JOIN expenses_table e  ON e.id = ip.expensesId
-        WHERE ip.is_deleted = 0 AND sp.is_deleted = 0 AND e.is_deleted = 0
+        WHERE p.suplier_id is null
     """)
     suspend fun getPurchaseExpenseRows(): List<PurchaseExpenseRow>
 

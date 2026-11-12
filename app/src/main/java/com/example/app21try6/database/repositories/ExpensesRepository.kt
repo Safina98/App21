@@ -8,6 +8,7 @@ import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.BarChartModel
 import com.example.app21try6.database.models.PaymentModel
 import com.example.app21try6.database.models.PurchaseOrderModel
+import com.example.app21try6.database.models.PurchaseOrderRaw
 
 import com.example.app21try6.database.tables.ExpenseCategory
 import com.example.app21try6.database.tables.Expenses
@@ -150,7 +151,7 @@ class ExpensesRepository(application: Application) {
             suplierDao.selectAllSuplierTable()
         }
     }
-    suspend fun getPurchaseOrders(suplierName:String): List<PurchaseOrderModel> =
+    suspend fun getPurchaseOrders(suplierName:String,interval:Int): List<PurchaseOrderModel> =
         withContext(Dispatchers.IO) {
             val now = Calendar.getInstance()
             val since30 = DateTypeConverter.fromDate(
@@ -169,7 +170,7 @@ class ExpensesRepository(application: Application) {
 
                 val net = raw.defaultNet
                 val order = if (net != null && net > 0.0) {
-                   val toOrder= ((averageSells * 45)-raw.totalNet) / net
+                   val toOrder= ((averageSells * interval)-raw.totalNet) / net
                     if (toOrder>0)
                     ceil(toOrder).toInt()
                     else 0
@@ -184,9 +185,53 @@ class ExpensesRepository(application: Application) {
                     totalSells30Days = raw.totalSells30Days,
                     totalSells90Days = raw.totalSells90Days,
                     averagesells = averageSells,
-                    purcahseOrder = order
+                    purcahseOrder = order,
+                    productName = raw.productName,
+                    ctgName = raw.categoryName
                 )
             }
+        }
+
+    // DB part: runs only when loading
+    suspend fun fetchPurchaseOrderRaw(suplierName: String): List<PurchaseOrderRaw> =
+        withContext(Dispatchers.IO) {
+            val now = Calendar.getInstance()
+            val since30 = DateTypeConverter.fromDate(
+                (now.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, -30) }.time
+            )!!
+            val since90 = DateTypeConverter.fromDate(
+                (now.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, -90) }.time
+            )!!
+
+            val suplierId = suplierDao.getSuplierIdByName(suplierName)
+            suplierDao.getPurchaseOrderRaw(suplierId, since30, since90)
+        }
+
+    // Pure calculation: no DB, called on every interval change
+    fun calculateOrders(rawList: List<PurchaseOrderRaw>, interval: Int): List<PurchaseOrderModel> =
+        rawList.map { raw ->
+            val daily30 = raw.totalSells30Days / 30.0
+            val daily90 = raw.totalSells90Days / 90.0
+            val averageSells = if (daily30 > daily90) daily30 else daily90
+
+            val net = raw.defaultNet
+            val order = if (net != null && net > 0.0) {
+                val toOrder = ((averageSells * interval) - raw.totalNet) / net
+                if (toOrder > 0) ceil(toOrder).toInt() else 0
+            } else null
+            PurchaseOrderModel(
+                subId = raw.subId,
+                productId = raw.productId,
+                subName = raw.subName,
+                totalNet = raw.totalNet,
+                defaultNet = raw.defaultNet,
+                totalSells30Days = raw.totalSells30Days,
+                totalSells90Days = raw.totalSells90Days,
+                averagesells = averageSells,
+                purcahseOrder = order,
+                productName = raw.productName,
+                ctgName = raw.categoryName
+            )
         }
     suspend fun deleteAllSuplierTable(){
         withContext(Dispatchers.IO) {
@@ -219,6 +264,12 @@ class ExpensesRepository(application: Application) {
             suplierDao.insert(suplierDummy)
         }
     }
+    suspend fun insertSuplier(suplierTable: SuplierTable){
+        withContext(Dispatchers.IO){
+
+            suplierDao.insert(suplierTable)
+        }
+    }
     suspend fun getSuplierNameById(id:Long?):String?{
         return withContext(Dispatchers.IO){
             suplierDao.getSuplierNameById(id)
@@ -227,7 +278,7 @@ class ExpensesRepository(application: Application) {
     ///////////////////////to delete later///////////////////////////////////////
 
     suspend fun updateProductSuppliersFromPurchases(): SupplierCleanupResult {
-        insertSupliers()
+       // insertSupliers()
         val supplierIdByName = suplierDao.getAllSuppliers()
             .associate { normalize(it.suplierName) to it.id }
 

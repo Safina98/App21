@@ -12,6 +12,7 @@ import com.example.app21try6.database.cloud.UploadInventories
 import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.models.DetailMerchandiseModel
 import com.example.app21try6.database.models.ExportStockPriceModel
+import com.example.app21try6.database.models.SelectableItem
 import com.example.app21try6.database.models.SubWithPriceModel
 import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.database.tables.Category
@@ -51,6 +52,10 @@ class StockRepositories (
     //spinner catogory entires
     fun getCategoryNameLiveData(): LiveData<List<String>> {
         return categoryDao.getName()
+    }
+
+    fun getCategoryNameList(): List<Category> {
+        return categoryDao.getCategoryNameByProductId()
     }
     suspend fun getCategoryNameById(id:Long):String{
         return withContext(Dispatchers.IO){
@@ -155,6 +160,10 @@ class StockRepositories (
     suspend fun getBrandByCategoryId(id:Long):List<BrandProductModel>{ return withContext(Dispatchers.IO){ brandDao.getBrandModelByCatId(null) } }
     suspend fun getAllBrand():List<Brand>{ return withContext(Dispatchers.IO){ brandDao.getAllBrand() } }
     fun getBrandNameListByCategoryName(): LiveData<List<String>>{ return  brandDao.getBrandNameListByCatName()  }
+
+    //todo delete later
+    suspend fun getBrandNameListBySuplierName(suplierName:String): List<SelectableItem>?{ return withContext(
+        Dispatchers.IO){ brandDao.getBrandsBySuplierName(suplierName)  }}
     //update brand
     suspend fun updateBrand(brand: Brand){ withContext(Dispatchers.IO){
         brandDao.update(brand)
@@ -313,6 +322,9 @@ class StockRepositories (
             uploadInventory.uploadProduct(product)
         }
     }
+
+    suspend fun getBProductNameListBySuplierName(suplierName:String): List<SelectableItem>?{ return withContext(
+        Dispatchers.IO){ productDao.getProductBySuplierName(suplierName)  }}
 ////////////////////////////////////////////////SubProduct//////////////////////////////////////////
     fun getSubProductLiveData(id:Long?,brandId: Long?): LiveData<List<SubProduct>> {
         return  subProductDao.getAll(id,brandId)

@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.app21try6.database.models.BrandProductModel
+import com.example.app21try6.database.models.SelectableItem
 import com.example.app21try6.database.tables.Brand
 import com.example.app21try6.stock.brandstock.ExportModel
 
@@ -41,6 +42,17 @@ interface BrandDao {
 
     @Query("SELECT  brand_name  from brand_table")
     fun getBrandNameListByCatName(): LiveData<List<String>>
+
+    @Query("""
+    SELECT DISTINCT b.brand_name AS name, 0 AS isChecked
+    FROM brand_table b
+    INNER JOIN product_table p ON p.brand_code = b.brandCloudId
+    INNER JOIN suplier_table s ON s.id = p.suplier_id
+    WHERE s.suplierName = :suplierName
+      AND p.is_deleted = 0
+    ORDER BY b.brand_name
+""")
+    fun getBrandsBySuplierName(suplierName: String): List<SelectableItem>?
 
     @Query("SELECT brandCloudId FROM brand_table WHERE brand_name =:name")
     fun getBrandIdbyName(name:String):Long?

@@ -1,11 +1,13 @@
 package com.example.app21try6.statement.purchaseorder
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -13,7 +15,7 @@ import com.example.app21try6.R
 import com.example.app21try6.database.repositories.ExpensesRepository
 import com.example.app21try6.database.repositories.StockRepositories
 import com.example.app21try6.databinding.FragmentPurchaseOrderBinding
-import com.example.app21try6.round2
+import com.example.app21try6.utils.setupMultiSelect
 
 val pOTag="OrderProbs"
 class PurchaseOrderFragment : Fragment() {
@@ -35,9 +37,11 @@ class PurchaseOrderFragment : Fragment() {
             .get(PurchaseOrderViewModel::class.java)
         binding.viewModel=viewModel
         binding.lifecycleOwner =this
+        viewModel.updateProduct()
 
         val adapter= PurchaseOrderAdapter(POModelListener{})
         binding.poRv.adapter=adapter
+
 
         viewModel.suplierList.observe(viewLifecycleOwner){supliers->
 
@@ -53,21 +57,58 @@ class PurchaseOrderFragment : Fragment() {
 
         viewModel.items.observe(viewLifecycleOwner){items->
             adapter.submitList(items)
-            items.forEach {
-                Log.i(pOTag,"${it.subName} 30 days ${it.totalSells30Days?.round2() }; 90 days ${it.totalSells90Days?.round2()}; averagesells ${it.averagesells?.round2()}; order${it.purcahseOrder}")
-            }
+            viewModel.draftText()
+        }
 
+        viewModel.isLoading.observe(viewLifecycleOwner){
+            if (it==true){
+               // hide keyboard
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(requireView().windowToken, 0)
+            }
+        }
+
+        // categories: List<Category>, loaded from your DB / ViewModel
+        viewModel.categoryOptions.observe(viewLifecycleOwner) { options ->
+            Log.i(pOTag,"category ${options}")
+            setupMultiSelect(
+                context = requireContext(),
+                inputLayout = binding.ilCategory,
+                editText = binding.etCategory,
+                items = options,
+                label = { it.name },
+                getChecked = { it.isChecked },
+                setChecked = { item, checked -> item.isChecked = checked },
+                onChanged = { selected ->
+                    viewModel.setSelectedCategories(selected.map { it.name }.toSet())
+                }
+            )
+
+        }
+        viewModel.productOptions.observe(viewLifecycleOwner){
+                options ->
+            Log.i(pOTag,"brand ${options}")
+            if (options!=null)
+            setupMultiSelect(
+                context = requireContext(),
+                inputLayout = binding.ilBrand,
+                editText = binding.etBrand,
+                items = options,
+                label = { it.name },
+                getChecked = { it.isChecked },
+                setChecked = { item, checked -> item.isChecked = checked },
+                onChanged = { selected ->
+                    viewModel.setSelectedBrands(selected.map { it.name }.toSet())
+                }
+            )
         }
 
         return binding.root
     }
 }
-//input suplier name
-//load all sub product where the product have the suplier id
-//what to be selected from loading is: sub_product name, net, qty*batchqty of the last 30 and 90 days from itansaction,
-//calculate how many stock to be added
-//The formula is
-// if(qty of 30 days > than pty of the last 90 days)
-// daylysells = qty 30 days :30 else pty 90 days :90
-//if (net<daily sells * 45) buy, else no
-//model: sub_id, sub_name, net, total sellsLast30Days, totalSalesLast90Days, daily sells, new order
+
+//advanced filtering
+//filter by day, input the number of day, pass it as a parameter to the repository
+//filter by brand and category
+//get a list of brand and category name and id from database
+//filter the item in the model based on the selected item in the list
