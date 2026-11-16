@@ -303,5 +303,24 @@
         android:id="@+id/purchaseOrderFragment"
         android:name="com.example.app21try6.statement.purchaseorder.PurchaseOrderFragment"
         android:label="PurchaseOrderFragment" />
+    <fragment
+        android:id="@+id/manageFragment"
+        android:name="com.example.app21try6.statement.manage.ManageFragment"
+        android:label="ManageFragment" >
+        <action
+            android:id="@+id/action_manageFragment_to_statementHsFragment"
+            app:destination="@id/statementHsFragment" />
+        <action
+            android:id="@+id/action_manageFragment_to_customerFragment"
+            app:destination="@id/customerFragment" />
+        <action
+            android:id="@+id/action_manageFragment_to_suplierFragment"
+            app:destination="@id/suplierFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/suplierFragment"
+        android:name="com.example.app21try6.statement.suplier.SuplierFragment"
+        android:label="fragment_suplier"
+        tools:layout="@layout/fragment_suplier" />
 
 </navigation>
