@@ -115,6 +115,8 @@ object DialogUtils{
         alert.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
         alert.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context!!, R.color.dialogbtncolor))
     }
+
+
     fun <VM : ViewModel, M> updateDialog(
         context: Context,
         viewModel: VM,
@@ -125,43 +127,41 @@ object DialogUtils{
         updateFunction: (VM, M) -> Unit,
         insertFunction: (VM, String) -> Unit
     ) {
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle(title)
-        val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.pop_up_update, null)
+        val view = LayoutInflater.from(context).inflate(R.layout.pop_up_update, null)
         val textKet = view.findViewById<TextInputEditText>(R.id.textUpdateKet)
+
         // Set initial text if model is not null
         if (model != null) {
             textKet.setText(getBrandName(model))
+            textKet.setSelection(textKet.text?.length ?: 0)
         }
         textKet.requestFocus()
-        builder.setView(view)
-        builder.setPositiveButton("Update") { dialog, which ->
-            val newName = textKet.text.toString().uppercase().trim()
 
-            if (model != null) {
-                setBrandName(model, newName)
+        val alert: AlertDialog = MaterialAlertDialogBuilder(context)
+            .setTitle(title)
+            .setView(view)
+            .setPositiveButton("Update") { _, _ ->
+                val newName = textKet.text.toString().uppercase().trim()
+
                 if (newName.isNotEmpty()) {
-                    updateFunction(viewModel, model)  // Use updateFunction with explicit types
-                }
-            } else {
-                if (newName.isNotEmpty()) {
-                    insertFunction(viewModel, newName)  // Use insertFunction with explicit types
+                    if (model != null) {
+                        setBrandName(model, newName)
+                        updateFunction(viewModel, model)
+                    } else {
+                        insertFunction(viewModel, newName)
+                    }
                 }
             }
-        }
+            .setNegativeButton("No", null)
+            .create()
 
-        builder.setNegativeButton("No") { dialog, which -> }
-        val alert = builder.create()
         alert.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         alert.show()
-        alert.setOnDismissListener {
-            alert.dismiss()
-        }
-        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(context, R.color.dialogbtncolor))
-        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context, R.color.dialogbtncolor))
-    }
 
+        val btnColor = ContextCompat.getColor(context, R.color.dialogbtncolor)
+        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(btnColor)
+        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(btnColor)
+    }
     fun updateBrandDialog(
         context: Context,
         viewModel: BrandStockViewModel,

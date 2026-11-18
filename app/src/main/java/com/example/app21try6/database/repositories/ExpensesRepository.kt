@@ -154,6 +154,7 @@ class ExpensesRepository(application: Application) {
         }
     }
 
+
     fun getSuplierTableList(): LiveData<List<StockCategoryModel>> {
             return suplierDao.selectAllSuplierTableAsModel()
     }
@@ -286,6 +287,11 @@ class ExpensesRepository(application: Application) {
     suspend fun getSuplierNameById(id:Long?):String?{
         return withContext(Dispatchers.IO){
             suplierDao.getSuplierNameById(id)
+        }
+    }
+    suspend fun getSuplierIdByName(suplierName:String?):Long?{
+        return withContext(Dispatchers.IO){
+            suplierDao.getSuplierIdByName(suplierName)
         }
     }
     ///////////////////////to delete later///////////////////////////////////////

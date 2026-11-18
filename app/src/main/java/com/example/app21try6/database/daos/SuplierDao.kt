@@ -32,10 +32,13 @@ interface SuplierDao {
     fun getAllSuplier():LiveData<List<String>>
 
     @Query("SELECT id  FROM suplier_table WHERE suplierName =:name")
-    suspend fun getSuplierIdByName(name:String):Long
+    suspend fun getSuplierIdByName(name:String?):Long
 
     @Query("SELECT suplierName FROM suplier_table WHERE id =:id ")
     suspend fun getSuplierNameById(id:Long?):String?
+
+    @Query("SELECT id FROM suplier_table WHERE suplierName =:name ")
+    suspend fun getSuplierIdbyName(name:String):Long?
 
 
     

@@ -56,17 +56,7 @@ class InputUpdateProduct : Fragment() {
                 }
             }
         )
-//        scrollToViewOnFocus(
-//            binding.scrollViewUpsertProduct,
-//            binding.textUpdateKet,
-//            binding.textUpdatePrice,
-//            binding.textUpdateAlternatePrice,
-//            binding.purchasePrice,
-//            binding.textCapital,
-//            binding.textCapital2,
-//            binding.defaultNet,
-//            binding.purchaseUnit
-//        )
+
         val repository = StockRepositories(application)
         val discountRepository= DiscountRepository(application)
         val transactionsRepository= TransactionsRepository(application)
@@ -115,6 +105,18 @@ class InputUpdateProduct : Fragment() {
                 binding.textCategory.setAdapter(adapterCat)
             }
         }
+
+        viewModel.supllierNameList.observe(viewLifecycleOwner){ entries->
+            if(entries!=null){
+                val adapterSup = ArrayAdapter(
+                    requireContext(),
+                    android.R.layout.simple_dropdown_item_1line,
+                    entries
+                )
+                binding.textSuplier.setAdapter(adapterSup)
+            }
+        }
+
         viewModel.branName.observe(viewLifecycleOwner){
         }
         viewModel.productModusList.observe(viewLifecycleOwner){}

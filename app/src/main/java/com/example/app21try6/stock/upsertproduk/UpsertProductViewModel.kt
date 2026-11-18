@@ -66,6 +66,8 @@ class UpsertProductViewModel(
 
     val ctgNameList = repository.getCategoryNameLiveData()
     val brandList = repository.getBrandNameListByCategoryName() // query from DB
+
+    val supllierNameList=expensesRepository.getAllSuplier()
     val _product=MutableLiveData<Product?>()
     var productName = MutableLiveData<String>()
     var productPice=MutableLiveData<Int>()
@@ -153,6 +155,7 @@ class UpsertProductViewModel(
             product.purchasePrice=purchasePrice.value ?: 0
             product.puchaseUnit=(puchaseUnit.value)?.uppercase()?.trim()
             product.alternate_price=alternatePrice.value ?: 0.0
+            product.suplierId=expensesRepository.getSuplierIdByName(suplierName.value)
             //product.cath_code=repository.getCategoryIdByName(ctgName.value ?: "")
             val ctgId=repository.getCategoryIdByName(ctgName.value ?: "")
             product.brand_code=repository.getBrandIdByName(branName.value?:"")?:0
