@@ -10,11 +10,13 @@ import com.example.app21try6.database.daos.ExpenseDao
 import com.example.app21try6.database.daos.TransDetailDao
 import com.example.app21try6.database.daos.TransSumDao
 import com.example.app21try6.database.repositories.DiscountRepository
+import com.example.app21try6.database.repositories.ExpensesRepository
 import com.example.app21try6.database.repositories.TransactionsRepository
 
 class StatementHSViewModelFactory(private val application: Application,
 
-                                  private val discountRepository: DiscountRepository
+                                  private val discountRepository: DiscountRepository,
+                                    private val expensesRepository: ExpensesRepository
 
 
                                           ): ViewModelProvider.Factory{
@@ -22,7 +24,7 @@ class StatementHSViewModelFactory(private val application: Application,
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(StatementHSViewModel::class.java)) {
             return StatementHSViewModel(application,
-                discountRepository) as T
+                discountRepository,expensesRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -6,6 +6,7 @@ import androidx.room.withTransaction
 import com.example.app21try6.database.DateTypeConverter
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.models.BarChartModel
+import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.models.PaymentModel
 import com.example.app21try6.database.models.PurchaseOrderModel
 import com.example.app21try6.database.models.PurchaseOrderRaw
@@ -17,6 +18,7 @@ import com.example.app21try6.database.tables.PurchaseDiscount
 import com.example.app21try6.database.tables.SuplierTable
 import com.example.app21try6.statement.DiscountAdapterModel
 import com.example.app21try6.stock.brandstock.CategoryModel
+import com.example.app21try6.stock.brandstock.StockCategoryModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Calendar
@@ -151,6 +153,21 @@ class ExpensesRepository(application: Application) {
             suplierDao.selectAllSuplierTable()
         }
     }
+
+    fun getSuplierTableList(): LiveData<List<StockCategoryModel>> {
+            return suplierDao.selectAllSuplierTableAsModel()
+    }
+    suspend fun updateSuplier(suplierTable: SuplierTable){
+        withContext(Dispatchers.IO){
+            suplierDao.update(suplierTable)
+        }
+    }
+
+    suspend fun deleteSuplier(id:Long){
+        withContext(Dispatchers.IO){
+            suplierDao.delete(id)
+        }
+    }
     suspend fun getPurchaseOrders(suplierName:String,interval:Int): List<PurchaseOrderModel> =
         withContext(Dispatchers.IO) {
             val now = Calendar.getInstance()
@@ -233,11 +250,7 @@ class ExpensesRepository(application: Application) {
                 ctgName = raw.categoryName
             )
         }
-    suspend fun deleteAllSuplierTable(){
-        withContext(Dispatchers.IO) {
-            suplierDao.delete()
-        }
-    }
+
 
     fun getAllSuplier() : LiveData<List<String>>{
         return suplierDao.getAllSuplier()

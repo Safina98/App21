@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.repositories.DiscountRepository
+import com.example.app21try6.database.repositories.ExpensesRepository
 import com.example.app21try6.statement.StatementHSViewModel
 import com.example.app21try6.statement.StatementHSViewModelFactory
 
@@ -21,7 +22,8 @@ class CustomerFragment: Fragment(){
     ): View {
         val application= requireNotNull(this.activity).application
         val discountRepo= DiscountRepository(application)
-        val viewModelFactory = StatementHSViewModelFactory(application,discountRepo)
+        val expensesRepository= ExpensesRepository(application)
+        val viewModelFactory = StatementHSViewModelFactory(application, discountRepo,expensesRepository)
         val viewModel = ViewModelProvider(this,viewModelFactory).get(StatementHSViewModel::class.java)
 
         return ComposeView(requireContext()).apply {

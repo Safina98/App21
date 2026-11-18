@@ -4,10 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
+import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.models.PurchaseExpenseRow
 import com.example.app21try6.database.models.PurchaseOrderRaw
 import com.example.app21try6.database.tables.DiscountTable
 import com.example.app21try6.database.tables.SuplierTable
+import com.example.app21try6.stock.brandstock.StockCategoryModel
 
 @Dao
 interface SuplierDao {
@@ -16,8 +19,14 @@ interface SuplierDao {
 
     @Insert
     suspend fun insert(suplierTable: SuplierTable)
-    @Query("DELETE  FROM suplier_table")
-    fun delete()
+
+    @Update
+    suspend fun update(suplierTable: SuplierTable)
+
+    @Query("DELETE  FROM suplier_table WHERE id=:id")
+    suspend fun delete(id:Long)
+
+
 
     @Query("SELECT suplierName FROM suplier_table")
     fun getAllSuplier():LiveData<List<String>>
@@ -32,6 +41,12 @@ interface SuplierDao {
     
     @Query("SELECT * FROM suplier_table ")
     fun selectAllSuplierTable(): List<SuplierTable>
+
+    @Query("SELECT " +
+            "suplierName as categoryName, " +
+            "id as id " +
+            "FROM suplier_table ")
+    fun selectAllSuplierTableAsModel(): LiveData<List<StockCategoryModel>>
 
     @Query(
         """

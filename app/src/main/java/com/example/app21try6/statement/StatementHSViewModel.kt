@@ -1,5 +1,6 @@
 package com.example.app21try6.statement
 
+import android.R
 import android.app.Application
 import android.os.Build
 import android.util.Log
@@ -7,11 +8,17 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.app21try6.database.models.BrandProductModel
 import com.example.app21try6.database.tables.CustomerTable
 import com.example.app21try6.database.tables.DiscountTable
 import com.example.app21try6.database.repositories.DiscountRepository
+import com.example.app21try6.database.repositories.ExpensesRepository
+import com.example.app21try6.database.tables.Category
+import com.example.app21try6.database.tables.SuplierTable
+import com.example.app21try6.stock.brandstock.StockCategoryModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -21,10 +28,12 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.math.exp
 
 @RequiresApi(Build.VERSION_CODES.O)
 class StatementHSViewModel(application: Application,
-                           val discountRepo: DiscountRepository
+                           val discountRepo: DiscountRepository,
+                            val expenseRepo: ExpensesRepository
 
     ):AndroidViewModel(application) {
 
@@ -33,6 +42,11 @@ class StatementHSViewModel(application: Application,
     val allCustomer=discountRepo.getAllCustomersFlow()
 
     var searchQuery = mutableStateOf("")
+
+    val suplierList = expenseRepo.getSuplierTableList()
+
+
+
     val filtered = snapshotFlow { searchQuery.value }
         .flatMapLatest { query ->
             allCustomer.map { list ->
@@ -44,8 +58,40 @@ class StatementHSViewModel(application: Application,
     var id = 0
     val isAddExpense=MutableLiveData<Boolean>(true)
 
+    val _isAddSuplierClicked= MutableLiveData<Boolean>(false)
+    val isAddSuplierClicked: LiveData<Boolean> get() = _isAddSuplierClicked
 
+    ///////////////////////////////////////Suplier////////////////////////////////////////////
+    fun onAddSuplierCick(){
+        _isAddSuplierClicked.value=true
+    }
+    fun onAddSuplierClicked(){
+        _isAddSuplierClicked.value=false
+    }
+    fun updateSuplier(suplierModel: StockCategoryModel){
+        viewModelScope.launch {
+            val suplier= SuplierTable()
+            suplier.id =suplierModel.id
+            suplier.suplierName=suplierModel.categoryName
+            suplier.needsSyncs=1
+            expenseRepo.updateSuplier(suplier)
+        }
+    }
+    fun insertSuplier(name: String){
+        viewModelScope.launch {
+            val suplier= SuplierTable()
+            suplier.id = System.currentTimeMillis()
+            suplier.suplierName=name
+            suplier.needsSyncs=1
+            expenseRepo.insertSuplier(suplier)
+        }
+    }
+    fun deleteSuplier(id: Long){
+        viewModelScope.launch {
 
+            expenseRepo.deleteSuplier(id)
+        }
+    }
  ////////////////////////////////////////////Customer////////////////////////////////////////////
 
 

@@ -19,6 +19,7 @@ import com.example.app21try6.R
 import com.example.app21try6.database.tables.CustomerTable
 import com.example.app21try6.database.VendibleDatabase
 import com.example.app21try6.database.repositories.DiscountRepository
+import com.example.app21try6.database.repositories.ExpensesRepository
 import com.example.app21try6.database.repositories.TransactionsRepository
 import com.example.app21try6.databinding.FragmentStatementHsBinding
 import com.example.app21try6.databinding.PopUpDiscBinding
@@ -38,7 +39,8 @@ class StatementHsFragment : Fragment() {
         val application= requireNotNull(this.activity).application
 
         val discountRepo= DiscountRepository(application)
-        val viewModelFactory = StatementHSViewModelFactory(application, discountRepo)
+        val expensesRepository= ExpensesRepository(application)
+        val viewModelFactory = StatementHSViewModelFactory(application, discountRepo,expensesRepository)
 
         viewModel = ViewModelProvider(this,viewModelFactory).get(StatementHSViewModel::class.java)
         binding.viewModel=viewModel
