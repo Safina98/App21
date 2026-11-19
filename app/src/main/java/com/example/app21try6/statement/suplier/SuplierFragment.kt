@@ -56,14 +56,11 @@ class SuplierFragment : Fragment() {
                     updateFunction = { vm, item -> (vm as StatementHSViewModel).updateSuplier(item as StockCategoryModel) },
                     insertFunction = { vm, name -> (vm as StatementHSViewModel).insertSuplier(name as String) }
                 )
-
             },DeleteListener {
                 DialogUtils.showConfirmationDialog(requireContext(),viewModel, it.id, "Are you sure you want to delete?",{ vm, item -> (vm as StatementHSViewModel).deleteSuplier(item as Long) })
             })
 
-
         binding.suplierRv.adapter=adapter
-
 
         viewModel = ViewModelProvider(this,viewModelFactory).get(StatementHSViewModel::class.java)
         binding.viewModel=viewModel
@@ -72,13 +69,12 @@ class SuplierFragment : Fragment() {
             if (it!=null){
                 adapter.submitList(it)
             }
-
         })
+
         viewModel.isAddSuplierClicked.observe(viewLifecycleOwner, Observer{
             Log.i("suplierprobs","$it")
             if (it==true){
                 Log.i("suplierprobs","$it")
-
                     DialogUtils.updateDialog(
                         context = requireContext(),
                         viewModel = viewModel,
@@ -89,12 +85,9 @@ class SuplierFragment : Fragment() {
                         updateFunction = { vm, item -> (vm as StatementHSViewModel).updateSuplier(item as StockCategoryModel) },
                         insertFunction = { vm, name -> (vm as StatementHSViewModel).insertSuplier(name as String) }
                     )
-
                 viewModel.onAddSuplierClicked()
-
         }}
         )
         return binding.root
     }
-
 }

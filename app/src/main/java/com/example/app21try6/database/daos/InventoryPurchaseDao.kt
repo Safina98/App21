@@ -113,7 +113,7 @@ interface InventoryPurchaseDao {
 
         val expenseSum=getPurchaseSum(inventoryPurchase.expensesId!!)
         val totalDiscount=getDiscountSum(inventoryPurchase.expensesId!!)
-        val newExpenseSum=expenseSum-totalDiscount
+        val newExpenseSum=expenseSum+totalDiscount
         updateExpenseAmmount(inventoryPurchase.expensesId!!,newExpenseSum)
     }
     @Transaction
@@ -130,7 +130,7 @@ interface InventoryPurchaseDao {
         insertPDiscount(pDiscount)
         val expenseSum=getPurchaseSum(pDiscount.expenseId!!)
         val totalDiscount=getDiscountSum(pDiscount.expenseId!!)
-        val newExpenseSum=expenseSum-totalDiscount
+        val newExpenseSum=expenseSum+totalDiscount
         updateExpenseAmmount(pDiscount.expenseId!!,newExpenseSum)
             }
     @Transaction
